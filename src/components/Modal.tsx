@@ -39,18 +39,20 @@ const Modal: React.FC<ModalProps> = ({ isShown, children, onClose, header, foote
           className="fixed z-[100] w-full h-full flex justify-center items-center top-0 left-0 bg-[#212121] bg-opacity-75"
           onClick={handleBackgroundClick}
         >
-          {header && (
-            <ModalHeader handleClose={onClose}>
-              {header}
-            </ModalHeader>
-          )}
-          {children}
-          {/* Footer section */}
-          {footer && (
-            <footer className="mt-4">
-              {footer}
-            </footer>
-          )}
+          <div className="bg-white rounded-lg shadow-lg w-full max-w-lg mx-auto p-6 space-y-6 overflow-hidden">
+            {header && (
+              <ModalHeader handleClose={onClose}>
+                {header}
+              </ModalHeader>
+            )}
+            {children}
+            {/* Footer section */}
+            {footer && (
+              <footer className="mt-4">
+                {footer}
+              </footer>
+            )}
+          </div>
         </div>,
         modal
       )

@@ -41,9 +41,7 @@ const Interface = () => {
       />
       <div className={`flex flex-1 flex-col p-[20px]`}>
         <Navbar windowWidth={windowWidth} sidebarMinimized={sidebarMinimized} />
-        <div>
           <Outlet />
-        </div>
       </div>
     </div>
   );

@@ -1,6 +1,7 @@
 import { FaUsers } from "react-icons/fa";
 import { AiFillHome } from "react-icons/ai";
 import { FaLayerGroup } from "react-icons/fa";
+import { BsPersonWorkspace } from "react-icons/bs";
 
 export const sidebarLinks = [
   {
@@ -30,4 +31,10 @@ export const sidebarAdminLinks = [
     active: ["/organizations"],
     Icon: FaLayerGroup,
   },
+  {
+    to: "/workspace",
+    text: "Espacios de trabajo",
+    active: ["/workspace"],
+    Icon: BsPersonWorkspace
+  }
 ];
