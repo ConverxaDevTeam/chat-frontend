@@ -1,21 +1,22 @@
 import { Socket } from "socket.io-client";
 
-export enum ROLE_USER {
-  ADMIN = "admin",
-  USER = "user",
-}
-
-export type UserProps = {
+export type IUser = {
   id: number;
-  create: string;
-  update: string;
+  created_at: string;
+  updated_at: string;
   email: string;
   email_verified: boolean;
-  role?: ROLE_USER;
+  is_super_admin: boolean;
   last_login: string;
   first_name: string;
   last_name: string;
-  userOrganizations: [{ id: number; organization: { name: string } }];
+};
+
+export type IOrganizarion = {
+  id: number;
+  created_at: string;
+  updated_at: string;
+  name: string;
 };
 
 export type CustomSocket = Pick<Socket, "on" | "off" | "emit" | "disconnect">;
@@ -24,7 +25,7 @@ export interface IAuthState {
   authenticated: boolean;
   loading: boolean;
   socket: CustomSocket | null;
-  user: UserProps | null;
-  selectOrganization: { id: number; name: string } | null;
-  theme: string;
+  user: IUser | null;
+  selectOrganizationId: number | null;
+  organizations: IOrganizarion[];
 }
