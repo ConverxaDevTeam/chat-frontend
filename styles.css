@@ -1,0 +1,45 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+#root {
+  height: 100%;
+}
+html,
+body {
+  height: 100vh;
+  font-family: "Poppins Regular", "Montserrat";
+}
+
+@font-face {
+  font-family: "Poppins Regular";
+  src: url("/fonts/Poppins-Regular.ttf");
+}
+
+@font-face {
+  font-family: "Poppins Medium";
+  src: url("/fonts/Poppins-Medium.ttf");
+}
+
+@font-face {
+  font-family: "Poppins SemiBold";
+  src: url("/fonts/Poppins-SemiBold.ttf");
+}
+
+@font-face {
+  font-family: "Poppins Bold";
+  src: url("/fonts/Poppins-Bold.ttf");
+}
+
+
+.theme {
+  --1: #e8e8e8;
+  --2: #af0400;
+  --3: #ff807d;
+  --4: #ffcac9;
+}

@@ -1,0 +1,35 @@
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+}
+.loader {
+  border: 1rem solid hsla(166, 84%, 59%, 0.5);
+  border-top: 1rem solid #3deec6;
+  border-radius: 50%;
+  width: 7.5rem;
+  height: 7.5rem;
+  animation: spinloader 2s linear infinite;
+}
+.img {
+  height: 5rem;
+  margin-top: -0.1875rem;
+  position: absolute;
+}
+.imgText {
+  height: 30px;
+  margin-top: 10.25rem;
+  position: absolute;
+}
+
+@keyframes spinloader {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
