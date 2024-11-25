@@ -4,6 +4,7 @@ import ProtectedAuth from "@components/ProtectedAuth";
 import Dashboard from "@pages/Home";
 import LogIn from "@pages/LogIn";
 import Organizations from "@pages/Organizations";
+import Workspace from "@pages/Workspace";
 import { AppDispatch, RootState } from "@store";
 import { verifySessionAsync } from "@store/actions/auth";
 import { useEffect } from "react";
@@ -36,6 +37,7 @@ const App = (): JSX.Element => {
         <Route index element={<Dashboard />} />
         <Route path="dashboard" element={<Dashboard />} />
         <Route path="organizations" element={<Organizations />} />
+        <Route path="workspace" element={<Workspace />} />
       </Route>
       <Route path="*" element={<Navigate to="/" />} />
     </Routes>
