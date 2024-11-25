@@ -23,10 +23,10 @@ const Search = () => {
   return (
     <>
       <Modal
-        close={setModalEditProfile}
-        isShown={ModalEditProfile}
-        element={<UpdateUser setModalVisible={setModalEditProfile} />}
-      />
+        onClose={() => setModalEditProfile(false)}
+        isShown={ModalEditProfile}>
+          <UpdateUser setModalVisible={setModalEditProfile} />
+      </Modal>
       <div className="flex pt-[16px] md:pt-[30px] pb-[24px] flex-col justify-between">
         <div className="flex flex-col-reverse lg:flex-row gap-[10px] lg:gap-0 justify-between items-center w-full">
           <div className="text-sofiaCall-dark flex items-center gap-[16px] 2xl:gap-[32px] w-full lg:w-auto">
