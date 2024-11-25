@@ -1,6 +1,6 @@
 import React, { memo, useState } from 'react';
 import DefaultNode from './DefaultNode';
-import { HiOutlineArrowRight, HiPlusCircle } from 'react-icons/hi';
+import { HiLink, HiPlusCircle } from 'react-icons/hi';
 import { CustomNodeProps } from '@interfaces/workflow';
 
 
@@ -38,7 +38,7 @@ const IntegracionesNode: React.FC<IntegracionesNodeProps> = ({ data, openModal }
         description: 'Conecta la plataforma con otras herramientas.'
       }}
       allowedConnections={['source']}
-      icon={<HiOutlineArrowRight size={24} className="w-8 h-8 text-gray-800" />}
+      icon={<HiLink size={24} className="w-8 h-8 text-gray-800" />}
     >
       <div className="mt-4 bg-transparent rounded-md text-black">
         <button

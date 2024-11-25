@@ -1,5 +1,6 @@
 import React, { memo } from "react";
 import { Handle, Position } from "@xyflow/react";
+import { is } from "date-fns/locale";
 
 interface CustomNodeProps {
   data: {
@@ -53,10 +54,9 @@ function NodeBody({ children, isSelected, name, description, icon }: NodeBodyPro
   return <> 
     {/* Mostrar el ícono solo cuando no está seleccionado */}
     {!isSelected ? (
-      <div className="flex justify-center items-center rounded-full w-16 h-16 bg-transparent text-black">
-        {icon}{" "}
-        {/* Ícono se pasa como prop y solo se muestra cuando no está seleccionado */}
-      </div>
+        <div className="flex justify-center items-center rounded-full w-16 h-16 bg-transparent text-black">
+          {icon} {/* Ícono se pasa como prop y solo se muestra cuando no está seleccionado */}
+        </div>
     ):
     (
       <div className="mt-4 text-center text-black">
@@ -81,18 +81,21 @@ function DefaultNode({
   const { name, description, isSelected } = data;
 
   return (
-    <div
-      className={`flex flex-col justify-center items-center border-2 transition-all p-6 ${
-        isSelected
-          ? "w-72 h-auto bg-blue-500 text-white rounded-lg shadow-xl" // Azul suave para el fondo
-          : "w-20 h-20 bg-white text-black rounded-full" // Mantener el círculo cuando no está seleccionado
-      } font-medium`}
-    >
-      <NodeBody name={name} description={description} icon={icon} isSelected={isSelected}>
-        {children}
-      </NodeBody>
-      <CustomHandles allowedConnections={allowedConnections} />
-    </div>
+    <div className="flex flex-col items-center">
+      { !isSelected && <div className="mb-2 text-black font-medium">{name}</div> }
+      <div
+        className={`flex flex-col justify-center items-center border-2 transition-all p-6 ${
+          isSelected
+            ? "w-72 h-auto bg-blue-500 text-white rounded-lg shadow-xl"
+            : "w-20 h-20 bg-white text-black rounded-full"
+        } font-medium`}
+      >
+        <NodeBody name={name} description={description} icon={icon} isSelected={isSelected}>
+          {children}
+        </NodeBody>
+        <CustomHandles allowedConnections={allowedConnections} />
+      </div>
+  </div>
   );
 }
 
