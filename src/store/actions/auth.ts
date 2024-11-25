@@ -1,11 +1,10 @@
 import axios from "axios";
-import { createAction, createAsyncThunk } from "@reduxjs/toolkit";
+import { createAsyncThunk } from "@reduxjs/toolkit";
 import { useAppDispatch } from "@store/hooks";
 import { apiUrls, baseUrl, tokenAccess } from "../../config/config";
 import { alertConfirm, alertError } from "../../utils/alerts";
 import socketIO, { Socket } from "socket.io-client";
 import { jwtDecode } from "jwt-decode";
-import { UserProps } from "@utils/interfaces";
 
 export const axiosInstance = axios.create({
   baseURL: baseUrl,
@@ -177,22 +176,6 @@ export const getUserAsync = createAsyncThunk(
   }
 );
 
-export const getMyBalanceAsync = createAsyncThunk(
-  "auth/getMyBalanceAsync",
-  async (_, { rejectWithValue }) => {
-    try {
-      const response = await axiosInstance.get(apiUrls.getMyBalance());
-      if (response.data.ok) {
-        return response.data.balance;
-      } else {
-        return rejectWithValue("error");
-      }
-    } catch (error) {
-      return rejectWithValue("error");
-    }
-  }
-);
-
 export const logInAsync = createAsyncThunk(
   "auth/logInAsync",
   async (
@@ -245,29 +228,6 @@ export const logInAsync = createAsyncThunk(
       return rejectWithValue("error");
     } finally {
       setActive(false);
-    }
-  }
-);
-
-export const uploadAvatarAsync = createAsyncThunk(
-  "auth/uploadAvatarAsync",
-  async (file: FormData, { rejectWithValue }) => {
-    try {
-      const response = await axiosInstance.put(apiUrls.uploadAvatar(), file, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-      if (response.data.ok) {
-        alertConfirm("Avatar actualizado");
-        return response.data.user.avatar;
-      } else {
-        alertError("Error al actualizar avatar");
-        return rejectWithValue("error");
-      }
-    } catch (error) {
-      alertError("Error al actualizar avatar");
-      return rejectWithValue("error");
     }
   }
 );
@@ -362,54 +322,6 @@ export const getMySessions = async (
   }
 };
 
-export const putUserAsync = createAsyncThunk(
-  "auth/putUserAsync",
-  async (
-    {
-      data,
-      setActive,
-      setError,
-      dispatch,
-    }: {
-      data: Partial<UserProps>;
-      setActive: (boolean: boolean) => void;
-      setError: (error: string) => void;
-      dispatch: ReturnType<typeof useAppDispatch>;
-    },
-    { rejectWithValue }
-  ) => {
-    try {
-      const response = await axiosInstance.put(apiUrls.putUser(), data);
-      if (response.data.ok) {
-        alertConfirm("Usuario actualizado");
-        dispatch(getUserAsync());
-        setError("");
-        return data;
-      } else {
-        alertError("Error al actualizar usuario");
-        setError(response.data.message);
-        return rejectWithValue("error");
-      }
-    } catch (error) {
-      let message = "Error al iniciar sesión";
-      if (axios.isAxiosError(error)) {
-        if (error.response) {
-          message =
-            error.response.data?.message || "Error inesperado del servidor";
-        } else if (error.request) {
-          message = "No se pudo conectar con el servidor";
-        } else {
-          message = error.message;
-        }
-      }
-      setError(message);
-      return rejectWithValue("error");
-    } finally {
-      setActive(false);
-    }
-  }
-);
-
 export const disconnectSocketAndLogOut = async (
   dispatch: ReturnType<typeof useAppDispatch>
 ) => {
@@ -448,8 +360,8 @@ export const connectSocketAsync = createAsyncThunk(
       if (websocket) {
         websocket.on("message", message => {
           console.log(message.action);
-          if (message.action === "balance-update") {
-            dispatch(getMyBalanceAsync());
+          if (message.action === "update-user") {
+            dispatch(getUserAsync());
           }
         });
         return websocket;
@@ -489,11 +401,3 @@ const disconnect = async (websocket: Socket | null) => {
     });
   });
 };
-
-export const setThemeAction = createAction(
-  "auth/setThemeAction",
-  (payload: string) => {
-    localStorage.setItem("theme", payload);
-    return { payload };
-  }
-);

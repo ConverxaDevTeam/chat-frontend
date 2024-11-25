@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { IAuthState } from "../../utils/interfaces";
+
 import {
   getUserAsync,
   logInAsync,
@@ -7,17 +8,15 @@ import {
   logOutAsync,
   connectSocketAsync,
   disconnectSocketAsync,
-  setThemeAction,
 } from "../actions/auth";
-import { getTheme } from "@utils/changeTheme";
 
 const initialState: IAuthState = {
   authenticated: false,
   loading: true,
   user: null,
-  selectOrganization: null,
+  selectOrganizationId: null,
+  organizations: [],
   socket: null,
-  theme: getTheme(),
 };
 
 export const authSlice = createSlice({
@@ -66,9 +65,6 @@ export const authSlice = createSlice({
       })
       .addCase(connectSocketAsync.rejected, state => {
         state.socket = null;
-      })
-      .addCase(setThemeAction, (state, action) => {
-        state.theme = action.payload;
       });
   },
 });
