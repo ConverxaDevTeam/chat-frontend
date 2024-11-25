@@ -4,6 +4,7 @@ import Home from "@pages/Home";
 import Interface from "@pages/Interface";
 import LogIn from "@pages/LogIn";
 import Organizations from "@pages/Organizations";
+import Workspace from "@pages/Workspace";
 import { AppDispatch, RootState } from "@store";
 import { verifySessionAsync } from "@store/actions/auth";
 import { setThemeClass } from "@utils/changeTheme";
@@ -40,6 +41,7 @@ const App = (): JSX.Element => {
         <Route index element={<Home />} />
         <Route path="dashboard" element={<Home />} />
         <Route path="organizations" element={<Organizations />} />
+        <Route path="workspace" element={<Workspace />} />
       </Route>
       <Route path="*" element={<Navigate to="/" />} />
     </Routes>
