@@ -37,7 +37,7 @@ const LogIn = () => {
     <div className="flex flex-col w-full h-full bg-app-background relative overflow-hidden">
       <div className="w-full h-full absolute bg-[url('demo/more.png')] bg-repeat z-10"></div>
       <div className="h-[66px] w-full flex items-center px-[12px] justify-between z-20">
-        <img className="h-[40px]" src="demo/logo_black.svg" alt="logo" />
+        <img className="h-[40px]" src="/demo/logo_black.svg" alt="logo" />
         <div className="flex items-center gap-[20px]">
           <p className="font-poppinsMedium text-app-dark text-[12px]">
             ¿Aún no tenés cuenta?
@@ -93,11 +93,11 @@ const LogIn = () => {
             />
           </div>
 
-          <p className="text-[13px] text-right font-poppinsSemiBold text-sofiaCall-dark mb-[12px]">
+          <p className="text-[13px] text-right font-poppinsSemiBold text-app-dark mb-[12px]">
             ¿Olvidaste tu contraseña?
           </p>
           <button
-            className="w-full rounded-[4px] h-[50px] bg-app-dark border-[1px] border-sofiaCall-dark text-sofiaCall-electricGreen text-[14px] font-poppinsSemiBold mb-[24px] disabled:bg-app-lightGray"
+            className="w-full rounded-[4px] h-[50px] bg-app-dark border-[1px] border-app-dark text-app-electricGreen text-[14px] font-poppinsSemiBold mb-[24px] disabled:bg-app-lightGray"
             type="submit"
             disabled={active}
           >
@@ -114,12 +114,12 @@ const LogIn = () => {
           </p>
           <img
             className="h-[40px] ml-[40px] mt-[24px]"
-            src="demo/logo_black.svg"
+            src="/demo/logo_black.svg"
             alt="logo"
           />
           <img
             className="h-[8px] absolute -bottom-[8px] mx-auto"
-            src="demo/line.png"
+            src="/demo/line.png"
             alt="line"
           />
         </form>
