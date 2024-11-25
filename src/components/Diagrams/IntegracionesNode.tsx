@@ -1,8 +1,7 @@
-import React, { memo, useState } from 'react';
-import DefaultNode from './DefaultNode';
-import { HiLink, HiPlusCircle } from 'react-icons/hi';
-import { CustomNodeProps } from '@interfaces/workflow';
-
+import React, { memo, useState } from "react";
+import DefaultNode from "./DefaultNode";
+import { HiLink, HiPlusCircle } from "react-icons/hi";
+import { CustomNodeProps } from "@interfaces/workflow";
 
 interface IntegracionesNodeProps extends CustomNodeProps {
   openModal: () => void;
@@ -23,7 +22,10 @@ const SubMenu: React.FC<{ openModal: () => void }> = ({ openModal }) => {
   );
 };
 
-const IntegracionesNode: React.FC<IntegracionesNodeProps> = ({ data, openModal }) => {
+const IntegracionesNode: React.FC<IntegracionesNodeProps> = ({
+  data,
+  openModal,
+}) => {
   const [isMenuVisible, setIsMenuVisible] = useState(false);
 
   const toggleMenu = () => {
@@ -34,10 +36,10 @@ const IntegracionesNode: React.FC<IntegracionesNodeProps> = ({ data, openModal }
     <DefaultNode
       data={{
         ...data,
-        name: 'Integraciones',
-        description: 'Conecta la plataforma con otras herramientas.'
+        name: "Integraciones",
+        description: "Conecta la plataforma con otras herramientas.",
       }}
-      allowedConnections={['source']}
+      allowedConnections={["source"]}
       icon={<HiLink size={24} className="w-8 h-8 text-gray-800" />}
     >
       <div className="mt-4 bg-transparent rounded-md text-black">
