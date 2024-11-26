@@ -81,5 +81,5 @@ export const useZoomToFit = (nodes: INode[], setCenter: Function) => {
     const centerY = (minY + maxY) / 2;
 
     setCenter(centerX, centerY, { duration: 0, zoom: 1 });
-  }, [nodes, setCenter]);
+  }, []);
 };

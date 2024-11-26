@@ -22,11 +22,16 @@ const SubMenu: React.FC<{ openModal: () => void }> = ({ openModal }) => {
   );
 };
 
+const menus = {
+  "initial": SubMenu
+}
+
 const IntegracionesNode: React.FC<IntegracionesNodeProps> = ({
   data,
   openModal,
 }) => {
   const [isMenuVisible, setIsMenuVisible] = useState(false);
+  const [currentMenu, setCurrentMenu] = useState("initial");
 
   const toggleMenu = () => {
     setIsMenuVisible(!isMenuVisible);

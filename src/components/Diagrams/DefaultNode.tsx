@@ -1,6 +1,5 @@
 import React, { memo } from "react";
 import { Handle, Position } from "@xyflow/react";
-import { is } from "date-fns/locale";
 
 interface CustomNodeProps {
   data: {
@@ -11,6 +10,7 @@ interface CustomNodeProps {
   allowedConnections: ("source" | "target")[]; // Determina qué tipo de conexiones estarán habilitadas
   icon?: React.ReactNode; // Ícono que se pasa como prop
   children?: React.ReactNode; // Contenido adicional a pasar como children
+  width?: string; // Ancho del nodo
 }
 const CustomHandles = ({ allowedConnections }: { allowedConnections: ("source" | "target")[] }) => (
   <>
@@ -77,6 +77,7 @@ function DefaultNode({
   allowedConnections,
   icon,
   children,
+  width = 'w-72',
 }: CustomNodeProps): JSX.Element {
   const { name, description, isSelected } = data;
 
@@ -86,7 +87,7 @@ function DefaultNode({
       <div
         className={`flex flex-col justify-center items-center border-2 transition-all p-6 ${
           isSelected
-            ? "w-72 h-auto bg-blue-500 text-white rounded-lg shadow-xl"
+            ? `${width} h-auto bg-blue-500 text-white rounded-lg shadow-xl`
             : "w-20 h-20 bg-white text-black rounded-full"
         } font-medium`}
       >
