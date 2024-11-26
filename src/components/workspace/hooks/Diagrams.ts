@@ -1,4 +1,4 @@
-import { addEdge, Connection, Edge, EdgeTypes, OnSelectionChangeFunc, Position } from '@xyflow/react';
+import { addEdge, Connection, OnSelectionChangeFunc, Position } from '@xyflow/react';
 import { EdgeBase } from '@xyflow/system';
 import { useState, useEffect, useCallback } from 'react';
 
