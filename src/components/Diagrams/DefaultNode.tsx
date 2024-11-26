@@ -1,4 +1,4 @@
-import React, { memo } from "react";
+import React, { memo, useRef } from "react";
 import { Handle, Position } from "@xyflow/react";
 
 interface CustomNodeProps {
@@ -79,10 +79,11 @@ function DefaultNode({
   children,
   width = 'w-72',
 }: CustomNodeProps): JSX.Element {
+  const ref = useRef<HTMLDivElement>(null);
   const { name, description, isSelected } = data;
 
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex flex-col items-center" ref={ref}>
       { !isSelected && <div className="mb-2 text-black font-medium">{name}</div> }
       <div
         className={`flex flex-col justify-center items-center border-2 transition-all p-6 ${

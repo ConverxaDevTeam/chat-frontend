@@ -58,7 +58,7 @@ const ZoomTransition = () => {
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const { setCenter } = useReactFlow();
 
-  const { selectedNode, handleSelectionChange, clearSelection } = useNodeSelection(nodes, setNodes, setCenter);
+  const { selectedNode, handleSelectionChange, clearSelection } = useNodeSelection(nodes, setNodes);
   const { onConnect } = useEdges(setEdges);
 
   useZoomToFit(nodes, setCenter);
@@ -85,7 +85,6 @@ const ZoomTransition = () => {
         nodeTypes={nodeTypes}
         onSelectionChange={handleSelectionChange}
         onPaneClick={clearSelection}
-        panOnDrag={!selectedNode}
       >
         <Controls />
         <MiniMap />
