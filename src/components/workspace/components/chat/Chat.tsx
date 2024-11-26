@@ -6,8 +6,8 @@ const Chat = ({ onClose }: ChatProps) => {
   return (
     <div className="grid grid-rows-[auto,1fr,auto] w-full h-full bg-gray-100 border-r border-gray-300 shadow-lg">
       {/* Encabezado del chat */}
-      <div className="p-4 bg-blue-500 text-white font-semibold justify-between items-center">
-        <span>Chat</span>
+      <div className="p-4 bg-blue-500 text-white font-semibold flex justify-between items-center">
+        <span className="text-left">Chat</span>
         {onClose && (
           <button
             onClick={onClose}

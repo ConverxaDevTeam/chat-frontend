@@ -18,7 +18,7 @@ const ChatWrapper = () => {
           isChatVisible ? "w-80" : "w-0"
         } overflow-hidden`}
       >
-         <Chat />
+         <Chat onClose={toggleChat} />
       </div>)
       : (
         <button
