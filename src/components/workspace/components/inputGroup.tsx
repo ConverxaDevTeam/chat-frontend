@@ -8,15 +8,15 @@ interface InputGroupProps {
   };
 }
   export const InputGroup = ({ label, placeholder, errors, labelColor='text-gray-600'}: InputGroupProps) => (
-    <div>
-      <label className={`block text-sm font-medium ${labelColor}`}>{label}</label>
-      <div className="flex items-center mt-1 bg-gray-100 px-3 py-2 rounded-md">
-        <textarea
-          className="ml-1 block w-full max-w-full overflow-ellipsis rounded-md focus:outline-none px-2 py-1 sm:text-sm bg-gray-100"
-          placeholder={placeholder}
-          rows={4} // Cambia la cantidad de filas
-        ></textarea>
-      </div>
+    <div >
+      <label className={`block text-sm font-medium ${labelColor} text-left mb-1`}>
+        {label}
+      </label>
+      <textarea
+        className="w-full rounded-md bg-gray-100 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-3 py-2 sm:text-sm"
+        placeholder={placeholder}
+        rows={4}
+      ></textarea>
       {errors && <p className="text-red-500 text-sm mt-1">{errors.message}</p>}
     </div>
 

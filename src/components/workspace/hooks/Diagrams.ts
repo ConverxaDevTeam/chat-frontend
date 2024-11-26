@@ -15,7 +15,7 @@ interface INode {
   data: INodeData;
   type: string;
 }
-export const useNodeSelection = (nodes: INode[], setNodes: Function) => {
+export const useNodeSelection = (nodes: INode[], setNodes: Function, setCenter: Function) => {
   const [selectedNode, setSelectedNode] = useState<string | null>(null);
 
   useEffect(() => {
@@ -37,6 +37,10 @@ export const useNodeSelection = (nodes: INode[], setNodes: Function) => {
       setSelectedNode(null);
     } else {
       setSelectedNode(nodes[0].id);
+      setCenter(nodes[0].position.x, nodes[0].position.y, {
+        zoom: 1.5, // Ajusta el zoom si es necesario
+        duration: 800, // Duración en ms para centrar
+      });
     }
   }, []);
 
