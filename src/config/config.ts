@@ -9,6 +9,10 @@ export const apiUrls = {
   deleteSession: (id: number) => `/api/auth/session/${id}`,
   //user
   getUser: () => `/api/user`,
+  //organizations
+  getOrganizations: () => `/api/organization`,
+  createOrganization: () => `/api/organization`,
+  myOrganizations: () => `/api/organization/my-organizations`,
   //socket
   socket: () => `${baseUrl}/api/socket`,
 };

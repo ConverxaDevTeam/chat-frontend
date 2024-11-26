@@ -176,6 +176,23 @@ export const getUserAsync = createAsyncThunk(
   }
 );
 
+export const getMyOrganizationsAsync = createAsyncThunk(
+  "auth/getMyOrganizationsAsync",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get(apiUrls.myOrganizations());
+      if (response.data.ok) {
+        return response.data.organizations;
+      } else {
+        return rejectWithValue("error");
+      }
+    } catch (error) {
+      deleteAccess();
+      return rejectWithValue("error");
+    }
+  }
+);
+
 export const logInAsync = createAsyncThunk(
   "auth/logInAsync",
   async (
@@ -207,6 +224,7 @@ export const logInAsync = createAsyncThunk(
         dispatch(connectSocketAsync({ dispatch }));
         alertConfirm("Sesión iniciada correctamente");
         dispatch(getUserAsync());
+        dispatch(getMyOrganizationsAsync());
         return {};
       } else {
         setError(response.data.message);
@@ -249,7 +267,8 @@ export const verifySessionAsync = createAsyncThunk(
     try {
       setupAxiosInterceptors(dispatch);
       dispatch(connectSocketAsync({ dispatch }));
-      await dispatch(getUserAsync());
+      dispatch(getUserAsync());
+      dispatch(getMyOrganizationsAsync());
       return {};
     } catch (error) {
       await deleteAccess();

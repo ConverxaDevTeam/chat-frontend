@@ -8,6 +8,7 @@ import {
   logOutAsync,
   connectSocketAsync,
   disconnectSocketAsync,
+  getMyOrganizationsAsync,
 } from "../actions/auth";
 
 const initialState: IAuthState = {
@@ -15,7 +16,7 @@ const initialState: IAuthState = {
   loading: true,
   user: null,
   selectOrganizationId: null,
-  organizations: [],
+  myOrganizations: [],
   socket: null,
 };
 
@@ -65,6 +66,12 @@ export const authSlice = createSlice({
       })
       .addCase(connectSocketAsync.rejected, state => {
         state.socket = null;
+      })
+      .addCase(getMyOrganizationsAsync.fulfilled, (state, action) => {
+        state.myOrganizations = action.payload;
+      })
+      .addCase(getMyOrganizationsAsync.rejected, state => {
+        state.myOrganizations = [];
       });
   },
 });

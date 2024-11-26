@@ -8,7 +8,9 @@ import BlockingPage from "./BlockingPage";
 import Navbar from "./Navbar";
 
 const Interface = () => {
-  const { user, organizations } = useSelector((state: RootState) => state.auth);
+  const { user, myOrganizations } = useSelector(
+    (state: RootState) => state.auth
+  );
   const [windowWidth, setWindowWidth] = useState<number>(window.innerWidth);
   const [windowHeight, setWindowHeight] = useState<number>(window.innerHeight);
   const [sidebarMinimized, setSidebarMinimized] = useState<boolean>(false);
@@ -27,7 +29,7 @@ const Interface = () => {
     };
   }, []);
 
-  if ((organizations?.length ?? 0) === 0 && !user?.is_super_admin) {
+  if ((myOrganizations?.length ?? 0) === 0 && !user?.is_super_admin) {
     return <BlockingPage />;
   }
 
@@ -41,7 +43,7 @@ const Interface = () => {
       />
       <div className={`flex flex-1 flex-col p-[20px]`}>
         <Navbar windowWidth={windowWidth} sidebarMinimized={sidebarMinimized} />
-          <Outlet />
+        <Outlet />
       </div>
     </div>
   );
