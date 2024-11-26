@@ -100,8 +100,6 @@ const ZoomTransition = () => {
 
 export default function Diagram() {
   return (
-    <ReactFlowProvider>
       <ZoomTransition />
-    </ReactFlowProvider>
   );
 }
