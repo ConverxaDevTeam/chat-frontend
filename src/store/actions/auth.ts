@@ -407,33 +407,6 @@ export const connectSocketAsync = createAsyncThunk(
   }
 );
 
-const connect = (): Promise<{ websocket: Socket | null }> => {
-  return new Promise(resolve => {
-    console.log("start socket");
-    const token = getToken();
-    const websocket = socketIO(apiUrls.socket(), {
-      path: "/api/events/socket.io",
-      query: {
-        token: `${token}`,
-      },
-    });
-
-    resolve({ websocket });
-  });
-};
-
-const disconnect = async (websocket: Socket | null) => {
-  if (!websocket) {
-    return null;
-  }
-  return await new Promise(resolve => {
-    console.log("close socket");
-    websocket.close();
-    websocket.on("disconnect", () => {
-      resolve(websocket.id);
-    });
-  });
-};
 
 export const setOrganizationId = createAction(
   "auth/setOrganizationId",
