@@ -1,4 +1,4 @@
-import { useCallback, useState, useMemo } from "react";
+import { useState, useMemo } from "react";
 import {
   ReactFlow,
   MiniMap,
@@ -7,7 +7,6 @@ import {
   useNodesState,
   useEdgesState,
   BackgroundVariant,
-  ReactFlowProvider,
   Position,
   useReactFlow,
 } from "@xyflow/react";
@@ -56,11 +55,11 @@ const initialEdges = [
 const ZoomTransition = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  const { setCenter } = useReactFlow();
 
-  const { selectedNode, handleSelectionChange, clearSelection } = useNodeSelection(nodes, setNodes);
+  const { handleSelectionChange, clearSelection } = useNodeSelection(nodes, setNodes);
   const { onConnect } = useEdges(setEdges);
 
-  const { setCenter } = useReactFlow();
   useZoomToFit(nodes, setCenter);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -91,7 +90,7 @@ const ZoomTransition = () => {
         <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
       </ReactFlow>
       <AddWebchat isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onSave={function (domain: string): void {
-        throw new Error("Function not implemented.");
+        throw new Error(`Function not implemented. ${domain}`);
       }} />
     </>
   );
@@ -100,8 +99,6 @@ const ZoomTransition = () => {
 
 export default function Diagram() {
   return (
-    <ReactFlowProvider>
       <ZoomTransition />
-    </ReactFlowProvider>
   );
 }

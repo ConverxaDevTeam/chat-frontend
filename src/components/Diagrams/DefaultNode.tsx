@@ -1,4 +1,4 @@
-import React, { memo } from "react";
+import React, { memo, useRef } from "react";
 import { Handle, Position } from "@xyflow/react";
 
 interface CustomNodeProps {
@@ -10,6 +10,7 @@ interface CustomNodeProps {
   allowedConnections: ("source" | "target")[]; // Determina qué tipo de conexiones estarán habilitadas
   icon?: React.ReactNode; // Ícono que se pasa como prop
   children?: React.ReactNode; // Contenido adicional a pasar como children
+  width?: string; // Ancho del nodo
 }
 const CustomHandles = ({ allowedConnections }: { allowedConnections: ("source" | "target")[] }) => (
   <>
@@ -53,10 +54,9 @@ function NodeBody({ children, isSelected, name, description, icon }: NodeBodyPro
   return <> 
     {/* Mostrar el ícono solo cuando no está seleccionado */}
     {!isSelected ? (
-      <div className="flex justify-center items-center rounded-full w-16 h-16 bg-transparent text-black">
-        {icon}{" "}
-        {/* Ícono se pasa como prop y solo se muestra cuando no está seleccionado */}
-      </div>
+        <div className="flex justify-center items-center rounded-full w-16 h-16 bg-transparent text-black">
+          {icon} {/* Ícono se pasa como prop y solo se muestra cuando no está seleccionado */}
+        </div>
     ):
     (
       <div className="mt-4 text-center text-black">
@@ -77,22 +77,27 @@ function DefaultNode({
   allowedConnections,
   icon,
   children,
+  width = 'w-72',
 }: CustomNodeProps): JSX.Element {
+  const ref = useRef<HTMLDivElement>(null);
   const { name, description, isSelected } = data;
 
   return (
-    <div
-      className={`flex flex-col justify-center items-center border-2 transition-all p-6 ${
-        isSelected
-          ? "w-72 h-auto bg-blue-500 text-white rounded-lg shadow-xl" // Azul suave para el fondo
-          : "w-20 h-20 bg-white text-black rounded-full" // Mantener el círculo cuando no está seleccionado
-      } font-medium`}
-    >
-      <NodeBody name={name} description={description} icon={icon} isSelected={isSelected}>
-        {children}
-      </NodeBody>
-      <CustomHandles allowedConnections={allowedConnections} />
-    </div>
+    <div className="flex flex-col items-center" ref={ref}>
+      { !isSelected && <div className="mb-2 text-black font-medium">{name}</div> }
+      <div
+        className={`flex flex-col justify-center items-center border-2 transition-all p-6 ${
+          isSelected
+            ? `${width} h-auto bg-blue-500 text-white rounded-lg shadow-xl`
+            : "w-20 h-20 bg-white text-black rounded-full"
+        } font-medium`}
+      >
+        <NodeBody name={name} description={description} icon={icon} isSelected={isSelected}>
+          {children}
+        </NodeBody>
+        <CustomHandles allowedConnections={allowedConnections} />
+      </div>
+  </div>
   );
 }
 

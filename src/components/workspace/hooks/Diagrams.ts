@@ -1,4 +1,4 @@
-import { addEdge, Connection, Edge, EdgeTypes, OnSelectionChangeFunc, Position } from '@xyflow/react';
+import { addEdge, Connection, OnSelectionChangeFunc, Position } from '@xyflow/react';
 import { EdgeBase } from '@xyflow/system';
 import { useState, useEffect, useCallback } from 'react';
 
@@ -21,6 +21,7 @@ export const useNodeSelection = (nodes: INode[], setNodes: Function) => {
   useEffect(() => {
     const updatedNodes = nodes.map((node) => ({
       ...node,
+      draggable: !selectedNode,
       data: {
         ...node.data,
         isSelected: node.id === selectedNode,
@@ -81,5 +82,5 @@ export const useZoomToFit = (nodes: INode[], setCenter: Function) => {
     const centerY = (minY + maxY) / 2;
 
     setCenter(centerX, centerY, { duration: 0, zoom: 1 });
-  }, [nodes, setCenter]);
+  }, []);
 };
