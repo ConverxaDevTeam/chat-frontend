@@ -46,7 +46,7 @@ const SelectOrganization = () => {
       <p>{text}</p>
       <HiOutlineSelector />
       {open && (
-        <div className="absolute w-full bg-app-c2 top-[36px] left-0 rounded-lg border-[1px] border-app-c3">
+        <div className="absolute w-full bg-app-c2 top-[36px] left-0 rounded-lg border-[1px] border-app-c3 z-50">
           {user?.is_super_admin && (
             <div
               onClick={() => handleSelectOrganization(0)}
