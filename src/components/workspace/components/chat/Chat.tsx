@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@store/hooks";
 import { connectToAgentRoom } from "@store/actions/auth";
 import { emitWebSocketEvent, onWebSocketEvent, leaveRoom } from "@services/websocket.service"; // Importar las funciones de WebSocket
