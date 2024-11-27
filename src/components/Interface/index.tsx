@@ -6,6 +6,7 @@ import { useSelector } from "react-redux";
 import BlockingPage from "./BlockingPage";
 
 import Navbar from "./Navbar";
+import Loading from "@components/Loading";
 
 const Interface = () => {
   const { user, myOrganizations } = useSelector(
@@ -29,7 +30,11 @@ const Interface = () => {
     };
   }, []);
 
-  if ((myOrganizations?.length ?? 0) === 0 && !user?.is_super_admin) {
+  if (!user) {
+    return <Loading />;
+  }
+
+  if (myOrganizations?.length === 0 && user && !user?.is_super_admin) {
     return <BlockingPage />;
   }
 

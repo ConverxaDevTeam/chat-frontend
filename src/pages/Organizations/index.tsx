@@ -2,7 +2,7 @@ import Loading from "@components/Loading";
 import Modal from "@components/Modal";
 import { getOrganizations } from "@services/organizations";
 import { useEffect, useState } from "react";
-import OrganizationCard from "./UserCard";
+import OrganizationCard from "./OrganizationCard";
 import ModalCreateOrganization from "./ModalCreateUser";
 
 export type IOrganizarion = {
@@ -10,6 +10,8 @@ export type IOrganizarion = {
   created_at: string;
   updated_at: string;
   name: string;
+  description: string;
+  users: number;
 };
 
 const Organizations = () => {
