@@ -7,7 +7,6 @@ import {
   useNodesState,
   useEdgesState,
   BackgroundVariant,
-  ReactFlowProvider,
   Position,
   useReactFlow,
 } from "@xyflow/react";
@@ -58,7 +57,7 @@ const ZoomTransition = () => {
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const { setCenter } = useReactFlow();
 
-  const { selectedNode, handleSelectionChange, clearSelection } = useNodeSelection(nodes, setNodes);
+  const { handleSelectionChange, clearSelection } = useNodeSelection(nodes, setNodes);
   const { onConnect } = useEdges(setEdges);
 
   useZoomToFit(nodes, setCenter);
@@ -91,7 +90,7 @@ const ZoomTransition = () => {
         <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
       </ReactFlow>
       <AddWebchat isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onSave={function (domain: string): void {
-        throw new Error("Function not implemented.");
+        throw new Error(`Function not implemented. ${domain}`);
       }} />
     </>
   );
