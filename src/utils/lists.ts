@@ -35,6 +35,6 @@ export const sidebarAdminLinks = [
     to: "/workspace",
     text: "Espacios de trabajo",
     active: ["/workspace"],
-    Icon: BsPersonWorkspace
-  }
+    Icon: BsPersonWorkspace,
+  },
 ];

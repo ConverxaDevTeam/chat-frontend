@@ -47,7 +47,8 @@ const Sidebar = ({
             )}
           </div>
           <ul className="flex flex-col w-full pl-[10px]">
-            {selectOrganizationId === null && user?.is_super_admin
+            {(selectOrganizationId === null && user?.is_super_admin) ||
+            (selectOrganizationId === 0 && user?.is_super_admin)
               ? sidebarAdminLinks.map((link, index) => {
                   return (
                     <ItemSidebar
