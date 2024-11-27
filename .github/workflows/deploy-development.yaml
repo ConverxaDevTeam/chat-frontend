@@ -1,0 +1,43 @@
+name: Auto deploy frontend-call development in VPS
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/**"
+      - "index.html"
+      - "package.json"
+      - "public/**"
+      - "scripts/**"
+      - "src/**"
+      - "vite.config.js"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Deploy using ssh
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.DEVELOPMENT_SSH_HOST }}
+          username: ${{ secrets.DEVELOPMENT_SSH_USERNAME }}
+          key: ${{ secrets.DEVELOPMENT_SSH_PRIVATE_KEY }}
+          port: 22
+          script: |
+            cd /root/repos/sofia-chat-frontend-v2
+            git pull origin main
+            cat <<EOF > .env
+            VITE_PUBLIC_BACKEND_URL=${{ secrets.VITE_PUBLIC_BACKEND_URL }}
+            VITE_PUBLIC_TOKEN_NAME=${{ secrets.VITE_PUBLIC_TOKEN_NAME }}
+            VITE_PUBLIC_TOKEN_REFRESH_NAME=${{ secrets.VITE_PUBLIC_TOKEN_REFRESH_NAME }}
+            EOF
+            docker-compose build
+            docker-compose down -v
+            docker-compose up -d
