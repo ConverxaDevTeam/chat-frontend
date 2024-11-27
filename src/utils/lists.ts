@@ -10,6 +10,12 @@ export const sidebarLinks = [
     active: ["/", "/dashboard"],
     Icon: AiFillHome,
   },
+  {
+    to: "/workspace",
+    text: "Espacios de trabajo",
+    active: ["/workspace"],
+    Icon: BsPersonWorkspace,
+  },
 ];
 
 export const sidebarAdminLinks = [
@@ -31,10 +37,4 @@ export const sidebarAdminLinks = [
     active: ["/organizations"],
     Icon: FaLayerGroup,
   },
-  {
-    to: "/workspace",
-    text: "Espacios de trabajo",
-    active: ["/workspace"],
-    Icon: BsPersonWorkspace
-  }
 ];

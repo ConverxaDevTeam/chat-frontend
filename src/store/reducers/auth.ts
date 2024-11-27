@@ -8,6 +8,8 @@ import {
   logOutAsync,
   connectSocketAsync,
   disconnectSocketAsync,
+  getMyOrganizationsAsync,
+  setOrganizationId,
 } from "../actions/auth";
 
 const initialState: IAuthState = {
@@ -15,7 +17,7 @@ const initialState: IAuthState = {
   loading: true,
   user: null,
   selectOrganizationId: null,
-  organizations: [],
+  myOrganizations: [],
   socket: null,
 };
 
@@ -49,10 +51,12 @@ export const authSlice = createSlice({
       .addCase(logOutAsync.fulfilled, state => {
         state.authenticated = false;
         state.user = null;
+        state.selectOrganizationId = null;
       })
       .addCase(logOutAsync.rejected, state => {
         state.authenticated = false;
         state.user = null;
+        state.selectOrganizationId = null;
       })
       .addCase(connectSocketAsync.fulfilled, (state, action) => {
         state.socket = action.payload;
@@ -65,6 +69,15 @@ export const authSlice = createSlice({
       })
       .addCase(connectSocketAsync.rejected, state => {
         state.socket = null;
+      })
+      .addCase(getMyOrganizationsAsync.fulfilled, (state, action) => {
+        state.myOrganizations = action.payload;
+      })
+      .addCase(getMyOrganizationsAsync.rejected, state => {
+        state.myOrganizations = [];
+      })
+      .addCase(setOrganizationId, (state, action) => {
+        state.selectOrganizationId = action.payload;
       });
   },
 });

@@ -1,5 +1,5 @@
 import axios from "axios";
-import { createAsyncThunk } from "@reduxjs/toolkit";
+import { createAction, createAsyncThunk } from "@reduxjs/toolkit";
 import { useAppDispatch } from "@store/hooks";
 import { apiUrls, baseUrl, tokenAccess } from "../../config/config";
 import { alertConfirm, alertError } from "../../utils/alerts";
@@ -90,6 +90,7 @@ const deleteAccess = async () => {
   } finally {
     localStorage.removeItem(tokenAccess.tokenName);
     localStorage.removeItem(tokenAccess.refreshTokenName);
+    localStorage.removeItem("organizationSelect");
   }
 };
 
@@ -177,6 +178,23 @@ export const getUserAsync = createAsyncThunk(
   }
 );
 
+export const getMyOrganizationsAsync = createAsyncThunk(
+  "auth/getMyOrganizationsAsync",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get(apiUrls.myOrganizations());
+      if (response.data.ok) {
+        return response.data.organizations;
+      } else {
+        return rejectWithValue("error");
+      }
+    } catch (error) {
+      deleteAccess();
+      return rejectWithValue("error");
+    }
+  }
+);
+
 export const logInAsync = createAsyncThunk(
   "auth/logInAsync",
   async (
@@ -208,6 +226,7 @@ export const logInAsync = createAsyncThunk(
         dispatch(connectSocketAsync({ dispatch }));
         alertConfirm("Sesión iniciada correctamente");
         dispatch(getUserAsync());
+        dispatch(getMyOrganizationsAsync());
         return {};
       } else {
         setError(response.data.message);
@@ -243,6 +262,10 @@ export const verifySessionAsync = createAsyncThunk(
     },
     { rejectWithValue }
   ) => {
+    const selectOrganizationId = localStorage.getItem("organizationSelect")
+      ? Number(localStorage.getItem("organizationSelect"))
+      : null;
+    dispatch(setOrganizationId(selectOrganizationId));
     if (!(await validateToken())) {
       await deleteAccess();
       return rejectWithValue("error");
@@ -250,7 +273,8 @@ export const verifySessionAsync = createAsyncThunk(
     try {
       setupAxiosInterceptors(dispatch);
       dispatch(connectSocketAsync({ dispatch }));
-      await dispatch(getUserAsync());
+      dispatch(getUserAsync());
+      dispatch(getMyOrganizationsAsync());
       return {};
     } catch (error) {
       await deleteAccess();
@@ -383,6 +407,45 @@ export const connectSocketAsync = createAsyncThunk(
   }
 );
 
+const connect = (): Promise<{ websocket: Socket | null }> => {
+  return new Promise(resolve => {
+    console.log("start socket");
+    const token = getToken();
+    const websocket = socketIO(apiUrls.socket(), {
+      path: "/api/events/socket.io",
+      query: {
+        token: `${token}`,
+      },
+    });
+
+    resolve({ websocket });
+  });
+};
+
+const disconnect = async (websocket: Socket | null) => {
+  if (!websocket) {
+    return null;
+  }
+  return await new Promise(resolve => {
+    console.log("close socket");
+    websocket.close();
+    websocket.on("disconnect", () => {
+      resolve(websocket.id);
+    });
+  });
+};
+
+export const setOrganizationId = createAction(
+  "auth/setOrganizationId",
+  (payload: number | null) => {
+    if (payload === null) {
+      localStorage.removeItem("organizationSelect");
+    } else {
+      localStorage.setItem("organizationSelect", String(payload));
+    }
+    return { payload };
+  }
+);
 export const connectToAgentRoom = createAsyncThunk(
   "chat/connectToAgentRoom",
   async (_, { dispatch }) => {

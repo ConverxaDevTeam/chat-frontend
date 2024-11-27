@@ -12,11 +12,22 @@ export type IUser = {
   last_name: string;
 };
 
+export enum OrganizationRoleType {
+  OWNER = "owner",
+  ADMIN = "admin",
+  USER = "user",
+}
+
 export type IOrganizarion = {
   id: number;
-  created_at: string;
-  updated_at: string;
-  name: string;
+  role: OrganizationRoleType;
+  organization: {
+    id: number;
+    created_at: string;
+    updated_at: string;
+    name: string;
+    description: string;
+  };
 };
 
 export type CustomSocket = Pick<Socket, "on" | "off" | "emit" | "disconnect"> & {
@@ -29,5 +40,5 @@ export interface IAuthState {
   socket: CustomSocket | null;
   user: IUser | null;
   selectOrganizationId: number | null;
-  organizations: IOrganizarion[];
+  myOrganizations: IOrganizarion[];
 }
