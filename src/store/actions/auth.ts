@@ -3,10 +3,9 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import { useAppDispatch } from "@store/hooks";
 import { apiUrls, baseUrl, tokenAccess } from "../../config/config";
 import { alertConfirm, alertError } from "../../utils/alerts";
-import socketIO, { Socket } from "socket.io-client";
 import { jwtDecode } from "jwt-decode";
-import { connectWebSocket, joinRoom, onWebSocketEvent } from "@services/websocket.service";
-import { addMessage } from "@store/reducers/chat";
+import { connectWebSocket, disconnectWebSocket, joinRoom, onWebSocketEvent } from "@services/websocket.service";
+import { addMessage, setAgentId, setConnectionStatus } from "@store/reducers/chat";
 
 export const axiosInstance = axios.create({
   baseURL: baseUrl,
@@ -335,7 +334,7 @@ export const disconnectSocketAsync = createAsyncThunk(
   "auth/disconnectSocketAsync",
   async (_, { rejectWithValue }) => {
     try {
-      const websocket = await disconnect(null);
+      const websocket = await disconnectWebSocket();
       if (websocket) {
         return websocket;
       } else {
@@ -388,8 +387,11 @@ export const connectSocketAsync = createAsyncThunk(
 export const connectToAgentRoom = createAsyncThunk(
   "chat/connectToAgentRoom",
   async (_, { dispatch }) => {
+    const agentId = "123"; // ID del agente (esto normalmente vendría de Redux o de otro lado)
 
-    const agentId = "123"; // ID del agente
+    // Despachamos para actualizar el estado con el agentId y conectar
+    dispatch(setAgentId(agentId));
+    dispatch(setConnectionStatus(true)); // Marcamos como conectado
 
     // Unirse al room de chat dinámico
     const roomName = `test-chat-${agentId}`;
@@ -407,16 +409,3 @@ export const connectToAgentRoom = createAsyncThunk(
     return roomName; // Puedes retornar el roomName si necesitas hacer algo con él en Redux
   }
 );
-
-const disconnect = async (websocket: Socket | null) => {
-  if (!websocket) {
-    return null;
-  }
-  return await new Promise(resolve => {
-    console.log("close socket");
-    websocket.close();
-    websocket.on("disconnect", () => {
-      resolve(websocket.id);
-    });
-  });
-};
