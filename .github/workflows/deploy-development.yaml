@@ -1,4 +1,4 @@
-name: Auto deploy frontend-call development in VPS
+name: Auto deploy sofia-chat-frontend-v2 development in VPS
 
 on:
   push:
