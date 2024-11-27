@@ -1,17 +1,20 @@
 import ReactDOM from "react-dom";
 import React from "react";
 
-
-const ModalHeader: React.FC<{ children: React.ReactNode, handleClose: () => void }> = ({ children, handleClose }) => 
+const ModalHeader: React.FC<{
+  children: React.ReactNode;
+  handleClose: () => void;
+}> = ({ children, handleClose }) => (
   <header className="flex justify-between items-center">
     {children}
     <button
-    onClick={() => handleClose()}
-    className="text-gray-500 hover:text-gray-700"
+      onClick={() => handleClose()}
+      className="text-gray-500 hover:text-gray-700"
     >
-    &times;
+      &times;
     </button>
   </header>
+);
 
 interface ModalProps {
   isShown: boolean;
@@ -21,8 +24,13 @@ interface ModalProps {
   footer?: JSX.Element;
 }
 
-
-const Modal: React.FC<ModalProps> = ({ isShown, children, onClose, header, footer }) => {
+const Modal: React.FC<ModalProps> = ({
+  isShown,
+  children,
+  onClose,
+  header,
+  footer,
+}) => {
   const modal = document.getElementById("modal");
   if (!modal) return null;
 
@@ -41,17 +49,11 @@ const Modal: React.FC<ModalProps> = ({ isShown, children, onClose, header, foote
         >
           <div className="bg-white rounded-lg shadow-lg w-full max-w-lg mx-auto p-6 space-y-6 overflow-hidden">
             {header && (
-              <ModalHeader handleClose={onClose}>
-                {header}
-              </ModalHeader>
+              <ModalHeader handleClose={onClose}>{header}</ModalHeader>
             )}
             {children}
             {/* Footer section */}
-            {footer && (
-              <footer className="mt-4">
-                {footer}
-              </footer>
-            )}
+            {footer && <footer className="mt-4">{footer}</footer>}
           </div>
         </div>,
         modal

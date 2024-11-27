@@ -1,5 +1,5 @@
 const DashboardSuperAdmin = () => {
-  return <div>DashboardSuperAdmin</div>;
+  return <div className="h-[5000px]">DashboardSuperAdmin</div>;
 };
 
 export default DashboardSuperAdmin;

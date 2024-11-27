@@ -1,6 +1,7 @@
 import Interface from "@components/Interface";
 import Loading from "@components/Loading";
 import ProtectedAuth from "@components/ProtectedAuth";
+import ProtectedSuperAdmin from "@components/ProtectedSuperAdmin";
 import Dashboard from "@pages/Home";
 import LogIn from "@pages/LogIn";
 import Organizations from "@pages/Organizations";
@@ -36,7 +37,14 @@ const App = (): JSX.Element => {
       >
         <Route index element={<Dashboard />} />
         <Route path="dashboard" element={<Dashboard />} />
-        <Route path="organizations" element={<Organizations />} />
+        <Route
+          path="organizations"
+          element={
+            <ProtectedSuperAdmin>
+              <Organizations />
+            </ProtectedSuperAdmin>
+          }
+        />
         <Route path="workspace" element={<Workspace />} />
       </Route>
       <Route path="*" element={<Navigate to="/" />} />
