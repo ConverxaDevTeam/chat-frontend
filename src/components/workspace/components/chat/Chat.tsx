@@ -1,4 +1,7 @@
+import { useAppDispatch, useAppSelector } from "@store/hooks";
 import { useChat } from "./chatHook";
+import { useEffect } from "react";
+import { connectToAgentRoom } from "@store/actions/auth";
 
 interface ChatProps {
   onClose?: () => void;
@@ -6,6 +9,17 @@ interface ChatProps {
 
 const Chat = ({ onClose }: ChatProps) => {
   const { messages, inputValue, setInputValue, handleSendMessage } = useChat();
+  const dispatch = useAppDispatch();
+  const connected = useAppSelector((state) => {
+    return state.chat.connected
+  }); // Estado de conexión
+
+  useEffect(() => {
+    if (!connected) {
+      // Solo intentamos conectar cuando el agentId esté disponible y no esté conectado
+      dispatch(connectToAgentRoom());
+    }
+  }, [dispatch, connected]); // Ejecutar cuando el agentId cambia o la conexión cambia
 
   return (
     <div className="grid grid-rows-[auto,1fr,auto] w-full h-full bg-gray-100 border-r border-gray-300 shadow-lg">
@@ -24,6 +38,7 @@ const Chat = ({ onClose }: ChatProps) => {
     </div>
   );
 };
+
 
 export default Chat;
 
