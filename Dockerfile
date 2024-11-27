@@ -8,7 +8,7 @@ RUN npm install serve -g
 RUN npm install -g create-vite
 RUN npm install -g vite
 RUN npm install -g pnpm
-RUN pnpm install
+RUN npm install
 
 COPY . .
 
