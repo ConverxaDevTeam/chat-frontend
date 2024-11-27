@@ -1,34 +1,67 @@
+import { useEffect, useRef, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@store/hooks";
-import { useChat } from "./chatHook";
-import { useEffect } from "react";
 import { connectToAgentRoom } from "@store/actions/auth";
-import { leaveRoom } from "@services/websocket.service"; // Asegúrate de importar leaveRoom
+import { emitWebSocketEvent, onWebSocketEvent, leaveRoom } from "@services/websocket.service"; // Importar las funciones de WebSocket
+import { useChat } from "./chatHook";
 
 interface ChatProps {
   onClose?: () => void;
 }
 
 const Chat = ({ onClose }: ChatProps) => {
-  const { messages, inputValue, setInputValue, handleSendMessage } = useChat();
+  const { inputValue, setInputValue } = useChat();
   const dispatch = useAppDispatch();
   const connected = useAppSelector((state) => state.chat.connected); // Estado de conexión
   const agentId = 123; // Obtener el agentId desde Redux
+  const roomName = `test-chat-${agentId}`; // El nombre del room en el que está el cliente
+
+  const [messages, setMessages] = useState<{ sender: "user" | "agent"; text: string }[]>([]);
 
   useEffect(() => {
-    if (!connected) {
-      // Solo intentamos conectar cuando el agentId esté disponible y no esté conectado
-      dispatch(connectToAgentRoom());
-    }
+    if (connected) return
+    // Solo intentamos conectar cuando no estamos conectados
+    dispatch(connectToAgentRoom());
+    // Escuchar los mensajes del agente a través de WebSocket
+    onWebSocketEvent("message", (message) => {
+      console.log("Mensaje recibido", message);
+      // El mensaje recibido es del agente, lo agregamos al historial
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        { sender: "agent", text: message.text },
+      ]);
+    });
+
+    // Escuchar el evento 'typing' para mostrar el estado de escritura
+    onWebSocketEvent("typing", (data) => {
+      console.log("Estado de escritura del usuario:", data); // Log para depurar
+      // Aquí puedes mostrar un mensaje que diga que el agente está escribiendo, por ejemplo
+    });
 
     // Limpieza cuando el componente se desmonta o se cierra
     return () => {
-      console.log("Chat desmontado", connected);
       if (connected) {
-        // Desconectar del room con nombre dinámico test-chat-{agentId}
-        leaveRoom(`test-chat-${agentId}`);
+        // Salir del room cuando el chat se cierre
+        leaveRoom(roomName);
       }
     };
-  }, [dispatch, connected, ]); // Ejecutar cuando el agentId cambia o la conexión cambia
+  }, [roomName]); // Ejecutar cuando el estado de conexión cambia
+
+  // Función para manejar el envío de un mensaje
+  const handleSendMessageToAgent = () => {
+    if (inputValue.trim() !== "") {
+      // Emitir el mensaje al backend, incluyendo el room al que pertenece
+      emitWebSocketEvent('message', { sender: 'user', text: inputValue, room: roomName });
+
+      // Agregar el mensaje al historial (localmente, sin Redux)
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        { sender: "user", text: inputValue },
+      ]);
+
+      // Limpiar el input después de enviar el mensaje
+      setInputValue("");
+    }
+  };
 
   const handleChatClose = () => {
     // Llamar a la función onClose proporcionada si existe
@@ -39,7 +72,7 @@ const Chat = ({ onClose }: ChatProps) => {
     // Asegurarse de salir del room cuando el chat se cierre
     if (connected) {
       console.log("Chat cerrado", connected);
-      leaveRoom(`test-chat-${agentId}`);
+      leaveRoom(roomName);
     }
   };
 
@@ -55,7 +88,7 @@ const Chat = ({ onClose }: ChatProps) => {
       <ChatFooter
         inputValue={inputValue}
         onInputChange={setInputValue}
-        onSendMessage={handleSendMessage}
+        onSendMessage={handleSendMessageToAgent} // Enviar el mensaje al agente
       />
     </div>
   );
@@ -120,7 +153,7 @@ const ChatFooter = ({
         placeholder="Escribe un mensaje..."
       />
       <button
-        onClick={onSendMessage}
+        onClick={onSendMessage} // Usamos handleSendMessage para enviar el mensaje
         className="p-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
       >
         Enviar

@@ -366,7 +366,6 @@ export const connectSocketAsync = createAsyncThunk(
 
         // Escuchar eventos del WebSocket
         onWebSocketEvent("message", (message) => {
-          console.log("Mensaje recibido:", message);
           // Si el mensaje es un update del usuario, actualizamos el estado global
           if (message.action === "update-user") {
             dispatch(getUserAsync());

@@ -16,9 +16,6 @@ export const connectWebSocket = (token: string): Socket | null => {
     transports: ["websocket"], // Usar solo WebSocket
   });
 
-  websocket.on("connect", () => {
-    console.log("Conectado al servidor WebSocket");
-  });
 
   websocket.on("disconnect", (reason) => {
     console.log(`Desconectado del servidor WebSocket: ${reason}`);
@@ -66,13 +63,11 @@ export const emitWebSocketEvent = (event: string, data: any): void => {
 
 // Unirse a una sala
 export const joinRoom = (roomName: string): void => {
-  console.log("joinRoom", roomName);
   if (!websocket) {
     console.warn("WebSocket no está conectado.");
     return;
   }
   websocket.emit("join", roomName);
-  console.log(`Cliente unido a la sala: ${roomName}`);
 };
 
 // Salir de una sala
