@@ -1,41 +1,36 @@
-import { useState } from "react";
+import { emitWebSocketEvent } from "@services/websocket.service";
+import { useCallback, useState } from "react";
 
 export interface Message {
   sender: "user" | "agent";
   text: string;
 }
 
-export const useChat = () => {
+export const useChat = (roomName: string) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState("");
 
-  const addMessage = (message: Message) => {
+  const addMessage = useCallback((message: Message) => {
     setMessages((prevMessages) => [...prevMessages, message]);
-  };
+  }, []);
 
-  const simulateAgentResponse = () => {
-    setTimeout(() => {
-      addMessage({ sender: "agent", text: "Esta es una respuesta automática del agente." });
-    }, 1000);
-  };
+  const handleSendMessage = useCallback(() => {
+    if (inputValue.trim() !== "") {
+      // Agregar mensaje del usuario localmente
+      addMessage({ sender: "user", text: inputValue });
+      
+      // Emitir el mensaje al backend
+      emitWebSocketEvent('message', { sender: 'user', text: inputValue, room: roomName });
 
-  const handleSendMessage = () => {
-    if (!inputValue.trim()) return;
-
-    // Agregar mensaje del usuario
-    addMessage({ sender: "user", text: inputValue });
-    setInputValue("");
-
-    // Simular respuesta del agente
-    simulateAgentResponse();
-  };
+      setInputValue("");
+    }
+  }, [inputValue, roomName, addMessage]);
 
   return {
     messages,
     inputValue,
     setInputValue,
     addMessage,
-    simulateAgentResponse,
     handleSendMessage,
   };
 };

@@ -1,7 +1,7 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { getDefaultDepartment } from "@services/department";
 import { setConnectionStatus, setWorkspaceData } from "@store/reducers/chat";
-import { joinRoom, onWebSocketEvent } from "@services/websocket.service";
+import { joinRoom } from "@services/websocket.service";
 
 export const initializeWorkspace = createAsyncThunk(
   "chat/initializeWorkspace",
@@ -32,12 +32,6 @@ export const initializeWorkspace = createAsyncThunk(
       joinRoom(roomName);
 
       console.log(`Se unió al room: ${roomName}`);
-      
-      // Escuchar mensajes o eventos WebSocket
-      onWebSocketEvent("message", (message) => {
-        console.log("Mensaje recibido:", message);
-        dispatch(addMessage({ sender: "agent", text: message }));
-      });
 
       return response;
     } catch (error) {

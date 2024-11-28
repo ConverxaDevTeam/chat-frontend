@@ -1,66 +1,48 @@
-import { useEffect } from "react";
+import { memo, useCallback, useEffect } from "react";
 import { useAppSelector } from "@store/hooks";
-import { emitWebSocketEvent, onWebSocketEvent, leaveRoom } from "@services/websocket.service"; // Importar las funciones de WebSocket
+import { onWebSocketEvent, leaveRoom } from "@services/websocket.service"; // Importar las funciones de WebSocket
 import { useChat } from "./chatHook";
 
 interface ChatProps {
   onClose?: () => void;
 }
 
-const Chat = ({ onClose }: ChatProps) => {
-  const { inputValue, setInputValue, addMessage, simulateAgentResponse, messages } = useChat();
+const Chat = memo(({ onClose }: ChatProps) => {
   const connected = useAppSelector((state) => state.chat.connected); // Estado de conexión
-  const agentId = useAppSelector((state) => state.chat.currentAgent?.id); // Obtener el agentId desde Redux
+  const agentId = useAppSelector((state) => state.chat.currentAgent?.id); // 
   const roomName = `test-chat-${agentId}`; // El nombre del room en el que está el cliente
+  const { inputValue, setInputValue, addMessage, messages, handleSendMessage } = useChat(roomName);
 
   useEffect(() => {
-    if (!connected) return;
-    // Escuchar los mensajes del agente a través de WebSocket
+    if (!connected || !agentId) return;
+
+    // Escuchar mensajes del agente
     onWebSocketEvent("message", (message) => {
-      console.log("Mensaje recibido", message);
-      addMessage({ sender: "agent", text: message.text });
+      addMessage({ sender: "agent", text: message });
     });
 
-    // Escuchar el evento 'typing' para mostrar el estado de escritura
-    onWebSocketEvent("typing", (data) => {
-      console.log("Estado de escritura del usuario:", data); // Log para depurar
+    // Escuchar el evento 'typing'
+    onWebSocketEvent("typing", (message) => {
+      console.log("Estado de escritura del usuario:", message);
     });
 
-    // Limpieza cuando el componente se desmonta o se cierra
     return () => {
       if (connected) {
-        // Salir del room cuando el chat se cierre
+        console.log(`Leaving room: ${roomName}`);
         leaveRoom(roomName);
       }
     };
-  }, [agentId, connected, roomName, addMessage, simulateAgentResponse]); // Ejecutar cuando el estado de conexión cambia
+  }, [connected, agentId, roomName, addMessage]); // Solo las dependencias necesarias
 
-  // Función para manejar el envío de un mensaje
-  const handleSendMessageToAgent = () => {
-    if (inputValue.trim() !== "") {
-      // Emitir el mensaje al backend, incluyendo el room al que pertenece
-      emitWebSocketEvent('message', { sender: 'user', text: inputValue, room: roomName });
-
-      // Agregar el mensaje al historial (localmente, sin Redux)
-      addMessage({ sender: "user", text: inputValue });
-
-      // Limpiar el input después de enviar el mensaje
-      setInputValue("");
-    }
-  };
-
-  const handleChatClose = () => {
-    // Llamar a la función onClose proporcionada si existe
+  const handleChatClose = useCallback(() => {
     if (onClose) {
       onClose();
     }
-
-    // Asegurarse de salir del room cuando el chat se cierre
     if (connected) {
       console.log("Chat cerrado", connected);
       leaveRoom(roomName);
     }
-  };
+  }, [onClose, connected, roomName]);
 
   return (
     <div className="grid grid-rows-[auto,1fr,auto] w-full h-full bg-gray-100 border-r border-gray-300 shadow-lg">
@@ -74,11 +56,13 @@ const Chat = ({ onClose }: ChatProps) => {
       <ChatFooter
         inputValue={inputValue}
         onInputChange={setInputValue}
-        onSendMessage={handleSendMessageToAgent} // Enviar el mensaje al agente
+        onSendMessage={handleSendMessage} // Enviar el mensaje al agente
       />
     </div>
   );
-};
+});
+
+Chat.displayName = "Chat";
 
 export default Chat;
 
