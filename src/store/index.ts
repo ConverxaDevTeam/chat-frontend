@@ -1,8 +1,10 @@
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import authSlice from "./reducers/auth";
+import chatSlice from "./reducers/chat";
 
 const reducer = combineReducers({
   auth: authSlice,
+  chat: chatSlice,
 });
 
 const store = configureStore({

@@ -49,7 +49,7 @@ const Organizations = () => {
         }
         footer={<button type="button">Crear</button>}
       />
-      <div className="flex flex-1 flex-col gap-[20px] overflow-auto w-full py-[20px]">
+      <div className="flex flex-1 flex-col gap-[20px] overflow-auto w-full">
         <button
           type="button"
           onClick={() => setIsModalCreateOrganizationOpen(true)}
