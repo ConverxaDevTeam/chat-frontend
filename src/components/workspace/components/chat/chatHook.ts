@@ -34,6 +34,8 @@ export const useChat = () => {
     messages,
     inputValue,
     setInputValue,
+    addMessage,
+    simulateAgentResponse,
     handleSendMessage,
   };
 };

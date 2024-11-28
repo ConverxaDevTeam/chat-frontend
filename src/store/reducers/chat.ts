@@ -5,16 +5,32 @@ interface Message {
   text: string;
 }
 
+interface Department {
+  id: number;
+}
+
+interface Chat {
+  id: number;
+}
+
+interface Agent {
+  id: number;
+}
+
 interface ChatState {
   messages: Message[];
   connected: boolean;
-  agentId: string | null;
+  department: Department | null;
+  chat: Chat | null;
+  currentAgent: Agent | null;
 }
 
 const initialState: ChatState = {
   messages: [],
   connected: false,
-  agentId: null,
+  department: null,
+  chat: null,
+  currentAgent: null,
 };
 
 const chatSlice = createSlice({
@@ -27,11 +43,31 @@ const chatSlice = createSlice({
     setConnectionStatus: (state, action: PayloadAction<boolean>) => {
       state.connected = action.payload;
     },
-    setAgentId: (state, action: PayloadAction<string | null>) => {
-      state.agentId = action.payload;
+    setWorkspaceData: (
+      state,
+      action: PayloadAction<{
+        department: Department;
+        chat: Chat;
+        agent: Agent;
+      }>
+    ) => {
+      state.department = action.payload.department;
+      state.chat = action.payload.chat;
+      state.currentAgent = action.payload.agent;
+    },
+    clearWorkspaceData: (state) => {
+      state.department = null;
+      state.chat = null;
+      state.currentAgent = null;
     },
   },
 });
 
-export const { addMessage, setConnectionStatus, setAgentId } = chatSlice.actions;
+export const { 
+  addMessage, 
+  setConnectionStatus, 
+  setWorkspaceData,
+  clearWorkspaceData 
+} = chatSlice.actions;
+
 export default chatSlice.reducer;

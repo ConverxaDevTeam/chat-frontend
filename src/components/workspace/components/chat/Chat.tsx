@@ -1,6 +1,5 @@
-import { useEffect, useState } from "react";
-import { useAppDispatch, useAppSelector } from "@store/hooks";
-import { connectToAgentRoom } from "@store/actions/auth";
+import { useEffect } from "react";
+import { useAppSelector } from "@store/hooks";
 import { emitWebSocketEvent, onWebSocketEvent, leaveRoom } from "@services/websocket.service"; // Importar las funciones de WebSocket
 import { useChat } from "./chatHook";
 
@@ -9,32 +8,22 @@ interface ChatProps {
 }
 
 const Chat = ({ onClose }: ChatProps) => {
-  const { inputValue, setInputValue } = useChat();
-  const dispatch = useAppDispatch();
+  const { inputValue, setInputValue, addMessage, simulateAgentResponse, messages } = useChat();
   const connected = useAppSelector((state) => state.chat.connected); // Estado de conexión
-  const agentId = 123; // Obtener el agentId desde Redux
+  const agentId = useAppSelector((state) => state.chat.currentAgent?.id); // Obtener el agentId desde Redux
   const roomName = `test-chat-${agentId}`; // El nombre del room en el que está el cliente
 
-  const [messages, setMessages] = useState<{ sender: "user" | "agent"; text: string }[]>([]);
-
   useEffect(() => {
-    if (connected) return
-    // Solo intentamos conectar cuando no estamos conectados
-    dispatch(connectToAgentRoom());
+    if (!connected) return;
     // Escuchar los mensajes del agente a través de WebSocket
     onWebSocketEvent("message", (message) => {
       console.log("Mensaje recibido", message);
-      // El mensaje recibido es del agente, lo agregamos al historial
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        { sender: "agent", text: message.text },
-      ]);
+      addMessage({ sender: "agent", text: message.text });
     });
 
     // Escuchar el evento 'typing' para mostrar el estado de escritura
     onWebSocketEvent("typing", (data) => {
       console.log("Estado de escritura del usuario:", data); // Log para depurar
-      // Aquí puedes mostrar un mensaje que diga que el agente está escribiendo, por ejemplo
     });
 
     // Limpieza cuando el componente se desmonta o se cierra
@@ -44,7 +33,7 @@ const Chat = ({ onClose }: ChatProps) => {
         leaveRoom(roomName);
       }
     };
-  }, [roomName]); // Ejecutar cuando el estado de conexión cambia
+  }, [agentId, connected, roomName, addMessage, simulateAgentResponse]); // Ejecutar cuando el estado de conexión cambia
 
   // Función para manejar el envío de un mensaje
   const handleSendMessageToAgent = () => {
@@ -53,10 +42,7 @@ const Chat = ({ onClose }: ChatProps) => {
       emitWebSocketEvent('message', { sender: 'user', text: inputValue, room: roomName });
 
       // Agregar el mensaje al historial (localmente, sin Redux)
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        { sender: "user", text: inputValue },
-      ]);
+      addMessage({ sender: "user", text: inputValue });
 
       // Limpiar el input después de enviar el mensaje
       setInputValue("");

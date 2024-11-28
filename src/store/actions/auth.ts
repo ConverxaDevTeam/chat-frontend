@@ -5,7 +5,8 @@ import { apiUrls, baseUrl, tokenAccess } from "../../config/config";
 import { alertConfirm, alertError } from "../../utils/alerts";
 import { jwtDecode } from "jwt-decode";
 import { connectWebSocket, disconnectWebSocket, joinRoom, onWebSocketEvent } from "@services/websocket.service";
-import { addMessage, setAgentId, setConnectionStatus } from "@store/reducers/chat";
+import { addMessage, setConnectionStatus, setWorkspaceData } from "@store/reducers/chat";
+import { getDefaultDepartment } from "@services/department";
 
 export const axiosInstance = axios.create({
   baseURL: baseUrl,
@@ -372,41 +373,26 @@ export const disconnectSocketAsync = createAsyncThunk(
 
 export const connectSocketAsync = createAsyncThunk(
   "auth/connectSocketAsync",
-  async (
-    { dispatch }: { dispatch: ReturnType<typeof useAppDispatch> },
-    { rejectWithValue }
-  ) => {
-    try {
-      // Obtener el token del almacenamiento local
-      const token = localStorage.getItem("token");
-      if (!token) {
-        return rejectWithValue("No se encontró el token");
-      }
-
-      // Conectarse al WebSocket
-      const websocket = connectWebSocket(token);
-
-      if (websocket) {
-
-        // Escuchar eventos del WebSocket
-        onWebSocketEvent("message", (message) => {
-          // Si el mensaje es un update del usuario, actualizamos el estado global
-          if (message.action === "update-user") {
-            dispatch(getUserAsync());
-          }
-        });
-
-        return websocket; // Devolvemos el websocket si la conexión fue exitosa
-      } else {
-        return rejectWithValue("Error al conectar el WebSocket");
-      }
-    } catch (error) {
-      console.error("Error al conectar el WebSocket:", error);
-      return rejectWithValue("Error al conectar el WebSocket");
+  async ({ dispatch }: { dispatch: ReturnType<typeof useAppDispatch> }) => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      throw new Error("No se encontr  el token");
     }
+
+    const websocket = connectWebSocket(token);
+    if (!websocket) {
+      throw new Error("Error al conectar el WebSocket");
+    }
+
+    onWebSocketEvent("message", (message) => {
+      if (message.action === "update-user") {
+        dispatch(getUserAsync());
+      }
+    });
+
+    return websocket;
   }
 );
-
 
 export const setOrganizationId = createAction(
   "auth/setOrganizationId",
@@ -417,30 +403,5 @@ export const setOrganizationId = createAction(
       localStorage.setItem("organizationSelect", String(payload));
     }
     return { payload };
-  }
-);
-export const connectToAgentRoom = createAsyncThunk(
-  "chat/connectToAgentRoom",
-  async (_, { dispatch }) => {
-    const agentId = "123"; // ID del agente (esto normalmente vendría de Redux o de otro lado)
-
-    // Despachamos para actualizar el estado con el agentId y conectar
-    dispatch(setAgentId(agentId));
-    dispatch(setConnectionStatus(true)); // Marcamos como conectado
-
-    // Unirse al room de chat dinámico
-    const roomName = `test-chat-${agentId}`;
-    joinRoom(roomName); // Llamamos a la función joinRoom para unirse al room
-
-    console.log(`Se unió al room: ${roomName}`);
-    
-    // Escuchar mensajes o eventos WebSocket
-    onWebSocketEvent("message", (message) => {
-      console.log("Mensaje recibido:", message);
-      // Aquí agregamos el mensaje recibido al estado de Redux
-      dispatch(addMessage({ sender: "agent", text: message }));
-    });
-
-    return roomName; // Puedes retornar el roomName si necesitas hacer algo con él en Redux
   }
 );
