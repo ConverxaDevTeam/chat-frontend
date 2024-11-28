@@ -2,7 +2,7 @@ import { Agent, CreateAgentDto } from '@interfaces/agents';
 import axios from 'axios';
 
 // URL base del backend desde las variables de entorno
-const BASE_URL = import.meta.env.VITE_PUBLIC_BACKEND_URL;
+const BASE_URL = import.meta.env.VITE_PUBLIC_BACKEND_URL + '/api';
 
 
 class AgentService {

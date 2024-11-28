@@ -6,6 +6,7 @@ import { Input } from '@components/forms/input';
 import { TextArea } from '@components/forms/textArea';
 import { agentService } from '@services/agent';
 import { useForm, SubmitHandler } from 'react-hook-form';
+import { get } from 'http';
 
 interface AgenteNodeProps {
   data: {
@@ -14,6 +15,7 @@ interface AgenteNodeProps {
     description: string;
     isSelected: boolean;
   };
+  agentId?: number;
 }
 
 interface AgentFormValues {
@@ -21,49 +23,47 @@ interface AgentFormValues {
   description: string;
 }
 
-const AgenteNode = ({ data }: AgenteNodeProps) => {
+const AgenteNode = ({ data, agentId }: AgenteNodeProps) => {
   const [isLoading, setIsLoading] = useState(false);
-  const [agentId, setAgentId] = useState<number>(1);
 
   // Configuración de react-hook-form
   const {
     register,
     handleSubmit,
-    setValue,
     formState: { errors },
+    setValue,
   } = useForm<AgentFormValues>();
 
-  // Crear agente automáticamente si no existe
   useEffect(() => {
-    const fetchOrCreateAgent = async () => {
-      return
+    if (!data.isSelected) return;
+    const fetchAgent = async () => {
+      if (!agentId) return;
+      
+      setIsLoading(true);
       try {
-        setIsLoading(true);
-        const fetchedAgent = await agentService.getAgentById(agentId); // ID estático como ejemplo
+        const fetchedAgent = await agentService.getAgentById(agentId);
         setValue('name', fetchedAgent.name);
-        setValue('description', fetchedAgent?.config?.instruccion ?? '');
-        setAgentId(fetchedAgent.id);
+        setValue('description', fetchedAgent.config.instruccion);
       } catch (error) {
-          console.error('Error al obtener o crear el agente:', error);
+        console.error('Error fetching agent:', error);
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchOrCreateAgent();
-  }, [setValue]);
+    fetchAgent();
+  }, [agentId, data.isSelected]);
 
-  // Manejar la edición del agente
-  const onSubmit: SubmitHandler<AgentFormValues> = async (data) => {
+  const onSubmit: SubmitHandler<AgentFormValues> = async (formData) => {
+    if (!agentId) return;
+    
+    setIsLoading(true);
     try {
-      setIsLoading(true);
-      const updatedAgent = await agentService.updateAgent(agentId, {
-        name: data.name,
-        description: data.description,
-      });
-      console.log('Agente actualizado:', updatedAgent);
+      await agentService.updateAgent(agentId, formData);
+      // Aquí podrías mostrar un mensaje de éxito
     } catch (error) {
-      console.error('Error al actualizar el agente:', error);
+      console.error('Error updating agent:', error);
+      // Aquí podrías mostrar un mensaje de error
     } finally {
       setIsLoading(false);
     }
@@ -78,7 +78,6 @@ const AgenteNode = ({ data }: AgenteNodeProps) => {
       }}
       icon={<MdOutlineSupportAgent size={24} className="w-8 h-8 text-gray-800" />}
       allowedConnections={['source', 'target']}
-      width="w-96"
     >
       <div className="grid gap-4 p-4 bg-white rounded-md shadow-lg">
         {isLoading ? (
