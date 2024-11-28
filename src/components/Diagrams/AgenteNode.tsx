@@ -1,7 +1,9 @@
 import { memo, useEffect, useState } from 'react';
 import DefaultNode from './DefaultNode';
 import { MdOutlineSupportAgent } from "react-icons/md";
-import { InputGroup } from '@components/inputGroup';
+import { InputGroup } from '@components/forms/inputGroup';
+import { Input } from '@components/forms/input';
+import { TextArea } from '@components/forms/textArea';
 import { agentService } from '@services/agent';
 import { useForm, SubmitHandler } from 'react-hook-form';
 
@@ -71,8 +73,8 @@ const AgenteNode = ({ data }: AgenteNodeProps) => {
     <DefaultNode
       data={{
         ...data,
-        name: data.name || "Agente",
-        description: data.description || "Agente conversacional",
+        name: "Agente",
+        description: "Agente conversacional",
       }}
       icon={<MdOutlineSupportAgent size={24} className="w-8 h-8 text-gray-800" />}
       allowedConnections={['source', 'target']}
@@ -85,22 +87,30 @@ const AgenteNode = ({ data }: AgenteNodeProps) => {
           <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4">
             <InputGroup
               label="Nombre"
-              placeholder="Nombre del agente"
-              register={register('name', { required: 'El nombre es obligatorio' })}
               errors={errors.name}
-            />
+            >
+              <Input
+                placeholder="Nombre del agente"
+                register={register('name', { required: 'El nombre es obligatorio' })}
+                error={errors.name?.message}
+              />
+            </InputGroup>
             <InputGroup
               label="Descripción"
-              placeholder="Descripción del agente"
-              register={register('description', {
-                required: 'La descripción es obligatoria',
-                minLength: {
-                  value: 10,
-                  message: 'La descripción debe tener al menos 10 caracteres',
-                },
-              })}
               errors={errors.description}
-            />
+            >
+              <TextArea
+                placeholder="Descripción del agente"
+                register={register('description', {
+                  required: 'La descripción es obligatoria',
+                  minLength: {
+                    value: 10,
+                    message: 'La descripción debe tener al menos 10 caracteres',
+                  },
+                })}
+                error={errors.description?.message}
+              />
+            </InputGroup>
             <button
               type="submit"
               className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 justify-self-end shadow"
