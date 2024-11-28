@@ -14,7 +14,7 @@ const Dashboard = () => {
   ) {
     return (
       <ProtectedSuperAdmin>
-        <DashboardSuperAdmin />;
+        <DashboardSuperAdmin />
       </ProtectedSuperAdmin>
     );
   } else {

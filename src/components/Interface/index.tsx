@@ -46,8 +46,14 @@ const Interface = () => {
         setSidebarMinimized={setSidebarMinimized}
         mobileResolution={mobileResolution}
       />
-      <div className={`flex flex-1 flex-col p-[20px]`}>
-        <Navbar windowWidth={windowWidth} sidebarMinimized={sidebarMinimized} />
+      <div
+        className={`flex flex-1 flex-col ${mobileResolution ? "px-[10px] gap-[10px] pb-[10px]" : "px-[20px] gap-[20px] pb-[20px]"}`}
+      >
+        <Navbar
+          windowWidth={windowWidth}
+          sidebarMinimized={sidebarMinimized}
+          mobileResolution={mobileResolution}
+        />
         <Outlet />
       </div>
     </div>

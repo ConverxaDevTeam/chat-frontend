@@ -21,13 +21,23 @@ const Sidebar = ({
   return (
     <>
       <div
-        className={`transition-all duration-150 ease-in-out flex flex-col p-[20px] pr-[0px] ${sidebarMinimized || mobileResolution ? "w-[100px]" : "w-[280px]"}`}
+        className={`transition-all duration-150 ease-in-out flex flex-col ${
+          mobileResolution ? "py-[10px]" : "p-[20px]"
+        } pr-[0px] ${sidebarMinimized || mobileResolution ? `${mobileResolution ? "w-[80px]" : "w-[100px]"}` : "w-[280px]"}`}
       >
         <div
           style={{
-            height: windowHeight - 40,
+            height: windowHeight - (mobileResolution ? 20 : 40),
           }}
-          className={`fixed bg-app-c2 border-[2px] border-app-c3 ${sidebarMinimized || mobileResolution ? "rounded-full w-[80px]" : "rounded-2xl w-[260px]"}`}
+          className={`fixed bg-app-c2 ${
+            mobileResolution ? "border-r-[2px] border-y-[2px] " : "border-[2px]"
+          } border-app-c3 ${
+            sidebarMinimized || mobileResolution
+              ? `${
+                  mobileResolution ? "rounded-r-[40px]" : "rounded-full"
+                } w-[80px]`
+              : "rounded-2xl w-[260px]"
+          }`}
         >
           <div className="flex h-[100px] items-start justify-center">
             {sidebarMinimized || mobileResolution ? (
