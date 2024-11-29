@@ -4,9 +4,7 @@ import { useAppDispatch } from "@store/hooks";
 import { apiUrls, baseUrl, tokenAccess } from "../../config/config";
 import { alertConfirm, alertError } from "../../utils/alerts";
 import { jwtDecode } from "jwt-decode";
-import { connectWebSocket, disconnectWebSocket, joinRoom, onWebSocketEvent } from "@services/websocket.service";
-import { addMessage, setConnectionStatus, setWorkspaceData } from "@store/reducers/chat";
-import { getDefaultDepartment } from "@services/department";
+import { connectWebSocket, disconnectWebSocket, onWebSocketEvent } from "@services/websocket.service";
 
 export const axiosInstance = axios.create({
   baseURL: baseUrl,

@@ -6,7 +6,6 @@ import { Input } from '@components/forms/input';
 import { TextArea } from '@components/forms/textArea';
 import { agentService } from '@services/agent';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import { get } from 'http';
 
 interface AgenteNodeProps {
   data: {
