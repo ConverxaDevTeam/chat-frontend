@@ -16,6 +16,7 @@ import IntegracionesNode from "./Diagrams/IntegracionesNode";
 import AgenteNode from "./Diagrams/AgenteNode";
 import AddWebchat from "@pages/Workspace/components/AddWebChat";
 import { useEdges, useNodeSelection, useZoomToFit } from "./workspace/hooks/Diagrams";
+import { useAppSelector } from "@store/hooks";
 
 const initialNodes = [
   {
@@ -56,6 +57,7 @@ const ZoomTransition = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const { setCenter } = useReactFlow();
+  const currentAgentId = useAppSelector((state) => state.chat.currentAgent?.id);
 
   const { handleSelectionChange, clearSelection } = useNodeSelection(nodes, setNodes);
   const { onConnect } = useEdges(setEdges);
@@ -67,9 +69,9 @@ const ZoomTransition = () => {
   const nodeTypes = useMemo(
     () => ({
       integraciones: (props: any) => <IntegracionesNode {...props} openModal={() => setIsModalOpen(true)} />,
-      agente: AgenteNode,
+      agente: (props: any) => <AgenteNode {...props} agentId={currentAgentId} />,
     }),
-    []
+    [currentAgentId]
   );
 
   return (

@@ -1,16 +1,67 @@
+import { memo, useCallback, useEffect } from "react";
+import { useAppSelector } from "@store/hooks";
+import { onWebSocketEvent, leaveRoom } from "@services/websocket.service";
 import { useChat } from "./chatHook";
 
 interface ChatProps {
   onClose?: () => void;
 }
 
-const Chat = ({ onClose }: ChatProps) => {
-  const { messages, inputValue, setInputValue, handleSendMessage } = useChat();
+const Chat = memo(({ onClose }: ChatProps) => {
+  const connected = useAppSelector((state) => state.chat.connected);
+  const agentId = useAppSelector((state) => state.chat.currentAgent?.id);
+  const roomName = `test-chat-${agentId}`;
+  const { 
+    inputValue, 
+    setInputValue, 
+    addMessage, 
+    messages, 
+    handleSendMessage,
+    setThreatId,
+    setAgentId,
+    agentId: agentIdState,
+    threatId
+  } = useChat(roomName);
+
+  useEffect(() => {
+    if (!connected || !agentId) return;
+
+    // Escuchar mensajes del agente
+    onWebSocketEvent("message", (response) => {
+      if (threatId !== response.conf.threadId) setThreatId(response.conf.threadId);
+      if (agentIdState !== response.conf.agentId) setAgentId(response.conf.agentId);
+      addMessage({
+        sender: "agent",
+        text: response.text,
+      });
+    });
+
+    // Escuchar el evento 'typing'
+    onWebSocketEvent("typing", (message) => {
+      addMessage({
+        sender: "user",
+        text: message,
+      });
+    });
+
+    return () => {
+      if (connected) {
+        console.log(`Leaving room: ${roomName}`);
+        leaveRoom(roomName);
+      }
+    };
+  }, [connected, agentId, roomName, addMessage]);
+
+  const handleChatClose = useCallback(() => {
+    if (onClose) {
+      onClose();
+    }
+  }, [onClose]);
 
   return (
     <div className="grid grid-rows-[auto,1fr,auto] w-full h-full bg-gray-100 border-r border-gray-300 shadow-lg">
       {/* Encabezado del chat */}
-      <ChatHeader onClose={onClose} />
+      <ChatHeader onClose={handleChatClose} />
 
       {/* Mensajes del chat */}
       <ChatHistory messages={messages} />
@@ -19,15 +70,17 @@ const Chat = ({ onClose }: ChatProps) => {
       <ChatFooter
         inputValue={inputValue}
         onInputChange={setInputValue}
-        onSendMessage={handleSendMessage}
+        onSendMessage={handleSendMessage} // Enviar el mensaje al agente
       />
     </div>
   );
-};
+});
+
+Chat.displayName = "Chat";
 
 export default Chat;
 
-// Subcomponentes (mantienen la estructura anterior)
+// Subcomponentes (sin cambios)
 
 const ChatHeader = ({ onClose }: { onClose?: () => void }) => {
   return (
@@ -84,7 +137,7 @@ const ChatFooter = ({
         placeholder="Escribe un mensaje..."
       />
       <button
-        onClick={onSendMessage}
+        onClick={onSendMessage} // Usamos handleSendMessage para enviar el mensaje
         className="p-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
       >
         Enviar

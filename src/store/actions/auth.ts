@@ -3,8 +3,8 @@ import { createAction, createAsyncThunk } from "@reduxjs/toolkit";
 import { useAppDispatch } from "@store/hooks";
 import { apiUrls, baseUrl, tokenAccess } from "../../config/config";
 import { alertConfirm, alertError } from "../../utils/alerts";
-import socketIO, { Socket } from "socket.io-client";
 import { jwtDecode } from "jwt-decode";
+import { connectWebSocket, disconnectWebSocket, onWebSocketEvent } from "@services/websocket.service";
 
 export const axiosInstance = axios.create({
   baseURL: baseUrl,
@@ -357,7 +357,7 @@ export const disconnectSocketAsync = createAsyncThunk(
   "auth/disconnectSocketAsync",
   async (_, { rejectWithValue }) => {
     try {
-      const websocket = await disconnect(null);
+      const websocket = await disconnectWebSocket();
       if (websocket) {
         return websocket;
       } else {
@@ -371,60 +371,26 @@ export const disconnectSocketAsync = createAsyncThunk(
 
 export const connectSocketAsync = createAsyncThunk(
   "auth/connectSocketAsync",
-  async (
-    {
-      dispatch,
-    }: {
-      dispatch: ReturnType<typeof useAppDispatch>;
-    },
-    { rejectWithValue }
-  ) => {
-    try {
-      const { websocket } = await connect();
-      if (websocket) {
-        websocket.on("message", message => {
-          console.log(message.action);
-          if (message.action === "update-user") {
-            dispatch(getUserAsync());
-          }
-        });
-        return websocket;
-      } else {
-        return rejectWithValue("error");
-      }
-    } catch (error) {
-      return rejectWithValue("error");
+  async ({ dispatch }: { dispatch: ReturnType<typeof useAppDispatch> }) => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      throw new Error("No se encontr  el token");
     }
+
+    const websocket = connectWebSocket(token);
+    if (!websocket) {
+      throw new Error("Error al conectar el WebSocket");
+    }
+
+    onWebSocketEvent("message", (message) => {
+      if (message.action === "update-user") {
+        dispatch(getUserAsync());
+      }
+    });
+
+    return websocket;
   }
 );
-
-const connect = (): Promise<{ websocket: Socket | null }> => {
-  return new Promise(resolve => {
-    console.log("start socket");
-    const token = getToken();
-    const websocket = socketIO(apiUrls.socket(), {
-      path: "/api/events/socket.io",
-      query: {
-        token: `${token}`,
-      },
-    });
-
-    resolve({ websocket });
-  });
-};
-
-const disconnect = async (websocket: Socket | null) => {
-  if (!websocket) {
-    return null;
-  }
-  return await new Promise(resolve => {
-    console.log("close socket");
-    websocket.close();
-    websocket.on("disconnect", () => {
-      resolve(websocket.id);
-    });
-  });
-};
 
 export const setOrganizationId = createAction(
   "auth/setOrganizationId",
