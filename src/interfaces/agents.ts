@@ -1,7 +1,6 @@
 export interface CreateAgentDto {
   name: string;
   description?: string;
-  // Agrega otros campos según tu modelo
 }
 
 export interface Agent {
@@ -10,5 +9,31 @@ export interface Agent {
   config: {
     instruccion: string;
   }
-  // Agrega otros campos según tu entidad
 }
+
+export interface AgenteType {
+  id: number;
+  name: string;
+  config: {
+    instruccion: string;
+  };
+}
+
+export enum AgentIdentifierType {
+  CHAT = 'chat',
+  THREAT = 'threat',
+  TEST = 'test',
+}
+
+export interface ChatAgentIdentifier {
+  chat_id: number;
+  type: AgentIdentifierType.CHAT;
+}
+
+export interface TestAgentIdentifier {
+  threat_id: string;
+  agent: AgenteType;
+  type: AgentIdentifierType.TEST;
+}
+
+export type AgentIdentifier = ChatAgentIdentifier | TestAgentIdentifier;

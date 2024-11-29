@@ -1,6 +1,6 @@
 import { memo, useCallback, useEffect } from "react";
 import { useAppSelector } from "@store/hooks";
-import { onWebSocketEvent, leaveRoom } from "@services/websocket.service"; // Importar las funciones de WebSocket
+import { onWebSocketEvent, leaveRoom } from "@services/websocket.service";
 import { useChat } from "./chatHook";
 
 interface ChatProps {
@@ -8,17 +8,26 @@ interface ChatProps {
 }
 
 const Chat = memo(({ onClose }: ChatProps) => {
-  const connected = useAppSelector((state) => state.chat.connected); // Estado de conexión
-  const agentId = useAppSelector((state) => state.chat.currentAgent?.id); // 
-  const roomName = `test-chat-${agentId}`; // El nombre del room en el que está el cliente
-  const { inputValue, setInputValue, addMessage, messages, handleSendMessage } = useChat(roomName);
+  const connected = useAppSelector((state) => state.chat.connected);
+  const agentId = useAppSelector((state) => state.chat.currentAgent?.id);
+  const roomName = `test-chat-${agentId}`;
+  const { 
+    inputValue, 
+    setInputValue, 
+    addMessage, 
+    messages, 
+    handleSendMessage
+  } = useChat(roomName);
 
   useEffect(() => {
     if (!connected || !agentId) return;
 
     // Escuchar mensajes del agente
-    onWebSocketEvent("message", (message) => {
-      addMessage({ sender: "agent", text: message });
+    onWebSocketEvent("message", (response) => {
+      addMessage({
+        sender: "agent",
+        text: response.text,
+      });
     });
 
     // Escuchar el evento 'typing'
@@ -32,17 +41,13 @@ const Chat = memo(({ onClose }: ChatProps) => {
         leaveRoom(roomName);
       }
     };
-  }, [connected, agentId, roomName, addMessage]); // Solo las dependencias necesarias
+  }, [connected, agentId, roomName, addMessage]);
 
   const handleChatClose = useCallback(() => {
     if (onClose) {
       onClose();
     }
-    if (connected) {
-      console.log("Chat cerrado", connected);
-      leaveRoom(roomName);
-    }
-  }, [onClose, connected, roomName]);
+  }, [onClose]);
 
   return (
     <div className="grid grid-rows-[auto,1fr,auto] w-full h-full bg-gray-100 border-r border-gray-300 shadow-lg">
@@ -85,7 +90,7 @@ const ChatHeader = ({ onClose }: { onClose?: () => void }) => {
   );
 };
 
-const ChatHistory = ({ messages }: { messages: { sender: "user" | "agent"; text: string }[] }) => {
+const ChatHistory = ({ messages }: { messages: { sender: "user" | "agent"; text: string; identifier?: ChatAgentIdentifier }[] }) => {
   return (
     <div className="p-4 overflow-y-auto">
       {messages.map((message, index) => (
