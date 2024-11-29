@@ -1,7 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { getDefaultDepartment } from "@services/department";
-import { setConnectionStatus, setWorkspaceData } from "@store/reducers/chat";
-import { joinRoom } from "@services/websocket.service";
+import { setWorkspaceData } from "@store/reducers/chat";
 
 export const initializeWorkspace = createAsyncThunk(
   "chat/initializeWorkspace",
@@ -25,13 +24,6 @@ export const initializeWorkspace = createAsyncThunk(
           id: response.agents[0].id,
         }
       }));
-      dispatch(setConnectionStatus(true));
-
-      // Unirse al room de chat dinámico
-      const roomName = `test-chat-${response.agents[0].id}`;
-      joinRoom(roomName);
-
-      console.log(`Se unió al room: ${roomName}`);
 
       return response;
     } catch (error) {

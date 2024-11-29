@@ -1,6 +1,6 @@
-import { memo, useCallback, useEffect } from "react";
+import { memo, useCallback, useEffect, useState } from "react";
 import { useAppSelector } from "@store/hooks";
-import { onWebSocketEvent, leaveRoom } from "@services/websocket.service";
+import { onWebSocketEvent, leaveRoom, joinRoom } from "@services/websocket.service";
 import { useChat } from "./chatHook";
 
 interface ChatProps {
@@ -8,7 +8,7 @@ interface ChatProps {
 }
 
 const Chat = memo(({ onClose }: ChatProps) => {
-  const connected = useAppSelector((state) => state.chat.connected);
+  let connected = false
   const agentId = useAppSelector((state) => state.chat.currentAgent?.id);
   const roomName = `test-chat-${agentId}`;
   const { 
@@ -22,6 +22,22 @@ const Chat = memo(({ onClose }: ChatProps) => {
     agentId: agentIdState,
     threatId
   } = useChat(roomName);
+
+  useEffect(() => {
+    if (!connected) {
+      joinRoom(roomName);
+      connected = true;
+
+      console.log("Conectando al chat", connected);
+    }
+    return () => {
+      if (connected) {
+        leaveRoom(roomName);
+        connected = false;
+      console.log("Desconectando del chat", connected);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     if (!connected || !agentId) return;
@@ -43,14 +59,7 @@ const Chat = memo(({ onClose }: ChatProps) => {
         text: message,
       });
     });
-
-    return () => {
-      if (connected) {
-        console.log(`Leaving room: ${roomName}`);
-        leaveRoom(roomName);
-      }
-    };
-  }, [connected, agentId, roomName, addMessage]);
+  }, [connected, agentId, addMessage]);
 
   const handleChatClose = useCallback(() => {
     if (onClose) {
