@@ -1,29 +1,24 @@
 import { emitWebSocketEvent } from "@services/websocket.service";
 import { useCallback, useState } from "react";
-import { AgentIdentifier, ChatAgentIdentifier, TestAgentIdentifier, AgenteType, AgentIdentifierType } from "@interfaces/agents";
+import { ChatAgentIdentifier, TestAgentIdentifier, AgentIdentifierType, AgenteType } from "@interfaces/agents";
 import { useAppSelector } from "@store/hooks";
 
 export interface Message {
   sender: "user" | "agent";
   text: string;
-  identifier?: AgentIdentifier;
+  threat_id?: string;
 }
 
 export const useChat = (roomName: string) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState("");
-  const [testAgent, setTestAgent] = useState<AgenteType | undefined>();
-  const [testThreatId, setTestThreatId] = useState<string | undefined>();
+  const [threat_id, setThreatId] = useState<string | undefined>();
   
   const chatId = useAppSelector((state) => state.chat.chat?.id);
 
-  const addMessage = useCallback((message: Message) => {
+  const addMessage = useCallback((message: Message,) => {
     // Si el mensaje es del agente y tiene identificador de test, guardamos los datos
-    if (message.sender === 'agent' && message.identifier?.type === 'test') {
-      const testIdentifier = message.identifier as TestAgentIdentifier;
-      setTestAgent(testIdentifier.agent);
-      setTestThreatId(testIdentifier.threat_id);
-    }
+    setThreatId(message.threat_id);
     setMessages((prevMessages) => [...prevMessages, message]);
   }, []);
 
@@ -39,15 +34,15 @@ export const useChat = (roomName: string) => {
       } as ChatAgentIdentifier;
     } else {
       identifier = {
-        type: 'test',
-        agent: testAgent,
-        threat_id: testThreatId
+        type: AgentIdentifierType.TEST,
+        threat_id: threat_id,
+        agent: AgenteType.SOFIA_ASISTENTE
       } as TestAgentIdentifier;
     }
 
     emitWebSocketEvent("message", { text: inputValue, room: roomName, identifier });
     setInputValue("");
-  }, [inputValue, roomName, addMessage, messages.length, chatId, testAgent, testThreatId]);
+  }, [inputValue, roomName, addMessage, messages.length, chatId, threat_id]);
 
   return {
     messages,
@@ -55,6 +50,8 @@ export const useChat = (roomName: string) => {
     setInputValue,
     addMessage,
     handleSendMessage,
-    chatId
+    chatId,
+    setThreatId,
+    threat_id
   };
 };

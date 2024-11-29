@@ -16,7 +16,9 @@ const Chat = memo(({ onClose }: ChatProps) => {
     setInputValue, 
     addMessage, 
     messages, 
-    handleSendMessage
+    handleSendMessage,
+    setThreatId,
+    threat_id
   } = useChat(roomName);
 
   useEffect(() => {
@@ -24,6 +26,8 @@ const Chat = memo(({ onClose }: ChatProps) => {
 
     // Escuchar mensajes del agente
     onWebSocketEvent("message", (response) => {
+      console.log("Respuesta del agente:", response);
+      if (threat_id !== response.threat_id) setThreatId(response.threat_id);
       addMessage({
         sender: "agent",
         text: response.text,
@@ -33,6 +37,10 @@ const Chat = memo(({ onClose }: ChatProps) => {
     // Escuchar el evento 'typing'
     onWebSocketEvent("typing", (message) => {
       console.log("Estado de escritura del usuario:", message);
+      addMessage({
+        sender: "user",
+        text: message,
+      });
     });
 
     return () => {
@@ -90,7 +98,7 @@ const ChatHeader = ({ onClose }: { onClose?: () => void }) => {
   );
 };
 
-const ChatHistory = ({ messages }: { messages: { sender: "user" | "agent"; text: string; identifier?: ChatAgentIdentifier }[] }) => {
+const ChatHistory = ({ messages }: { messages: { sender: "user" | "agent"; text: string }[] }) => {
   return (
     <div className="p-4 overflow-y-auto">
       {messages.map((message, index) => (
