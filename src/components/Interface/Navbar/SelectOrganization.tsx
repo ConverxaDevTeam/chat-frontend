@@ -5,7 +5,11 @@ import { useState } from "react";
 import { setOrganizationId } from "@store/actions/auth";
 import { useNavigate } from "react-router-dom";
 
-const SelectOrganization = () => {
+type SelectOrganizationProps = {
+  mobileResolution: boolean;
+};
+
+const SelectOrganization = ({ mobileResolution }: SelectOrganizationProps) => {
   const { myOrganizations, selectOrganizationId, user } = useSelector(
     (state: RootState) => state.auth
   );
@@ -40,7 +44,7 @@ const SelectOrganization = () => {
 
   return (
     <div
-      className="bg-app-c1 w-[220px] h-[36px] border-[1px] border-app-c3 relative rounded-lg flex justify-between items-center p-[6px] cursor-pointer"
+      className={`bg-app-c1 h-[36px] border-[1px] border-app-c3 relative rounded-lg flex justify-between items-center p-[6px] cursor-pointer ${mobileResolution ? "w-full" : "w-[200px]"}`}
       onClick={() => setOpen(!open)}
     >
       <p>{text}</p>
