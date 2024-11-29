@@ -12,37 +12,39 @@ export interface Message {
 export const useChat = (roomName: string) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState("");
-  const [threat_id, setThreatId] = useState<string | undefined>();
+  const [threatId, setThreatId] = useState<string | undefined>();
+  const [agentId, setAgentId] = useState<string | undefined>();
   
   const chatId = useAppSelector((state) => state.chat.chat?.id);
 
   const addMessage = useCallback((message: Message,) => {
     // Si el mensaje es del agente y tiene identificador de test, guardamos los datos
-    setThreatId(message.threat_id);
     setMessages((prevMessages) => [...prevMessages, message]);
   }, []);
 
   const handleSendMessage = useCallback(() => {
     if (inputValue.trim() === "") return;
     let identifier: ChatAgentIdentifier | TestAgentIdentifier;
-    
+    console.log("messages.length", messages.length) 
     if (messages.length === 0) {
       // Primer mensaje: usar ChatAgentIdentifier
       identifier = {
-        chat_id: chatId,
-        type: AgentIdentifierType.CHAT
+        chatId: chatId,
+        type: AgentIdentifierType.CHAT_TEST
       } as ChatAgentIdentifier;
     } else {
+      console.log("TestAgentIdentifier", threatId, agentId)
       identifier = {
         type: AgentIdentifierType.TEST,
-        threat_id: threat_id,
+        threatId: threatId,
+        agentId: agentId,
         agent: AgenteType.SOFIA_ASISTENTE
       } as TestAgentIdentifier;
     }
 
     emitWebSocketEvent("message", { text: inputValue, room: roomName, identifier });
     setInputValue("");
-  }, [inputValue, roomName, addMessage, messages.length, chatId, threat_id]);
+  }, [inputValue, roomName, addMessage, messages.length, chatId, threatId, agentId]);
 
   return {
     messages,
@@ -52,6 +54,8 @@ export const useChat = (roomName: string) => {
     handleSendMessage,
     chatId,
     setThreatId,
-    threat_id
+    setAgentId,
+    threatId,
+    agentId
   };
 };

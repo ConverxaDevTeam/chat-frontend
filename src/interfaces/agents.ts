@@ -15,21 +15,23 @@ export enum AgenteType {
   SOFIA_ASISTENTE = 'sofia_asistente',
   LLAMA = 'llama',
   GROK = 'grok',
-  }
+}
 
 export enum AgentIdentifierType {
   CHAT = 'chat',
+  CHAT_TEST = 'chatTest',
   THREAT = 'threat',
   TEST = 'test',
 }
 
 export interface ChatAgentIdentifier {
-  chat_id: number;
-  type: AgentIdentifierType.CHAT;
+  chatId?: number;
+  type: AgentIdentifierType.CHAT | AgentIdentifierType.CHAT_TEST;
 }
 
 export interface TestAgentIdentifier {
-  threat_id: string
+  threatId: string
+  agentId: string
   agent: AgenteType
   type: AgentIdentifierType.TEST
 }
