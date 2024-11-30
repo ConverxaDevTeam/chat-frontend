@@ -1,4 +1,5 @@
 export const baseUrl = import.meta.env.VITE_PUBLIC_BACKEND_URL;
+export const urlFiles = import.meta.env.VITE_PUBLIC_URL_FILES;
 
 export const apiUrls = {
   // auth
@@ -15,6 +16,9 @@ export const apiUrls = {
   myOrganizations: () => `/api/organization/my-organizations`,
   //socket
   socket: () => `${baseUrl}/api/socket`,
+  //web-chat
+  getIntegrationWebChat: (departmentId: number, selectOrganizationId: number) =>
+    `/api/integration/web-chat/${selectOrganizationId}/${departmentId}`,
 };
 
 export const tokenAccess = {

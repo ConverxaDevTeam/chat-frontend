@@ -37,6 +37,7 @@ jobs:
             VITE_PUBLIC_BACKEND_URL=${{ secrets.VITE_PUBLIC_BACKEND_URL }}
             VITE_PUBLIC_TOKEN_NAME=${{ secrets.VITE_PUBLIC_TOKEN_NAME }}
             VITE_PUBLIC_TOKEN_REFRESH_NAME=${{ secrets.VITE_PUBLIC_TOKEN_REFRESH_NAME }}
+            VITE_PUBLIC_URL_FILES=${{ secrets.VITE_PUBLIC_URL_FILES }}
             EOF
             docker-compose build
             docker-compose down -v
