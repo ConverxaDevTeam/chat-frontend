@@ -15,6 +15,9 @@ export const apiUrls = {
   myOrganizations: () => `/api/organization/my-organizations`,
   //socket
   socket: () => `${baseUrl}/api/socket`,
+  //web-chat
+  getIntegrationWebChat: (departmentId: number, selectOrganizationId: number) =>
+    `/api/integration/web-chat/${selectOrganizationId}/${departmentId}`,
 };
 
 export const tokenAccess = {

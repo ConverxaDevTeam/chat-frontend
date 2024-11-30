@@ -1,9 +1,10 @@
-import React, { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
-import * as yup from 'yup';
-import { yupResolver } from '@hookform/resolvers/yup';
-import { HiOutlineClipboard } from 'react-icons/hi';
-import Modal from '@components/Modal';
+import React, { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { HiOutlineClipboard } from "react-icons/hi";
+import Modal from "@components/Modal";
+import CustomizeChat from "./CustomizeChat";
 
 interface AddWebchatProps {
   isOpen: boolean;
@@ -13,16 +14,30 @@ interface AddWebchatProps {
 }
 
 const schema = yup.object().shape({
-  domain: yup.string().url('Debe ser una URL válida').required('El dominio es obligatorio'),
+  domain: yup
+    .string()
+    .url("Debe ser una URL válida")
+    .required("El dominio es obligatorio"),
 });
 
-const AddWebchat: React.FC<AddWebchatProps> = ({ isOpen, onClose, onSave, initialDomain = '' }) => {
-  const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm({
+const AddWebchat: React.FC<AddWebchatProps> = ({
+  isOpen,
+  onClose,
+  onSave,
+  initialDomain = "",
+}) => {
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    watch,
+    formState: { errors },
+  } = useForm({
     resolver: yupResolver(schema),
   });
 
   useEffect(() => {
-    setValue('domain', initialDomain.replace(/^https?:\/\//, ''));
+    setValue("domain", initialDomain.replace(/^https?:\/\//, ""));
   }, [initialDomain, setValue]);
 
   const onSubmit = (data: { domain: string }) => {
@@ -30,39 +45,34 @@ const AddWebchat: React.FC<AddWebchatProps> = ({ isOpen, onClose, onSave, initia
     onClose();
   };
 
-  const generatedScript = (domain: string) => (
-    `<script src="https://${domain}/js/min/jquery.min.js"></script>\n<script id="sbinit" src="https://${domain}/js/main.js"></script>`
-  );
+  const generatedScript = (domain: string) =>
+    `<script src="https://${domain}/js/min/jquery.min.js"></script>\n<script id="sbinit" src="https://${domain}/js/main.js"></script>`;
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(generatedScript(watch('domain')))
+    navigator.clipboard
+      .writeText(generatedScript(watch("domain")))
       .then(() => alert("Script copiado al portapapeles"))
-      .catch((error) => console.error("Error al copiar:", error));
+      .catch(error => console.error("Error al copiar:", error));
   };
 
   return (
     <Modal
       isShown={isOpen}
       onClose={onClose}
-      header={<h2 className="text-lg font-semibold text-gray-800">Agregar o Editar Webchat</h2>}
-      footer={
-        <div className="flex justify-end space-x-2">
-          <button
-            type="button"
-            onClick={onClose}
-            className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 shadow"
-          >
-            Cancelar
-          </button>
-          <button
-            type="submit"
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 shadow"
-          >
-            Guardar
-          </button>
-        </div>
+      header={
+        <h2 className="text-lg font-semibold text-gray-800">
+          Agregar o Editar Webchat
+        </h2>
       }
     >
+      <CustomizeChat onClose={onClose} />
+    </Modal>
+  );
+};
+
+export default AddWebchat;
+
+/*
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div>
           <label className="block text-sm font-medium text-gray-600">Dominio</label>
@@ -94,8 +104,4 @@ const AddWebchat: React.FC<AddWebchatProps> = ({ isOpen, onClose, onSave, initia
           </div>
         </div>
       </form>
-    </Modal>
-  );
-};
-
-export default AddWebchat;
+      */

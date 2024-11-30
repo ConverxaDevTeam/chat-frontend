@@ -30,7 +30,10 @@ export type IOrganizarion = {
   };
 };
 
-export type CustomSocket = Pick<Socket, "on" | "off" | "emit" | "disconnect"> & {
+export type CustomSocket = Pick<
+  Socket,
+  "on" | "off" | "emit" | "disconnect"
+> & {
   connected: boolean;
 };
 
