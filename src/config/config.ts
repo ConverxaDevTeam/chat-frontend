@@ -1,4 +1,5 @@
 export const baseUrl = import.meta.env.VITE_PUBLIC_BACKEND_URL;
+export const urlFiles = import.meta.env.VITE_PUBLIC_URL_FILES;
 
 export const apiUrls = {
   // auth

@@ -1,7 +1,10 @@
 import Loading from "@components/Loading";
+import { urlFiles } from "@config/config";
 import { getIntegrationWebChat } from "@services/integration";
 import { RootState } from "@store";
+import { alertConfirm } from "@utils/alerts";
 import { useEffect, useState } from "react";
+import { HiOutlineClipboard } from "react-icons/hi";
 import { useSelector } from "react-redux";
 
 interface CustomizeChatProps {
@@ -52,6 +55,17 @@ const CustomizeChat = ({ onClose }: CustomizeChatProps) => {
     }
   };
 
+  const handleCopy = () => {
+    if (!integration) return alertConfirm("No se ha podido copiar el script");
+    navigator.clipboard
+      .writeText(generatedScript(integration?.id))
+      .then(() => alertConfirm("Script copiado al portapapeles"))
+      .catch(error => console.error("Error al copiar:", error));
+  };
+
+  const generatedScript = (integrationId: number) =>
+    `<script src="${urlFiles}/sofia-chat/${integrationId}.js"></script>`;
+
   useEffect(() => {
     if (department && selectOrganizationId) {
       searchIntegrationWebChat(department?.id, selectOrganizationId);
@@ -60,6 +74,24 @@ const CustomizeChat = ({ onClose }: CustomizeChatProps) => {
 
   return integration ? (
     <div>
+      <div>
+        <label className="block text-sm font-medium text-gray-600">
+          Script de Integración
+        </label>
+        <div className="grid grid-cols-[1fr_auto] bg-gray-50 p-4 rounded-md border border-gray-200 shadow-inner">
+          <div className="text-gray-800 text-sm font-mono leading-tight whitespace-pre-wrap break-all">
+            {generatedScript(integration.id)}
+          </div>
+          <button
+            onClick={handleCopy}
+            type="button"
+            className="text-gray-500 hover:text-gray-700 ml-2"
+            aria-label="Copiar script"
+          >
+            <HiOutlineClipboard size={24} className="h-5 w-5" />
+          </button>
+        </div>
+      </div>
       <div className="flex justify-end space-x-2">
         <button
           type="button"
