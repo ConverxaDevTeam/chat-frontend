@@ -58,7 +58,13 @@ const AgenteNode = ({ data, agentId }: AgenteNodeProps) => {
     
     setIsLoading(true);
     try {
-      await agentService.updateAgent(agentId, formData);
+      const agentData = {
+        name: formData.name,
+        config: {
+          instruccion: formData.description,
+        },
+      }
+      await agentService.updateAgent(agentId, agentData);
       // Aquí podrías mostrar un mensaje de éxito
     } catch (error) {
       console.error('Error updating agent:', error);

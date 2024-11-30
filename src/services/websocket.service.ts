@@ -77,5 +77,4 @@ export const leaveRoom = (roomName: string): void => {
     return;
   }
   websocket.emit("leave", roomName);
-  console.log(`Cliente salió de la sala: ${roomName}`);
 };
