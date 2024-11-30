@@ -64,7 +64,7 @@ const CustomizeChat = ({ onClose }: CustomizeChatProps) => {
   };
 
   const generatedScript = (integrationId: number) =>
-    `<script src="${urlFiles}/sofia-chat/${integrationId}.js"></script>`;
+    `<script src="${urlFiles}/sofia-chat/CI${integrationId}.js"></script>`;
 
   useEffect(() => {
     if (department && selectOrganizationId) {
