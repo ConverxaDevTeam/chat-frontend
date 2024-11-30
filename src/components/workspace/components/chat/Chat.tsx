@@ -2,6 +2,7 @@ import { memo, useCallback, useEffect, useState } from "react";
 import { useAppSelector } from "@store/hooks";
 import { onWebSocketEvent, leaveRoom, joinRoom } from "@services/websocket.service";
 import { useChat } from "./chatHook";
+import { toast } from 'react-toastify';
 
 interface ChatProps {
   onClose?: () => void;
@@ -20,7 +21,8 @@ const Chat = memo(({ onClose }: ChatProps) => {
     setThreatId,
     setAgentId,
     agentId: agentIdState,
-    threatId
+    threatId,
+    resetChat
   } = useChat(roomName);
 
   useEffect(() => {
@@ -59,7 +61,16 @@ const Chat = memo(({ onClose }: ChatProps) => {
         text: message,
       });
     });
-  }, [connected, agentId, addMessage]);
+
+    // Escuchar el evento 'agent:updated'
+    onWebSocketEvent("agent:updated", () => {
+      toast.info('El agente se ha actualizado. Reiniciando el chat...', {
+        position: "top-right",
+        autoClose: 3000,
+      });
+      resetChat();
+    });
+  }, [connected, agentId, addMessage, resetChat]);
 
   const handleChatClose = useCallback(() => {
     if (onClose) {

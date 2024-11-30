@@ -17,6 +17,12 @@ export const useChat = (roomName: string) => {
   
   const chatId = useAppSelector((state) => state.chat.chat?.id);
 
+  const resetChat = useCallback(() => {
+    setMessages([]);
+    setThreatId(undefined);
+    setAgentId(undefined);
+  }, []);
+
   const addMessage = useCallback((message: Message,) => {
     // Si el mensaje es del agente y tiene identificador de test, guardamos los datos
     setMessages((prevMessages) => [...prevMessages, message]);
@@ -56,6 +62,7 @@ export const useChat = (roomName: string) => {
     setThreatId,
     setAgentId,
     threatId,
-    agentId
+    agentId,
+    resetChat
   };
 };
