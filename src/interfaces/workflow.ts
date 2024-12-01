@@ -10,3 +10,7 @@ interface NodeData extends Record<string, unknown> {
 export interface CustomNodeProps extends NodeProps {
   data: NodeData; // Asegura que los datos tengan el tipo adecuado
 }
+
+export interface IntegracionesNodeProps {
+  data: NodeData; 
+}

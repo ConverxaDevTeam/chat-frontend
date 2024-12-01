@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useMemo, memo } from "react";
 import {
   ReactFlow,
   MiniMap,
@@ -14,9 +14,9 @@ import {
 import "@xyflow/react/dist/style.css";
 import IntegracionesNode from "./Diagrams/IntegracionesNode";
 import AgenteNode from "./Diagrams/AgenteNode";
-import AddWebchat from "@pages/Workspace/components/AddWebChat";
 import { useEdges, useNodeSelection, useZoomToFit } from "./workspace/hooks/Diagrams";
 import { useAppSelector } from "@store/hooks";
+import { IntegracionesNodeProps } from "@interfaces/workflow";
 
 const initialNodes = [
   {
@@ -53,6 +53,23 @@ const initialEdges = [
   },
 ];
 
+// Memoized node components
+const MemoizedIntegracionesNode = memo(({ data }: Pick<IntegracionesNodeProps, 'data'>) => (
+  <IntegracionesNode 
+    data={data} 
+  />
+));
+
+const MemoizedAgenteNode = memo(({ data, agentId }: any) => (
+  <AgenteNode data={data} agentId={agentId} />
+));
+
+// Node types defined outside of any component
+const nodeTypes = {
+  integraciones: MemoizedIntegracionesNode,
+  agente: MemoizedAgenteNode,
+};
+
 const ZoomTransition = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
@@ -64,20 +81,22 @@ const ZoomTransition = () => {
 
   useZoomToFit(nodes, setCenter);
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const nodeTypes = useMemo(
-    () => ({
-      integraciones: (props: any) => <IntegracionesNode {...props} openModal={() => setIsModalOpen(true)} />,
-      agente: (props: any) => <AgenteNode {...props} agentId={currentAgentId} />,
-    }),
-    [currentAgentId]
+  // Pass props through the data object instead
+  const nodesWithProps = useMemo(() => 
+    nodes.map(node => ({
+      ...node,
+      data: {
+        ...node.data,
+        agentId: node.type === 'agente' ? currentAgentId : undefined,
+      }
+    })),
+    [nodes, currentAgentId]
   );
 
   return (
     <>
       <ReactFlow
-        nodes={nodes}
+        nodes={nodesWithProps}
         edges={edges}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
@@ -91,9 +110,6 @@ const ZoomTransition = () => {
         <MiniMap />
         <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
       </ReactFlow>
-      <AddWebchat isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onSave={function (domain: string): void {
-        throw new Error(`Function not implemented. ${domain}`);
-      }} />
     </>
   );
 };
