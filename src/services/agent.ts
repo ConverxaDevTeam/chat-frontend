@@ -1,5 +1,5 @@
+import axiosInstance from '@config/axios';
 import { Agent, CreateAgentDto } from '@interfaces/agents';
-import axios from 'axios';
 
 // URL base del backend desde las variables de entorno
 const BASE_URL = import.meta.env.VITE_PUBLIC_BACKEND_URL + '/api';
@@ -11,7 +11,7 @@ class AgentService {
    * @param id ID del agente.
    */
   async getAgentById(id: number): Promise<Agent> {
-    const response = await axios.get<Agent>(`${BASE_URL}/agent/${id}`);
+    const response = await axiosInstance.get<Agent>(`${BASE_URL}/agent/${id}`);
     return response.data;
   }
 
@@ -20,7 +20,7 @@ class AgentService {
    * @param agent Datos del agente a crear.
    */
   async createAgent(agent: CreateAgentDto): Promise<Agent> {
-    const response = await axios.post<Agent>(`${BASE_URL}/agent`, agent);
+    const response = await axiosInstance.post<Agent>(`${BASE_URL}/agent`, agent);
     return response.data;
   }
 
@@ -30,7 +30,7 @@ class AgentService {
    * @param agent Datos del agente a actualizar.
    */
   async updateAgent(id: number, agent: Partial<CreateAgentDto>): Promise<Agent> {
-    const response = await axios.put<Agent>(`${BASE_URL}/agent/${id}`, agent);
+    const response = await axiosInstance.put<Agent>(`${BASE_URL}/agent/${id}`, agent);
     return response.data;
   }
 }
