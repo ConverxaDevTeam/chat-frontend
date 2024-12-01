@@ -29,6 +29,7 @@ export const useChat = (roomName: string) => {
   }, []);
 
   const handleSendMessage = useCallback(() => {
+    console.log("departmentId", departmentId);
     if (inputValue.trim() === "") return;
     let identifier: ChatAgentIdentifier | TestAgentIdentifier;
     if (messages.length === 0) {
