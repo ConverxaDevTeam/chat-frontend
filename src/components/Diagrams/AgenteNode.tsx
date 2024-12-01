@@ -15,7 +15,7 @@ interface AgentFormValues {
 }
 
 const AgenteNode = (props: AgentNodeProps) => {
-  const { data, selected, agentId } = props;
+  const { data, selected } = props;
   const [isLoading, setIsLoading] = useState(false);
 
   // Configuración de react-hook-form
@@ -28,12 +28,13 @@ const AgenteNode = (props: AgentNodeProps) => {
 
   useEffect(() => {
     if (!selected) return;
+    console.log('Agent ID:', data.agentId);
     const fetchAgent = async () => {
-      if (!agentId) return;
+      if (!data.agentId) return;
       
       setIsLoading(true);
       try {
-        const fetchedAgent = await agentService.getAgentById(agentId);
+        const fetchedAgent = await agentService.getAgentById(data.agentId);
         setValue('name', fetchedAgent.name);
         setValue('description', fetchedAgent.config.instruccion);
       } catch (error) {
@@ -44,10 +45,10 @@ const AgenteNode = (props: AgentNodeProps) => {
     };
 
     fetchAgent();
-  }, [agentId, selected]);
+  }, [data.agentId, selected]);
 
   const onSubmit: SubmitHandler<AgentFormValues> = async (formData) => {
-    if (!agentId) return;
+    if (!data.agentId) return;
     
     setIsLoading(true);
     try {
@@ -57,7 +58,7 @@ const AgenteNode = (props: AgentNodeProps) => {
           instruccion: formData.description,
         },
       }
-      await agentService.updateAgent(agentId, agentData);
+      await agentService.updateAgent(data.agentId, agentData);
       // Aquí podrías mostrar un mensaje de éxito
     } catch (error) {
       console.error('Error updating agent:', error);

@@ -14,7 +14,7 @@ import {
 import "@xyflow/react/dist/style.css";
 import IntegracionesNode from "./Diagrams/IntegracionesNode";
 import AgenteNode from "./Diagrams/AgenteNode";
-import { useEdges, useNodeSelection, useZoomToFit } from "./workspace/hooks/Diagrams";
+import { useEdges, useZoomToFit } from "./workspace/hooks/Diagrams";
 import { useAppSelector } from "@store/hooks";
 import { CustomNodeProps } from "@interfaces/workflow";
 
@@ -26,7 +26,6 @@ const initialNodes: CustomNodeProps[] = [
       title: "A",
       name: "Node A",
       description: "This is Node A",
-      isSelected: false,
     },
     type: "integraciones",
   },
@@ -36,7 +35,6 @@ const initialNodes: CustomNodeProps[] = [
       title: "",
       name: "Node B",
       description: "This is Node B",
-      isSelected: false,
     },
     type: "agente",
     position: { x: 500, y: 0 },
@@ -65,13 +63,13 @@ const ZoomTransition = () => {
   const { setCenter } = useReactFlow();
   const currentAgentId = useAppSelector((state) => state.chat.currentAgent?.id);
 
-  const { handleSelectionChange, resetSelection } = useNodeSelection();
   const { onConnect } = useEdges(setEdges);
 
   useZoomToFit(nodes, setCenter);
 
   // Pass props through the data object instead
   const nodesWithProps = useMemo(() => {
+    console.log('currentAgentId', currentAgentId);
     return nodes.map(node => ({
       ...node,
       data: {
@@ -92,8 +90,6 @@ const ZoomTransition = () => {
         onConnect={onConnect}
         fitView={false}
         nodeTypes={nodeTypes}
-        onSelectionChange={handleSelectionChange}
-        onPaneClick={resetSelection}
       >
         <Controls />
         <MiniMap />

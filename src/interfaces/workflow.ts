@@ -4,7 +4,10 @@ import { Node, NodeProps } from "@xyflow/react";
 interface NodeData extends Record<string, unknown> {
   name: string;
   description: string;
-  isSelected: boolean;
+}
+
+interface AgentData extends NodeData {
+  agentId: number;
 }
 
 export interface CustomTypeNodeProps extends NodeProps {
@@ -16,5 +19,5 @@ export interface CustomNodeProps extends Node {
 }
 
 export interface AgentNodeProps extends CustomTypeNodeProps {
-  agentId?: number;
+  data: AgentData;
 }

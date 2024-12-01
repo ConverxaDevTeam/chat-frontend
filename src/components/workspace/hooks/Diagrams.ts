@@ -1,30 +1,9 @@
 import { CustomNodeProps } from '@interfaces/workflow';
-import { addEdge, Connection, OnSelectionChangeFunc, Position } from '@xyflow/react';
+import { addEdge, Connection, Position } from '@xyflow/react';
 import { EdgeBase } from '@xyflow/system';
-import { useState, useCallback, useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 
 
-export const useNodeSelection = () => {
-  const [selectedNode, setSelectedNode] = useState<string | null>(null);
-
-
-
-  const handleSelectionChange: OnSelectionChangeFunc = useCallback((params) => {
-    const { nodes } = params;
-    const selectedNodeId = nodes[0]?.id || null;
-    setSelectedNode(selectedNodeId);
-  }, []);
-
-  const resetSelection = useCallback(() => {
-    setSelectedNode(null);
-  }, []);
-
-  return {
-    selectedNode,
-    handleSelectionChange,
-    resetSelection
-  };
-};
 
 export const useEdges = (setEdges: Function) => {
   const onConnect = useCallback(
