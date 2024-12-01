@@ -1,17 +1,17 @@
-import React, { memo, useRef } from "react";
-import { Handle, Position } from "@xyflow/react";
+import React, { useRef } from "react";
+import { Handle, Position, NodeProps } from "@xyflow/react";
 
-interface CustomNodeProps {
+interface CustomNodeProps extends NodeProps {
   data: {
     name: string;
     description: string;
-    isSelected: boolean;
   };
   allowedConnections: ("source" | "target")[]; // Determina qué tipo de conexiones estarán habilitadas
   icon?: React.ReactNode; // Ícono que se pasa como prop
   children?: React.ReactNode; // Contenido adicional a pasar como children
-  width?: string; // Ancho del nodo
+  width?: number; // Ancho del nodo
 }
+
 const CustomHandles = ({ allowedConnections }: { allowedConnections: ("source" | "target")[] }) => (
   <>
     {allowedConnections.includes("target") && (
@@ -71,28 +71,28 @@ function NodeBody({ children, isSelected, name, description, icon }: NodeBodyPro
   </>;
 }
 
-
 function DefaultNode({
   data,
-  allowedConnections,
+  selected,
+  allowedConnections = [],
   icon,
   children,
-  width = 'w-72',
+  width = 72,
 }: CustomNodeProps): JSX.Element {
+ 
   const ref = useRef<HTMLDivElement>(null);
-  const { name, description, isSelected } = data;
-
+  const { name, description } = data;
   return (
     <div className="flex flex-col items-center" ref={ref}>
-      { !isSelected && <div className="mb-2 text-black font-medium">{name}</div> }
+      { !selected && <div className="mb-2 text-black font-medium">{name}</div> }
       <div
         className={`flex flex-col justify-center items-center border-2 transition-all p-6 ${
-          isSelected
-            ? `${width} h-auto bg-blue-500 text-white rounded-lg shadow-xl`
+          selected
+            ? `w-${width} h-auto bg-blue-500 text-white rounded-lg shadow-xl`
             : "w-20 h-20 bg-white text-black rounded-full"
         } font-medium`}
       >
-        <NodeBody name={name} description={description} icon={icon} isSelected={isSelected}>
+        <NodeBody name={name} description={description} icon={icon} isSelected={selected??false}>
           {children}
         </NodeBody>
         <CustomHandles allowedConnections={allowedConnections} />
@@ -101,4 +101,4 @@ function DefaultNode({
   );
 }
 
-export default memo(DefaultNode);
+export default DefaultNode;

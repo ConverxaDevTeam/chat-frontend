@@ -31,7 +31,6 @@ export const useChat = (roomName: string) => {
   const handleSendMessage = useCallback(() => {
     if (inputValue.trim() === "") return;
     let identifier: ChatAgentIdentifier | TestAgentIdentifier;
-    console.log("messages.length", messages.length) 
     if (messages.length === 0) {
       // Primer mensaje: usar ChatAgentIdentifier
       identifier = {
@@ -39,7 +38,6 @@ export const useChat = (roomName: string) => {
         type: AgentIdentifierType.CHAT_TEST
       } as ChatAgentIdentifier;
     } else {
-      console.log("TestAgentIdentifier", threatId, agentId)
       identifier = {
         type: AgentIdentifierType.TEST,
         threatId: threatId,

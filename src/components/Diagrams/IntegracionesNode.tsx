@@ -1,8 +1,8 @@
-import React, { memo, useState } from "react";
+import React, { useState } from "react";
 import DefaultNode from "./DefaultNode";
 import { HiLink, HiPlusCircle } from "react-icons/hi";
-import { IntegracionesNodeProps } from "@interfaces/workflow";
 import AddWebchat from "@pages/Workspace/components/AddWebChat";
+import { CustomTypeNodeProps } from "@interfaces/workflow";
 
 const SubMenu: React.FC<{ openModal: () => void }> = ({ openModal }) => {
   return (
@@ -20,8 +20,10 @@ const SubMenu: React.FC<{ openModal: () => void }> = ({ openModal }) => {
 };
 
 const IntegracionesNode = ({
-  data
-}: IntegracionesNodeProps) => {
+  data,
+  selected,
+  ...rest
+}: CustomTypeNodeProps) => {
   const [isMenuVisible, setIsMenuVisible] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -37,6 +39,7 @@ const IntegracionesNode = ({
   return (
     <>
       <DefaultNode
+        selected={selected}
         data={{
           ...data,
           name: "Integraciones",
@@ -44,6 +47,7 @@ const IntegracionesNode = ({
         }}
         allowedConnections={["source"]}
         icon={<HiLink size={24} className="w-8 h-8 text-gray-800" />}
+        {...rest}
       >
         <div className="mt-4 bg-transparent rounded-md text-black">
           <button
@@ -66,4 +70,4 @@ const IntegracionesNode = ({
   );
 };
 
-export default memo(IntegracionesNode);
+export default IntegracionesNode;

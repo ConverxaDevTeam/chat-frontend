@@ -1,4 +1,4 @@
-import { useMemo, memo } from "react";
+import { useMemo} from "react";
 import {
   ReactFlow,
   MiniMap,
@@ -16,9 +16,9 @@ import IntegracionesNode from "./Diagrams/IntegracionesNode";
 import AgenteNode from "./Diagrams/AgenteNode";
 import { useEdges, useNodeSelection, useZoomToFit } from "./workspace/hooks/Diagrams";
 import { useAppSelector } from "@store/hooks";
-import { IntegracionesNodeProps } from "@interfaces/workflow";
+import { CustomNodeProps } from "@interfaces/workflow";
 
-const initialNodes = [
+const initialNodes: CustomNodeProps[] = [
   {
     id: "1",
     position: { x: 0, y: 0 },
@@ -32,14 +32,14 @@ const initialNodes = [
   },
   {
     id: "2",
-    position: { x: 500, y: 0 },
     data: {
-      title: "B",
+      title: "",
       name: "Node B",
       description: "This is Node B",
       isSelected: false,
     },
     type: "agente",
+    position: { x: 500, y: 0 },
   },
 ];
 
@@ -53,44 +53,33 @@ const initialEdges = [
   },
 ];
 
-// Memoized node components
-const MemoizedIntegracionesNode = memo(({ data }: Pick<IntegracionesNodeProps, 'data'>) => (
-  <IntegracionesNode 
-    data={data} 
-  />
-));
-
-const MemoizedAgenteNode = memo(({ data, agentId }: any) => (
-  <AgenteNode data={data} agentId={agentId} />
-));
-
 // Node types defined outside of any component
 const nodeTypes = {
-  integraciones: MemoizedIntegracionesNode,
-  agente: MemoizedAgenteNode,
+  integraciones: IntegracionesNode,
+  agente: AgenteNode,
 };
 
 const ZoomTransition = () => {
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
+  const [nodes, _, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const { setCenter } = useReactFlow();
   const currentAgentId = useAppSelector((state) => state.chat.currentAgent?.id);
 
-  const { handleSelectionChange, clearSelection } = useNodeSelection(nodes, setNodes);
+  const { handleSelectionChange, resetSelection } = useNodeSelection();
   const { onConnect } = useEdges(setEdges);
 
   useZoomToFit(nodes, setCenter);
 
   // Pass props through the data object instead
-  const nodesWithProps = useMemo(() => 
-    nodes.map(node => ({
+  const nodesWithProps = useMemo(() => {
+    return nodes.map(node => ({
       ...node,
       data: {
         ...node.data,
         agentId: node.type === 'agente' ? currentAgentId : undefined,
       }
-    })),
-    [nodes, currentAgentId]
+    }))},
+    [currentAgentId, nodes]
   );
 
   return (
@@ -104,7 +93,7 @@ const ZoomTransition = () => {
         fitView={false}
         nodeTypes={nodeTypes}
         onSelectionChange={handleSelectionChange}
-        onPaneClick={clearSelection}
+        onPaneClick={resetSelection}
       >
         <Controls />
         <MiniMap />

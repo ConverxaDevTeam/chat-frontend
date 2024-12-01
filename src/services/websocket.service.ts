@@ -17,8 +17,7 @@ export const connectWebSocket = (token: string): Socket | null => {
   });
 
 
-  websocket.on("disconnect", (reason) => {
-    console.log(`Desconectado del servidor WebSocket: ${reason}`);
+  websocket.on("disconnect", () => {
     websocket = null; // Limpiar referencia al desconectar
   });
 
@@ -37,7 +36,6 @@ export const disconnectWebSocket = async (): Promise<string | null> => {
     websocket!.on("disconnect", () => {
       const id = websocket!.id;
       websocket = null; // Limpia la referencia
-      console.log("Desconexión completa");
       resolve(id ?? null);
     });
   });
