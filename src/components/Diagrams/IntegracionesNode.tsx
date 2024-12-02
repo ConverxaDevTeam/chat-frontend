@@ -31,11 +31,6 @@ const IntegracionesNode = ({
     setIsMenuVisible(!isMenuVisible);
   };
 
-  const handleSave = (domain: string) => {
-    // Implementar la lógica de guardado aquí
-    console.log('Domain saved:', domain);
-  };
-
   return (
     <>
       <DefaultNode
@@ -61,11 +56,7 @@ const IntegracionesNode = ({
           {isMenuVisible && <SubMenu openModal={() => setIsModalOpen(true)} />}
         </div>
       </DefaultNode>
-      <AddWebchat 
-        isOpen={isModalOpen} 
-        onClose={() => setIsModalOpen(false)} 
-        onSave={handleSave}
-      />
+      <AddWebchat isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </>
   );
 };

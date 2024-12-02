@@ -1,35 +1,39 @@
 import { memo, useCallback, useEffect } from "react";
 import { useAppSelector } from "@store/hooks";
-import { onWebSocketEvent, leaveRoom, joinRoom } from "@services/websocket.service";
+import {
+  onWebSocketEvent,
+  leaveRoom,
+  joinRoom,
+} from "@services/websocket.service";
 import { useChat } from "./chatHook";
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
+import { WebSocketChatTestResponse } from "@interfaces/websocket.interface";
 
 interface ChatProps {
   onClose?: () => void;
 }
 
 const Chat = memo(({ onClose }: ChatProps) => {
-  let connected = false
-  const agentId = useAppSelector((state) => state.chat.currentAgent?.id);
+  let connected = false;
+  const agentId = useAppSelector(state => state.chat.currentAgent?.id);
   const roomName = `test-chat-${agentId}`;
-  const { 
-    inputValue, 
-    setInputValue, 
-    addMessage, 
-    messages, 
+  const {
+    inputValue,
+    setInputValue,
+    addMessage,
+    messages,
     handleSendMessage,
     setThreatId,
     setAgentId,
     agentId: agentIdState,
     threatId,
-    resetChat
+    resetChat,
   } = useChat(roomName);
 
   useEffect(() => {
     if (!connected) {
       joinRoom(roomName);
       connected = true;
-
     }
     return () => {
       if (connected) {
@@ -43,9 +47,11 @@ const Chat = memo(({ onClose }: ChatProps) => {
     if (!connected || !agentId) return;
 
     // Escuchar mensajes del agente
-    onWebSocketEvent("message", (response) => {
-      if (threatId !== response.conf.threadId) setThreatId(response.conf.threadId);
-      if (agentIdState !== response.conf.agentId) setAgentId(response.conf.agentId);
+    onWebSocketEvent<WebSocketChatTestResponse>("message", response => {
+      if (threatId !== response.conf.threadId)
+        setThreatId(response.conf.threadId);
+      if (agentIdState !== response.conf.agentId)
+        setAgentId(response.conf.agentId);
       addMessage({
         sender: "agent",
         text: response.text,
@@ -53,7 +59,7 @@ const Chat = memo(({ onClose }: ChatProps) => {
     });
 
     // Escuchar el evento 'typing'
-    onWebSocketEvent("typing", (message) => {
+    onWebSocketEvent<string>("typing", message => {
       addMessage({
         sender: "user",
         text: message,
@@ -61,8 +67,8 @@ const Chat = memo(({ onClose }: ChatProps) => {
     });
 
     // Escuchar el evento 'agent:updated'
-    onWebSocketEvent("agent:updated", () => {
-      toast.info('El agente se ha actualizado. Reiniciando el chat...', {
+    onWebSocketEvent<void>("agent:updated", () => {
+      toast.info("El agente se ha actualizado. Reiniciando el chat...", {
         position: "top-right",
         autoClose: 3000,
       });
@@ -117,7 +123,11 @@ const ChatHeader = ({ onClose }: { onClose?: () => void }) => {
   );
 };
 
-const ChatHistory = ({ messages }: { messages: { sender: "user" | "agent"; text: string }[] }) => {
+const ChatHistory = ({
+  messages,
+}: {
+  messages: { sender: "user" | "agent"; text: string }[];
+}) => {
   return (
     <div className="p-4 overflow-y-auto">
       {messages.map((message, index) => (
@@ -150,7 +160,7 @@ const ChatFooter = ({
       <input
         type="text"
         value={inputValue}
-        onChange={(e) => onInputChange(e.target.value)}
+        onChange={e => onInputChange(e.target.value)}
         className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
         placeholder="Escribe un mensaje..."
       />

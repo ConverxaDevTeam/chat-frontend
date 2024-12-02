@@ -1,4 +1,4 @@
-import { useMemo} from "react";
+import { useMemo } from "react";
 import {
   ReactFlow,
   MiniMap,
@@ -61,7 +61,7 @@ const ZoomTransition = () => {
   const [nodes, _, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const { setCenter } = useReactFlow();
-  const currentAgentId = useAppSelector((state) => state.chat.currentAgent?.id);
+  const currentAgentId = useAppSelector(state => state.chat.currentAgent?.id);
 
   const { onConnect } = useEdges(setEdges);
 
@@ -69,16 +69,15 @@ const ZoomTransition = () => {
 
   // Pass props through the data object instead
   const nodesWithProps = useMemo(() => {
-    console.log('currentAgentId', currentAgentId);
+    console.log("currentAgentId", currentAgentId);
     return nodes.map(node => ({
       ...node,
       data: {
         ...node.data,
-        agentId: node.type === 'agente' ? currentAgentId : undefined,
-      }
-    }))},
-    [currentAgentId, nodes]
-  );
+        agentId: node.type === "agente" ? currentAgentId : undefined,
+      },
+    }));
+  }, [currentAgentId, nodes]);
 
   return (
     <>
@@ -99,9 +98,6 @@ const ZoomTransition = () => {
   );
 };
 
-
 export default function Diagram() {
-  return (
-      <ZoomTransition />
-  );
+  return <ZoomTransition />;
 }
