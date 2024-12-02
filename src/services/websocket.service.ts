@@ -16,7 +16,6 @@ export const connectWebSocket = (token: string): Socket | null => {
     transports: ["websocket"], // Usar solo WebSocket
   });
 
-
   websocket.on("disconnect", () => {
     websocket = null; // Limpiar referencia al desconectar
   });
@@ -31,7 +30,7 @@ export const disconnectWebSocket = async (): Promise<string | null> => {
     return null;
   }
 
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     websocket!.disconnect(); // Cierra la conexión
     websocket!.on("disconnect", () => {
       const id = websocket!.id;
@@ -42,7 +41,10 @@ export const disconnectWebSocket = async (): Promise<string | null> => {
 };
 
 // Escuchar eventos del servidor
-export const onWebSocketEvent = (event: string, callback: (data: any) => void): void => {
+export const onWebSocketEvent = (
+  event: string,
+  callback: (data: any) => void
+): void => {
   if (!websocket) {
     console.warn("WebSocket no está conectado.");
     return;

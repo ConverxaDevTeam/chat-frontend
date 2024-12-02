@@ -8,20 +8,20 @@ export interface Agent {
   name: string;
   config: {
     instruccion: string;
-  }
+  };
 }
 
 export enum AgenteType {
-  SOFIA_ASISTENTE = 'sofia_asistente',
-  LLAMA = 'llama',
-  GROK = 'grok',
+  SOFIA_ASISTENTE = "sofia_asistente",
+  LLAMA = "llama",
+  GROK = "grok",
 }
 
 export enum AgentIdentifierType {
-  CHAT = 'chat',
-  CHAT_TEST = 'chatTest',
-  THREAT = 'threat',
-  TEST = 'test',
+  CHAT = "chat",
+  CHAT_TEST = "chatTest",
+  THREAT = "threat",
+  TEST = "test",
 }
 
 export interface ChatAgentIdentifier {
@@ -30,10 +30,10 @@ export interface ChatAgentIdentifier {
 }
 
 export interface TestAgentIdentifier {
-  threatId: string
-  agentId: string
-  agent: AgenteType
-  type: AgentIdentifierType.TEST
+  threatId: string;
+  agentId: string;
+  agent: AgenteType;
+  type: AgentIdentifierType.TEST;
 }
 
 export type AgentIdentifier = ChatAgentIdentifier | TestAgentIdentifier;

@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios from "axios";
 
 interface DepartmentResponse {
   ok: boolean;
@@ -12,13 +12,14 @@ interface DepartmentResponse {
 }
 
 const BASE_URL = import.meta.env.VITE_PUBLIC_BACKEND_URL;
-export const getDefaultDepartment = async (organization:number) => {
+export const getDefaultDepartment = async (organization: number) => {
   try {
     const response = await axios.get<DepartmentResponse>(
-      `${BASE_URL}/api/departments/default/${organization}`);
+      `${BASE_URL}/api/departments/default/${organization}`
+    );
     return response.data;
   } catch (error) {
-    console.error('Error fetching default department:', error);
+    console.error("Error fetching default department:", error);
     throw error;
   }
-}
+};
