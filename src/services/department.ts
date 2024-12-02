@@ -4,13 +4,11 @@ interface DepartmentResponse {
   ok: boolean;
   department: {
     id: number;
+    name: string;
+    agentes: Array<{
+      id: number;
+    }>;
   };
-  chat: {
-    id: number;
-  };
-  agents: Array<{
-    id: number;
-  }>;
 }
 
 const BASE_URL = import.meta.env.VITE_PUBLIC_BACKEND_URL;

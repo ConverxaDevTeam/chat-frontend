@@ -7,8 +7,7 @@ export const initializeWorkspace = createAsyncThunk(
   async (organization: number, { dispatch }) => {
     try {
       const response = await getDefaultDepartment(organization);
-      
-      if (!response.ok || !response.department || !response.chat || !response.agents?.[0]) {
+      if (!response.ok || !response.department?.id || !response.department?.agentes?.[0]) {
         throw new Error('No se pudo obtener la información del departamento');
       }
 
@@ -17,11 +16,8 @@ export const initializeWorkspace = createAsyncThunk(
         department: {
           id: response.department.id,
         },
-        chat: {
-          id: response.chat.id,
-        },
         agent: {
-          id: response.agents[0].id,
+          id: response.department.agentes[0].id,
         }
       }));
 
