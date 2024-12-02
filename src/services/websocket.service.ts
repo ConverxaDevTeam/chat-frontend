@@ -41,9 +41,9 @@ export const disconnectWebSocket = async (): Promise<string | null> => {
 };
 
 // Escuchar eventos del servidor
-export const onWebSocketEvent = (
+export const onWebSocketEvent = <T>(
   event: string,
-  callback: (data: any) => void
+  callback: (data: T) => void
 ): void => {
   if (!websocket) {
     console.warn("WebSocket no está conectado.");
@@ -53,7 +53,7 @@ export const onWebSocketEvent = (
 };
 
 // Emitir eventos al servidor
-export const emitWebSocketEvent = (event: string, data: any): void => {
+export const emitWebSocketEvent = (event: string, data: unknown): void => {
   if (!websocket) {
     console.warn("WebSocket no está conectado.");
     return;
