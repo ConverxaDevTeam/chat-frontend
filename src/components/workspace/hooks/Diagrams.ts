@@ -1,22 +1,21 @@
-import { CustomNodeProps } from '@interfaces/workflow';
-import { addEdge, Connection, Position } from '@xyflow/react';
-import { EdgeBase } from '@xyflow/system';
-import { useCallback, useEffect } from 'react';
+import { CustomNodeProps } from "@interfaces/workflow";
+import { addEdge, Connection } from "@xyflow/react";
+import { EdgeBase } from "@xyflow/system";
+import { useCallback, useEffect } from "react";
 
-
-
-export const useEdges = (setEdges: Function) => {
+export const useEdges = (
+  setEdges: React.Dispatch<React.SetStateAction<EdgeBase[]>>
+) => {
   const onConnect = useCallback(
     (params: Connection) => {
       const newEdge: EdgeBase = {
-        id: `${params.source}-${params.target}`,
-        source: params.source,
-        target: params.target,
-        sourceHandle: Position.Left,
-        targetHandle: Position.Right,
-        type: "smoothstep",
+        id: `e${params.source}-${params.target}`,
+        source: params.source ?? "",
+        target: params.target ?? "",
+        sourceHandle: params.sourceHandle ?? undefined,
+        targetHandle: params.targetHandle ?? undefined,
       };
-      setEdges((eds: EdgeBase[]) => addEdge(newEdge, eds));
+      setEdges(currentEdges => addEdge(newEdge, currentEdges));
     },
     [setEdges]
   );
@@ -24,13 +23,20 @@ export const useEdges = (setEdges: Function) => {
   return { onConnect };
 };
 
-export const useZoomToFit = (nodes: CustomNodeProps[], setCenter: Function) => {
+export const useZoomToFit = (
+  nodes: CustomNodeProps[],
+  setCenter: (
+    x: number,
+    y: number,
+    options: { duration: number; zoom: number }
+  ) => void
+) => {
   useEffect(() => {
     if (nodes.length === 0) return;
-    if (nodes.some((node) => !node.selected)) return;
-    
-    const xValues = nodes.map((node) => node.position.x);
-    const yValues = nodes.map((node) => node.position.y);
+    if (nodes.some(node => !node.selected)) return;
+
+    const xValues = nodes.map(node => node.position.x);
+    const yValues = nodes.map(node => node.position.y);
 
     const minX = Math.min(...xValues);
     const maxX = Math.max(...xValues);

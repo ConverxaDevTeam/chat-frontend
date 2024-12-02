@@ -27,7 +27,7 @@ export const useNodeManagement = () => {
 
       // Calcular la posición del nuevo nodo
       const offset = 200; // Espacio entre nodos
-      const verticalSpacing = 150; // Espacio vertical entre nodos función
+      const verticalSpacing = 300; // Espacio vertical entre nodos función
 
       const position = {
         x: sourceNode.position.x + (sourceNode.width || 0) + offset,
@@ -59,7 +59,6 @@ export const useNodeManagement = () => {
         id: `e${sourceNodeId}-${newNodeId}`,
         source: sourceNodeId,
         target: newNodeId,
-        type: "smoothstep",
         sourceHandle: `node-source-${Position.Right}`,
         targetHandle: `node-target-${Position.Left}`,
       };

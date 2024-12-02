@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useCallback } from "react";
 import {
   ReactFlow,
   MiniMap,
@@ -9,7 +9,9 @@ import {
   BackgroundVariant,
   Position,
   useReactFlow,
+  OnConnectEnd,
 } from "@xyflow/react";
+import { EdgeBase } from "@xyflow/system";
 
 import "@xyflow/react/dist/style.css";
 import IntegracionesNode from "./Diagrams/IntegracionesNode";
@@ -60,16 +62,57 @@ const nodeTypes = {
 };
 
 const ZoomTransition = () => {
-  const [nodes, _, onNodesChange] = useNodesState(initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
-  const { setCenter } = useReactFlow();
+  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
+  const [edges, setEdges, onEdgesChange] =
+    useEdgesState<EdgeBase>(initialEdges);
+  const { setCenter, screenToFlowPosition } = useReactFlow();
   const currentAgentId = useAppSelector(state => state.chat.currentAgent?.id);
 
   const { onConnect } = useEdges(setEdges);
 
   useZoomToFit(nodes, setCenter);
 
-  // Pass props through the data object instead
+  const onConnectEnd: OnConnectEnd = useCallback(
+    (event, connectionState) => {
+      if (
+        !connectionState.isValid &&
+        connectionState.fromNode?.type === "agente"
+      ) {
+        const { clientX, clientY } =
+          event instanceof MouseEvent ? event : event.touches[0];
+
+        const newNodeId = `function-${Date.now()}`;
+        const position = screenToFlowPosition({
+          x: clientX,
+          y: clientY,
+        });
+
+        const newNode = {
+          id: newNodeId,
+          type: "funcion",
+          position,
+          data: {
+            name: "Nueva Función",
+            description: "Función personalizada",
+            parentNodeId: connectionState.fromNode.id,
+          },
+        };
+
+        const newEdge = {
+          id: `e${connectionState.fromNode.id}-${newNodeId}`,
+          source: connectionState.fromNode.id,
+          target: newNodeId,
+          sourceHandle: `node-source-${Position.Right}`,
+          targetHandle: `node-target-${Position.Left}`,
+        };
+
+        setNodes(nds => [...nds, newNode]);
+        setEdges(eds => [...eds, newEdge]);
+      }
+    },
+    [screenToFlowPosition]
+  );
+
   const nodesWithProps = useMemo(() => {
     return nodes.map(node => ({
       ...node,
@@ -88,6 +131,7 @@ const ZoomTransition = () => {
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
+        onConnectEnd={onConnectEnd}
         fitView={false}
         nodeTypes={nodeTypes}
       >
