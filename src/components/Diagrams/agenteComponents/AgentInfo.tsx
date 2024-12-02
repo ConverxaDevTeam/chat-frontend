@@ -1,4 +1,5 @@
 import { MdEdit, MdAddCircleOutline } from "react-icons/md";
+import { useNodeManagement } from "../hooks/useNodeManagement";
 
 interface AgentData {
   name: string;
@@ -20,26 +21,29 @@ const InfoField = ({ label, value, defaultValue }: InfoFieldProps) => (
 
 interface ActionButtonsProps {
   onEdit: () => void;
+  nodeId: string;
 }
 
-const ActionButtons = ({ onEdit }: ActionButtonsProps) => (
-  <div className="flex flex-col gap-2 w-full">
-    <button
-      onClick={onEdit}
-      className="flex items-center justify-center w-full px-4 py-2 text-sm text-blue-600 bg-blue-100 rounded-lg hover:bg-blue-200 transition-colors duration-200"
-    >
-      <MdEdit className="mr-2" /> Editar
-    </button>
-    <button
-      onClick={() => {
-        /* TODO: Implementar agregar funciones */
-      }}
-      className="flex items-center justify-center w-full px-4 py-2 text-sm text-blue-600 bg-blue-100 rounded-lg hover:bg-blue-200 transition-colors duration-200"
-    >
-      <MdAddCircleOutline className="mr-2" /> Agregar Funciones
-    </button>
-  </div>
-);
+const ActionButtons = ({ onEdit, nodeId }: ActionButtonsProps) => {
+  const { addFunctionNode } = useNodeManagement();
+
+  return (
+    <div className="flex flex-col gap-2 w-full">
+      <button
+        onClick={onEdit}
+        className="flex items-center justify-center w-full px-4 py-2 text-sm text-blue-600 bg-blue-100 rounded-lg hover:bg-blue-200 transition-colors duration-200"
+      >
+        <MdEdit className="mr-2" /> Editar
+      </button>
+      <button
+        onClick={() => addFunctionNode(nodeId)}
+        className="flex items-center justify-center w-full px-4 py-2 text-sm text-blue-600 bg-blue-100 rounded-lg hover:bg-blue-200 transition-colors duration-200"
+      >
+        <MdAddCircleOutline className="mr-2" /> Agregar Funciones
+      </button>
+    </div>
+  );
+};
 
 interface LoadingStateProps {
   message: string;
@@ -53,9 +57,15 @@ interface AgentInfoProps {
   isLoading: boolean;
   agentData: AgentData | null;
   onEdit: () => void;
+  nodeId: string;
 }
 
-export const AgentInfo = ({ isLoading, agentData, onEdit }: AgentInfoProps) => {
+export const AgentInfo = ({
+  isLoading,
+  agentData,
+  onEdit,
+  nodeId,
+}: AgentInfoProps) => {
   if (isLoading) {
     return <LoadingState message="Cargando agente..." />;
   }
@@ -72,7 +82,7 @@ export const AgentInfo = ({ isLoading, agentData, onEdit }: AgentInfoProps) => {
         value={agentData?.description}
         defaultValue="Sin descripción"
       />
-      <ActionButtons onEdit={onEdit} />
+      <ActionButtons onEdit={onEdit} nodeId={nodeId} />
     </div>
   );
 };

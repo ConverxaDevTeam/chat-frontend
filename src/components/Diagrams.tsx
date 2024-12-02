@@ -14,6 +14,7 @@ import {
 import "@xyflow/react/dist/style.css";
 import IntegracionesNode from "./Diagrams/IntegracionesNode";
 import AgenteNode from "./Diagrams/AgenteNode";
+import FuncionNode from "./Diagrams/FuncionNode";
 import { useEdges, useZoomToFit } from "./workspace/hooks/Diagrams";
 import { useAppSelector } from "@store/hooks";
 import { CustomNodeProps } from "@interfaces/workflow";
@@ -55,6 +56,7 @@ const initialEdges = [
 const nodeTypes = {
   integraciones: IntegracionesNode,
   agente: AgenteNode,
+  funcion: FuncionNode,
 };
 
 const ZoomTransition = () => {

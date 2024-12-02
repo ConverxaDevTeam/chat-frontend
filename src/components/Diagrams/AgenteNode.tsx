@@ -38,6 +38,7 @@ const AgenteNode = (props: AgentNodeProps) => {
             isLoading={isLoading}
             agentData={agentData}
             onEdit={() => setIsModalOpen(true)}
+            nodeId={props.id}
           />
         </div>
       </DefaultNode>
