@@ -11,7 +11,10 @@ const stripePromise = loadStripe(import.meta.env.VITE_PUBLIC_STRIPE_KEY_PUBLIC);
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <Elements stripe={stripePromise}>
-    <BrowserRouter>
+    <BrowserRouter future={{ 
+      v7_relativeSplatPath: true,
+      v7_startTransition: true 
+    }}>
       <Provider store={store}>
         <App />
         <ToastContainer />

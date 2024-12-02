@@ -1,4 +1,4 @@
-import { memo, useCallback, useEffect, useState } from "react";
+import { memo, useCallback, useEffect } from "react";
 import { useAppSelector } from "@store/hooks";
 import { onWebSocketEvent, leaveRoom, joinRoom } from "@services/websocket.service";
 import { useChat } from "./chatHook";
@@ -30,13 +30,11 @@ const Chat = memo(({ onClose }: ChatProps) => {
       joinRoom(roomName);
       connected = true;
 
-      console.log("Conectando al chat", connected);
     }
     return () => {
       if (connected) {
         leaveRoom(roomName);
         connected = false;
-      console.log("Desconectando del chat", connected);
       }
     };
   }, []);

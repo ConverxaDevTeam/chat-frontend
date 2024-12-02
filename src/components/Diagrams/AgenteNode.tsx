@@ -1,4 +1,4 @@
-import { memo, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import DefaultNode from './DefaultNode';
 import { MdOutlineSupportAgent } from "react-icons/md";
 import { InputGroup } from '@components/forms/inputGroup';
@@ -6,23 +6,16 @@ import { Input } from '@components/forms/input';
 import { TextArea } from '@components/forms/textArea';
 import { agentService } from '@services/agent';
 import { useForm, SubmitHandler } from 'react-hook-form';
+import { AgentNodeProps } from '@interfaces/workflow';
 
-interface AgenteNodeProps {
-  data: {
-    title: string;
-    name: string;
-    description: string;
-    isSelected: boolean;
-  };
-  agentId?: number;
-}
 
 interface AgentFormValues {
   name: string;
   description: string;
 }
 
-const AgenteNode = ({ data, agentId }: AgenteNodeProps) => {
+const AgenteNode = (props: AgentNodeProps) => {
+  const { data, selected } = props;
   const [isLoading, setIsLoading] = useState(false);
 
   // Configuración de react-hook-form
@@ -34,13 +27,14 @@ const AgenteNode = ({ data, agentId }: AgenteNodeProps) => {
   } = useForm<AgentFormValues>();
 
   useEffect(() => {
-    if (!data.isSelected) return;
+    if (!selected) return;
+    console.log('Agent ID:', data.agentId);
     const fetchAgent = async () => {
-      if (!agentId) return;
+      if (!data.agentId) return;
       
       setIsLoading(true);
       try {
-        const fetchedAgent = await agentService.getAgentById(agentId);
+        const fetchedAgent = await agentService.getAgentById(data.agentId);
         setValue('name', fetchedAgent.name);
         setValue('description', fetchedAgent.config.instruccion);
       } catch (error) {
@@ -51,10 +45,10 @@ const AgenteNode = ({ data, agentId }: AgenteNodeProps) => {
     };
 
     fetchAgent();
-  }, [agentId, data.isSelected]);
+  }, [data.agentId, selected]);
 
   const onSubmit: SubmitHandler<AgentFormValues> = async (formData) => {
-    if (!agentId) return;
+    if (!data.agentId) return;
     
     setIsLoading(true);
     try {
@@ -64,7 +58,7 @@ const AgenteNode = ({ data, agentId }: AgenteNodeProps) => {
           instruccion: formData.description,
         },
       }
-      await agentService.updateAgent(agentId, agentData);
+      await agentService.updateAgent(data.agentId, agentData);
       // Aquí podrías mostrar un mensaje de éxito
     } catch (error) {
       console.error('Error updating agent:', error);
@@ -76,6 +70,7 @@ const AgenteNode = ({ data, agentId }: AgenteNodeProps) => {
 
   return (
     <DefaultNode
+      {...props}
       data={{
         ...data,
         name: "Agente",
@@ -128,4 +123,4 @@ const AgenteNode = ({ data, agentId }: AgenteNodeProps) => {
   );
 };
 
-export default memo(AgenteNode);
+export default AgenteNode;
