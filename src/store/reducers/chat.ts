@@ -9,7 +9,6 @@ interface Department {
   id: number;
 }
 
-
 interface Agent {
   id: number;
 }
@@ -48,18 +47,18 @@ const chatSlice = createSlice({
       state.department = action.payload.department;
       state.currentAgent = action.payload.agent;
     },
-    clearWorkspaceData: (state) => {
+    clearWorkspaceData: state => {
       state.department = null;
       state.currentAgent = null;
     },
   },
 });
 
-export const { 
-  addMessage, 
-  setConnectionStatus, 
+export const {
+  addMessage,
+  setConnectionStatus,
   setWorkspaceData,
-  clearWorkspaceData 
+  clearWorkspaceData,
 } = chatSlice.actions;
 
 export default chatSlice.reducer;
