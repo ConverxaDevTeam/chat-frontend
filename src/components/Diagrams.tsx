@@ -1,4 +1,3 @@
-import { useCallback, useState } from "react";
 import {
   ReactFlow,
   MiniMap,
@@ -7,8 +6,6 @@ import {
   useEdgesState,
   Position,
   useReactFlow,
-  OnConnectEnd,
-  NodeProps,
 } from "@xyflow/react";
 import { EdgeBase } from "@xyflow/system";
 
@@ -18,11 +15,13 @@ import AgenteNode from "./Diagrams/AgenteNode";
 import FuncionNode from "./Diagrams/FuncionNode";
 import { useEdges, useZoomToFit } from "./workspace/hooks/Diagrams";
 import { useAppSelector } from "@store/hooks";
-import { CustomNodeProps } from "@interfaces/workflow";
 import ContextMenu from "./ContextMenu";
-import { nanoid } from "nanoid";
+import { useNodeSelection } from "./Diagrams/hooks/useNodeSelection";
+import { useContextMenu } from "./Diagrams/hooks/useContextMenu";
+import { useNodeCreation } from "./Diagrams/hooks/useNodeCreation";
 
-const initialNodes: CustomNodeProps[] = [
+// Initial state moved to a separate constant
+const initialNodes = [
   {
     id: "1",
     position: { x: 0, y: 0 },
@@ -55,7 +54,6 @@ const initialEdges = [
   },
 ];
 
-// Node types defined outside of any component
 const nodeTypes = {
   integraciones: IntegracionesNode,
   agente: AgenteNode,
@@ -63,86 +61,20 @@ const nodeTypes = {
 };
 
 const ZoomTransition = () => {
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
+  const [nodes, _, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] =
     useEdgesState<EdgeBase>(initialEdges);
-  const { setCenter, screenToFlowPosition } = useReactFlow();
   const currentAgentId = useAppSelector(state => state.chat.currentAgent?.id);
-  const [contextMenu, setContextMenu] = useState<{
-    x: number;
-    y: number;
-    fromNode: NodeProps & Record<string, unknown>;
-  } | null>(null);
 
+  const { handleNodeDragStart, handleNodeDragStop } = useNodeSelection();
+  const { contextMenu, setContextMenu, handleConnectEnd } = useContextMenu();
+  const { handleCreateFunction } = useNodeCreation({
+    currentAgentId,
+    setContextMenu,
+  });
   const { onConnect } = useEdges(setEdges);
-
+  const { setCenter } = useReactFlow();
   useZoomToFit(nodes, setCenter);
-
-  const handleConnectEnd: OnConnectEnd = useCallback(
-    (event, connectionState) => {
-      if (
-        !connectionState.isValid &&
-        connectionState.fromNode?.type === "agente"
-      ) {
-        const { clientX, clientY } =
-          event instanceof MouseEvent ? event : event.touches[0];
-
-        // Explicitly convert InternalNodeBase to NodeProps
-        const fromNodeProps: NodeProps = {
-          id: connectionState.fromNode.id,
-          type: connectionState.fromNode.type,
-          data: connectionState.fromNode.data,
-          isConnectable: true, // Add this with a default value
-          positionAbsoluteX: connectionState.fromNode.position.x ?? 0, // Add this with a fallback
-          positionAbsoluteY: connectionState.fromNode.position.y ?? 0, // Add this with a fallback
-          dragging: connectionState.fromNode.dragging ?? false,
-          zIndex: connectionState.fromNode.zIndex ?? 0,
-        };
-
-        setContextMenu({
-          x: clientX,
-          y: clientY,
-          fromNode: fromNodeProps,
-        });
-      }
-    },
-    []
-  );
-
-  const handleCreateFunction = useCallback(() => {
-    if (!contextMenu) return;
-
-    const { fromNode } = contextMenu;
-    const newNodeId = `funcion-${nanoid()}`;
-    const flowPosition = screenToFlowPosition({
-      x: contextMenu.x,
-      y: contextMenu.y,
-    });
-
-    const newNode: CustomNodeProps = {
-      id: newNodeId,
-      type: "funcion",
-      position: flowPosition,
-      data: {
-        name: "Nueva Función",
-        description: "",
-        label: "Nueva Función",
-        agentId: currentAgentId,
-      },
-    };
-
-    const newEdge: EdgeBase = {
-      id: `e${fromNode.id}-${newNodeId}`,
-      source: fromNode.id,
-      target: newNodeId,
-      sourceHandle: `node-source-${Position.Right}`,
-      targetHandle: `node-target-${Position.Left}`,
-    };
-
-    setNodes(nds => [...nds, newNode]);
-    setEdges(eds => [...eds, newEdge]);
-    setContextMenu(null);
-  }, [contextMenu, currentAgentId, screenToFlowPosition, setEdges, setNodes]);
 
   return (
     <div className="h-full">
@@ -153,6 +85,8 @@ const ZoomTransition = () => {
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
         onConnectEnd={handleConnectEnd}
+        onNodeDragStart={handleNodeDragStart}
+        onNodeDragStop={handleNodeDragStop}
         nodeTypes={nodeTypes}
         fitView
       >
@@ -166,7 +100,7 @@ const ZoomTransition = () => {
           onClose={() => setContextMenu(null)}
         >
           <button
-            onClick={handleCreateFunction}
+            onClick={() => handleCreateFunction(contextMenu)}
             className="w-full text-left px-4 py-2 hover:bg-gray-100 rounded"
           >
             Crear Función
