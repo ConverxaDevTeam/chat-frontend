@@ -38,3 +38,31 @@ export const sidebarAdminLinks = [
     Icon: FaLayerGroup,
   },
 ];
+
+export const themeColors = [
+  {
+    id: 0,
+    color: "#FF2F2C",
+    name: "Red",
+  },
+  {
+    id: 1,
+    color: "#8D14E9",
+    name: "Purple",
+  },
+  {
+    id: 2,
+    color: "#300970",
+    name: "Indigo",
+  },
+  {
+    id: 3,
+    color: "#1700D1",
+    name: "Blue",
+  },
+  {
+    id: 4,
+    color: "#252525",
+    name: "Black",
+  },
+];

@@ -6,6 +6,7 @@ import { alertConfirm } from "@utils/alerts";
 import { useEffect, useState } from "react";
 import { HiOutlineClipboard } from "react-icons/hi";
 import { useSelector } from "react-redux";
+import ChatEditor from "./ChatEditor";
 
 interface CustomizeChatProps {
   onClose: () => void;
@@ -38,6 +39,7 @@ export interface Integracion {
 const CustomizeChat = ({ onClose }: CustomizeChatProps) => {
   const [integration, setIntegration] = useState<Integracion | null>(null);
   const { department } = useSelector((state: RootState) => state.chat);
+  const [viwer, setViwer] = useState("script");
   const { selectOrganizationId } = useSelector(
     (state: RootState) => state.auth
   );
@@ -73,25 +75,98 @@ const CustomizeChat = ({ onClose }: CustomizeChatProps) => {
   }, []);
 
   return integration ? (
-    <div>
-      <div>
-        <label className="block text-sm font-medium text-gray-600">
-          Script de Integración
-        </label>
-        <div className="grid grid-cols-[1fr_auto] bg-gray-50 p-4 rounded-md border border-gray-200 shadow-inner">
-          <div className="text-gray-800 text-sm font-mono leading-tight whitespace-pre-wrap break-all">
-            {generatedScript(integration.id)}
-          </div>
-          <button
-            onClick={handleCopy}
-            type="button"
-            className="text-gray-500 hover:text-gray-700 ml-2"
-            aria-label="Copiar script"
-          >
-            <HiOutlineClipboard size={24} className="h-5 w-5" />
-          </button>
-        </div>
+    <div className="flex flex-col gap-[20px]">
+      <div className="flex w-full">
+        <button
+          onClick={() => setViwer("script")}
+          className={`${
+            viwer === "script"
+              ? "bg-blue-600 text-white"
+              : "bg-gray-200 text-gray-600"
+          } flex-1 py-2 rounded-tl-md`}
+        >
+          Script
+        </button>
+        <button
+          onClick={() => setViwer("text")}
+          className={`${
+            viwer === "text"
+              ? "bg-blue-600 text-white"
+              : "bg-gray-200 text-gray-600"
+          } flex-1 py-2`}
+        >
+          Textos
+        </button>
+        <button
+          onClick={() => setViwer("interface")}
+          className={`${
+            viwer === "interface"
+              ? "bg-blue-600 text-white"
+              : "bg-gray-200 text-gray-600"
+          } flex-1 py-2 rounded-tr-md`}
+        >
+          Interface
+        </button>
       </div>
+      {viwer === "script" && (
+        <div className="flex flex-col gap-[10px]">
+          <label className="block text-sm font-medium text-gray-600">
+            Script de Integración
+          </label>
+          <div className="grid grid-cols-[1fr_auto] bg-gray-50 p-4 rounded-md border border-gray-200 shadow-inner">
+            <div className="text-gray-800 text-sm font-mono leading-tight whitespace-pre-wrap break-all">
+              {generatedScript(integration.id)}
+            </div>
+            <button
+              onClick={handleCopy}
+              type="button"
+              className="text-gray-500 hover:text-gray-700 ml-2"
+              aria-label="Copiar script"
+            >
+              <HiOutlineClipboard size={24} className="h-5 w-5" />
+            </button>
+          </div>
+        </div>
+      )}
+      {viwer === "text" && (
+        <div className="flex flex-col gap-[10px]">
+          <label className="block text-sm font-medium text-gray-600">
+            Textos
+          </label>
+          <div className="grid grid-cols-[1fr_auto] gap-4">
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-medium text-gray-600">
+                Título
+              </label>
+              <input
+                type="text"
+                className="w-full border border-gray-200 rounded-md p-2"
+                value={integration.config.title}
+              />
+            </div>
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-medium text-gray-600">
+                Subtítulo
+              </label>
+              <input
+                type="text"
+                className="w-full border border-gray-200 rounded-md p-2"
+                value={integration.config.sub_title}
+              />
+            </div>
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-medium text-gray-600">
+                Descripción
+              </label>
+              <textarea
+                className="w-full border border-gray-200 rounded-md p-2"
+                value={integration.config.description}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+      {viwer === "interface" && <ChatEditor />}
       <div className="flex justify-end space-x-2">
         <button
           type="button"
