@@ -15,7 +15,8 @@ export const connectWebSocket = (token: string): Socket | null => {
     query: { token }, // Enviar token como parámetro
     transports: ["websocket"], // Usar solo WebSocket
   });
-
+  console.log("Conectado al servidor WebSocket.");
+  console.log(websocket);
   websocket.on("disconnect", () => {
     websocket = null; // Limpiar referencia al desconectar
   });
