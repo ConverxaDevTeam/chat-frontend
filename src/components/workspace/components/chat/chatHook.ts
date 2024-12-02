@@ -15,7 +15,7 @@ export const useChat = (roomName: string) => {
   const [threatId, setThreatId] = useState<string | undefined>();
   const [agentId, setAgentId] = useState<string | undefined>();
   
-  const chatId = useAppSelector((state) => state.chat.chat?.id);
+  const departmentId = useAppSelector((state) => state.chat.department?.id);
 
   const resetChat = useCallback(() => {
     setMessages([]);
@@ -29,17 +29,16 @@ export const useChat = (roomName: string) => {
   }, []);
 
   const handleSendMessage = useCallback(() => {
+    console.log("departmentId", departmentId);
     if (inputValue.trim() === "") return;
     let identifier: ChatAgentIdentifier | TestAgentIdentifier;
-    console.log("messages.length", messages.length) 
     if (messages.length === 0) {
       // Primer mensaje: usar ChatAgentIdentifier
       identifier = {
-        chatId: chatId,
+        departamentoId: departmentId,
         type: AgentIdentifierType.CHAT_TEST
       } as ChatAgentIdentifier;
     } else {
-      console.log("TestAgentIdentifier", threatId, agentId)
       identifier = {
         type: AgentIdentifierType.TEST,
         threatId: threatId,
@@ -50,7 +49,7 @@ export const useChat = (roomName: string) => {
 
     emitWebSocketEvent("message", { text: inputValue, room: roomName, identifier });
     setInputValue("");
-  }, [inputValue, roomName, addMessage, messages.length, chatId, threatId, agentId]);
+  }, [inputValue, roomName, addMessage, messages.length, departmentId, threatId, agentId]);
 
   return {
     messages,
@@ -58,7 +57,7 @@ export const useChat = (roomName: string) => {
     setInputValue,
     addMessage,
     handleSendMessage,
-    chatId,
+    departmentId,
     setThreatId,
     setAgentId,
     threatId,

@@ -4,7 +4,11 @@ import { useAppDispatch } from "@store/hooks";
 import { apiUrls, baseUrl, tokenAccess } from "../../config/config";
 import { alertConfirm, alertError } from "../../utils/alerts";
 import { jwtDecode } from "jwt-decode";
-import { connectWebSocket, disconnectWebSocket, onWebSocketEvent } from "@services/websocket.service";
+import {
+  connectWebSocket,
+  disconnectWebSocket,
+  onWebSocketEvent,
+} from "@services/websocket.service";
 
 export const axiosInstance = axios.create({
   baseURL: baseUrl,
@@ -372,7 +376,7 @@ export const disconnectSocketAsync = createAsyncThunk(
 export const connectSocketAsync = createAsyncThunk(
   "auth/connectSocketAsync",
   async ({ dispatch }: { dispatch: ReturnType<typeof useAppDispatch> }) => {
-    const token = localStorage.getItem("token");
+    const token = getToken();
     if (!token) {
       throw new Error("No se encontr  el token");
     }
@@ -382,7 +386,7 @@ export const connectSocketAsync = createAsyncThunk(
       throw new Error("Error al conectar el WebSocket");
     }
 
-    onWebSocketEvent("message", (message) => {
+    onWebSocketEvent<{ action: string }>("message", message => {
       if (message.action === "update-user") {
         dispatch(getUserAsync());
       }

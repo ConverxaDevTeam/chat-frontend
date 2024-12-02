@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useMemo } from "react";
 import {
   ReactFlow,
   MiniMap,
@@ -14,11 +14,11 @@ import {
 import "@xyflow/react/dist/style.css";
 import IntegracionesNode from "./Diagrams/IntegracionesNode";
 import AgenteNode from "./Diagrams/AgenteNode";
-import AddWebchat from "@pages/Workspace/components/AddWebChat";
-import { useEdges, useNodeSelection, useZoomToFit } from "./workspace/hooks/Diagrams";
+import { useEdges, useZoomToFit } from "./workspace/hooks/Diagrams";
 import { useAppSelector } from "@store/hooks";
+import { CustomNodeProps } from "@interfaces/workflow";
 
-const initialNodes = [
+const initialNodes: CustomNodeProps[] = [
   {
     id: "1",
     position: { x: 0, y: 0 },
@@ -26,20 +26,18 @@ const initialNodes = [
       title: "A",
       name: "Node A",
       description: "This is Node A",
-      isSelected: false,
     },
     type: "integraciones",
   },
   {
     id: "2",
-    position: { x: 500, y: 0 },
     data: {
-      title: "B",
+      title: "",
       name: "Node B",
       description: "This is Node B",
-      isSelected: false,
     },
     type: "agente",
+    position: { x: 500, y: 0 },
   },
 ];
 
@@ -53,54 +51,53 @@ const initialEdges = [
   },
 ];
 
+// Node types defined outside of any component
+const nodeTypes = {
+  integraciones: IntegracionesNode,
+  agente: AgenteNode,
+};
+
 const ZoomTransition = () => {
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
+  const [nodes, _, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const { setCenter } = useReactFlow();
-  const currentAgentId = useAppSelector((state) => state.chat.currentAgent?.id);
+  const currentAgentId = useAppSelector(state => state.chat.currentAgent?.id);
 
-  const { handleSelectionChange, clearSelection } = useNodeSelection(nodes, setNodes);
   const { onConnect } = useEdges(setEdges);
 
   useZoomToFit(nodes, setCenter);
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const nodeTypes = useMemo(
-    () => ({
-      integraciones: (props: any) => <IntegracionesNode {...props} openModal={() => setIsModalOpen(true)} />,
-      agente: (props: any) => <AgenteNode {...props} agentId={currentAgentId} />,
-    }),
-    [currentAgentId]
-  );
+  // Pass props through the data object instead
+  const nodesWithProps = useMemo(() => {
+    console.log("currentAgentId", currentAgentId);
+    return nodes.map(node => ({
+      ...node,
+      data: {
+        ...node.data,
+        agentId: node.type === "agente" ? currentAgentId : undefined,
+      },
+    }));
+  }, [currentAgentId, nodes]);
 
   return (
     <>
       <ReactFlow
-        nodes={nodes}
+        nodes={nodesWithProps}
         edges={edges}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
         fitView={false}
         nodeTypes={nodeTypes}
-        onSelectionChange={handleSelectionChange}
-        onPaneClick={clearSelection}
       >
         <Controls />
         <MiniMap />
         <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
       </ReactFlow>
-      <AddWebchat isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onSave={function (domain: string): void {
-        throw new Error(`Function not implemented. ${domain}`);
-      }} />
     </>
   );
 };
 
-
 export default function Diagram() {
-  return (
-      <ZoomTransition />
-  );
+  return <ZoomTransition />;
 }

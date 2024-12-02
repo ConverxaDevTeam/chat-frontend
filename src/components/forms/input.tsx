@@ -1,26 +1,26 @@
-import React from 'react';
-import { UseFormRegisterReturn } from 'react-hook-form';
+import React from "react";
+import { UseFormRegisterReturn } from "react-hook-form";
 
 interface InputProps {
   placeholder?: string;
   register: UseFormRegisterReturn;
   error?: string;
   className?: string;
-  type?: 'text' | 'email' | 'password' | 'number';
+  type?: "text" | "email" | "password" | "number";
 }
 
 export const Input: React.FC<InputProps> = ({
   placeholder,
   register,
   error,
-  className = '',
-  type = 'text',
+  className = "",
+  type = "text",
 }) => {
   return (
     <input
       type={type}
       className={`w-full rounded-md bg-gray-100 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-3 py-2 sm:text-sm ${
-        error ? 'border-red-500' : ''
+        error ? "border-red-500" : ""
       } ${className}`}
       placeholder={placeholder}
       {...register}
