@@ -69,7 +69,6 @@ const ZoomTransition = () => {
 
   // Pass props through the data object instead
   const nodesWithProps = useMemo(() => {
-    console.log("currentAgentId", currentAgentId);
     return nodes.map(node => ({
       ...node,
       data: {
