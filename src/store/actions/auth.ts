@@ -376,6 +376,7 @@ export const disconnectSocketAsync = createAsyncThunk(
 export const connectSocketAsync = createAsyncThunk(
   "auth/connectSocketAsync",
   async ({ dispatch }: { dispatch: ReturnType<typeof useAppDispatch> }) => {
+    console.log("connectSocketAsync ENTER");
     const token = localStorage.getItem("token");
     if (!token) {
       throw new Error("No se encontr  el token");
