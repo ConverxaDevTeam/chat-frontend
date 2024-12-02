@@ -23,20 +23,20 @@ interface ActionButtonsProps {
 }
 
 const ActionButtons = ({ onEdit }: ActionButtonsProps) => (
-  <div className="flex gap-2 pt-2">
+  <div className="flex flex-col gap-2 w-full">
     <button
       onClick={onEdit}
-      className="flex items-center px-3 py-1 text-sm text-white bg-blue-600 rounded-md hover:bg-blue-700"
+      className="flex items-center justify-center w-full px-4 py-2 text-sm text-blue-600 bg-blue-100 rounded-lg hover:bg-blue-200 transition-colors duration-200"
     >
-      <MdEdit className="mr-1" /> Editar
+      <MdEdit className="mr-2" /> Editar
     </button>
     <button
       onClick={() => {
         /* TODO: Implementar agregar funciones */
       }}
-      className="flex items-center px-3 py-1 text-sm text-white bg-green-600 rounded-md hover:bg-green-700"
+      className="flex items-center justify-center w-full px-4 py-2 text-sm text-blue-600 bg-blue-100 rounded-lg hover:bg-blue-200 transition-colors duration-200"
     >
-      <MdAddCircleOutline className="mr-1" /> Agregar Funciones
+      <MdAddCircleOutline className="mr-2" /> Agregar Funciones
     </button>
   </div>
 );
