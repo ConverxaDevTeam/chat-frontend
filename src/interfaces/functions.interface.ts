@@ -1,3 +1,4 @@
+import { FunctionParam } from "./function-params.interface";
 import { NodeData } from "./workflow";
 
 enum FunctionNodeTypes {
@@ -16,7 +17,7 @@ export interface HttpRequestFunction {
   config: {
     url?: string;
     method?: HttpMethod;
-    requestBody?: Record<string, unknown>;
+    requestBody?: FunctionParam[];
   };
 }
 
