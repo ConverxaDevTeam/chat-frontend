@@ -1,4 +1,4 @@
-import { memo, useState } from "react";
+import { memo, useState, useCallback } from "react";
 import { MdCode } from "react-icons/md";
 import DefaultNode from "./DefaultNode";
 import { CustomTypeNodeProps } from "@interfaces/workflow";
@@ -10,6 +10,8 @@ import {
   HttpRequestFunction,
 } from "@interfaces/functions.interface";
 import { FunctionParam } from "@interfaces/function-params.interface";
+import { functionsService } from "@services/functions.service";
+import { useSweetAlert } from "../../hooks/useSweetAlert";
 
 const useModal = (initialState = false) => {
   const [isOpen, setIsOpen] = useState(initialState);
@@ -39,14 +41,139 @@ const useParams = (initialParams: FunctionParam[] = []) => {
   return { params, addParam, editParam, deleteParam };
 };
 
+const useFunctionActions = (initialData: FunctionData<HttpRequestFunction>) => {
+  const [data, setData] = useState(initialData);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const { handleOperation, showConfirmation } = useSweetAlert();
+
+  const handleCreate = useCallback(
+    async (functionData: FunctionData<HttpRequestFunction>) => {
+      try {
+        setIsLoading(true);
+        setError(null);
+
+        const result = await handleOperation(
+          () => functionsService.create(functionData),
+          {
+            title: "Creando función",
+            successTitle: "¡Función creada!",
+            successText: "La función se ha creado exitosamente",
+            errorTitle: "Error al crear la función",
+          }
+        );
+
+        if (result.success && result.data) {
+          setData(result.data);
+          return result.data;
+        }
+        return null;
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    []
+  );
+
+  const handleUpdate = useCallback(
+    async (functionData: Partial<FunctionData<HttpRequestFunction>>) => {
+      if (!data.functionId) return;
+
+      try {
+        setIsLoading(true);
+        setError(null);
+
+        const result = await handleOperation(
+          () => functionsService.update(data.functionId!, functionData),
+          {
+            title: "Actualizando función",
+            successTitle: "¡Función actualizada!",
+            successText: "La función se ha actualizado exitosamente",
+            errorTitle: "Error al actualizar la función",
+          }
+        );
+
+        if (result.success && result.data) {
+          setData(result.data);
+          return result.data;
+        }
+        return null;
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [data.functionId]
+  );
+
+  const handleDelete = useCallback(async () => {
+    if (!data.functionId) return;
+
+    try {
+      const confirmed = await showConfirmation({
+        title: "¿Eliminar función?",
+        text: "¿Estás seguro de que deseas eliminar esta función? Esta acción no se puede deshacer.",
+        confirmButtonText: "Sí, eliminar",
+        cancelButtonText: "Cancelar",
+      });
+
+      if (!confirmed) {
+        return false;
+      }
+
+      setIsLoading(true);
+      setError(null);
+
+      const result = await handleOperation(
+        () => functionsService.delete(data.functionId!),
+        {
+          title: "Eliminando función",
+          successTitle: "¡Función eliminada!",
+          successText: "La función se ha eliminado exitosamente",
+          errorTitle: "Error al eliminar la función",
+        }
+      );
+
+      return result.success;
+    } finally {
+      setIsLoading(false);
+    }
+  }, [data.functionId]);
+
+  return {
+    data,
+    isLoading,
+    error,
+    createFunction: handleCreate,
+    updateFunction: handleUpdate,
+    deleteFunction: handleDelete,
+  };
+};
+
 const FuncionNode = memo(
   (props: CustomTypeNodeProps<FunctionData<HttpRequestFunction>>) => {
-    const { data } = props;
-    const editModal = useModal(!data.functionId);
+    const { data: initialData } = props;
+    const editModal = useModal(!initialData.functionId);
     const paramsModal = useModal();
     const { params, addParam, editParam, deleteParam } = useParams(
-      data.config?.requestBody || []
+      initialData.config?.requestBody || []
     );
+    const { data, isLoading, error, createFunction, updateFunction } =
+      useFunctionActions(initialData);
+
+    const handleSuccess = async (
+      functionData: FunctionData<HttpRequestFunction>
+    ) => {
+      try {
+        if (functionData.functionId) {
+          await updateFunction(functionData);
+        } else {
+          await createFunction(functionData);
+        }
+        editModal.close();
+      } catch (error) {
+        console.error("Error al guardar la función:", error);
+      }
+    };
 
     return (
       <>
@@ -71,7 +198,9 @@ const FuncionNode = memo(
           onClose={editModal.close}
           functionId={data.functionId}
           initialData={data}
-          onSuccess={editModal.close}
+          onSuccess={handleSuccess}
+          isLoading={isLoading}
+          error={error}
         />
 
         <ParamsModal
