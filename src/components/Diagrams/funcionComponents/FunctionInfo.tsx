@@ -55,27 +55,37 @@ export const FunctionInfo = ({
     return <LoadingState message="Cargando función..." />;
   }
 
+  const fields = [
+    {
+      label: "Nombre",
+      value: functionData?.name,
+      defaultValue: "Sin nombre",
+    },
+    {
+      label: "Descripción",
+      value: functionData?.description,
+      defaultValue: "Sin descripción",
+    },
+    {
+      label: "Tipo",
+      value:
+        functionData?.type === "API_REQUEST"
+          ? "API Request"
+          : functionData?.type,
+      defaultValue: "No especificado",
+    },
+  ];
+
   return (
     <div className="grid gap-4">
-      <InfoField
-        label="Nombre"
-        value={functionData?.name}
-        defaultValue="Sin nombre"
-      />
-      <InfoField
-        label="Descripción"
-        value={functionData?.description}
-        defaultValue="Sin descripción"
-      />
-      <InfoField
-        label="Tipo"
-        value={
-          functionData?.type === "API_REQUEST"
-            ? "API Request"
-            : functionData?.type
-        }
-        defaultValue="No especificado"
-      />
+      {fields.map(field => (
+        <InfoField
+          key={field.label}
+          label={field.label}
+          value={field.value}
+          defaultValue={field.defaultValue}
+        />
+      ))}
       <ActionButtons onEdit={onEdit} />
     </div>
   );

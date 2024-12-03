@@ -1,5 +1,6 @@
 import Modal from "@components/Modal";
 import { FunctionForm } from "./FunctionForm";
+import { HttpRequestFunction } from "@interfaces/functions.interface";
 
 interface FunctionEditModalProps {
   isOpen: boolean;
@@ -8,11 +9,7 @@ interface FunctionEditModalProps {
   initialData?: {
     name: string;
     description: string;
-    config: {
-      url?: string;
-      method?: string;
-      requestBody?: Record<string, unknown>;
-    };
+    config: HttpRequestFunction["config"];
   };
   onSuccess?: () => void;
 }
