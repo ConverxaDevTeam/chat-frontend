@@ -12,6 +12,8 @@ import { useState } from "react";
 import {
   HttpMethod,
   HttpRequestFunction,
+  FunctionData,
+  FunctionNodeTypes,
 } from "@interfaces/functions.interface";
 
 // Tipos y constantes
@@ -24,12 +26,9 @@ interface FunctionFormValues {
 
 interface FunctionFormProps {
   functionId?: number;
-  initialData?: {
-    name: string;
-    description: string;
-    config: HttpRequestFunction["config"];
-  };
-  onSuccess?: () => void;
+  initialData?: FunctionData<HttpRequestFunction>;
+  onSuccess?: (data: FunctionData<HttpRequestFunction>) => void;
+  isLoading?: boolean;
 }
 
 const HTTP_METHODS = [
@@ -41,7 +40,12 @@ const HTTP_METHODS = [
 
 // Hook personalizado para manejar el formulario
 const useFunctionForm = (props: FunctionFormProps) => {
-  const { functionId, initialData, onSuccess } = props;
+  const {
+    functionId,
+    initialData,
+    onSuccess,
+    isLoading: externalLoading,
+  } = props;
   const [isLoading, setIsLoading] = useState(false);
   const isCreating = !functionId;
 
@@ -55,23 +59,22 @@ const useFunctionForm = (props: FunctionFormProps) => {
   });
 
   const onSubmit: SubmitHandler<FunctionFormValues> = async formData => {
+    if (externalLoading) return;
     setIsLoading(true);
     try {
-      const functionData = {
+      const functionData: FunctionData<HttpRequestFunction> = {
+        functionId,
         name: formData.name,
-        type: "httpRequest",
+        description: formData.description,
+        type: FunctionNodeTypes.API_ENDPOINT,
         config: {
           url: formData.url,
           method: formData.method,
+          requestBody: initialData?.config?.requestBody || [],
         },
       };
 
-      if (isCreating) {
-        console.log("Creating new function:", functionData);
-      } else {
-        console.log("Updating function:", functionData);
-      }
-      onSuccess?.();
+      onSuccess?.(functionData);
     } catch (error) {
       console.error("Error saving function:", error);
     } finally {
@@ -81,7 +84,7 @@ const useFunctionForm = (props: FunctionFormProps) => {
 
   return {
     form,
-    isLoading,
+    isLoading: isLoading || externalLoading,
     isCreating,
     onSubmit: form.handleSubmit(onSubmit),
   };
@@ -212,29 +215,33 @@ const SubmitButton = ({ isLoading, isCreating }: SubmitButtonProps) => (
 
 // Componente principal
 export const FunctionForm = (props: FunctionFormProps) => {
-  const { form, isLoading, isCreating, onSubmit } = useFunctionForm(props);
   const {
-    register,
-    formState: { errors },
-  } = form;
+    form: {
+      register,
+      formState: { errors },
+    },
+    isLoading,
+    isCreating,
+    onSubmit,
+  } = useFunctionForm(props);
 
-  const formFields: FormFieldConfig[] = [
+  const formFields = [
     {
       name: "name",
-      placeholder: "Ej: Obtener clima",
+      placeholder: "Nombre de la función",
       validation: { required: "El nombre es obligatorio" },
       type: "input",
     },
     {
       name: "description",
-      placeholder: "Ej: Esta función obtiene el clima actual de una ciudad",
+      placeholder: "Descripción de la función",
       validation: { required: "La descripción es obligatoria" },
       type: "textarea",
-      rows: 2,
+      rows: 3,
     },
     {
       name: "url",
-      placeholder: "https://api.ejemplo.com/endpoint",
+      placeholder: "URL del endpoint",
       validation: {
         required: "La URL es obligatoria",
         pattern: {

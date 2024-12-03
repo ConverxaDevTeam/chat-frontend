@@ -1,4 +1,4 @@
-import axios from "axios";
+import axiosInstance from "@config/axios";
 
 interface DepartmentResponse {
   ok: boolean;
@@ -14,7 +14,7 @@ interface DepartmentResponse {
 const BASE_URL = import.meta.env.VITE_PUBLIC_BACKEND_URL;
 export const getDefaultDepartment = async (organization: number) => {
   try {
-    const response = await axios.get<DepartmentResponse>(
+    const response = await axiosInstance.get<DepartmentResponse>(
       `${BASE_URL}/api/departments/default/${organization}`
     );
     return response.data;

@@ -1,17 +1,18 @@
 import Modal from "@components/Modal";
 import { FunctionForm } from "./FunctionForm";
-import { HttpRequestFunction } from "@interfaces/functions.interface";
+import {
+  FunctionData,
+  HttpRequestFunction,
+} from "@interfaces/functions.interface";
 
 interface FunctionEditModalProps {
   isOpen: boolean;
   onClose: () => void;
   functionId?: number;
-  initialData?: {
-    name: string;
-    description: string;
-    config: HttpRequestFunction["config"];
-  };
-  onSuccess?: () => void;
+  initialData?: FunctionData<HttpRequestFunction>;
+  onSuccess?: (data: FunctionData<HttpRequestFunction>) => void;
+  isLoading?: boolean;
+  error?: string | null;
 }
 
 export const FunctionEditModal = ({
@@ -20,7 +21,15 @@ export const FunctionEditModal = ({
   functionId,
   initialData,
   onSuccess,
+  isLoading,
+  error,
 }: FunctionEditModalProps) => {
+  const handleSuccess = (data: FunctionData<HttpRequestFunction>) => {
+    if (onSuccess) {
+      onSuccess(data);
+    }
+  };
+
   return (
     <Modal
       isShown={isOpen}
@@ -31,11 +40,19 @@ export const FunctionEditModal = ({
         </h2>
       }
     >
-      <FunctionForm
-        functionId={functionId}
-        initialData={initialData}
-        onSuccess={onSuccess}
-      />
+      <div className="space-y-4">
+        {error && (
+          <div className="p-4 text-sm text-red-700 bg-red-100 rounded-md">
+            {error}
+          </div>
+        )}
+        <FunctionForm
+          functionId={functionId}
+          initialData={initialData}
+          onSuccess={handleSuccess}
+          isLoading={isLoading}
+        />
+      </div>
     </Modal>
   );
 };
