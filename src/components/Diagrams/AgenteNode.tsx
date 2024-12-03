@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { MdOutlineSupportAgent } from "react-icons/md";
-import { AgentNodeProps } from "@interfaces/workflow";
+import { AgentData, CustomTypeNodeProps } from "@interfaces/workflow";
 import DefaultNode from "./DefaultNode";
 import { AgentInfo } from "./agenteComponents/AgentInfo";
 import { AgentEditModal } from "./agenteComponents/AgentEditModal";
 import { useAgentData } from "./hooks/useAgentData";
 
-const AgenteNode = (props: AgentNodeProps) => {
+const AgenteNode = (props: CustomTypeNodeProps<AgentData>) => {
   const { data, selected } = props;
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { isLoading, agentData, refreshAgentData } = useAgentData(

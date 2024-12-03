@@ -6,18 +6,20 @@ interface NodeData extends Record<string, unknown> {
   description: string;
 }
 
-interface AgentData extends NodeData {
+export interface AgentData extends NodeData {
   agentId: number;
 }
 
-export interface CustomTypeNodeProps extends NodeProps {
-  data: NodeData; // Asegura que los datos tengan el tipo adecuado
+export interface FunctionData extends NodeData {
+  functionId: number;
+  type?: string;
+  config?: Record<string, unknown>;
 }
 
-export interface CustomNodeProps extends Node {
-  data: NodeData;
+export interface CustomTypeNodeProps<T extends NodeData> extends NodeProps {
+  data: T;
 }
 
-export interface AgentNodeProps extends CustomTypeNodeProps {
-  data: AgentData;
+export interface CustomNodeProps<T extends Node> {
+  data: T;
 }
