@@ -1,4 +1,9 @@
-import { useForm, SubmitHandler } from "react-hook-form";
+import {
+  useForm,
+  SubmitHandler,
+  UseFormRegister,
+  FieldErrors,
+} from "react-hook-form";
 import { InputGroup } from "@components/forms/inputGroup";
 import { Input } from "@components/forms/input";
 import { TextArea } from "@components/forms/textArea";
@@ -9,6 +14,7 @@ import {
   HttpRequestFunction,
 } from "@interfaces/functions.interface";
 
+// Tipos y constantes
 interface FunctionFormValues {
   name: string;
   description: string;
@@ -33,19 +39,13 @@ const HTTP_METHODS = [
   { value: "DELETE", label: "DELETE" },
 ];
 
-export const FunctionForm = ({
-  functionId,
-  initialData,
-  onSuccess,
-}: FunctionFormProps) => {
+// Hook personalizado para manejar el formulario
+const useFunctionForm = (props: FunctionFormProps) => {
+  const { functionId, initialData, onSuccess } = props;
   const [isLoading, setIsLoading] = useState(false);
   const isCreating = !functionId;
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<FunctionFormValues>({
+  const form = useForm<FunctionFormValues>({
     defaultValues: {
       name: initialData?.name || "",
       description: initialData?.description || "",
@@ -66,7 +66,6 @@ export const FunctionForm = ({
         },
       };
 
-      // TODO: Implement function service
       if (isCreating) {
         console.log("Creating new function:", functionData);
       } else {
@@ -80,67 +79,195 @@ export const FunctionForm = ({
     }
   };
 
+  return {
+    form,
+    isLoading,
+    isCreating,
+    onSubmit: form.handleSubmit(onSubmit),
+  };
+};
+
+// Tipos para los campos del formulario
+type FieldType = "input" | "textarea" | "select";
+
+interface BaseFieldProps {
+  name: keyof FunctionFormValues;
+  placeholder: string;
+  validation?: Record<string, unknown>;
+}
+
+interface InputFieldProps extends BaseFieldProps {
+  type: "input";
+}
+
+interface TextAreaFieldProps extends BaseFieldProps {
+  type: "textarea";
+  rows?: number;
+}
+
+interface SelectFieldProps extends BaseFieldProps {
+  type: "select";
+  options: { value: string; label: string }[];
+}
+
+type FormFieldConfig = InputFieldProps | TextAreaFieldProps | SelectFieldProps;
+
+// Componentes de formulario
+interface FormFieldProps {
+  register: UseFormRegister<FunctionFormValues>;
+  errors: FieldErrors<FunctionFormValues>;
+  name: keyof FunctionFormValues;
+  placeholder: string;
+  validation?: Record<string, unknown>;
+  type?: FieldType;
+  options?: { value: string; label: string }[];
+  value?: string;
+  rows?: number;
+}
+
+const RenderField = ({
+  register,
+  errors,
+  name,
+  placeholder,
+  validation = {},
+  type = "input",
+  options = [],
+  rows = 2,
+}: FormFieldProps) => {
+  switch (type) {
+    case "textarea":
+      return (
+        <TextArea
+          placeholder={placeholder}
+          register={register(name, validation)}
+          error={errors[name]?.message}
+          rows={rows}
+        />
+      );
+    case "select":
+      return (
+        <Select
+          options={options}
+          register={register(name, validation)}
+          error={errors[name]?.message}
+        />
+      );
+    default:
+      return (
+        <Input
+          placeholder={placeholder}
+          register={register(name, validation)}
+          error={errors[name]?.message}
+        />
+      );
+  }
+};
+
+const FormField = ({
+  register,
+  errors,
+  name,
+  placeholder,
+  validation = {},
+  type = "input",
+  options = [],
+  rows = 2,
+}: FormFieldProps) => {
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4">
+    <InputGroup label={name} errors={errors[name]}>
+      <RenderField
+        register={register}
+        errors={errors}
+        name={name}
+        placeholder={placeholder}
+        validation={validation}
+        type={type}
+        options={options}
+        rows={rows}
+      />
+    </InputGroup>
+  );
+};
+
+// Componente de botón de submit
+interface SubmitButtonProps {
+  isLoading: boolean;
+  isCreating: boolean;
+}
+
+const SubmitButton = ({ isLoading, isCreating }: SubmitButtonProps) => (
+  <button
+    type="submit"
+    disabled={isLoading}
+    className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 disabled:opacity-50"
+  >
+    {isLoading
+      ? "Guardando..."
+      : isCreating
+        ? "Crear función"
+        : "Actualizar función"}
+  </button>
+);
+
+// Componente principal
+export const FunctionForm = (props: FunctionFormProps) => {
+  const { form, isLoading, isCreating, onSubmit } = useFunctionForm(props);
+  const {
+    register,
+    formState: { errors },
+  } = form;
+
+  const formFields: FormFieldConfig[] = [
+    {
+      name: "name",
+      placeholder: "Ej: Obtener clima",
+      validation: { required: "El nombre es obligatorio" },
+      type: "input",
+    },
+    {
+      name: "description",
+      placeholder: "Ej: Esta función obtiene el clima actual de una ciudad",
+      validation: { required: "La descripción es obligatoria" },
+      type: "textarea",
+      rows: 2,
+    },
+    {
+      name: "url",
+      placeholder: "https://api.ejemplo.com/endpoint",
+      validation: {
+        required: "La URL es obligatoria",
+        pattern: {
+          value: /^https?:\/\/.+/,
+          message:
+            "Debe ser una URL válida que comience con http:// o https://",
+        },
+      },
+      type: "input",
+    },
+    {
+      name: "method",
+      placeholder: "",
+      validation: { required: "El tipo de operación es obligatorio" },
+      type: "select",
+      options: HTTP_METHODS,
+    },
+  ];
+
+  return (
+    <form onSubmit={onSubmit} className="grid gap-4">
       <div className="max-h-[75vh] overflow-y-auto">
-        <InputGroup label="Nombre de la función" errors={errors.name}>
-          <Input
-            placeholder="Ej: Obtener clima"
-            register={register("name", {
-              required: "El nombre es obligatorio",
-            })}
-            error={errors.name?.message}
+        {formFields.map(field => (
+          <FormField
+            key={field.name}
+            register={register}
+            errors={errors}
+            {...field}
           />
-        </InputGroup>
-
-        <InputGroup label="Descripción" errors={errors.description}>
-          <TextArea
-            placeholder="Ej: Esta función obtiene el clima actual de una ciudad"
-            register={register("description", {
-              required: "La descripción es obligatoria",
-            })}
-            error={errors.description?.message}
-            rows={2}
-          />
-        </InputGroup>
-
-        <InputGroup label="URL del servicio" errors={errors.url}>
-          <Input
-            placeholder="https://api.ejemplo.com/endpoint"
-            register={register("url", {
-              required: "La URL es obligatoria",
-              pattern: {
-                value: /^https?:\/\/.+/,
-                message:
-                  "Debe ser una URL válida que comience con http:// o https://",
-              },
-            })}
-            error={errors.url?.message}
-          />
-        </InputGroup>
-
-        <InputGroup label="Tipo de operación" errors={errors.method}>
-          <Select
-            options={HTTP_METHODS}
-            register={register("method", {
-              required: "El tipo de operación es obligatorio",
-            })}
-            error={errors.method?.message}
-          />
-        </InputGroup>
+        ))}
       </div>
 
-      <button
-        type="submit"
-        disabled={isLoading}
-        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 disabled:opacity-50"
-      >
-        {isLoading
-          ? "Guardando..."
-          : isCreating
-            ? "Crear función"
-            : "Actualizar función"}
-      </button>
+      <SubmitButton isLoading={isLoading} isCreating={isCreating} />
     </form>
   );
 };

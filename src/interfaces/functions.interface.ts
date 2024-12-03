@@ -1,8 +1,8 @@
 import { FunctionParam } from "./function-params.interface";
 import { NodeData } from "./workflow";
 
-enum FunctionNodeTypes {
-  HTTP_REQUEST = "httpRequest",
+export enum FunctionNodeTypes {
+  API_ENDPOINT = "apiEndpoint",
 }
 
 export enum HttpMethod {
@@ -13,7 +13,7 @@ export enum HttpMethod {
 }
 
 export interface HttpRequestFunction {
-  type: FunctionNodeTypes.HTTP_REQUEST;
+  type: FunctionNodeTypes.API_ENDPOINT;
   config: {
     url?: string;
     method?: HttpMethod;

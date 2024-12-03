@@ -11,32 +11,42 @@ import {
 } from "@interfaces/functions.interface";
 import { FunctionParam } from "@interfaces/function-params.interface";
 
+const useModal = (initialState = false) => {
+  const [isOpen, setIsOpen] = useState(initialState);
+  const open = () => setIsOpen(true);
+  const close = () => setIsOpen(false);
+  return { isOpen, open, close };
+};
+
+const useParams = (initialParams: FunctionParam[] = []) => {
+  const [params, setParams] = useState<FunctionParam[]>(initialParams);
+
+  const addParam = (param: FunctionParam) => {
+    setParams([...params, { ...param, id: crypto.randomUUID() }]);
+    // TODO: Implement save params to backend
+  };
+
+  const editParam = (param: FunctionParam) => {
+    setParams(params.map(p => (p.id === param.id ? param : p)));
+    // TODO: Implement save params to backend
+  };
+
+  const deleteParam = (paramId: string) => {
+    setParams(params.filter(p => p.id !== paramId));
+    // TODO: Implement save params to backend
+  };
+
+  return { params, addParam, editParam, deleteParam };
+};
+
 const FuncionNode = memo(
   (props: CustomTypeNodeProps<FunctionData<HttpRequestFunction>>) => {
     const { data } = props;
-    const [isModalOpen, setIsModalOpen] = useState(!data.functionId);
-    const [showParamsModal, setShowParamsModal] = useState(false);
-    const [params, setParams] = useState<FunctionParam[]>(
+    const editModal = useModal(!data.functionId);
+    const paramsModal = useModal();
+    const { params, addParam, editParam, deleteParam } = useParams(
       data.config?.requestBody || []
     );
-
-    const handleClose = () => setIsModalOpen(false);
-    const handleEdit = () => setIsModalOpen(true);
-
-    const handleAddParam = (param: FunctionParam) => {
-      setParams([...params, { ...param, id: crypto.randomUUID() }]);
-      // TODO: Implement save params to backend
-    };
-
-    const handleEditParam = (param: FunctionParam) => {
-      setParams(params.map(p => (p.id === param.id ? param : p)));
-      // TODO: Implement save params to backend
-    };
-
-    const handleDeleteParam = (paramId: string) => {
-      setParams(params.filter(p => p.id !== paramId));
-      // TODO: Implement save params to backend
-    };
 
     return (
       <>
@@ -46,9 +56,9 @@ const FuncionNode = memo(
           allowedConnections={["source", "target"]}
         >
           <div className="grid gap-4 p-4 bg-white rounded-md shadow-lg">
-            <FunctionInfo functionData={data} onEdit={handleEdit} />
+            <FunctionInfo functionData={data} onEdit={editModal.open} />
             <button
-              onClick={() => setShowParamsModal(true)}
+              onClick={paramsModal.open}
               className="w-full px-3 py-1.5 text-sm text-gray-700 bg-gray-100 rounded hover:bg-gray-200 transition-colors"
             >
               Ver Parámetros ({params.length})
@@ -57,20 +67,20 @@ const FuncionNode = memo(
         </DefaultNode>
 
         <FunctionEditModal
-          isOpen={isModalOpen}
-          onClose={handleClose}
+          isOpen={editModal.isOpen}
+          onClose={editModal.close}
           functionId={data.functionId}
           initialData={data}
-          onSuccess={handleClose}
+          onSuccess={editModal.close}
         />
 
         <ParamsModal
-          isOpen={showParamsModal}
-          onClose={() => setShowParamsModal(false)}
+          isOpen={paramsModal.isOpen}
+          onClose={paramsModal.close}
           params={params}
-          onParamAdd={handleAddParam}
-          onParamEdit={handleEditParam}
-          onParamDelete={handleDeleteParam}
+          onParamAdd={addParam}
+          onParamEdit={editParam}
+          onParamDelete={deleteParam}
         />
       </>
     );
