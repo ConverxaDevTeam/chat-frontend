@@ -79,7 +79,14 @@ const nodePositioning = {
     centerPos: Position2D
   ): Position2D => {
     const radius = 300;
-    const angle = (index * 2 * Math.PI) / total;
+    // Ajustamos para que solo use 240 grados (desde -30° hasta 210°)
+    // evitando así la zona izquierda donde está la integración
+    const startAngle = (-100 * Math.PI) / 180; // -30 grados en radianes
+    const endAngle = (210 * Math.PI) / 180; // 210 grados en radianes
+    const angleRange = endAngle - startAngle;
+    const angleStep = angleRange / (total - 1 || 1);
+    const angle = startAngle + index * angleStep;
+
     return {
       x: centerPos.x + radius * Math.cos(angle),
       y: centerPos.y + radius * Math.sin(angle),
