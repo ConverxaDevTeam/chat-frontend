@@ -7,6 +7,7 @@ import {
   FunctionNodeTypes,
   HttpRequestFunction,
 } from "@interfaces/functions.interface";
+
 interface ContextMenuState {
   x: number;
   y: number;
@@ -32,14 +33,19 @@ export const useNodeCreation = ({
 
   const handleCreateFunction = useCallback(
     (contextMenu: ContextMenuState) => {
-      if (!contextMenu) return;
-      if (!currentAgentId) return;
+      if (!contextMenu) throw new Error("No se ha seleccionado un nodo");
+      
       const { fromNode } = contextMenu;
+      // Usamos el agentId del nodo seleccionado en lugar del estado global
+      const agentId = fromNode.data.agentId;
+      if (!agentId) throw new Error("El nodo seleccionado no tiene un agente asignado");
+
       const newNodeId = `funcion-${nanoid()}`;
       const flowPosition = screenToFlowPosition({
         x: contextMenu.x,
         y: contextMenu.y,
       });
+
       const newNode: FunctionNodeData<HttpRequestFunction> = {
         id: newNodeId,
         type: "funcion",
@@ -48,7 +54,7 @@ export const useNodeCreation = ({
           name: "Nueva Función",
           description: "",
           label: "Nueva Función",
-          agentId: currentAgentId,
+          agentId: agentId,
           type: FunctionNodeTypes.API_ENDPOINT,
           config: {
             url: undefined,
@@ -70,7 +76,7 @@ export const useNodeCreation = ({
       setEdges(eds => [...eds, newEdge]);
       setContextMenu(null);
     },
-    [currentAgentId, screenToFlowPosition, setEdges, setNodes, setContextMenu]
+    [screenToFlowPosition, setEdges, setNodes, setContextMenu]
   );
 
   return {

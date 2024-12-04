@@ -10,7 +10,7 @@ const AgenteNode = (props: CustomTypeNodeProps<AgentData>) => {
   const { data, selected } = props;
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { isLoading, agentData, refreshAgentData } = useAgentData(
-    data.agentId ?? null,
+    data.agentId,
     selected ?? false
   );
 
@@ -46,7 +46,7 @@ const AgenteNode = (props: CustomTypeNodeProps<AgentData>) => {
       <AgentEditModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        agentId={data.agentId || -1}
+        agentId={data.agentId}
         initialData={agentData || undefined}
         onSuccess={handleEditSuccess}
       />

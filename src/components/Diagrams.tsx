@@ -8,6 +8,7 @@ import {
   useReactFlow,
 } from "@xyflow/react";
 import { EdgeBase } from "@xyflow/system";
+import { useEffect } from "react";
 
 import "@xyflow/react/dist/style.css";
 import IntegracionesNode from "./Diagrams/IntegracionesNode";
@@ -20,8 +21,7 @@ import { useNodeSelection } from "./Diagrams/hooks/useNodeSelection";
 import { useContextMenu } from "./Diagrams/hooks/useContextMenu";
 import { useNodeCreation } from "./Diagrams/hooks/useNodeCreation";
 
-// Initial state moved to a separate constant
-const initialNodes = [
+const createInitialNodes = (agentId?: number) => [
   {
     id: "1",
     position: { x: 0, y: 0 },
@@ -38,6 +38,7 @@ const initialNodes = [
       title: "",
       name: "Node B",
       description: "This is Node B",
+      agentId: agentId,
     },
     type: "agente",
     position: { x: 500, y: 0 },
@@ -54,7 +55,6 @@ const initialEdges = [
   },
 ];
 
-// Node types definition moved outside of the component
 const nodeTypes = {
   integraciones: IntegracionesNode,
   agente: AgenteNode,
@@ -62,10 +62,23 @@ const nodeTypes = {
 } as const;
 
 const ZoomTransition = () => {
-  const [nodes, _, onNodesChange] = useNodesState(initialNodes);
+  const currentAgentId = useAppSelector(state => state.chat.currentAgent?.id);
+  const [nodes, setNodes, onNodesChange] = useNodesState(
+    createInitialNodes(currentAgentId)
+  );
   const [edges, setEdges, onEdgesChange] =
     useEdgesState<EdgeBase>(initialEdges);
-  const currentAgentId = useAppSelector(state => state.chat.currentAgent?.id);
+
+  useEffect(() => {
+    if (!currentAgentId) return;
+    setNodes(nodes =>
+      nodes.map(node =>
+        node.type === "agente"
+          ? { ...node, data: { ...node.data, agentId: currentAgentId } }
+          : node
+      )
+    );
+  }, [currentAgentId, setNodes]);
 
   const { handleNodeDragStart, handleNodeDragStop } = useNodeSelection();
   const { contextMenu, setContextMenu, handleConnectEnd } = useContextMenu();
@@ -113,5 +126,11 @@ const ZoomTransition = () => {
 };
 
 export default function Diagram() {
+  const currentAgentId = useAppSelector(state => state.chat.currentAgent?.id);
+
+  if (!currentAgentId) {
+    return <div>Cargando...</div>;
+  }
+
   return <ZoomTransition />;
 }

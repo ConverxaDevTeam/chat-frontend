@@ -1,16 +1,16 @@
 import axiosInstance from "@config/axios";
+import { apiUrls } from "@config/config";
 import { Agent, CreateAgentDto } from "@interfaces/agents";
 
 // URL base del backend desde las variables de entorno
-const BASE_URL = import.meta.env.VITE_PUBLIC_BACKEND_URL + "/api";
 
 class AgentService {
   /**
    * Obtiene un agente por su ID.
    * @param id ID del agente.
    */
-  async getAgentById(id: number): Promise<Agent> {
-    const response = await axiosInstance.get<Agent>(`${BASE_URL}/agent/${id}`);
+  async getById(id: number): Promise<Agent> {
+    const response = await axiosInstance.get<Agent>(apiUrls.agents.byId(id));
     return response.data;
   }
 
@@ -18,9 +18,9 @@ class AgentService {
    * Crea un nuevo agente.
    * @param agent Datos del agente a crear.
    */
-  async createAgent(agent: CreateAgentDto): Promise<Agent> {
+  async create(agent: CreateAgentDto): Promise<Agent> {
     const response = await axiosInstance.post<Agent>(
-      `${BASE_URL}/agent`,
+      apiUrls.agents.base(),
       agent
     );
     return response.data;
@@ -31,12 +31,9 @@ class AgentService {
    * @param id ID del agente.
    * @param agent Datos del agente a actualizar.
    */
-  async updateAgent(
-    id: number,
-    agent: Partial<CreateAgentDto>
-  ): Promise<Agent> {
+  async update(id: number, agent: Partial<CreateAgentDto>): Promise<Agent> {
     const response = await axiosInstance.put<Agent>(
-      `${BASE_URL}/agent/${id}`,
+      apiUrls.agents.byId(id),
       agent
     );
     return response.data;

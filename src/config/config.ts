@@ -19,6 +19,29 @@ export const apiUrls = {
   //web-chat
   getIntegrationWebChat: (departmentId: number, selectOrganizationId: number) =>
     `/api/integration/web-chat/${selectOrganizationId}/${departmentId}`,
+
+  // departments
+  departments: {
+    base: () => `/api/departments`,
+    byId: (id: number) => `/api/departments/${id}`,
+    default: (organizationId: number) =>
+      `/api/departments/default/${organizationId}`,
+  },
+
+  // agents
+  agents: {
+    base: () => `/api/agent`,
+    byId: (id: number) => `/api/agent/${id}`,
+    byDepartment: (departmentId: number) =>
+      `/api/agent/department/${departmentId}`,
+  },
+
+  // functions
+  functions: {
+    base: () => `/api/functions`,
+    byId: (id: number) => `/api/functions/${id}`,
+    byAgent: (agentId: number) => `/api/functions/agent/${agentId}`,
+  },
 };
 
 export const tokenAccess = {

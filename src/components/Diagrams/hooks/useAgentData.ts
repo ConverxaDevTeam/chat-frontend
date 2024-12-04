@@ -18,12 +18,6 @@ const transformAgentData = (agent: Agent): AgentData => ({
   description: agent.config.instruccion,
 });
 
-// Función para manejar errores
-const handleFetchError = (error: unknown) => {
-  console.error("Error fetching agent:", error);
-  return null;
-};
-
 // Hook para manejar el estado de la carga
 const useLoadingState = () => {
   const [state, setState] = useState<AgentDataState>({
@@ -46,20 +40,18 @@ const useLoadingState = () => {
   };
 };
 
-export const useAgentData = (agentId: number | null, selected: boolean) => {
+export const useAgentData = (agentId: number, selected: boolean) => {
   const { state, setLoading, setData } = useLoadingState();
 
   const fetchAgent = useCallback(async () => {
-    if (!agentId) return;
-
     setLoading(true);
     try {
-      const fetchedAgent = await agentService.getAgentById(agentId);
+      const fetchedAgent = await agentService.getById(agentId);
       const transformedData = transformAgentData(fetchedAgent);
       setData(transformedData);
     } catch (error) {
-      handleFetchError(error);
-      setData(null);
+      console.error("Error fetching agent:", error);
+      throw new Error("Error al cargar el agente");
     } finally {
       setLoading(false);
     }
