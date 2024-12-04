@@ -6,96 +6,110 @@ interface CustomNodeProps extends NodeProps {
     name: string;
     description: string;
   };
-  allowedConnections: ("source" | "target")[]; // Determina qué tipo de conexiones estarán habilitadas
-  icon?: React.ReactNode; // Ícono que se pasa como prop
-  children?: React.ReactNode; // Contenido adicional a pasar como children
-  width?: number; // Ancho del nodo
+  allowedConnections: ("source" | "target")[];
+  icon?: React.ReactNode;
+  children?: React.ReactNode;
+  width?: number;
 }
 
-const CustomHandles = ({
-  allowedConnections,
-}: {
+interface NodeLabelProps {
+  name: string;
+  selected?: boolean;
+}
+
+const NodeLabel: React.FC<NodeLabelProps> = ({ name, selected }) => {
+  if (selected) return null;
+
+  return (
+    <div className="absolute bottom-[96px] left-1/2 -translate-x-1/2 z-10">
+      <div className="w-[200px] break-words text-center flex flex-col-reverse">
+        <span className="text-sm font-medium text-gray-700">{name}</span>
+      </div>
+    </div>
+  );
+};
+
+interface HandleProps {
+  type: "source" | "target";
+  position: Position;
+}
+
+const NodeHandle: React.FC<HandleProps> = ({ type, position }) => (
+  <Handle
+    type={type}
+    id={`node-${type}-${position}`}
+    position={position}
+    className="w-6 h-6 bg-gray-500"
+  />
+);
+
+const NodeHandles: React.FC<{
   allowedConnections: ("source" | "target")[];
-}) => (
+}> = ({ allowedConnections }) => (
   <>
     {allowedConnections.includes("target") && (
       <>
         {Object.values(Position).map(position => (
-          <Handle
-            key={position}
-            type="target"
-            id={`node-target-${position}`}
-            position={position}
-            className="w-6 h-6 bg-gray-500"
-          />
+          <NodeHandle key={position} type="target" position={position} />
         ))}
       </>
     )}
     {allowedConnections.includes("source") && (
       <>
         {Object.values(Position).map(position => (
-          <Handle
-            key={position}
-            type="source"
-            id={`node-source-${position}`}
-            position={position}
-            className="w-6 h-6 bg-gray-500"
-          />
+          <NodeHandle key={position} type="source" position={position} />
         ))}
       </>
     )}
   </>
 );
 
-interface NodeBodyProps {
-  children: React.ReactNode;
+interface NodeContentProps {
+  children?: React.ReactNode;
   name: string;
   description: string;
-  icon: React.ReactNode;
+  icon?: React.ReactNode;
   isSelected: boolean;
 }
-function NodeBody({
+
+const NodeContent: React.FC<NodeContentProps> = ({
   children,
   isSelected,
   name,
   description,
   icon,
-}: NodeBodyProps) {
-  return (
-    <>
-      {/* Mostrar el ícono solo cuando no está seleccionado */}
-      {!isSelected ? (
-        <div className="flex justify-center items-center rounded-full w-16 h-16 bg-transparent text-black">
-          {icon}{" "}
-          {/* Ícono se pasa como prop y solo se muestra cuando no está seleccionado */}
-        </div>
-      ) : (
-        <div className="mt-4 text-center text-black">
-          <div className="font-semibold text-lg">{name}</div>
-          <div className="text-sm">{description}</div>
-          {/* Mostrar el contenido que se pase como children */}
-          <div className="mt-4 bg-transparent rounded-md">
-            {children} {/* Aquí se renderiza el contenido adicional */}
-          </div>
-        </div>
-      )}
-    </>
-  );
-}
+}) => {
+  if (!isSelected) {
+    return (
+      <div className="flex justify-center items-center rounded-full w-16 h-16 bg-transparent text-black">
+        {icon}
+      </div>
+    );
+  }
 
-function DefaultNode({
+  return (
+    <div className="mt-4 text-center text-black">
+      <div className="font-semibold text-lg">{name}</div>
+      <div className="text-sm">{description}</div>
+      <div className="mt-4 bg-transparent rounded-md">{children}</div>
+    </div>
+  );
+};
+
+const DefaultNode: React.FC<CustomNodeProps> = ({
   data,
   selected,
   allowedConnections = [],
   icon,
   children,
   width = 72,
-}: CustomNodeProps): JSX.Element {
+}) => {
   const ref = useRef<HTMLDivElement>(null);
   const { name, description } = data;
+
   return (
-    <div className="flex flex-col items-center" ref={ref}>
-      {!selected && <div className="mb-2 text-black font-medium">{name}</div>}
+    <div className="relative" ref={ref}>
+      <NodeLabel name={name} selected={selected} />
       <div
         className={`flex flex-col justify-center items-center border-2 transition-all p-6 ${
           selected
@@ -103,18 +117,18 @@ function DefaultNode({
             : "w-20 h-20 bg-white text-black rounded-full"
         } font-medium`}
       >
-        <NodeBody
+        <NodeContent
           name={name}
           description={description}
           icon={icon}
           isSelected={selected ?? false}
         >
           {children}
-        </NodeBody>
-        <CustomHandles allowedConnections={allowedConnections} />
+        </NodeContent>
+        <NodeHandles allowedConnections={allowedConnections} />
       </div>
     </div>
   );
-}
+};
 
 export default DefaultNode;

@@ -15,19 +15,25 @@ import {
 } from "@xyflow/react";
 import { EdgeBase } from "@xyflow/system";
 import { useEffect } from "react";
-
 import "@xyflow/react/dist/style.css";
+import { useAppSelector } from "@store/hooks";
+import { NodeData, AgentData } from "@/interfaces/workflow";
+import {
+  FunctionData,
+  HttpRequestFunction,
+  FunctionNodeTypes,
+  HttpMethod,
+} from "@/interfaces/functions.interface";
 import IntegracionesNode from "./Diagrams/IntegracionesNode";
 import AgenteNode from "./Diagrams/AgenteNode";
 import FuncionNode from "./Diagrams/FuncionNode";
-import { useEdges, useZoomToFit } from "./workspace/hooks/Diagrams";
-import { useAppSelector } from "@store/hooks";
 import ContextMenu from "./ContextMenu";
 import { useNodeSelection } from "./Diagrams/hooks/useNodeSelection";
 import { useContextMenu } from "./Diagrams/hooks/useContextMenu";
 import { useNodeCreation } from "./Diagrams/hooks/useNodeCreation";
-import { NodeData, AgentData } from "@/interfaces/workflow";
+import { useEdges, useZoomToFit } from "./workspace/hooks/Diagrams";
 
+// Tipos y interfaces
 interface ContextMenuState {
   x: number;
   y: number;
@@ -57,140 +63,197 @@ interface DiagramFlowProps {
   onNodeDragStop: (event: React.MouseEvent, node: Node) => void;
 }
 
+// Tipos para la creación de nodos
+type NodeType = "default" | "agente" | "integraciones" | "funcion";
+
+interface Position2D {
+  x: number;
+  y: number;
+}
+
+// Utilidades de posicionamiento
+const nodePositioning = {
+  calculateCircularPosition: (
+    index: number,
+    total: number,
+    centerPos: Position2D
+  ): Position2D => {
+    const radius = 300;
+    const angle = (index * 2 * Math.PI) / total;
+    return {
+      x: centerPos.x + radius * Math.cos(angle),
+      y: centerPos.y + radius * Math.sin(angle),
+    };
+  },
+
+  getHandlePositions: (
+    sourcePos: Position2D,
+    targetPos: Position2D
+  ): { sourceHandle: string; targetHandle: string } => {
+    const dx = targetPos.x - sourcePos.x;
+    const dy = targetPos.y - sourcePos.y;
+    const angle = Math.atan2(dy, dx) * (180 / Math.PI);
+
+    if (angle >= -45 && angle < 45) {
+      return {
+        sourceHandle: `node-source-${Position.Right}`,
+        targetHandle: `node-target-${Position.Left}`,
+      };
+    } else if (angle >= 45 && angle < 135) {
+      return {
+        sourceHandle: `node-source-${Position.Bottom}`,
+        targetHandle: `node-target-${Position.Top}`,
+      };
+    } else if (angle >= -135 && angle < -45) {
+      return {
+        sourceHandle: `node-source-${Position.Top}`,
+        targetHandle: `node-target-${Position.Bottom}`,
+      };
+    }
+    return {
+      sourceHandle: `node-source-${Position.Left}`,
+      targetHandle: `node-target-${Position.Right}`,
+    };
+  },
+};
+
+// Factory de nodos
+const nodeFactory = {
+  createBaseNode: <T extends NodeData>(
+    id: string,
+    position: Position2D,
+    data: T,
+    type: NodeType
+  ): Node<T> => ({
+    id,
+    position,
+    data,
+    type,
+  }),
+
+  createAgentNode: (agentId: number, position: Position2D): Node<AgentData> =>
+    nodeFactory.createBaseNode(
+      "agent",
+      position,
+      {
+        name: "Node B",
+        description: "This is Node B",
+        agentId,
+      },
+      "agente"
+    ),
+
+  createIntegrationsNode: (position: Position2D): Node<NodeData> =>
+    nodeFactory.createBaseNode(
+      "integrations",
+      position,
+      {
+        name: "Node A",
+        description: "This is Node A",
+      },
+      "integraciones"
+    ),
+
+  createFunctionNode: (
+    func: { id: number; name: string },
+    position: Position2D,
+    agentId: number
+  ): Node<FunctionData<HttpRequestFunction>> =>
+    nodeFactory.createBaseNode(
+      `function-${func.id}`,
+      position,
+      {
+        name: `Función \n ${func.name}`,
+        description: "Función del agente",
+        agentId,
+        functionId: func.id,
+        type: FunctionNodeTypes.API_ENDPOINT,
+        config: {
+          method: HttpMethod.GET,
+          url: "",
+          requestBody: [],
+        },
+      },
+      "funcion"
+    ),
+};
+
+// Factory de edges
+const edgeFactory = {
+  createEdge: (
+    id: string,
+    source: string,
+    target: string,
+    sourceHandle: string,
+    targetHandle: string
+  ): Edge => ({
+    id,
+    source,
+    target,
+    sourceHandle,
+    targetHandle,
+  }),
+
+  createAgentFunctionEdge: (
+    agentPos: Position2D,
+    functionNode: Node<FunctionData<HttpRequestFunction>>
+  ): Edge => {
+    const { sourceHandle, targetHandle } = nodePositioning.getHandlePositions(
+      agentPos,
+      functionNode.position
+    );
+    return edgeFactory.createEdge(
+      `e-agent-${functionNode.id}`,
+      "agent",
+      functionNode.id,
+      sourceHandle,
+      targetHandle
+    );
+  },
+};
+
 const createInitialNodes = (
   agentId?: number
 ): { nodes: Node[]; initialEdges: Edge[] } => {
-  const agentNode: Node<AgentData> = {
-    id: "agent",
-    data: {
-      name: "Node B",
-      description: "This is Node B",
-      agentId: agentId || 0,
-    },
-    type: "agente",
-    position: { x: 500, y: 0 },
-  };
+  const agentNode = nodeFactory.createAgentNode(agentId || 0, { x: 500, y: 0 });
+  const integrationsNode = nodeFactory.createIntegrationsNode({ x: 0, y: 0 });
+  const nodes: Node[] = [integrationsNode, agentNode];
 
-  const integracionesNode: Node<NodeData> = {
-    id: "integrations",
-    position: { x: 0, y: 0 },
-    data: {
-      name: "Node A",
-      description: "This is Node A",
-    },
-    type: "integraciones",
-  };
-
-  const nodes: Node[] = [integracionesNode, agentNode];
-
-  // Obtener las funciones del agente del estado de Redux
   const agentFunctions = useAppSelector(state => state.chat.agentFunctions);
+  const initialEdges: Edge[] = [
+    edgeFactory.createEdge(
+      "e1-2",
+      "integrations",
+      "agent",
+      `node-source-${Position.Right}`,
+      `node-target-${Position.Left}`
+    ),
+  ];
 
-  // Si hay funciones y un agentId, crear los nodos de funciones
   if (agentFunctions?.length > 0 && agentId) {
     const functionNodes = agentFunctions
       .map((func, index) => {
         if (!func.id) return null;
-
-        // Calcular el ángulo para cada nodo en casi todo el círculo (300 grados)
-        const startAngle = (-5 * Math.PI) / 6;
-        const endAngle = (5 * Math.PI) / 6;
-        const angleRange = endAngle - startAngle;
-        const angleStep = angleRange / (agentFunctions.length - 1 || 1);
-        const angle = startAngle + index * angleStep;
-
-        // Radio del semicírculo
-        const radius = 300;
-
-        // Calcular posición usando coordenadas polares
-        const x = agentNode.position.x + radius * Math.cos(angle);
-        const y = agentNode.position.y + radius * Math.sin(angle);
-
-        const functionNode: Node = {
-          id: `function-${func.id}`,
-          type: "funcion",
-          position: { x, y },
-          data: {
-            name: `Función \n ${func.name}`,
-            description: "Función del agente",
-            agentId: agentId,
-            functionId: func.id,
-          },
-        };
-
-        return functionNode;
+        const position = nodePositioning.calculateCircularPosition(
+          index,
+          agentFunctions.length,
+          agentNode.position
+        );
+        return nodeFactory.createFunctionNode(func, position, agentId);
       })
-      .filter((node): node is NonNullable<typeof node> => node !== null);
+      .filter(
+        (node): node is Node<FunctionData<HttpRequestFunction>> => node !== null
+      );
 
     nodes.push(...functionNodes);
-
-    // Crear los edges que conectan el agente con sus funciones
-    const initialEdges = [
-      {
-        id: "e1-2",
-        source: "integrations",
-        target: "agent",
-        sourceHandle: `node-source-${Position.Right}`,
-        targetHandle: `node-target-${Position.Left}`,
-      },
-    ];
-
     initialEdges.push(
-      ...functionNodes.map(node => {
-        // Calcular el ángulo entre el agente y el nodo de función
-        const dx = node.position.x - agentNode.position.x;
-        const dy = node.position.y - agentNode.position.y;
-        const angle = Math.atan2(dy, dx);
-
-        // Determinar los handles basados en el ángulo
-        let sourceHandle, targetHandle;
-
-        // Convertir el ángulo a grados para facilitar las comparaciones
-        const degrees = angle * (180 / Math.PI);
-
-        if (degrees >= -45 && degrees < 45) {
-          // Derecha
-          sourceHandle = `node-source-${Position.Right}`;
-          targetHandle = `node-target-${Position.Left}`;
-        } else if (degrees >= 45 && degrees < 135) {
-          // Abajo
-          sourceHandle = `node-source-${Position.Bottom}`;
-          targetHandle = `node-target-${Position.Top}`;
-        } else if (degrees >= -135 && degrees < -45) {
-          // Arriba
-          sourceHandle = `node-source-${Position.Top}`;
-          targetHandle = `node-target-${Position.Bottom}`;
-        } else {
-          // Izquierda
-          sourceHandle = `node-source-${Position.Left}`;
-          targetHandle = `node-target-${Position.Right}`;
-        }
-
-        return {
-          id: `e-agent-${node.id}`,
-          source: "agent",
-          target: node.id,
-          sourceHandle,
-          targetHandle,
-        };
-      })
+      ...functionNodes.map(node =>
+        edgeFactory.createAgentFunctionEdge(agentNode.position, node)
+      )
     );
-
-    return { nodes, initialEdges };
   }
 
-  return {
-    nodes,
-    initialEdges: [
-      {
-        id: "e1-2",
-        source: "integrations",
-        target: "agent",
-        sourceHandle: `node-source-${Position.Right}`,
-        targetHandle: `node-target-${Position.Left}`,
-      },
-    ],
-  };
+  return { nodes, initialEdges };
 };
 
 const DiagramContextMenu = ({
