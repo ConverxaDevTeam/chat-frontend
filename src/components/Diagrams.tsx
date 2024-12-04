@@ -6,6 +6,11 @@ import {
   useEdgesState,
   Position,
   useReactFlow,
+  Node,
+  OnNodesChange,
+  OnConnectEnd,
+  OnEdgesChange,
+  Connection,
 } from "@xyflow/react";
 import { EdgeBase } from "@xyflow/system";
 import { useEffect } from "react";
@@ -20,6 +25,35 @@ import ContextMenu from "./ContextMenu";
 import { useNodeSelection } from "./Diagrams/hooks/useNodeSelection";
 import { useContextMenu } from "./Diagrams/hooks/useContextMenu";
 import { useNodeCreation } from "./Diagrams/hooks/useNodeCreation";
+
+interface ContextMenuState {
+  x: number;
+  y: number;
+  fromNode: {
+    id: string;
+    type: string;
+    data: {
+      agentId: number;
+    };
+  };
+}
+
+interface DiagramContextMenuProps {
+  contextMenu: ContextMenuState | null;
+  onClose: () => void;
+  onCreateFunction: (contextMenu: ContextMenuState) => void;
+}
+
+interface DiagramFlowProps {
+  nodes: Node[];
+  edges: EdgeBase[];
+  onNodesChange: OnNodesChange;
+  onEdgesChange: OnEdgesChange;
+  onConnect: (params: Connection) => void;
+  onConnectEnd: OnConnectEnd;
+  onNodeDragStart: (event: React.MouseEvent, node: Node) => void;
+  onNodeDragStop: (event: React.MouseEvent, node: Node) => void;
+}
 
 const createInitialNodes = (agentId?: number) => [
   {
@@ -61,9 +95,55 @@ const nodeTypes = {
   funcion: FuncionNode,
 } as const;
 
+const DiagramContextMenu = ({
+  contextMenu,
+  onClose,
+  onCreateFunction,
+}: DiagramContextMenuProps) => {
+  if (!contextMenu) return null;
+
+  return (
+    <ContextMenu x={contextMenu.x} y={contextMenu.y} onClose={onClose}>
+      <button
+        onClick={() => onCreateFunction(contextMenu)}
+        className="w-full text-left px-4 py-2 hover:bg-gray-100 rounded"
+      >
+        Crear Función
+      </button>
+    </ContextMenu>
+  );
+};
+
+const DiagramFlow = ({
+  nodes,
+  edges,
+  onNodesChange,
+  onEdgesChange,
+  onConnect,
+  onConnectEnd,
+  onNodeDragStart,
+  onNodeDragStop,
+}: DiagramFlowProps) => (
+  <ReactFlow
+    nodes={nodes}
+    edges={edges}
+    onNodesChange={onNodesChange}
+    onEdgesChange={onEdgesChange}
+    onConnect={onConnect}
+    onConnectEnd={onConnectEnd}
+    onNodeDragStart={onNodeDragStart}
+    onNodeDragStop={onNodeDragStop}
+    nodeTypes={nodeTypes}
+    fitView
+  >
+    <Controls />
+    <MiniMap />
+  </ReactFlow>
+);
+
 const ZoomTransition = () => {
   const currentAgentId = useAppSelector(state => state.chat.currentAgent?.id);
-  const [nodes, setNodes, onNodesChange] = useNodesState(
+  const [nodes, setNodes, onNodesChange] = useNodesState<Node>(
     createInitialNodes(currentAgentId)
   );
   const [edges, setEdges, onEdgesChange] =
@@ -83,8 +163,8 @@ const ZoomTransition = () => {
   const { handleNodeDragStart, handleNodeDragStop } = useNodeSelection();
   const { contextMenu, setContextMenu, handleConnectEnd } = useContextMenu();
   const { handleCreateFunction } = useNodeCreation({
-    currentAgentId,
     setContextMenu,
+    currentAgentId,
   });
   const { onConnect } = useEdges(setEdges);
   const { setCenter } = useReactFlow();
@@ -92,7 +172,7 @@ const ZoomTransition = () => {
 
   return (
     <div className="h-full">
-      <ReactFlow
+      <DiagramFlow
         nodes={nodes}
         edges={edges}
         onNodesChange={onNodesChange}
@@ -101,26 +181,12 @@ const ZoomTransition = () => {
         onConnectEnd={handleConnectEnd}
         onNodeDragStart={handleNodeDragStart}
         onNodeDragStop={handleNodeDragStop}
-        nodeTypes={nodeTypes}
-        fitView
-      >
-        <Controls />
-        <MiniMap />
-      </ReactFlow>
-      {contextMenu && (
-        <ContextMenu
-          x={contextMenu.x}
-          y={contextMenu.y}
-          onClose={() => setContextMenu(null)}
-        >
-          <button
-            onClick={() => handleCreateFunction(contextMenu)}
-            className="w-full text-left px-4 py-2 hover:bg-gray-100 rounded"
-          >
-            Crear Función
-          </button>
-        </ContextMenu>
-      )}
+      />
+      <DiagramContextMenu
+        contextMenu={contextMenu}
+        onClose={() => setContextMenu(null)}
+        onCreateFunction={handleCreateFunction}
+      />
     </div>
   );
 };

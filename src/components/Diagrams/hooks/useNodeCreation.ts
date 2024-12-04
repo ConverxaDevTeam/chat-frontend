@@ -25,20 +25,18 @@ type NodeCreationProps = {
   setContextMenu: (value: ContextMenuState | null) => void;
 };
 
-export const useNodeCreation = ({
-  currentAgentId,
-  setContextMenu,
-}: NodeCreationProps) => {
+export const useNodeCreation = ({ setContextMenu }: NodeCreationProps) => {
   const { screenToFlowPosition, setNodes, setEdges } = useReactFlow();
 
   const handleCreateFunction = useCallback(
     (contextMenu: ContextMenuState) => {
       if (!contextMenu) throw new Error("No se ha seleccionado un nodo");
-      
+
       const { fromNode } = contextMenu;
       // Usamos el agentId del nodo seleccionado en lugar del estado global
       const agentId = fromNode.data.agentId;
-      if (!agentId) throw new Error("El nodo seleccionado no tiene un agente asignado");
+      if (!agentId)
+        throw new Error("El nodo seleccionado no tiene un agente asignado");
 
       const newNodeId = `funcion-${nanoid()}`;
       const flowPosition = screenToFlowPosition({
