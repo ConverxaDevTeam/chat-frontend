@@ -1,8 +1,8 @@
 import { memo, useState } from "react";
-import { MdCode, MdDelete } from "react-icons/md";
+import { MdCode } from "react-icons/md";
 import DefaultNode from "./DefaultNode";
 import { CustomTypeNodeProps } from "@interfaces/workflow";
-import { FunctionInfo } from "./funcionComponents/FunctionInfo";
+import { ActionButtons, FunctionInfo } from "./funcionComponents/FunctionInfo";
 import { FunctionEditModal } from "./funcionComponents/FunctionEditModal";
 import { ParamsModal } from "./funcionComponents/ParamsModal";
 import {
@@ -12,196 +12,142 @@ import {
 import { FunctionParam } from "@interfaces/function-params.interface";
 import { useFunctionData } from "./hooks/useFunctionData";
 import { useFunctionActions } from "./hooks/useFunctionActions";
+import { useReactFlow } from "@xyflow/react";
 
-// Tipos
 interface FunctionNodeProps
   extends CustomTypeNodeProps<FunctionData<HttpRequestFunction>> {}
 
-interface FunctionHandlersProps {
-  functionData: FunctionData<HttpRequestFunction>;
-  createFunction: (
-    data: FunctionData<HttpRequestFunction>
-  ) => Promise<FunctionData<HttpRequestFunction> | null>;
-  updateFunction: (
-    data: Partial<FunctionData<HttpRequestFunction>>
-  ) => Promise<FunctionData<HttpRequestFunction> | null | undefined>;
-  onSuccess: () => void;
-}
-
-interface ModalsProps {
-  editModal: {
-    isOpen: boolean;
-    onClose: () => void;
-  };
-  paramsModal: {
-    isOpen: boolean;
-    onClose: () => void;
-  };
-  functionData: FunctionData<HttpRequestFunction>;
-  initialData: FunctionData<HttpRequestFunction>;
-  isLoading: boolean;
-  error: string | null;
-  params: FunctionParam[];
-  onSuccess: (data: FunctionData<HttpRequestFunction>) => void;
-}
-
-// Hook para manejar modales
-const useModal = (initialState = false) => {
-  const [isOpen, setIsOpen] = useState(initialState);
-  return {
-    isOpen,
-    open: () => setIsOpen(true),
-    onClose: () => setIsOpen(false),
-  };
+// Funciones de manejo individuales
+const handleFunctionSave = async (
+  data: FunctionData<HttpRequestFunction>,
+  { createFunction, updateFunction }: ReturnType<typeof useFunctionActions>
+) => {
+  try {
+    data.functionId ? await updateFunction(data) : await createFunction(data);
+    return true;
+  } catch (error) {
+    console.error("Error al guardar la función:", error);
+    return false;
+  }
 };
 
-// Hook para manejar parámetros
-const useParams = (initialParams: FunctionParam[] = []) => {
-  const [params, setParams] = useState<FunctionParam[]>(initialParams);
-
-  const addParam = (param: FunctionParam) => {
-    setParams([...params, { ...param, id: crypto.randomUUID() }]);
-  };
-
-  const editParam = (param: FunctionParam) => {
-    setParams(params.map(p => (p.id === param.id ? param : p)));
-  };
-
-  const deleteParam = (paramId: string) => {
-    setParams(params.filter(p => p.id !== paramId));
-  };
-
-  return { params, addParam, editParam, deleteParam };
-};
-
-// Componente para el botón de eliminar
-const DeleteButton = ({ onClick }: { onClick: () => void }) => (
-  <button
-    onClick={onClick}
-    className="p-1 text-red-600 hover:text-red-700 hover:bg-red-100 rounded-full transition-colors"
-    title="Eliminar función"
-  >
-    <MdDelete size={20} />
-  </button>
-);
-
-// Componente para el contenido del nodo
-const NodeContent = ({
-  functionData,
-  params,
-  onEditClick,
-  onParamsClick,
-}: {
-  functionData: FunctionData<HttpRequestFunction>;
-  params: FunctionParam[];
-  onEditClick: () => void;
-  onParamsClick: () => void;
-}) => (
-  <div className="grid gap-4 p-4 bg-white rounded-md shadow-lg">
-    <FunctionInfo functionData={functionData} onEdit={onEditClick} />
-    <button
-      onClick={onParamsClick}
-      className="w-full px-3 py-1.5 text-sm text-gray-700 bg-gray-100 rounded hover:bg-gray-200 transition-colors"
-    >
-      Ver Parámetros ({params.length})
-    </button>
-  </div>
-);
-
-// Componente para los handlers de función
-const useFunctionHandlers = ({
-  createFunction,
-  updateFunction,
-  onSuccess,
-}: FunctionHandlersProps) => {
-  const handleSuccess = async (data: FunctionData<HttpRequestFunction>) => {
-    try {
-      if (data.functionId) {
-        await updateFunction(data);
-      } else {
-        await createFunction(data);
-      }
-      onSuccess();
-    } catch (error) {
-      console.error("Error al guardar la función:", error);
+const handleNodeDelete = async (
+  id: string,
+  deleteFunction: () => Promise<boolean>,
+  setNodes: ReturnType<typeof useReactFlow>["setNodes"],
+  setEdges: ReturnType<typeof useReactFlow>["setEdges"]
+) => {
+  try {
+    const success = await deleteFunction();
+    if (success) {
+      setNodes(nodes => nodes.filter(node => node.id !== id));
+      setEdges(edges =>
+        edges.filter(edge => edge.source !== id && edge.target !== id)
+      );
     }
-  };
+  } catch (error) {
+    console.error("Error al eliminar la función:", error);
+  }
+};
 
-  return { handleSuccess };
+// Hook simplificado para manejar las operaciones del nodo
+const useNodeOperations = (
+  initialData: FunctionData<HttpRequestFunction>,
+  id: string,
+  selected: boolean
+) => {
+  const { setNodes, setEdges } = useReactFlow();
+  const actions = useFunctionActions(initialData);
+  const { data: functionData } = useFunctionData(
+    initialData.functionId,
+    selected
+  );
+
+  return {
+    currentData: functionData || actions.data,
+    isLoading: actions.isLoading,
+    error: actions.error,
+    handleSuccess: (data: FunctionData<HttpRequestFunction>) =>
+      handleFunctionSave(data, actions),
+    handleDelete: () =>
+      handleNodeDelete(id, actions.deleteFunction, setNodes, setEdges),
+  };
 };
 
 // Componente para los modales
-const Modals = ({
-  editModal,
-  paramsModal,
-  functionData,
+const FunctionModals = ({
+  showEdit,
+  showParams,
+  onEditClose,
+  onParamsClose,
   initialData,
+  currentData,
   isLoading,
   error,
   params,
   onSuccess,
-}: ModalsProps) => (
+}: {
+  showEdit: boolean;
+  showParams: boolean;
+  onEditClose: () => void;
+  onParamsClose: () => void;
+  initialData: FunctionData<HttpRequestFunction>;
+  currentData: FunctionData<HttpRequestFunction>;
+  isLoading: boolean;
+  error: string | null;
+  params: FunctionParam[];
+  onSuccess: (data: FunctionData<HttpRequestFunction>) => void;
+}) => (
   <>
     <FunctionEditModal
-      isOpen={editModal.isOpen}
-      onClose={editModal.onClose}
+      isOpen={showEdit}
+      onClose={onEditClose}
       functionId={initialData.functionId}
-      initialData={functionData}
+      initialData={currentData}
       onSuccess={onSuccess}
       isLoading={isLoading}
       error={error}
       agentId={initialData.agentId}
     />
-    <ParamsModal
-      isOpen={paramsModal.isOpen}
-      onClose={paramsModal.onClose}
-      params={params}
-    />
+    <ParamsModal isOpen={showParams} onClose={onParamsClose} params={params} />
   </>
 );
 
-// Componente principal
-const FuncionNode = memo((props: FunctionNodeProps) => {
-  const { data: initialData, selected } = props;
+// Componente para el contenido del nodo
+const NodeContent = ({
+  currentData,
+  params,
+  onEditClick,
+  onParamsClick,
+  onDelete,
+}: {
+  currentData: FunctionData<HttpRequestFunction>;
+  params: FunctionParam[];
+  onEditClick: () => void;
+  onParamsClick: () => void;
+  onDelete: () => void;
+}) => (
+  <div className="grid gap-4 p-4 bg-white rounded-md shadow-lg">
+    <FunctionInfo functionData={currentData} />
+    <ActionButtons
+      onEdit={onEditClick}
+      onParamsClick={onParamsClick}
+      onDelete={onDelete}
+      params={params}
+    />
+  </div>
+);
 
-  // Hooks
-  const editModal = useModal(!initialData.functionId);
-  const paramsModal = useModal();
-  const { params } = useParams(initialData.config?.requestBody || []);
-  const {
-    data,
-    isLoading,
-    error,
-    createFunction,
-    updateFunction,
-    deleteFunction,
-  } = useFunctionActions(initialData);
-  const { data: functionData } = useFunctionData(
-    initialData.functionId,
-    selected ?? false
+const FuncionNode = memo((props: FunctionNodeProps) => {
+  const { data: initialData, selected, id } = props;
+  const [showEditModal, setShowEditModal] = useState(!initialData.functionId);
+  const [showParamsModal, setShowParamsModal] = useState(false);
+  const [params] = useState<FunctionParam[]>(
+    initialData.config?.requestBody || []
   );
 
-  // Datos actualizados
-  const currentData = functionData || data;
-
-  // Handlers
-  const { handleSuccess } = useFunctionHandlers({
-    functionData: currentData,
-    createFunction,
-    updateFunction,
-    onSuccess: editModal.onClose,
-  });
-
-  const handleDelete = async () => {
-    try {
-      const success = await deleteFunction();
-      if (success) {
-        console.log("Función eliminada exitosamente");
-      }
-    } catch (error) {
-      console.error("Error al eliminar la función:", error);
-    }
-  };
+  const { currentData, isLoading, error, handleSuccess, handleDelete } =
+    useNodeOperations(initialData, id, selected ?? false);
 
   return (
     <>
@@ -209,29 +155,33 @@ const FuncionNode = memo((props: FunctionNodeProps) => {
         {...props}
         allowedConnections={["source", "target"]}
         icon={<MdCode size={20} className="text-gray-700" />}
-        headerActions={selected && <DeleteButton onClick={handleDelete} />}
       >
         <NodeContent
-          functionData={currentData}
+          currentData={currentData}
           params={params}
-          onEditClick={editModal.open}
-          onParamsClick={paramsModal.open}
+          onEditClick={() => setShowEditModal(true)}
+          onParamsClick={() => setShowParamsModal(true)}
+          onDelete={handleDelete}
         />
       </DefaultNode>
 
-      <Modals
-        editModal={editModal}
-        paramsModal={paramsModal}
-        functionData={currentData}
+      <FunctionModals
+        showEdit={showEditModal}
+        showParams={showParamsModal}
+        onEditClose={() => setShowEditModal(false)}
+        onParamsClose={() => setShowParamsModal(false)}
         initialData={initialData}
+        currentData={currentData}
         isLoading={isLoading}
         error={error}
         params={params}
-        onSuccess={handleSuccess}
+        onSuccess={async data => {
+          const success = await handleSuccess(data);
+          if (success) setShowEditModal(false);
+        }}
       />
     </>
   );
 });
 
-FuncionNode.displayName = "FuncionNode";
 export default FuncionNode;

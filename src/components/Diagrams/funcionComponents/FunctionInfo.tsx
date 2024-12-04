@@ -1,4 +1,4 @@
-import { MdEdit } from "react-icons/md";
+import { MdDelete, MdEdit } from "react-icons/md";
 
 interface FunctionInfoProps {
   isLoading?: boolean;
@@ -7,7 +7,6 @@ interface FunctionInfoProps {
     description: string;
     type?: string;
   };
-  onEdit: () => void;
 }
 
 const LoadingState = ({ message = "Cargando..." }) => (
@@ -33,7 +32,18 @@ const InfoField = ({
   </div>
 );
 
-const ActionButtons = ({ onEdit }: { onEdit: () => void }) => {
+interface ActionButtonsProps {
+  params: { name: string; type: string }[];
+  onEdit: () => void;
+  onParamsClick: () => void;
+  onDelete: () => void;
+}
+export const ActionButtons = ({
+  params,
+  onEdit,
+  onParamsClick,
+  onDelete,
+}: ActionButtonsProps) => {
   return (
     <div className="grid gap-2 w-full">
       <button
@@ -42,6 +52,20 @@ const ActionButtons = ({ onEdit }: { onEdit: () => void }) => {
       >
         <MdEdit className="mr-2" /> Editar
       </button>
+      <button
+        onClick={onParamsClick}
+        className="w-full px-3 py-1.5 text-sm text-gray-700 bg-gray-100 rounded hover:bg-gray-200 transition-colors"
+      >
+        Ver Parámetros ({params.length})
+      </button>
+      <button
+        onClick={onDelete}
+        className="w-full px-3 py-1.5 text-sm text-red-600 hover:text-red-700 hover:bg-red-100 rounded transition-colors flex items-center justify-center"
+        title="Eliminar función"
+      >
+        <MdDelete size={16} className="mr-2" />
+        Eliminar Funci&oacute;n
+      </button>
     </div>
   );
 };
@@ -49,7 +73,6 @@ const ActionButtons = ({ onEdit }: { onEdit: () => void }) => {
 export const FunctionInfo = ({
   isLoading,
   functionData,
-  onEdit,
 }: FunctionInfoProps) => {
   if (isLoading) {
     return <LoadingState message="Cargando función..." />;
@@ -86,7 +109,6 @@ export const FunctionInfo = ({
           defaultValue={field.defaultValue}
         />
       ))}
-      <ActionButtons onEdit={onEdit} />
     </div>
   );
 };
