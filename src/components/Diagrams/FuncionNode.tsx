@@ -1,4 +1,4 @@
-import { memo, useState, useCallback } from "react";
+import { memo, useState } from "react";
 import { MdCode } from "react-icons/md";
 import DefaultNode from "./DefaultNode";
 import { CustomTypeNodeProps } from "@interfaces/workflow";
@@ -10,9 +10,8 @@ import {
   HttpRequestFunction,
 } from "@interfaces/functions.interface";
 import { FunctionParam } from "@interfaces/function-params.interface";
-import { functionsService } from "@services/functions.service";
-import { useSweetAlert } from "../../hooks/useSweetAlert";
 import { useFunctionData } from "./hooks/useFunctionData";
+import { useFunctionActions } from "./hooks/useFunctionActions";
 
 const useModal = (initialState = false) => {
   const [isOpen, setIsOpen] = useState(initialState);
@@ -40,120 +39,6 @@ const useParams = (initialParams: FunctionParam[] = []) => {
   };
 
   return { params, addParam, editParam, deleteParam };
-};
-
-const useFunctionActions = (initialData: FunctionData<HttpRequestFunction>) => {
-  const [data, setData] = useState(initialData);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const { handleOperation, showConfirmation } = useSweetAlert();
-
-  const handleCreate = useCallback(
-    async (functionData: FunctionData<HttpRequestFunction>) => {
-      try {
-        setIsLoading(true);
-        setError(null);
-
-        // Asegurarse de que el agentId se mantenga del nodo inicial
-        const dataToSend = {
-          ...functionData,
-          agentId: initialData.agentId,
-        };
-
-        const result = await handleOperation(
-          () => functionsService.create(dataToSend),
-          {
-            title: "Creando función",
-            successTitle: "¡Función creada!",
-            successText: "La función se ha creado exitosamente",
-            errorTitle: "Error al crear la función",
-          }
-        );
-
-        if (result.success && result.data) {
-          setData(result.data);
-          return result.data;
-        }
-        return null;
-      } finally {
-        setIsLoading(false);
-      }
-    },
-    [initialData.agentId]
-  );
-
-  const handleUpdate = useCallback(
-    async (functionData: Partial<FunctionData<HttpRequestFunction>>) => {
-      if (!data.functionId) return;
-
-      try {
-        setIsLoading(true);
-        setError(null);
-
-        const result = await handleOperation(
-          () => functionsService.update(data.functionId!, functionData),
-          {
-            title: "Actualizando función",
-            successTitle: "¡Función actualizada!",
-            successText: "La función se ha actualizado exitosamente",
-            errorTitle: "Error al actualizar la función",
-          }
-        );
-
-        if (result.success && result.data) {
-          setData(result.data);
-          return result.data;
-        }
-        return null;
-      } finally {
-        setIsLoading(false);
-      }
-    },
-    [data.functionId]
-  );
-
-  const handleDelete = useCallback(async () => {
-    if (!data.functionId) return;
-
-    try {
-      const confirmed = await showConfirmation({
-        title: "¿Eliminar función?",
-        text: "¿Estás seguro de que deseas eliminar esta función? Esta acción no se puede deshacer.",
-        confirmButtonText: "Sí, eliminar",
-        cancelButtonText: "Cancelar",
-      });
-
-      if (!confirmed) {
-        return false;
-      }
-
-      setIsLoading(true);
-      setError(null);
-
-      const result = await handleOperation(
-        () => functionsService.delete(data.functionId!),
-        {
-          title: "Eliminando función",
-          successTitle: "¡Función eliminada!",
-          successText: "La función se ha eliminado exitosamente",
-          errorTitle: "Error al eliminar la función",
-        }
-      );
-
-      return result.success;
-    } finally {
-      setIsLoading(false);
-    }
-  }, [data.functionId]);
-
-  return {
-    data,
-    isLoading,
-    error,
-    createFunction: handleCreate,
-    updateFunction: handleUpdate,
-    deleteFunction: handleDelete,
-  };
 };
 
 const FuncionNode = memo(
