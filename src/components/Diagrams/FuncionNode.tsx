@@ -53,8 +53,14 @@ const useFunctionActions = (initialData: FunctionData<HttpRequestFunction>) => {
         setIsLoading(true);
         setError(null);
 
+        // Asegurarse de que el agentId se mantenga del nodo inicial
+        const dataToSend = {
+          ...functionData,
+          agentId: initialData.agentId,
+        };
+
         const result = await handleOperation(
-          () => functionsService.create(functionData),
+          () => functionsService.create(dataToSend),
           {
             title: "Creando función",
             successTitle: "¡Función creada!",
@@ -72,7 +78,7 @@ const useFunctionActions = (initialData: FunctionData<HttpRequestFunction>) => {
         setIsLoading(false);
       }
     },
-    []
+    [initialData.agentId]
   );
 
   const handleUpdate = useCallback(
@@ -201,6 +207,7 @@ const FuncionNode = memo(
           onSuccess={handleSuccess}
           isLoading={isLoading}
           error={error}
+          agentId={data.agentId}
         />
 
         <ParamsModal

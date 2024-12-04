@@ -28,36 +28,32 @@ interface OperationResult<T> {
   error?: unknown;
 }
 
-const formatErrorMessage = (error: unknown): string => {
-  // Si es un error de axios, puede venir en error.response.data
-  if (error && typeof error === "object" && "response" in error) {
-    const axiosError = error as ApiError;
-    if (axiosError.response?.data?.message) {
-      const message = axiosError.response.data.message;
-      if (Array.isArray(message)) {
-        return message.join("\\n");
-      }
-      return message;
+const formatAxiosError = (error: ApiError): string | null => {
+  if (error.response?.data?.message) {
+    const message = error.response.data.message;
+    if (Array.isArray(message)) {
+      return message.join("\\n");
     }
+    return message;
   }
+  return null;
+};
 
-  // Si es un error directo de la API
-  if (error && typeof error === "object" && "message" in error) {
-    const apiError = error as ApiError;
-    if (apiError.message) {
-      if (Array.isArray(apiError.message)) {
-        return apiError.message.join("\\n");
-      }
-      return apiError.message;
+const formatApiError = (error: ApiError): string | null => {
+  if (error.message) {
+    if (Array.isArray(error.message)) {
+      return error.message.join("\\n");
     }
+    return error.message;
   }
+  return null;
+};
 
-  // Si es un error estándar de JavaScript
+const formatGenericError = (error: unknown): string => {
   if (error instanceof Error) {
     return error.message;
   }
 
-  // Si es un objeto, intentamos convertirlo a string
   if (error && typeof error === "object") {
     try {
       return JSON.stringify(error);
@@ -66,8 +62,28 @@ const formatErrorMessage = (error: unknown): string => {
     }
   }
 
-  // Fallback para cualquier otro tipo de error
   return "Ha ocurrido un error";
+};
+
+const formatError = (error: unknown): string => {
+  if (!error || typeof error !== "object") {
+    return formatGenericError(error);
+  }
+
+  // Intenta formatear como error de Axios
+  if ("response" in error) {
+    const axiosErrorMessage = formatAxiosError(error as ApiError);
+    if (axiosErrorMessage) return axiosErrorMessage;
+  }
+
+  // Intenta formatear como error de API
+  if ("message" in error) {
+    const apiErrorMessage = formatApiError(error as ApiError);
+    if (apiErrorMessage) return apiErrorMessage;
+  }
+
+  // Fallback a error genérico
+  return formatGenericError(error);
 };
 
 export const useSweetAlert = () => {
@@ -120,7 +136,7 @@ export const useSweetAlert = () => {
             });
           } catch (err) {
             console.error("Operation error:", err);
-            const errorMessage = formatErrorMessage(err);
+            const errorMessage = formatError(err);
             Swal.close();
             await Swal.fire({
               icon: "error",

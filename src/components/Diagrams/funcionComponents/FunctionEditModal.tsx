@@ -13,6 +13,7 @@ interface FunctionEditModalProps {
   onSuccess?: (data: FunctionData<HttpRequestFunction>) => void;
   isLoading?: boolean;
   error?: string | null;
+  agentId?: number;
 }
 
 export const FunctionEditModal = ({
@@ -23,13 +24,13 @@ export const FunctionEditModal = ({
   onSuccess,
   isLoading,
   error,
+  agentId,
 }: FunctionEditModalProps) => {
   const handleSuccess = (data: FunctionData<HttpRequestFunction>) => {
     if (onSuccess) {
       onSuccess(data);
     }
   };
-
   return (
     <Modal
       isShown={isOpen}
@@ -51,6 +52,7 @@ export const FunctionEditModal = ({
           initialData={initialData}
           onSuccess={handleSuccess}
           isLoading={isLoading}
+          agentId={agentId}
         />
       </div>
     </Modal>

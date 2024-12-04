@@ -2,7 +2,11 @@ import { useCallback } from "react";
 import { Position, useReactFlow } from "@xyflow/react";
 import { EdgeBase } from "@xyflow/system";
 import { nanoid } from "nanoid";
-import { CustomNodeProps } from "@interfaces/workflow";
+import {
+  FunctionNodeData,
+  FunctionNodeTypes,
+  HttpRequestFunction,
+} from "@interfaces/functions.interface";
 interface ContextMenuState {
   x: number;
   y: number;
@@ -10,7 +14,7 @@ interface ContextMenuState {
     id: string;
     type: string;
     data: {
-      agentId: string;
+      agentId: number;
     };
   };
 }
@@ -29,15 +33,14 @@ export const useNodeCreation = ({
   const handleCreateFunction = useCallback(
     (contextMenu: ContextMenuState) => {
       if (!contextMenu) return;
-
+      if (!currentAgentId) return;
       const { fromNode } = contextMenu;
       const newNodeId = `funcion-${nanoid()}`;
       const flowPosition = screenToFlowPosition({
         x: contextMenu.x,
         y: contextMenu.y,
       });
-
-      const newNode: CustomNodeProps = {
+      const newNode: FunctionNodeData<HttpRequestFunction> = {
         id: newNodeId,
         type: "funcion",
         position: flowPosition,
@@ -46,6 +49,12 @@ export const useNodeCreation = ({
           description: "",
           label: "Nueva Función",
           agentId: currentAgentId,
+          type: FunctionNodeTypes.API_ENDPOINT,
+          config: {
+            url: undefined,
+            method: undefined,
+            requestBody: undefined,
+          },
         },
       };
 

@@ -1,5 +1,6 @@
 import { FunctionParam } from "./function-params.interface";
 import { NodeData } from "./workflow";
+import { Node } from "@xyflow/react";
 
 export enum FunctionNodeTypes {
   API_ENDPOINT = "apiEndpoint",
@@ -25,6 +26,13 @@ export interface FunctionData<
   T extends { type: string; config: Record<string, unknown> },
 > extends NodeData {
   functionId?: number;
+  agentId: number;
   type: T["type"];
   config: T["config"];
+}
+
+export interface FunctionNodeData<
+  T extends { type: string; config: Record<string, unknown> },
+> extends Node {
+  data: FunctionData<T>;
 }

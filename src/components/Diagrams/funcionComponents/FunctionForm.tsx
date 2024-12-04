@@ -29,6 +29,7 @@ interface FunctionFormProps {
   initialData?: FunctionData<HttpRequestFunction>;
   onSuccess?: (data: FunctionData<HttpRequestFunction>) => void;
   isLoading?: boolean;
+  agentId?: number;
 }
 
 const HTTP_METHODS = [
@@ -65,6 +66,7 @@ const useFunctionForm = (props: FunctionFormProps) => {
       const functionData: FunctionData<HttpRequestFunction> = {
         functionId,
         name: formData.name,
+        agentId: props.agentId || -1,
         description: formData.description,
         type: FunctionNodeTypes.API_ENDPOINT,
         config: {
@@ -92,28 +94,6 @@ const useFunctionForm = (props: FunctionFormProps) => {
 
 // Tipos para los campos del formulario
 type FieldType = "input" | "textarea" | "select";
-
-interface BaseFieldProps {
-  name: keyof FunctionFormValues;
-  placeholder: string;
-  validation?: Record<string, unknown>;
-}
-
-interface InputFieldProps extends BaseFieldProps {
-  type: "input";
-}
-
-interface TextAreaFieldProps extends BaseFieldProps {
-  type: "textarea";
-  rows?: number;
-}
-
-interface SelectFieldProps extends BaseFieldProps {
-  type: "select";
-  options: { value: string; label: string }[];
-}
-
-type FormFieldConfig = InputFieldProps | TextAreaFieldProps | SelectFieldProps;
 
 // Componentes de formulario
 interface FormFieldProps {
@@ -242,14 +222,7 @@ export const FunctionForm = (props: FunctionFormProps) => {
     {
       name: "url",
       placeholder: "URL del endpoint",
-      validation: {
-        required: "La URL es obligatoria",
-        pattern: {
-          value: /^https?:\/\/.+/,
-          message:
-            "Debe ser una URL válida que comience con http:// o https://",
-        },
-      },
+      validation: { required: "La URL es obligatoria" },
       type: "input",
     },
     {
@@ -259,7 +232,14 @@ export const FunctionForm = (props: FunctionFormProps) => {
       type: "select",
       options: HTTP_METHODS,
     },
-  ];
+  ] as const satisfies Array<{
+    name: keyof FunctionFormValues;
+    placeholder: string;
+    validation: { required: string; pattern?: string };
+    type: string;
+    rows?: number;
+    options?: { value: string; label: string }[];
+  }>;
 
   return (
     <form onSubmit={onSubmit} className="grid gap-4">
@@ -274,7 +254,7 @@ export const FunctionForm = (props: FunctionFormProps) => {
         ))}
       </div>
 
-      <SubmitButton isLoading={isLoading} isCreating={isCreating} />
+      <SubmitButton isLoading={isLoading ?? false} isCreating={isCreating} />
     </form>
   );
 };

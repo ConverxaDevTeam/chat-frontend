@@ -7,7 +7,7 @@ type ContextMenuState = {
   fromNode: {
     id: string;
     type: string;
-    data: { agentId: string };
+    data: { agentId: number };
   };
 } | null;
 
@@ -17,24 +17,25 @@ export const useContextMenu = () => {
   const handleConnectEnd: OnConnectEnd = useCallback(
     (event, connectionState) => {
       if (
-        !connectionState.isValid &&
-        connectionState.fromNode?.type === "agente"
-      ) {
-        const { clientX, clientY } =
-          event instanceof MouseEvent ? event : event.touches[0];
+        connectionState.isValid ||
+        connectionState.fromNode?.type !== "agente"
+      )
+        return;
 
-        const fromNodeProps = {
-          id: connectionState.fromNode.id,
-          type: connectionState.fromNode.type,
-          data: connectionState.fromNode.data as { agentId: string },
-        };
+      const { clientX, clientY } =
+        event instanceof MouseEvent ? event : event.touches[0];
+      console.log(connectionState.fromNode);
+      const fromNodeProps = {
+        id: connectionState.fromNode.id,
+        type: connectionState.fromNode.type,
+        data: connectionState.fromNode.data as { agentId: number },
+      };
 
-        setContextMenu({
-          x: clientX,
-          y: clientY,
-          fromNode: fromNodeProps,
-        });
-      }
+      setContextMenu({
+        x: clientX,
+        y: clientY,
+        fromNode: fromNodeProps,
+      });
     },
     []
   );

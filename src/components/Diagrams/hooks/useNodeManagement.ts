@@ -1,5 +1,6 @@
 import { useCallback } from "react";
 import { useReactFlow, Node, Edge, Position } from "@xyflow/react";
+import { useAppSelector } from "@store/hooks";
 
 export const useNodeManagement = () => {
   const {
@@ -11,9 +12,11 @@ export const useNodeManagement = () => {
     addEdges,
     getNodesBounds,
   } = useReactFlow();
+  const currentAgentId = useAppSelector(state => state.chat.currentAgent?.id);
 
   const addFunctionNode = useCallback(
     (sourceNodeId: string) => {
+      if (!currentAgentId) return;
       // Obtener el nodo fuente y todos los nodos
       const sourceNode = getNode(sourceNodeId);
       const nodes = getNodes();
@@ -46,6 +49,7 @@ export const useNodeManagement = () => {
         type: "funcion",
         position,
         data: {
+          agentId: currentAgentId,
           name: "Nueva Función",
           description: "Función personalizada",
           parentNodeId: sourceNodeId,
