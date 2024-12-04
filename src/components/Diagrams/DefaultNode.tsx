@@ -1,15 +1,14 @@
 import React, { useRef } from "react";
 import { Handle, Position, NodeProps } from "@xyflow/react";
+import { NodeData } from "@interfaces/workflow";
 
 interface CustomNodeProps extends NodeProps {
-  data: {
-    name: string;
-    description: string;
-  };
+  data: NodeData;
   allowedConnections: ("source" | "target")[];
   icon?: React.ReactNode;
   children?: React.ReactNode;
   width?: number;
+  headerActions?: React.ReactNode;
 }
 
 interface NodeLabelProps {
@@ -70,6 +69,7 @@ interface NodeContentProps {
   description: string;
   icon?: React.ReactNode;
   isSelected: boolean;
+  headerActions?: React.ReactNode;
 }
 
 const NodeContent: React.FC<NodeContentProps> = ({
@@ -78,6 +78,7 @@ const NodeContent: React.FC<NodeContentProps> = ({
   name,
   description,
   icon,
+  headerActions,
 }) => {
   if (!isSelected) {
     return (
@@ -89,7 +90,13 @@ const NodeContent: React.FC<NodeContentProps> = ({
 
   return (
     <div className="mt-4 text-center text-black">
-      <div className="font-semibold text-lg">{name}</div>
+      <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center gap-2">
+          {icon}
+          <span className="font-semibold text-lg">{name}</span>
+        </div>
+        {headerActions}
+      </div>
       <div className="text-sm">{description}</div>
       <div className="mt-4 bg-transparent rounded-md">{children}</div>
     </div>
@@ -103,6 +110,7 @@ const DefaultNode: React.FC<CustomNodeProps> = ({
   icon,
   children,
   width = 72,
+  headerActions,
 }) => {
   const ref = useRef<HTMLDivElement>(null);
   const { name, description } = data;
@@ -122,6 +130,7 @@ const DefaultNode: React.FC<CustomNodeProps> = ({
           description={description}
           icon={icon}
           isSelected={selected ?? false}
+          headerActions={headerActions}
         >
           {children}
         </NodeContent>
