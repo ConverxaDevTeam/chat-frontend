@@ -54,11 +54,12 @@ const initialEdges = [
   },
 ];
 
+// Node types definition moved outside of the component
 const nodeTypes = {
   integraciones: IntegracionesNode,
   agente: AgenteNode,
   funcion: FuncionNode,
-};
+} as const;
 
 const ZoomTransition = () => {
   const [nodes, _, onNodesChange] = useNodesState(initialNodes);

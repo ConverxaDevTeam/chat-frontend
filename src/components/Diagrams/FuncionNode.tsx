@@ -160,9 +160,7 @@ const FuncionNode = memo(
     const { data: initialData } = props;
     const editModal = useModal(!initialData.functionId);
     const paramsModal = useModal();
-    const { params, addParam, editParam, deleteParam } = useParams(
-      initialData.config?.requestBody || []
-    );
+    const { params } = useParams(initialData.config?.requestBody || []);
     const { data, isLoading, error, createFunction, updateFunction } =
       useFunctionActions(initialData);
 
@@ -214,9 +212,6 @@ const FuncionNode = memo(
           isOpen={paramsModal.isOpen}
           onClose={paramsModal.close}
           params={params}
-          onParamAdd={addParam}
-          onParamEdit={editParam}
-          onParamDelete={deleteParam}
         />
       </>
     );

@@ -27,6 +27,7 @@ export interface FunctionData<
 > extends NodeData {
   functionId?: number;
   agentId: number;
+  description: string;
   type: T["type"];
   config: T["config"];
 }
