@@ -12,6 +12,7 @@ import {
 import { FunctionParam } from "@interfaces/function-params.interface";
 import { functionsService } from "@services/functions.service";
 import { useSweetAlert } from "../../hooks/useSweetAlert";
+import { useFunctionData } from "./hooks/useFunctionData";
 
 const useModal = (initialState = false) => {
   const [isOpen, setIsOpen] = useState(initialState);
@@ -157,12 +158,19 @@ const useFunctionActions = (initialData: FunctionData<HttpRequestFunction>) => {
 
 const FuncionNode = memo(
   (props: CustomTypeNodeProps<FunctionData<HttpRequestFunction>>) => {
-    const { data: initialData } = props;
+    const { data: initialData, selected } = props;
     const editModal = useModal(!initialData.functionId);
     const paramsModal = useModal();
     const { params } = useParams(initialData.config?.requestBody || []);
     const { data, isLoading, error, createFunction, updateFunction } =
       useFunctionActions(initialData);
+    const { data: functionData } = useFunctionData(
+      initialData.functionId,
+      selected ?? false
+    );
+
+    // Usar los datos más actualizados
+    const currentData = functionData || data;
 
     const handleSuccess = async (
       functionData: FunctionData<HttpRequestFunction>
@@ -187,7 +195,7 @@ const FuncionNode = memo(
           allowedConnections={["source", "target"]}
         >
           <div className="grid gap-4 p-4 bg-white rounded-md shadow-lg">
-            <FunctionInfo functionData={data} onEdit={editModal.open} />
+            <FunctionInfo functionData={currentData} onEdit={editModal.open} />
             <button
               onClick={paramsModal.open}
               className="w-full px-3 py-1.5 text-sm text-gray-700 bg-gray-100 rounded hover:bg-gray-200 transition-colors"
@@ -200,12 +208,12 @@ const FuncionNode = memo(
         <FunctionEditModal
           isOpen={editModal.isOpen}
           onClose={editModal.close}
-          functionId={data.functionId}
-          initialData={data}
+          functionId={initialData.functionId}
+          initialData={currentData || initialData}
           onSuccess={handleSuccess}
           isLoading={isLoading}
           error={error}
-          agentId={data.agentId}
+          agentId={initialData.agentId}
         />
 
         <ParamsModal

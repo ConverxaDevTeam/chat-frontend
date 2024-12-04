@@ -72,7 +72,6 @@ const useFunctionForm = (props: FunctionFormProps) => {
         config: {
           url: formData.url,
           method: formData.method,
-          requestBody: initialData?.config?.requestBody || [],
         },
       };
 
