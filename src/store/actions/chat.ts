@@ -10,6 +10,12 @@ export const initializeWorkspace = createAsyncThunk(
       if (!response.ok || !response.department?.id) {
         throw new Error("No se pudo obtener la información del departamento");
       }
+
+      const agent = response.department.agentes[0];
+      if (!agent?.id) {
+        throw new Error("No se encontró un agente en el departamento");
+      }
+
       // Despachamos para actualizar el estado con la información del workspace
       dispatch(
         setWorkspaceData({
@@ -17,8 +23,10 @@ export const initializeWorkspace = createAsyncThunk(
             id: response.department.id,
           },
           agent: {
-            id: response.department.agentes[0]?.id,
+            id: agent.id,
+            funciones: agent.funciones,
           },
+          functions: agent.funciones || [],
         })
       );
 

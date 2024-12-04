@@ -6,8 +6,15 @@ interface DepartmentResponse {
   department: {
     id: number;
     name: string;
+    organizacion: {
+      id: number;
+    };
     agentes: Array<{
       id: number;
+      funciones: Array<{
+        id: number;
+        name: string;
+      }>;
     }>;
   };
 }

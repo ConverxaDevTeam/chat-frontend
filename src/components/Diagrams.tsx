@@ -11,6 +11,7 @@ import {
   OnConnectEnd,
   OnEdgesChange,
   Connection,
+  Edge,
 } from "@xyflow/react";
 import { EdgeBase } from "@xyflow/system";
 import { useEffect } from "react";
@@ -25,6 +26,7 @@ import ContextMenu from "./ContextMenu";
 import { useNodeSelection } from "./Diagrams/hooks/useNodeSelection";
 import { useContextMenu } from "./Diagrams/hooks/useContextMenu";
 import { useNodeCreation } from "./Diagrams/hooks/useNodeCreation";
+import { NodeData, AgentData } from "@/interfaces/workflow";
 
 interface ContextMenuState {
   x: number;
@@ -55,45 +57,141 @@ interface DiagramFlowProps {
   onNodeDragStop: (event: React.MouseEvent, node: Node) => void;
 }
 
-const createInitialNodes = (agentId?: number) => [
-  {
-    id: "1",
+const createInitialNodes = (
+  agentId?: number
+): { nodes: Node[]; initialEdges: Edge[] } => {
+  const agentNode: Node<AgentData> = {
+    id: "agent",
+    data: {
+      name: "Node B",
+      description: "This is Node B",
+      agentId: agentId || 0,
+    },
+    type: "agente",
+    position: { x: 500, y: 0 },
+  };
+
+  const integracionesNode: Node<NodeData> = {
+    id: "integrations",
     position: { x: 0, y: 0 },
     data: {
-      title: "A",
       name: "Node A",
       description: "This is Node A",
     },
     type: "integraciones",
-  },
-  {
-    id: "2",
-    data: {
-      title: "",
-      name: "Node B",
-      description: "This is Node B",
-      agentId: agentId,
-    },
-    type: "agente",
-    position: { x: 500, y: 0 },
-  },
-];
+  };
 
-const initialEdges = [
-  {
-    id: "e1-2",
-    source: "1",
-    target: "2",
-    sourceHandle: `node-source-${Position.Right}`,
-    targetHandle: `node-target-${Position.Left}`,
-  },
-];
+  const nodes: Node[] = [integracionesNode, agentNode];
 
-const nodeTypes = {
-  integraciones: IntegracionesNode,
-  agente: AgenteNode,
-  funcion: FuncionNode,
-} as const;
+  // Obtener las funciones del agente del estado de Redux
+  const agentFunctions = useAppSelector(state => state.chat.agentFunctions);
+
+  // Si hay funciones y un agentId, crear los nodos de funciones
+  if (agentFunctions?.length > 0 && agentId) {
+    const functionNodes = agentFunctions
+      .map((func, index) => {
+        if (!func.id) return null;
+
+        // Calcular el ángulo para cada nodo en casi todo el círculo (300 grados)
+        const startAngle = (-5 * Math.PI) / 6;
+        const endAngle = (5 * Math.PI) / 6;
+        const angleRange = endAngle - startAngle;
+        const angleStep = angleRange / (agentFunctions.length - 1 || 1);
+        const angle = startAngle + index * angleStep;
+
+        // Radio del semicírculo
+        const radius = 300;
+
+        // Calcular posición usando coordenadas polares
+        const x = agentNode.position.x + radius * Math.cos(angle);
+        const y = agentNode.position.y + radius * Math.sin(angle);
+
+        const functionNode: Node = {
+          id: `function-${func.id}`,
+          type: "funcion",
+          position: { x, y },
+          data: {
+            name: `Función \n ${func.name}`,
+            description: "Función del agente",
+            agentId: agentId,
+            functionId: func.id,
+          },
+        };
+
+        return functionNode;
+      })
+      .filter((node): node is NonNullable<typeof node> => node !== null);
+
+    nodes.push(...functionNodes);
+
+    // Crear los edges que conectan el agente con sus funciones
+    const initialEdges = [
+      {
+        id: "e1-2",
+        source: "integrations",
+        target: "agent",
+        sourceHandle: `node-source-${Position.Right}`,
+        targetHandle: `node-target-${Position.Left}`,
+      },
+    ];
+
+    initialEdges.push(
+      ...functionNodes.map(node => {
+        // Calcular el ángulo entre el agente y el nodo de función
+        const dx = node.position.x - agentNode.position.x;
+        const dy = node.position.y - agentNode.position.y;
+        const angle = Math.atan2(dy, dx);
+
+        // Determinar los handles basados en el ángulo
+        let sourceHandle, targetHandle;
+
+        // Convertir el ángulo a grados para facilitar las comparaciones
+        const degrees = angle * (180 / Math.PI);
+
+        if (degrees >= -45 && degrees < 45) {
+          // Derecha
+          sourceHandle = `node-source-${Position.Right}`;
+          targetHandle = `node-target-${Position.Left}`;
+        } else if (degrees >= 45 && degrees < 135) {
+          // Abajo
+          sourceHandle = `node-source-${Position.Bottom}`;
+          targetHandle = `node-target-${Position.Top}`;
+        } else if (degrees >= -135 && degrees < -45) {
+          // Arriba
+          sourceHandle = `node-source-${Position.Top}`;
+          targetHandle = `node-target-${Position.Bottom}`;
+        } else {
+          // Izquierda
+          sourceHandle = `node-source-${Position.Left}`;
+          targetHandle = `node-target-${Position.Right}`;
+        }
+
+        return {
+          id: `e-agent-${node.id}`,
+          source: "agent",
+          target: node.id,
+          sourceHandle,
+          targetHandle,
+        };
+      })
+    );
+
+    return { nodes, initialEdges };
+  }
+
+  return {
+    nodes,
+    initialEdges: [
+      {
+        id: "e1-2",
+        source: "integrations",
+        target: "agent",
+        sourceHandle: `node-source-${Position.Right}`,
+        targetHandle: `node-target-${Position.Left}`,
+      },
+    ],
+  };
+};
 
 const DiagramContextMenu = ({
   contextMenu,
@@ -133,7 +231,11 @@ const DiagramFlow = ({
     onConnectEnd={onConnectEnd}
     onNodeDragStart={onNodeDragStart}
     onNodeDragStop={onNodeDragStop}
-    nodeTypes={nodeTypes}
+    nodeTypes={{
+      integraciones: IntegracionesNode,
+      agente: AgenteNode,
+      funcion: FuncionNode,
+    }}
     fitView
   >
     <Controls />
@@ -143,9 +245,8 @@ const DiagramFlow = ({
 
 const ZoomTransition = () => {
   const currentAgentId = useAppSelector(state => state.chat.currentAgent?.id);
-  const [nodes, setNodes, onNodesChange] = useNodesState<Node>(
-    createInitialNodes(currentAgentId)
-  );
+  const { nodes, initialEdges } = createInitialNodes(currentAgentId);
+  const [nodesState, setNodes, onNodesChange] = useNodesState<Node>(nodes);
   const [edges, setEdges, onEdgesChange] =
     useEdgesState<EdgeBase>(initialEdges);
 
@@ -168,12 +269,12 @@ const ZoomTransition = () => {
   });
   const { onConnect } = useEdges(setEdges);
   const { setCenter } = useReactFlow();
-  useZoomToFit(nodes, setCenter);
+  useZoomToFit(nodesState, setCenter);
 
   return (
     <div className="h-full">
       <DiagramFlow
-        nodes={nodes}
+        nodes={nodesState}
         edges={edges}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
