@@ -68,7 +68,6 @@ const CustomizeChat = ({ onClose }: CustomizeChatProps) => {
   const generatedScript = (integrationId: number) =>
     `<script src="${urlFiles}/sofia-chat/CI${integrationId}.js"></script>`;
 
-
   useEffect(() => {
     if (department && selectOrganizationId) {
       searchIntegrationWebChat(department?.id, selectOrganizationId);
@@ -167,7 +166,7 @@ const CustomizeChat = ({ onClose }: CustomizeChatProps) => {
           </div>
         </div>
       )}
-      {viwer === "interface" && <ChatEditor />}
+      {viwer === "interface" && <ChatEditor integration={integration} />}
       <div className="flex justify-end space-x-2">
         <button
           type="button"
