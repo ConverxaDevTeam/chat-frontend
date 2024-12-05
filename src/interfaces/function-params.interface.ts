@@ -1,12 +1,25 @@
-export interface FunctionParam {
-  id?: string;
+export enum ParamType {
+  STRING = "string",
+  NUMBER = "number",
+  ENUM = "enum",
+  REGEX = "regex",
+  BOOLEAN = "boolean",
+  OBJECT = "object",
+  ARRAY = "array",
+}
+
+export interface CreateFunctionParamDto {
   name: string;
-  type: string;
+  type: ParamType;
   description: string;
 }
 
-export interface FunctionParamFormValues {
-  name: string;
-  type: string;
-  description: string;
+export interface UpdateFunctionParamDto {
+  name?: string;
+  type?: ParamType;
+  description?: string;
+}
+
+export interface FunctionParam extends CreateFunctionParamDto {
+  id: string;
 }
