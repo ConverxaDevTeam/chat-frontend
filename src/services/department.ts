@@ -9,13 +9,13 @@ interface DepartmentResponse {
     organizacion: {
       id: number;
     };
-    agentes: Array<{
+    agente: {
       id: number;
       funciones: Array<{
         id: number;
         name: string;
       }>;
-    }>;
+    };
   };
 }
 

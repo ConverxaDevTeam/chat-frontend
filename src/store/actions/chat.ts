@@ -11,8 +11,8 @@ export const initializeWorkspace = createAsyncThunk(
         throw new Error("No se pudo obtener la información del departamento");
       }
 
-      const agent = response.department.agentes[0];
-      if (!agent?.id) {
+      const { agente } = response.department;
+      if (!agente?.id) {
         throw new Error("No se encontró un agente en el departamento");
       }
 
@@ -23,16 +23,15 @@ export const initializeWorkspace = createAsyncThunk(
             id: response.department.id,
           },
           agent: {
-            id: agent.id,
-            funciones: agent.funciones,
+            id: agente.id,
           },
-          functions: agent.funciones || [],
+          functions: agente.funciones || [], // Asignamos las funciones directamente al estado
         })
       );
 
       return response;
     } catch (error) {
-      console.error("Error al inicializar el workspace:", error);
+      console.error("Error initializing workspace:", error);
       throw error;
     }
   }

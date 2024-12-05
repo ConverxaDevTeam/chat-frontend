@@ -16,7 +16,6 @@ interface AgentFunction {
 
 interface Agent {
   id: number;
-  funciones?: AgentFunction[];
 }
 
 interface ChatState {
@@ -50,18 +49,17 @@ const chatSlice = createSlice({
       action: PayloadAction<{
         department: Department;
         agent: Agent;
-        functions?: AgentFunction[];
+        functions: AgentFunction[];
       }>
     ) => {
       state.department = action.payload.department;
       state.currentAgent = action.payload.agent;
-      if (action.payload.functions) {
-        state.agentFunctions = action.payload.functions;
-      }
+      state.agentFunctions = action.payload.functions;
     },
     clearWorkspaceData: state => {
       state.department = null;
       state.currentAgent = null;
+      state.agentFunctions = [];
     },
   },
 });
