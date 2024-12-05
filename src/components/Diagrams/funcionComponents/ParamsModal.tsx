@@ -6,30 +6,31 @@ import {
   ParamType,
 } from "@interfaces/function-params.interface";
 import { FaEdit, FaPlus, FaTrash } from "react-icons/fa";
+import { paramsService } from "@services/params.service";
+import { toast } from "react-toastify";
 
 interface ParamsModalProps {
   isOpen: boolean;
   onClose: () => void;
-  params?: FunctionParam[];
-  onParamAdd?: (param: CreateFunctionParamDto) => void;
-  onParamEdit?: (
-    paramId: string,
-    param: Partial<CreateFunctionParamDto>
-  ) => void;
-  onParamDelete?: (paramId: string) => void;
+  functionData: {
+    id: number;
+    requestBody?: FunctionParam[];
+  };
+  params: FunctionParam[];
+  setParams: (params: FunctionParam[]) => void;
 }
 
 export const ParamsModal = ({
   isOpen,
   onClose,
-  params = [],
-  onParamAdd,
-  onParamEdit,
-  onParamDelete,
+  functionData,
+  params,
+  setParams,
 }: ParamsModalProps) => {
   const [showParamForm, setShowParamForm] = useState(false);
   const [editingParam, setEditingParam] = useState<FunctionParam | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
   const itemsPerPage = 5;
 
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -47,6 +48,55 @@ export const ParamsModal = ({
     setShowParamForm(true);
   };
 
+  const handleDelete = async (paramId: string) => {
+    if (window.confirm("¿Está seguro de eliminar este parámetro?")) {
+      try {
+        setIsLoading(true);
+        await paramsService.delete(functionData.id, paramId);
+        toast.success("Parámetro eliminado exitosamente");
+        // Actualizamos localmente
+        setParams(params.filter(p => p.id !== paramId));
+      } catch (error) {
+        console.error("Error deleting param:", error);
+        toast.error("Error al eliminar el parámetro");
+      } finally {
+        setIsLoading(false);
+      }
+    }
+  };
+
+  const handleSubmit = async (param: CreateFunctionParamDto) => {
+    try {
+      setIsLoading(true);
+      if (editingParam) {
+        const updatedParam = await paramsService.update(
+          functionData.id,
+          editingParam.id,
+          param
+        );
+        // Actualizamos localmente
+        setParams(
+          params.map(p => (p.id === editingParam.id ? updatedParam : p))
+        );
+        toast.success("Parámetro actualizado exitosamente");
+      } else {
+        const newParam = await paramsService.create(
+          param as FunctionParam,
+          functionData.id
+        );
+        // Añadimos el nuevo parámetro localmente
+        setParams([...params, newParam]);
+        toast.success("Parámetro creado exitosamente");
+      }
+      setShowParamForm(false);
+    } catch (error) {
+      console.error("Error saving param:", error);
+      toast.error("Error al guardar el parámetro");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <Modal
       isShown={isOpen}
@@ -54,7 +104,7 @@ export const ParamsModal = ({
       header={
         <div className="flex justify-between items-center px-6 py-4 border-b border-gray-100">
           <h2 className="text-xl font-semibold text-gray-900">
-            Parámetros de la Función
+            Parámetros de la Función ({params.length})
           </h2>
         </div>
       }
@@ -63,14 +113,21 @@ export const ParamsModal = ({
         <div className="p-6 space-y-6">
           <button
             onClick={handleAdd}
+            disabled={isLoading}
             className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all duration-200 shadow-sm hover:shadow-md"
           >
             <FaPlus size={16} />
-            <span className="font-medium">Agregar Nuevo Parámetro</span>
+            <span className="font-medium">
+              Agregar Nuevo Parámetro ({params.length})
+            </span>
           </button>
 
           <div className="grid gap-3">
-            {currentParams.length === 0 ? (
+            {isLoading ? (
+              <div className="text-center py-8">
+                <p className="text-gray-500">Cargando...</p>
+              </div>
+            ) : currentParams.length === 0 ? (
               <div className="text-center py-8">
                 <p className="text-gray-500">No hay parámetros configurados</p>
                 <p className="text-sm text-gray-400">
@@ -101,13 +158,15 @@ export const ParamsModal = ({
                   <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                     <button
                       onClick={() => handleEdit(param)}
+                      disabled={isLoading}
                       className="p-2 text-gray-400 hover:text-blue-500 rounded-md hover:bg-blue-50 transition-colors"
                       title="Editar parámetro"
                     >
                       <FaEdit size={16} />
                     </button>
                     <button
-                      onClick={() => onParamDelete?.(param.id)}
+                      onClick={() => handleDelete(param.id)}
+                      disabled={isLoading}
                       className="p-2 text-gray-400 hover:text-red-500 rounded-md hover:bg-red-50 transition-colors"
                       title="Eliminar parámetro"
                     >
@@ -143,14 +202,7 @@ export const ParamsModal = ({
             isOpen={showParamForm}
             onClose={() => setShowParamForm(false)}
             param={editingParam}
-            onSubmit={param => {
-              if (editingParam) {
-                onParamEdit?.(editingParam.id, param);
-              } else {
-                onParamAdd?.(param);
-              }
-              setShowParamForm(false);
-            }}
+            onSubmit={handleSubmit}
           />
         )}
       </Fragment>

@@ -41,7 +41,8 @@ export const apiUrls = {
     base: () => `/api/functions`,
     byId: (id: number) => `/api/functions/${id}`,
     byAgent: (agentId: number) => `/api/functions/agent/${agentId}`,
-    paramsBase: (functionId: number) => `/api/function-params/${functionId}`,
+    paramsBase: (functionId: number) =>
+      `/api/functions/${functionId}/parameters`,
   },
 };
 

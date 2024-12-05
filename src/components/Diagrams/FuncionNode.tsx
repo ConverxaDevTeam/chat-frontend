@@ -1,4 +1,4 @@
-import { memo, useState } from "react";
+import { memo, useState, useEffect } from "react";
 import { MdCode } from "react-icons/md";
 import DefaultNode from "./DefaultNode";
 import { CustomTypeNodeProps } from "@interfaces/workflow";
@@ -109,7 +109,16 @@ const FunctionModals = ({
       error={error}
       agentId={initialData.agentId}
     />
-    <ParamsModal isOpen={showParams} onClose={onParamsClose} params={params} />
+    <ParamsModal
+      isOpen={showParams}
+      onClose={onParamsClose}
+      functionData={{
+        id: initialData.functionId || 0,
+        requestBody: initialData.config?.requestBody,
+      }}
+      params={params}
+      setParams={params => params}
+    />
   </>
 );
 
@@ -142,9 +151,21 @@ const FuncionNode = memo((props: FunctionNodeProps) => {
   const { data: initialData, selected, id } = props;
   const [showEditModal, setShowEditModal] = useState(!initialData.functionId);
   const [showParamsModal, setShowParamsModal] = useState(false);
-  const [params] = useState<FunctionParam[]>(
-    initialData.config?.requestBody || []
-  );
+  const [params, setParams] = useState<FunctionParam[]>([]);
+
+  useEffect(() => {
+    if (initialData.config?.requestBody) {
+      setParams(initialData.config.requestBody);
+    }
+  }, [initialData.config?.requestBody]);
+
+  const handleShowParamsModal = () => {
+    setShowParamsModal(true);
+  };
+
+  const handleCloseParamsModal = () => {
+    setShowParamsModal(false);
+  };
 
   const { currentData, isLoading, error, handleSuccess, handleDelete } =
     useNodeOperations(initialData, id, selected ?? false);
@@ -160,7 +181,7 @@ const FuncionNode = memo((props: FunctionNodeProps) => {
           currentData={currentData}
           params={params}
           onEditClick={() => setShowEditModal(true)}
-          onParamsClick={() => setShowParamsModal(true)}
+          onParamsClick={handleShowParamsModal}
           onDelete={handleDelete}
         />
       </DefaultNode>
@@ -169,7 +190,7 @@ const FuncionNode = memo((props: FunctionNodeProps) => {
         showEdit={showEditModal}
         showParams={showParamsModal}
         onEditClose={() => setShowEditModal(false)}
-        onParamsClose={() => setShowParamsModal(false)}
+        onParamsClose={handleCloseParamsModal}
         initialData={initialData}
         currentData={currentData}
         isLoading={isLoading}
@@ -180,6 +201,18 @@ const FuncionNode = memo((props: FunctionNodeProps) => {
           if (success) setShowEditModal(false);
         }}
       />
+      {initialData.functionId && (
+        <ParamsModal
+          isOpen={showParamsModal}
+          onClose={handleCloseParamsModal}
+          functionData={{
+            id: initialData.functionId,
+            requestBody: initialData.config?.requestBody,
+          }}
+          params={params}
+          setParams={setParams}
+        />
+      )}
     </>
   );
 });
