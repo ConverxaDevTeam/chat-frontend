@@ -24,8 +24,8 @@ const Chat = memo(({ onClose }: ChatProps) => {
     messages,
     handleSendMessage,
     setThreatId,
-    setAgentId,
-    agentId: agentIdState,
+    setLLMAgentId: setAgentId,
+    LLMAgentId: agentIdState,
     threatId,
     resetChat,
   } = useChat(roomName);

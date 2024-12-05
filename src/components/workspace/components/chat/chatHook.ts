@@ -18,15 +18,15 @@ export const useChat = (roomName: string) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [threatId, setThreatId] = useState<string | undefined>();
-  const [agentId, setAgentId] = useState<string | undefined>();
-
-  const departmentId = useAppSelector(state => state.chat.department?.id);
+  const [LLMAgentId, setLLMAgentId] = useState<string | undefined>();
+  const agentId = useAppSelector(state => state.chat.currentAgent?.id);
 
   const resetChat = useCallback(() => {
     setMessages([]);
     setThreatId(undefined);
-    setAgentId(undefined);
+    setLLMAgentId(undefined);
   }, []);
+  if (!agentId) throw new Error("No se ha seleccionado un agente");
 
   const addMessage = useCallback((message: Message) => {
     // Si el mensaje es del agente y tiene identificador de test, guardamos los datos
@@ -39,13 +39,14 @@ export const useChat = (roomName: string) => {
     if (messages.length === 0) {
       // Primer mensaje: usar ChatAgentIdentifier
       identifier = {
-        departamentoId: departmentId,
+        agentId: agentId,
         type: AgentIdentifierType.CHAT_TEST,
       } as ChatAgentIdentifier;
     } else {
       identifier = {
         type: AgentIdentifierType.TEST,
         threatId: threatId,
+        LLMAgentId: LLMAgentId,
         agentId: agentId,
         agent: AgenteType.SOFIA_ASISTENTE,
       } as TestAgentIdentifier;
@@ -57,15 +58,7 @@ export const useChat = (roomName: string) => {
       identifier,
     });
     setInputValue("");
-  }, [
-    inputValue,
-    roomName,
-    addMessage,
-    messages.length,
-    departmentId,
-    threatId,
-    agentId,
-  ]);
+  }, [inputValue, roomName, addMessage, messages.length, threatId, LLMAgentId]);
 
   return {
     messages,
@@ -73,11 +66,10 @@ export const useChat = (roomName: string) => {
     setInputValue,
     addMessage,
     handleSendMessage,
-    departmentId,
     setThreatId,
-    setAgentId,
+    setLLMAgentId,
     threatId,
-    agentId,
+    LLMAgentId,
     resetChat,
   };
 };
