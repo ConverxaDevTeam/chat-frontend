@@ -1,13 +1,13 @@
 import { formatDateString } from "@utils/format";
+import { IMessage } from ".";
+import { configChat } from "../ChatEditor";
 
-type MessageSofiaProps = {
-  menssage: string;
-  date: string;
-  bg: string;
-  textDate: string;
-};
+interface MessageSofiaProps {
+  menssage: IMessage;
+  config: configChat;
+}
 
-const MessageSofia = ({ menssage, date, bg, textDate }: MessageSofiaProps) => {
+const MessageSofia = ({ menssage, config }: MessageSofiaProps) => {
   return (
     <div className="flex gap-[10px]">
       <div className="bg-white w-[40px] h-[40px] relative rounded-full flex justify-center items-center">
@@ -18,18 +18,18 @@ const MessageSofia = ({ menssage, date, bg, textDate }: MessageSofiaProps) => {
         <p
           className="p-[16px] rounded-[16px] text-sofiaCall-dark leading-[18px] font-poppinsRegular text-[14px]"
           style={{
-            backgroundColor: bg,
+            backgroundColor: config.bg_assistant,
           }}
         >
-          {menssage}
+          {menssage.text}
         </p>
         <p
           className="px-[16px] leading-[18px] font-poppinsRegular text-[12px]"
           style={{
-            color: textDate,
+            color: config.text_date,
           }}
         >
-          {formatDateString(date)}
+          {formatDateString(menssage.created_at)}
         </p>
       </div>
     </div>

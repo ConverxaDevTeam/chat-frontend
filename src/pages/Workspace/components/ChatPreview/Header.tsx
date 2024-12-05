@@ -1,0 +1,52 @@
+import { IConversation } from ".";
+import { configChat } from "../ChatEditor";
+
+interface HeaderProps {
+  conversation: IConversation | null;
+  config: configChat;
+  setConversation: (conversation: IConversation | null) => void;
+}
+
+const Header = ({ conversation, config, setConversation }: HeaderProps) => {
+  return (
+    <div
+      className="py-[20px] px-[10px] flex flex-col gap-[10px] relative"
+      style={{
+        backgroundColor: config.bg_color,
+      }}
+    >
+      <img
+        src={`${config.url_assets}/assets/${config.icon_close}`}
+        className="select-none w-[18px] h-[18px] absolute top-[10px] right-[10px] cursor-pointer"
+        alt="Chat"
+      />
+      {conversation ? (
+        <div className="flex gap-[10px] items-center">
+          <img
+            src={`${config.url_assets}/assets/icon-arrow.png`}
+            className="select-none w-[32px] h-[32px] cursor-pointer"
+            alt="Chat"
+            onClick={() => setConversation(null)}
+          />
+          <img
+            src={`${config.url_assets}/logos/${config.logo}`}
+            className="select-none w-[50px] h-[50px] cursor-pointer bg-white rounded-full p-[6px]"
+            alt="Chat"
+          />
+          <p className="font-medium text-[20px]">{config.name}</p>
+        </div>
+      ) : (
+        <>
+          <p className="text-center font-semibold text-[20px]">
+            {config.sub_title}
+          </p>
+          <p className="text-[12px] text-center font-medium">
+            {config.description}
+          </p>
+        </>
+      )}
+    </div>
+  );
+};
+
+export default Header;

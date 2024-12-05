@@ -1,31 +1,31 @@
 import { formatDateString } from "@utils/format";
+import { IMessage } from ".";
+import { configChat } from "../ChatEditor";
 
-type MessageUserProps = {
-  menssage: string;
-  date: string;
-  bg: string;
-  textDate: string;
-};
+interface MessageUserProps {
+  menssage: IMessage;
+  config: configChat;
+}
 
-const MessageUser = ({ menssage, date, bg, textDate }: MessageUserProps) => {
+const MessageUser = ({ menssage, config }: MessageUserProps) => {
   return (
     <div className="flex gap-[10px]">
       <div className="flex flex-1 flex-col gap-[4px] items-end">
         <p
           className="p-[16px] rounded-[16px] text-sofiaCall-dark leading-[18px] font-poppinsRegular text-[14px]"
           style={{
-            backgroundColor: bg,
+            backgroundColor: config.bg_user,
           }}
         >
-          {menssage}
+          {menssage.text}
         </p>
         <p
           className="px-[16px] leading-[18px] font-poppinsRegular text-[12px]"
           style={{
-            color: textDate,
+            color: config.text_date,
           }}
         >
-          {formatDateString(date)}
+          {formatDateString(menssage.created_at)}
         </p>
       </div>
       <div className="bg-[#82c0cf] w-[40px] h-[40px] relative rounded-full flex justify-center items-center">

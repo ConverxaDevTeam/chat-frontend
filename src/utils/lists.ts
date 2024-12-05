@@ -2,6 +2,7 @@ import { FaUsers } from "react-icons/fa";
 import { AiFillHome } from "react-icons/ai";
 import { FaLayerGroup } from "react-icons/fa";
 import { BsPersonWorkspace } from "react-icons/bs";
+import { IConversation } from "@pages/Workspace/components/ChatPreview";
 
 export const sidebarLinks = [
   {
@@ -107,56 +108,128 @@ export const themeColors: themeColor[] = [
     textDate: "#BFBFBF",
     buttonColor: "#15ECDA",
   },
-];
-
-interface ChatMessage {
-  id: number;
-  text: string;
-  user: "assistant" | "user";
-  created_at: string;
-}
-
-export const chatExample: ChatMessage[] = [
-  {
-    id: 1,
-    text: "Hola, ¿en qué puedo ayudarte?",
-    user: "assistant",
-    created_at: "2022-01-01T12:00:00",
-  },
-  {
-    id: 2,
-    text: "Necesito ayuda con mi cuenta",
-    user: "user",
-    created_at: "2022-01-01T12:01:00",
-  },
-  {
-    id: 3,
-    text: "¿Qué necesitas saber?",
-    user: "assistant",
-    created_at: "2022-01-01T12:02:00",
-  },
-  {
-    id: 4,
-    text: "¿Cómo puedo cambiar mi contraseña?",
-    user: "user",
-    created_at: "2022-01-01T12:03:00",
-  },
   {
     id: 5,
-    text: "Puedes hacerlo desde la sección de configuración",
-    user: "assistant",
-    created_at: "2022-01-01T12:04:00",
+    bgColor: "#252525",
+    bgChat: "#F5F5F5",
+    bgUser: "#82c0cf",
+    bgAssistant: "#8D14E9",
+    name: "Black",
+    textColor: "#ffffff",
+    textDate: "#BFBFBF",
+    buttonColor: "#15ECDA",
   },
   {
     id: 6,
-    text: "Gracias",
-    user: "user",
-    created_at: "2022-01-01T12:05:00",
+    bgColor: "#252525",
+    bgChat: "#F5F5F5",
+    bgUser: "#82c0cf",
+    bgAssistant: "#8D14E9",
+    name: "Black",
+    textColor: "#ffffff",
+    textDate: "#BFBFBF",
+    buttonColor: "#15ECDA",
   },
   {
     id: 7,
-    text: "De nada, ¿hay algo más en lo que pueda ayudarte?",
-    user: "assistant",
-    created_at: "2022-01-01T12:06:00",
+    bgColor: "#252525",
+    bgChat: "#F5F5F5",
+    bgUser: "#82c0cf",
+    bgAssistant: "#8D14E9",
+    name: "Black",
+    textColor: "#ffffff",
+    textDate: "#BFBFBF",
+    buttonColor: "#15ECDA",
+  },
+  {
+    id: 8,
+    bgColor: "#252525",
+    bgChat: "#F5F5F5",
+    bgUser: "#82c0cf",
+    bgAssistant: "#8D14E9",
+    name: "Black",
+    textColor: "#ffffff",
+    textDate: "#BFBFBF",
+    buttonColor: "#15ECDA",
+  },
+  {
+    id: 9,
+    bgColor: "#252525",
+    bgChat: "#F5F5F5",
+    bgUser: "#82c0cf",
+    bgAssistant: "#8D14E9",
+    name: "Black",
+    textColor: "#ffffff",
+    textDate: "#BFBFBF",
+    buttonColor: "#15ECDA",
+  },
+];
+
+export const conversationsExample: IConversation[] = [
+  {
+    id: 1,
+    created_at: "2024-12-05 03:35:36.824",
+    messages: [
+      {
+        id: 1,
+        text: "Hola, ¿cómo estás?",
+        type: "agent",
+        created_at: "2024-12-05 03:35:36.824",
+      },
+      {
+        id: 2,
+        text: "Hola, bien, gracias",
+        type: "user",
+        created_at: "2024-12-05 03:35:36.824",
+      },
+      {
+        id: 3,
+        text: "¿En qué puedo ayudarte?",
+        type: "agent",
+        created_at: "2024-12-05 03:35:36.824",
+      },
+      {
+        id: 4,
+        text: "Quiero saber más sobre tu producto",
+        type: "user",
+        created_at: "2024-12-05 03:35:36.824",
+      },
+      {
+        id: 5,
+        text: "Claro, ¿qué te gustaría saber?",
+        type: "agent",
+        created_at: "2024-12-05 03:35:36.824",
+      },
+    ],
+  },
+  {
+    id: 2,
+    created_at: "2024-12-05 03:35:36.824",
+    messages: [
+      {
+        id: 1,
+        text: "Hola, ¿cómo estás?",
+        type: "agent",
+        created_at: "2024-12-05 03:35:36.824",
+      },
+      {
+        id: 2,
+        text: "Hola, bien, gracias",
+        type: "user",
+        created_at: "2024-12-05 03:35:36.824",
+      },
+      {
+        id: 3,
+        text: "¿En qué puedo ayudarte?",
+        type: "agent",
+        created_at: "2024-12-05 03:35:36.824",
+      },
+      {
+        id: 4,
+        text: "Quiero saber más sobre tu producto",
+        type: "user",
+        created_at: "2024-12-05 03:35:36.824",
+      },
+    ],
   },
 ];

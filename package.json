@@ -13,6 +13,7 @@
     "@hookform/resolvers": "^3.9.1",
     "@reduxjs/toolkit": "^2.2.6",
     "@stripe/react-stripe-js": "^2.8.0",
+    "@types/react-color": "^3.0.12",
     "@xyflow/react": "^12.3.5",
     "axios": "^1.7.2",
     "chart.js": "^4.4.4",
