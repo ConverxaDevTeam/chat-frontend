@@ -66,6 +66,7 @@ export const useNodeCreation = ({ setContextMenu }: NodeCreationProps) => {
         id: `e${fromNode.id}-${newNodeId}`,
         source: fromNode.id,
         target: newNodeId,
+        type: "auth",
         sourceHandle: `node-source-${Position.Right}`,
         targetHandle: `node-target-${Position.Left}`,
       };

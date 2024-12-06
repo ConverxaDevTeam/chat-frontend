@@ -65,6 +65,7 @@ export const useNodeManagement = () => {
         target: newNodeId,
         sourceHandle: `node-source-${Position.Right}`,
         targetHandle: `node-target-${Position.Left}`,
+        type: sourceNodeId === "agent" ? "auth" : undefined, // Agregar tipo auth si el origen es el agente
       };
 
       // Agregar el nuevo nodo y el edge

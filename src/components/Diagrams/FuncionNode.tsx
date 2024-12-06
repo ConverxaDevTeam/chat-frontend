@@ -157,13 +157,8 @@ const FuncionNode = memo((props: FunctionNodeProps) => {
   const [showParamsModal, setShowParamsModal] = useState(false);
   const [params, setParams] = useState<FunctionParam[]>([]);
 
-  const handleShowParamsModal = () => {
-    setShowParamsModal(true);
-  };
-
-  const handleCloseParamsModal = () => {
-    setShowParamsModal(false);
-  };
+  const handleShowParamsModal = () => setShowParamsModal(true);
+  const handleCloseParamsModal = () => setShowParamsModal(false);
 
   const { currentData, isLoading, error, handleSuccess, handleDelete } =
     useNodeOperations(initialData, id, setParams, selected ?? false);
