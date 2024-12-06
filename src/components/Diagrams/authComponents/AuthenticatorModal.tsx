@@ -9,6 +9,7 @@ import {
   HttpAutenticador,
   BearerConfig,
 } from "@interfaces/autenticators.interface";
+import { useSweetAlert } from "@hooks/useSweetAlert";
 
 type AuthenticatorType = Autenticador<HttpAutenticador<BearerConfig>>;
 
@@ -69,7 +70,12 @@ export function AuthenticatorModal({
   };
 
   const handleDelete = async (id: number) => {
-    if (window.confirm("¿Estás seguro de eliminar este autenticador?")) {
+    if (
+      await useSweetAlert().showConfirmation({
+        title: "Eliminar Autenticador",
+        text: "¿Estás seguro que deseas eliminar este autenticador?",
+      })
+    ) {
       try {
         await axiosInstance.delete(`/api/autenticadores/${id}`);
         setAuthenticators(prev => prev.filter(auth => auth.id !== id));

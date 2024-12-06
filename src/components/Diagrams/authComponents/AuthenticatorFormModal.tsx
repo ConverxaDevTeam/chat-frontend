@@ -1,7 +1,12 @@
 import { Input } from "@components/forms/input";
 import Modal from "@components/Modal";
 import { InputGroup } from "@components/forms/inputGroup";
-import { useForm, FieldError, FieldErrors } from "react-hook-form";
+import {
+  useForm,
+  FieldError,
+  FieldErrors,
+  UseFormRegister,
+} from "react-hook-form";
 import {
   Autenticador,
   AutenticadorType,
@@ -30,6 +35,182 @@ type NestedKeys =
   | "config.injectConfig.tokenPath"
   | "config.injectConfig.refreshPath";
 
+const DEFAULT_VALUES = (organizationId: number): AuthenticatorType => ({
+  name: "",
+  organizationId,
+  value: "",
+  life_time: 3600,
+  type: AutenticadorType.ENDPOINT,
+  config: {
+    url: "",
+    method: HttpMethod.POST,
+    params: {},
+    injectPlace: injectPlaces.BEARER_HEADER,
+    injectConfig: {
+      tokenPath: "",
+      refreshPath: "",
+    },
+  },
+});
+
+const useAuthenticatorForm = ({
+  initialData,
+  organizationId,
+}: Pick<
+  AuthenticatorFormModalProps,
+  "initialData" | "organizationId" | "show" | "onSubmit"
+>) => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm<AuthenticatorType>({
+    defaultValues: DEFAULT_VALUES(organizationId),
+  });
+
+  useEffect(() => {
+    if (initialData) {
+      reset(initialData);
+    }
+  }, [initialData, reset]);
+
+  const getNestedError = (path: NestedKeys) => {
+    return (errors as Record<string, unknown>)[path] as FieldError | undefined;
+  };
+
+  return {
+    register,
+    handleSubmit,
+    errors,
+    getNestedError,
+    reset,
+  };
+};
+
+interface FormFieldConfig {
+  label: string;
+  placeholder: string;
+  name: NestedKeys;
+  required?: boolean;
+  type?: "text" | "select";
+  options?: { value: string; label: string }[];
+  validation?: Record<string, unknown>;
+}
+
+interface FormFieldProps extends Omit<FormFieldConfig, "name"> {
+  name: NestedKeys;
+  error?: FieldError;
+  register: (
+    name: string,
+    validation?: Record<string, unknown>
+  ) => ReturnType<UseFormRegister<AuthenticatorType>>;
+}
+
+const FormField = ({
+  label,
+  placeholder,
+  name,
+  register,
+  error,
+  required = true,
+  type = "text",
+  options = [],
+  validation = {},
+}: FormFieldProps) => (
+  <InputGroup label={label} errors={error}>
+    {type === "select" ? (
+      <select
+        {...register(name, {
+          required: required ? "Este campo es requerido" : false,
+          ...validation,
+        })}
+        className="w-full rounded-md bg-gray-100 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-3 py-2 sm:text-sm"
+      >
+        {options.map(option => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
+    ) : (
+      <Input
+        type={type}
+        placeholder={placeholder}
+        register={register(name, {
+          required: required ? "Este campo es requerido" : false,
+          ...validation,
+        })}
+      />
+    )}
+  </InputGroup>
+);
+
+const FORM_FIELDS: FormFieldConfig[] = [
+  {
+    label: "Nombre",
+    placeholder: "Nombre del autenticador",
+    name: "name" as NestedKeys,
+    required: true,
+    type: "text",
+  },
+  {
+    label: "URL",
+    placeholder: "URL del endpoint",
+    name: "config.url" as NestedKeys,
+    required: true,
+    type: "text",
+  },
+  {
+    label: "Método",
+    placeholder: "Método HTTP",
+    name: "config.method" as NestedKeys,
+    required: true,
+    type: "select",
+    options: Object.values(HttpMethod).map(method => ({
+      value: method,
+      label: method,
+    })),
+  },
+  {
+    label: "Token Path",
+    placeholder: "Ruta del token en la respuesta",
+    name: "config.injectConfig.tokenPath" as NestedKeys,
+    required: true,
+    type: "text",
+  },
+  {
+    label: "Refresh Path",
+    placeholder: "Ruta del refresh token en la respuesta",
+    name: "config.injectConfig.refreshPath" as NestedKeys,
+    required: true,
+    type: "text",
+  },
+];
+
+interface FormActionsProps {
+  onCancel: () => void;
+  isEditing: boolean;
+}
+
+const FormActions = ({ onCancel, isEditing }: FormActionsProps) => (
+  <div className="flex justify-end space-x-2 pt-4">
+    <button
+      type="button"
+      className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+      onClick={onCancel}
+    >
+      Cancelar
+    </button>
+    <button
+      type="submit"
+      className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
+    >
+      {isEditing ? "Actualizar" : "Crear"}
+    </button>
+  </div>
+);
+
 export function AuthenticatorFormModal({
   show,
   onClose,
@@ -37,164 +218,34 @@ export function AuthenticatorFormModal({
   initialData,
   organizationId,
 }: AuthenticatorFormModalProps) {
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm<AuthenticatorType>({
-    defaultValues: initialData || {
-      name: "",
-      organizationId,
-      value: "",
-      life_time: 3600,
-      type: AutenticadorType.ENDPOINT,
-      config: {
-        url: "",
-        method: HttpMethod.POST,
-        params: {},
-        injectPlace: injectPlaces.BEARER_HEADER,
-        injectConfig: {
-          tokenPath: "",
-          refreshPath: "",
-        },
-      },
-    },
+  const { register, handleSubmit, getNestedError } = useAuthenticatorForm({
+    initialData,
+    organizationId,
+    show,
+    onSubmit,
   });
 
-  useEffect(() => {
-    if (show) {
-      reset(
-        initialData || {
-          name: "",
-          organizationId,
-          value: "",
-          life_time: 3600,
-          type: AutenticadorType.ENDPOINT,
-          config: {
-            url: "",
-            method: HttpMethod.POST,
-            params: {},
-            injectPlace: injectPlaces.BEARER_HEADER,
-            injectConfig: {
-              tokenPath: "",
-              refreshPath: "",
-            },
-          },
-        }
-      );
-    }
-  }, [show, initialData, organizationId, reset]);
-
-  const handleFormSubmit = async (data: AuthenticatorType) => {
-    await onSubmit(data);
-    reset();
-  };
-
-  const handleCancel = () => {
-    reset();
-    onClose();
-  };
-
-  const getNestedError = (path: NestedKeys): FieldError | undefined => {
-    const parts = path.split(".");
-    let result: unknown = errors;
-
-    for (const part of parts) {
-      result = (result as Record<string, unknown>)?.[part];
-      if (!result) return undefined;
-    }
-
-    return result as FieldError | undefined;
+  const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    handleSubmit(async (data: AuthenticatorType) => {
+      await onSubmit(data);
+    })(e);
   };
 
   return (
-    <Modal
-      isShown={show}
-      onClose={onClose}
-      header={
-        <div className="flex justify-between items-center">
-          <h2 className="text-lg font-semibold">
-            {initialData ? "Editar" : "Agregar"} Autenticador
-          </h2>
-        </div>
-      }
-    >
-      <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
-        <InputGroup label="Nombre" errors={errors.name as FieldError}>
-          <Input
-            placeholder="Nombre del autenticador"
-            register={register("name", {
-              required: "El nombre es obligatorio",
-            })}
-            error={errors.name?.message}
+    <Modal isShown={show} onClose={onClose}>
+      <form onSubmit={handleFormSubmit}>
+        {FORM_FIELDS.map(field => (
+          <FormField
+            key={field.name}
+            {...field}
+            error={getNestedError(field.name)}
+            register={(name, validation) =>
+              register(name as keyof AuthenticatorType, { ...validation })
+            }
           />
-        </InputGroup>
-
-        <InputGroup label="URL" errors={getNestedError("config.url")}>
-          <Input
-            placeholder="URL del endpoint"
-            register={register("config.url", {
-              required: "La URL es obligatoria",
-            })}
-            error={getNestedError("config.url")?.message}
-          />
-        </InputGroup>
-
-        <InputGroup label="Método" errors={getNestedError("config.method")}>
-          <select
-            {...register("config.method")}
-            className="w-full rounded-md bg-gray-100 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-3 py-2 sm:text-sm"
-          >
-            {Object.values(HttpMethod).map(method => (
-              <option key={method} value={method}>
-                {method}
-              </option>
-            ))}
-          </select>
-        </InputGroup>
-
-        <InputGroup
-          label="Token Path"
-          errors={getNestedError("config.injectConfig.tokenPath")}
-        >
-          <Input
-            placeholder="Ruta del token en la respuesta"
-            register={register("config.injectConfig.tokenPath", {
-              required: "El token path es obligatorio",
-            })}
-            error={getNestedError("config.injectConfig.tokenPath")?.message}
-          />
-        </InputGroup>
-
-        <InputGroup
-          label="Refresh Path"
-          errors={getNestedError("config.injectConfig.refreshPath")}
-        >
-          <Input
-            placeholder="Ruta del refresh token en la respuesta"
-            register={register("config.injectConfig.refreshPath", {
-              required: "El refresh path es obligatorio",
-            })}
-            error={getNestedError("config.injectConfig.refreshPath")?.message}
-          />
-        </InputGroup>
-
-        <div className="flex justify-end space-x-2 pt-4">
-          <button
-            type="button"
-            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
-            onClick={handleCancel}
-          >
-            Cancelar
-          </button>
-          <button
-            type="submit"
-            className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
-          >
-            {initialData ? "Actualizar" : "Crear"}
-          </button>
-        </div>
+        ))}
+        <FormActions onCancel={onClose} isEditing={!!initialData} />
       </form>
     </Modal>
   );
