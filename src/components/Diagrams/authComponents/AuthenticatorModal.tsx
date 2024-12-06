@@ -1,5 +1,5 @@
 import Modal from "@components/Modal";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { FaTrash, FaEdit, FaPlus } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { AuthenticatorFormModal } from "./AuthenticatorFormModal";
@@ -52,57 +52,82 @@ const useAuthenticatorState = () => {
   };
 };
 
+const useFetchAuthenticators = (
+  organizationId: number,
+  setAuthenticators: React.Dispatch<React.SetStateAction<AuthenticatorType[]>>
+) => {
+  return useCallback(async () => {
+    try {
+      const data = await authenticatorService.fetchAll(organizationId);
+      setAuthenticators(data);
+    } catch {
+      toast.error("Error al cargar autenticadores");
+    }
+  }, [organizationId]);
+};
+
+const useAuthenticatorSubmit = (
+  setAuthenticators: React.Dispatch<React.SetStateAction<AuthenticatorType[]>>,
+  onClose: () => void
+) => {
+  return useCallback(
+    async (data: AuthenticatorType) => {
+      try {
+        const result = data.id
+          ? await authenticatorService.update(data.id, data)
+          : await authenticatorService.create(data);
+
+        setAuthenticators(prev =>
+          data.id
+            ? prev.map(auth => (auth.id === data.id ? result : auth))
+            : [...prev, result]
+        );
+
+        toast.success(
+          `Autenticador ${data.id ? "actualizado" : "creado"} exitosamente`
+        );
+        onClose();
+      } catch {
+        toast.error("Error al guardar el autenticador");
+        throw new Error();
+      }
+    },
+    [onClose]
+  );
+};
+
+const useAuthenticatorDelete = (
+  setAuthenticators: React.Dispatch<React.SetStateAction<AuthenticatorType[]>>
+) => {
+  return useCallback(async (id: number) => {
+    const confirmed = await useSweetAlert().showConfirmation({
+      title: "Eliminar Autenticador",
+      text: "¿Estás seguro que deseas eliminar este autenticador?",
+    });
+
+    if (!confirmed) return;
+
+    try {
+      await authenticatorService.remove(id);
+      setAuthenticators(prev => prev.filter(auth => auth.id !== id));
+      toast.success("Autenticador eliminado exitosamente");
+    } catch {
+      toast.error("Error al eliminar el autenticador");
+    }
+  }, []);
+};
+
 const useAuthenticatorActions = (
   organizationId: number,
   setAuthenticators: React.Dispatch<React.SetStateAction<AuthenticatorType[]>>,
   onClose: () => void
 ) => {
-  const fetchAuthenticators = async () => {
-    try {
-      const authenticators =
-        await authenticatorService.fetchAll(organizationId);
-      setAuthenticators(authenticators);
-    } catch (error) {
-      toast.error("Error al cargar autenticadores");
-    }
-  };
-
-  const handleSubmit = async (data: AuthenticatorType): Promise<void> => {
-    try {
-      if (data.id) {
-        const updated = await authenticatorService.update(data.id, data);
-        setAuthenticators(prev =>
-          prev.map(auth => (auth.id === data.id ? updated : auth))
-        );
-        toast.success("Autenticador actualizado exitosamente");
-      } else {
-        const created = await authenticatorService.create(data);
-        setAuthenticators(prev => [...prev, created]);
-        toast.success("Autenticador creado exitosamente");
-      }
-      onClose();
-    } catch (error) {
-      toast.error("Error al guardar el autenticador");
-      throw error;
-    }
-  };
-
-  const handleDelete = async (id: number) => {
-    if (
-      await useSweetAlert().showConfirmation({
-        title: "Eliminar Autenticador",
-        text: "¿Estás seguro que deseas eliminar este autenticador?",
-      })
-    ) {
-      try {
-        await authenticatorService.remove(id);
-        setAuthenticators(prev => prev.filter(auth => auth.id !== id));
-        toast.success("Autenticador eliminado exitosamente");
-      } catch (error) {
-        toast.error("Error al eliminar el autenticador");
-      }
-    }
-  };
+  const fetchAuthenticators = useFetchAuthenticators(
+    organizationId,
+    setAuthenticators
+  );
+  const handleSubmit = useAuthenticatorSubmit(setAuthenticators, onClose);
+  const handleDelete = useAuthenticatorDelete(setAuthenticators);
 
   return {
     fetchAuthenticators,
