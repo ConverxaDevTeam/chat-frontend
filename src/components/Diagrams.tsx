@@ -17,7 +17,11 @@ import { EdgeBase } from "@xyflow/system";
 import { useCallback, useEffect } from "react";
 import "@xyflow/react/dist/style.css";
 import { useAppSelector } from "@store/hooks";
-import { NodeData, AgentData } from "@/interfaces/workflow";
+import {
+  NodeData,
+  AgentData,
+  CustomTypeNodeProps,
+} from "@/interfaces/workflow";
 import {
   FunctionData,
   HttpRequestFunction,
@@ -38,13 +42,7 @@ import { AuthEdge } from "./Diagrams/edges/AuthEdge";
 interface ContextMenuState {
   x: number;
   y: number;
-  fromNode: {
-    id: string;
-    type: string;
-    data: {
-      agentId: number;
-    };
-  };
+  fromNode: CustomTypeNodeProps<AgentData>;
 }
 
 interface DiagramContextMenuProps {

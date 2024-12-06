@@ -1,14 +1,11 @@
 import { useCallback, useState } from "react";
 import { OnConnectEnd } from "@xyflow/react";
+import { AgentData, CustomTypeNodeProps } from "@interfaces/workflow";
 
 type ContextMenuState = {
   x: number;
   y: number;
-  fromNode: {
-    id: string;
-    type: string;
-    data: { agentId: number };
-  };
+  fromNode: CustomTypeNodeProps<AgentData>;
 } | null;
 
 export const useContextMenu = () => {
@@ -28,7 +25,7 @@ export const useContextMenu = () => {
         id: connectionState.fromNode.id,
         type: connectionState.fromNode.type,
         data: connectionState.fromNode.data as { agentId: number },
-      };
+      } as CustomTypeNodeProps<AgentData>;
 
       setContextMenu({
         x: clientX,
