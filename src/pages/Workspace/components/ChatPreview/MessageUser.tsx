@@ -1,10 +1,10 @@
 import { formatDateString } from "@utils/format";
 import { IMessage } from ".";
-import { configChat } from "../ChatEditor";
+import { ConfigWebChat } from "../CustomizeChat";
 
 interface MessageUserProps {
   menssage: IMessage;
-  config: configChat;
+  config: ConfigWebChat;
 }
 
 const MessageUser = ({ menssage, config }: MessageUserProps) => {
@@ -12,9 +12,10 @@ const MessageUser = ({ menssage, config }: MessageUserProps) => {
     <div className="flex gap-[10px]">
       <div className="flex flex-1 flex-col gap-[4px] items-end">
         <p
-          className="p-[16px] rounded-[16px] text-sofiaCall-dark leading-[18px] font-poppinsRegular text-[14px]"
+          className="p-[16px] text-sofiaCall-dark leading-[18px] font-poppinsRegular text-[14px]"
           style={{
             backgroundColor: config.bg_user,
+            borderRadius: `${config.message_radius}px`,
           }}
         >
           {menssage.text}
