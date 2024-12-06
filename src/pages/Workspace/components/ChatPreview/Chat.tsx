@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from "react";
-import { configChat } from "../ChatEditor";
 import { IConversation } from ".";
 import MessageSofia from "./MessageSofia";
 import MessageUser from "./MessageUser";
+import { ConfigWebChat } from "../CustomizeChat";
 
 interface ChatProps {
-  config: configChat;
+  config: ConfigWebChat;
   conversation: IConversation;
 }
 
