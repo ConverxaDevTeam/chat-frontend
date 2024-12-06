@@ -1,8 +1,9 @@
 import { useCallback } from "react";
-import { Position, useReactFlow, Node, Edge } from "@xyflow/react";
+import { Position, useReactFlow, Node, Edge, Connection } from "@xyflow/react";
+import { EdgeBase } from "@xyflow/system";
 import { nanoid } from "nanoid";
 import {
-  FunctionNodeData,
+  FunctionData,
   FunctionNodeTypes,
   HttpRequestFunction,
 } from "@interfaces/functions.interface";
@@ -13,12 +14,24 @@ interface Position2D {
   y: number;
 }
 
+interface ContextMenuState {
+  x: number;
+  y: number;
+  fromNode: {
+    id: string;
+    type: string;
+    data: {
+      agentId: number;
+    };
+  };
+}
+
 interface CreateNodeOptions {
   position: Position2D;
   agentId: number;
   sourceNodeId?: string;
   parentNodeId?: string;
-  initialData?: Partial<FunctionNodeData<HttpRequestFunction>>;
+  initialData?: Partial<FunctionData<HttpRequestFunction>>;
   type?: string;
 }
 
@@ -49,7 +62,7 @@ export const useUnifiedNodeCreation = () => {
       const newNodeId = `${type}-${nanoid()}`;
 
       // Crear el nuevo nodo
-      const newNode: Node<FunctionNodeData<HttpRequestFunction>> = {
+      const newNode: Node<FunctionData<HttpRequestFunction>> = {
         id: newNodeId,
         type,
         position,
@@ -71,14 +84,12 @@ export const useUnifiedNodeCreation = () => {
       // Si hay un nodo fuente, crear el edge
       let newEdge: Edge | undefined;
       if (sourceNodeId) {
-        newEdge = {
-          id: `e${sourceNodeId}-${newNodeId}`,
+        newEdge = createEdge({
           source: sourceNodeId,
           target: newNodeId,
-          type: sourceNodeId === "agent" ? "auth" : undefined,
           sourceHandle: `node-source-${Position.Right}`,
           targetHandle: `node-target-${Position.Left}`,
-        };
+        } as Connection);
       }
 
       return { node: newNode, edge: newEdge };
@@ -86,13 +97,20 @@ export const useUnifiedNodeCreation = () => {
     []
   );
 
+  const createEdge = useCallback((params: Connection) => {
+    return {
+      id: `e${params.source}-${params.target}`,
+      source: params.source ?? "",
+      target: params.target ?? "",
+      sourceHandle: params.sourceHandle ?? undefined,
+      targetHandle: params.targetHandle ?? undefined,
+      type: params.source === "agent" ? "auth" : undefined,
+    } as EdgeBase;
+  }, []);
+
   // Crear nodo desde el menú contextual
   const createFromContextMenu = useCallback(
-    (contextMenu: {
-      x: number;
-      y: number;
-      fromNode: { id: string; data: { agentId: number } };
-    }) => {
+    (contextMenu: ContextMenuState) => {
       if (!contextMenu.fromNode.data.agentId) {
         throw new Error("El nodo seleccionado no tiene un agente asignado");
       }
@@ -181,7 +199,7 @@ export const useUnifiedNodeCreation = () => {
     (
       position: Position2D,
       agentId: number,
-      initialData?: Partial<FunctionNodeData<HttpRequestFunction>>
+      initialData?: Partial<FunctionData<HttpRequestFunction>>
     ) => {
       const { node } = createNode({
         position,
@@ -200,5 +218,6 @@ export const useUnifiedNodeCreation = () => {
     createFromContextMenu,
     createWithSpacing,
     createFromDiagram,
+    createEdge,
   };
 };

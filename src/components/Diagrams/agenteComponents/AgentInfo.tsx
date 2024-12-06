@@ -1,5 +1,6 @@
 import { MdEdit, MdAddCircleOutline } from "react-icons/md";
-import { useNodeManagement } from "../hooks/useNodeManagement";
+import { useUnifiedNodeCreation } from "../hooks/useUnifiedNodeCreation";
+import { useCallback } from "react";
 
 interface AgentData {
   name: string;
@@ -25,7 +26,13 @@ interface ActionButtonsProps {
 }
 
 const ActionButtons = ({ onEdit, nodeId }: ActionButtonsProps) => {
-  const { addFunctionNode } = useNodeManagement();
+  const { createWithSpacing } = useUnifiedNodeCreation();
+  const addFunctionNode = useCallback(
+    (sourceNodeId: string) => {
+      createWithSpacing(sourceNodeId);
+    },
+    [createWithSpacing]
+  );
 
   return (
     <div className="flex flex-col gap-2 w-full">

@@ -1,3 +1,4 @@
+import { useUnifiedNodeCreation } from "@components/Diagrams/hooks/useUnifiedNodeCreation";
 import { addEdge, Connection } from "@xyflow/react";
 import { EdgeBase, NodeBase } from "@xyflow/system";
 import { useCallback, useEffect } from "react";
@@ -5,19 +6,14 @@ import { useCallback, useEffect } from "react";
 export const useEdges = (
   setEdges: React.Dispatch<React.SetStateAction<EdgeBase[]>>
 ) => {
+  const { createEdge } = useUnifiedNodeCreation(); // Use the hook
+
   const onConnect = useCallback(
     (params: Connection) => {
-      const newEdge: EdgeBase = {
-        id: `e${params.source}-${params.target}`,
-        source: params.source ?? "",
-        target: params.target ?? "",
-        sourceHandle: params.sourceHandle ?? undefined,
-        targetHandle: params.targetHandle ?? undefined,
-        type: params.source === "agent" ? "auth" : undefined, // Usar edge de autenticación si el origen es un agente
-      };
+      const newEdge = createEdge(params);
       setEdges(currentEdges => addEdge(newEdge, currentEdges));
     },
-    [setEdges]
+    [setEdges, createEdge]
   );
 
   return { onConnect };

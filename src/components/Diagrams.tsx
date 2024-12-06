@@ -14,7 +14,7 @@ import {
   Edge,
 } from "@xyflow/react";
 import { EdgeBase } from "@xyflow/system";
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import "@xyflow/react/dist/style.css";
 import { useAppSelector } from "@store/hooks";
 import { NodeData, AgentData } from "@/interfaces/workflow";
@@ -30,7 +30,7 @@ import FuncionNode from "./Diagrams/FuncionNode";
 import ContextMenu from "./ContextMenu";
 import { useNodeSelection } from "./Diagrams/hooks/useNodeSelection";
 import { useContextMenu } from "./Diagrams/hooks/useContextMenu";
-import { useNodeCreation } from "./Diagrams/hooks/useNodeCreation";
+import { useUnifiedNodeCreation } from "./Diagrams/hooks/useUnifiedNodeCreation";
 import { useEdges, useZoomToFit } from "./workspace/hooks/Diagrams";
 import { AuthEdge } from "./Diagrams/edges/AuthEdge";
 
@@ -341,10 +341,14 @@ const ZoomTransition = () => {
 
   const { handleNodeDragStart, handleNodeDragStop } = useNodeSelection();
   const { contextMenu, setContextMenu, handleConnectEnd } = useContextMenu();
-  const { handleCreateFunction } = useNodeCreation({
-    setContextMenu,
-    currentAgentId,
-  });
+  const { createFromContextMenu } = useUnifiedNodeCreation();
+  const handleCreateFunction = useCallback(
+    (contextMenu: ContextMenuState) => {
+      createFromContextMenu(contextMenu);
+      setContextMenu(null);
+    },
+    [createFromContextMenu, setContextMenu]
+  );
   const { onConnect } = useEdges(setEdges);
   const { setCenter } = useReactFlow();
   useZoomToFit(nodesState, setCenter);
