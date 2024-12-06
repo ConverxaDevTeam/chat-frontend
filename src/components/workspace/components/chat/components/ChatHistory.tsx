@@ -9,7 +9,7 @@ interface ChatHistoryProps {
 
 export const ChatHistory = ({ messages }: ChatHistoryProps) => {
   return (
-    <div className="h-full overflow-y-auto p-4">
+    <div className="overflow-y-auto p-4">
       <div className="flex flex-col space-y-2">
         {messages.map((message, index) => (
           <div
