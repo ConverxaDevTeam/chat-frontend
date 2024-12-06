@@ -1,9 +1,12 @@
 import axiosInstance from "@config/axios";
 import { apiUrls } from "@config/config";
-import { FunctionParam } from "@interfaces/function-params.interface";
+import {
+  FunctionParam,
+  CreateFunctionParamDto,
+} from "@interfaces/function-params.interface";
 
 class ParamsService {
-  async create(data: FunctionParam, functionId: number) {
+  async create(data: CreateFunctionParamDto, functionId: number) {
     const response = await axiosInstance.post<FunctionParam>(
       `${apiUrls.functions.paramsBase(functionId)}`,
       data
@@ -14,7 +17,7 @@ class ParamsService {
   async update(
     functionId: number,
     paramId: string,
-    data: Partial<FunctionParam>
+    data: CreateFunctionParamDto
   ) {
     const response = await axiosInstance.patch<FunctionParam>(
       `${apiUrls.functions.paramsBase(functionId)}/${paramId}`,

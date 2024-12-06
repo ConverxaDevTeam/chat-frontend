@@ -6,7 +6,7 @@ import {
 } from "@interfaces/functions.interface";
 
 interface FunctionEditModalProps {
-  isOpen: boolean;
+  isShown: boolean;
   onClose: () => void;
   functionId?: number;
   initialData?: FunctionData<HttpRequestFunction>;
@@ -17,44 +17,38 @@ interface FunctionEditModalProps {
 }
 
 export const FunctionEditModal = ({
-  isOpen,
+  isShown,
   onClose,
   functionId,
   initialData,
   onSuccess,
   isLoading,
-  error,
   agentId,
 }: FunctionEditModalProps) => {
   const handleSuccess = (data: FunctionData<HttpRequestFunction>) => {
     if (onSuccess) {
       onSuccess(data);
     }
+    onClose();
   };
+
   return (
     <Modal
-      isShown={isOpen}
+      isShown={isShown}
       onClose={onClose}
       header={
-        <h2 className="text-xl font-bold">
+        <h2 className="text-xl font-semibold">
           {functionId ? "Editar Función" : "Nueva Función"}
         </h2>
       }
     >
-      <div className="space-y-4">
-        {error && (
-          <div className="p-4 text-sm text-red-700 bg-red-100 rounded-md">
-            {error}
-          </div>
-        )}
-        <FunctionForm
-          functionId={functionId}
-          initialData={initialData}
-          onSuccess={handleSuccess}
-          isLoading={isLoading}
-          agentId={agentId}
-        />
-      </div>
+      <FunctionForm
+        functionId={functionId}
+        initialData={initialData}
+        onSuccess={handleSuccess}
+        isLoading={isLoading}
+        agentId={agentId}
+      />
     </Modal>
   );
 };

@@ -12,12 +12,7 @@ export interface CreateFunctionParamDto {
   name: string;
   type: ParamType;
   description: string;
-}
-
-export interface UpdateFunctionParamDto {
-  name?: string;
-  type?: ParamType;
-  description?: string;
+  required: boolean;
 }
 
 export interface FunctionParam extends CreateFunctionParamDto {

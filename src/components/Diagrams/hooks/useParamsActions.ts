@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { toast } from "react-toastify";
 import { AxiosError } from "axios";
-import { FunctionParam } from "@interfaces/function-params.interface";
+import { CreateFunctionParamDto } from "@interfaces/function-params.interface";
 import { paramsService } from "@services/params.service";
 
 interface ApiErrorResponse {
@@ -12,7 +12,7 @@ interface ApiErrorResponse {
 export const useParamsActions = (functionId: number) => {
   const [isLoading, setIsLoading] = useState(false);
 
-  const createParam = async (param: FunctionParam) => {
+  const createParam = async (param: CreateFunctionParamDto) => {
     try {
       setIsLoading(true);
       await paramsService.create(param, functionId);
@@ -34,7 +34,7 @@ export const useParamsActions = (functionId: number) => {
     data,
   }: {
     paramId: string;
-    data: Partial<FunctionParam>;
+    data: CreateFunctionParamDto;
   }) => {
     try {
       setIsLoading(true);

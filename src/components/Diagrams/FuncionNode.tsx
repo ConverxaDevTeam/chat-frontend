@@ -104,7 +104,7 @@ const FunctionModals = ({
 }) => (
   <>
     <FunctionEditModal
-      isOpen={showEdit}
+      isShown={showEdit}
       onClose={onEditClose}
       functionId={initialData.functionId}
       initialData={currentData}
@@ -114,7 +114,7 @@ const FunctionModals = ({
       agentId={initialData.agentId}
     />
     <ParamsModal
-      isOpen={showParams}
+      isShown={showParams}
       onClose={onParamsClose}
       functionData={{
         id: initialData.functionId || 0,
