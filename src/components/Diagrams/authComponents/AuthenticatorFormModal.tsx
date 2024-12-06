@@ -1,37 +1,29 @@
 import { Input } from "@components/forms/input";
 import Modal from "@components/Modal";
 import { InputGroup } from "@components/forms/inputGroup";
-import { useForm } from "react-hook-form";
+import { useForm, FieldError, FieldErrors } from "react-hook-form";
 import {
+  Autenticador,
   AutenticadorType,
   injectPlaces,
 } from "@interfaces/autenticators.interface";
 import { HttpMethod } from "@interfaces/functions.interface";
 
-interface AuthenticatorFormData {
-  id?: number;
-  name: string;
-  organizationId: number;
-  type: AutenticadorType;
-  config: {
-    url: string;
-    method: HttpMethod;
-    params: Record<string, string>;
-    injectPlace: injectPlaces;
-    injectConfig: {
-      tokenPath: string;
-      refreshPath: string;
-    };
-  };
-}
-
 interface AuthenticatorFormModalProps {
   show: boolean;
   onClose: () => void;
-  onSubmit: (data: AuthenticatorFormData) => Promise<void>;
-  initialData?: AuthenticatorFormData;
+  onSubmit: (data: Autenticador) => Promise<void>;
+  initialData?: Autenticador;
   organizationId: number;
 }
+
+type NestedFieldErrors = FieldErrors<Autenticador>;
+type NestedKeys =
+  | keyof NestedFieldErrors
+  | "config.url"
+  | "config.method"
+  | "config.injectConfig.tokenPath"
+  | "config.injectConfig.refreshPath";
 
 export function AuthenticatorFormModal({
   show,
@@ -45,7 +37,7 @@ export function AuthenticatorFormModal({
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<AuthenticatorFormData>({
+  } = useForm<Autenticador>({
     defaultValues: initialData || {
       name: "",
       organizationId,
@@ -63,7 +55,7 @@ export function AuthenticatorFormModal({
     },
   });
 
-  const handleFormSubmit = async (data: AuthenticatorFormData) => {
+  const handleFormSubmit = async (data: Autenticador) => {
     await onSubmit(data);
     reset();
   };
@@ -71,6 +63,18 @@ export function AuthenticatorFormModal({
   const handleCancel = () => {
     reset();
     onClose();
+  };
+
+  const getNestedError = (path: NestedKeys): FieldError | undefined => {
+    const parts = path.split(".");
+    let result: unknown = errors;
+
+    for (const part of parts) {
+      result = (result as Record<string, unknown>)?.[part];
+      if (!result) return undefined;
+    }
+
+    return result as FieldError | undefined;
   };
 
   return (
@@ -86,7 +90,7 @@ export function AuthenticatorFormModal({
       }
     >
       <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
-        <InputGroup label="Nombre" errors={errors.name}>
+        <InputGroup label="Nombre" errors={errors.name as FieldError}>
           <Input
             placeholder="Nombre del autenticador"
             register={register("name", {
@@ -96,17 +100,17 @@ export function AuthenticatorFormModal({
           />
         </InputGroup>
 
-        <InputGroup label="URL" errors={errors.config?.url}>
+        <InputGroup label="URL" errors={getNestedError("config.url")}>
           <Input
             placeholder="URL del endpoint"
             register={register("config.url", {
               required: "La URL es obligatoria",
             })}
-            error={errors.config?.url?.message}
+            error={getNestedError("config.url")?.message}
           />
         </InputGroup>
 
-        <InputGroup label="Método" errors={errors.config?.method}>
+        <InputGroup label="Método" errors={getNestedError("config.method")}>
           <select
             {...register("config.method")}
             className="w-full rounded-md bg-gray-100 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-3 py-2 sm:text-sm"
@@ -121,27 +125,27 @@ export function AuthenticatorFormModal({
 
         <InputGroup
           label="Token Path"
-          errors={errors.config?.injectConfig?.tokenPath}
+          errors={getNestedError("config.injectConfig.tokenPath")}
         >
           <Input
             placeholder="Ruta del token en la respuesta"
             register={register("config.injectConfig.tokenPath", {
               required: "El token path es obligatorio",
             })}
-            error={errors.config?.injectConfig?.tokenPath?.message}
+            error={getNestedError("config.injectConfig.tokenPath")?.message}
           />
         </InputGroup>
 
         <InputGroup
           label="Refresh Path"
-          errors={errors.config?.injectConfig?.refreshPath}
+          errors={getNestedError("config.injectConfig.refreshPath")}
         >
           <Input
             placeholder="Ruta del refresh token en la respuesta"
             register={register("config.injectConfig.refreshPath", {
               required: "El refresh path es obligatorio",
             })}
-            error={errors.config?.injectConfig?.refreshPath?.message}
+            error={getNestedError("config.injectConfig.refreshPath")?.message}
           />
         </InputGroup>
 

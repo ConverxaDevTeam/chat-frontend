@@ -41,6 +41,8 @@ export interface Autenticador<
 > {
   life_time: number;
   value: string;
+  name: string;
+  id?: number;
   organizationId: number;
   type: T["type"];
   config: T["config"];
