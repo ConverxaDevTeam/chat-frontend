@@ -7,6 +7,7 @@ const config = {
     token_refresh_name: import.meta.env.VITE_PUBLIC_TOKEN_REFRESH_NAME || "",
     google_client_id: import.meta.env.VITE_PUBLIC_GOOGLE_CLIENT_ID || "",
   },
+  url_assets: import.meta.env.VITE_BACKEND_URL_FILES,
 };
 
 export default config;
