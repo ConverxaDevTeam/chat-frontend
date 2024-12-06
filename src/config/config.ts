@@ -44,7 +44,15 @@ export const apiUrls = {
     paramsBase: (functionId: number) =>
       `/api/functions/${functionId}/parameters`,
   },
-};
+
+  // authenticators
+  authenticators: {
+    base: () => `/api/autenticadores`,
+    byId: (id: number) => `/api/autenticadores/${id}`,
+    byOrganization: (organizationId: number) =>
+      `/api/autenticadores/${organizationId}`,
+  },
+} as const;
 
 export const tokenAccess = {
   tokenName: import.meta.env.VITE_PUBLIC_TOKEN_NAME || "token",

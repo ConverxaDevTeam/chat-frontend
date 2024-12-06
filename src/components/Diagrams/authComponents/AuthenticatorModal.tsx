@@ -1,15 +1,15 @@
 import Modal from "@components/Modal";
-import axiosInstance from "@config/axios";
 import { useState, useEffect } from "react";
 import { FaTrash, FaEdit, FaPlus } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { AuthenticatorFormModal } from "./AuthenticatorFormModal";
+import { useSweetAlert } from "@/hooks/useSweetAlert";
+import { authenticatorService } from "@/services/authenticator.service";
 import {
   Autenticador,
-  HttpAutenticador,
   BearerConfig,
+  HttpAutenticador,
 } from "@interfaces/autenticators.interface";
-import { useSweetAlert } from "@hooks/useSweetAlert";
 
 type AuthenticatorType = Autenticador<HttpAutenticador<BearerConfig>>;
 
@@ -59,10 +59,9 @@ const useAuthenticatorActions = (
 ) => {
   const fetchAuthenticators = async () => {
     try {
-      const response = await axiosInstance.get(
-        `/api/autenticadores/${organizationId}`
-      );
-      setAuthenticators(response.data);
+      const authenticators =
+        await authenticatorService.fetchAll(organizationId);
+      setAuthenticators(authenticators);
     } catch (error) {
       toast.error("Error al cargar autenticadores");
     }
@@ -71,24 +70,17 @@ const useAuthenticatorActions = (
   const handleSubmit = async (data: AuthenticatorType): Promise<void> => {
     try {
       if (data.id) {
-        const response = await axiosInstance.patch(
-          `/api/autenticadores/${data.id}`,
-          data
-        );
+        const updated = await authenticatorService.update(data.id, data);
         setAuthenticators(prev =>
-          prev.map(auth => (auth.id === data.id ? response.data : auth))
+          prev.map(auth => (auth.id === data.id ? updated : auth))
         );
         toast.success("Autenticador actualizado exitosamente");
       } else {
-        const response = await axiosInstance.post("/api/autenticadores", {
-          ...data,
-          life_time: 3600,
-          value: "",
-        });
-        setAuthenticators(prev => [...prev, response.data]);
+        const created = await authenticatorService.create(data);
+        setAuthenticators(prev => [...prev, created]);
         toast.success("Autenticador creado exitosamente");
       }
-      onClose(); // Cerramos el modal después de guardar exitosamente
+      onClose();
     } catch (error) {
       toast.error("Error al guardar el autenticador");
       throw error;
@@ -103,7 +95,7 @@ const useAuthenticatorActions = (
       })
     ) {
       try {
-        await axiosInstance.delete(`/api/autenticadores/${id}`);
+        await authenticatorService.remove(id);
         setAuthenticators(prev => prev.filter(auth => auth.id !== id));
         toast.success("Autenticador eliminado exitosamente");
       } catch (error) {
@@ -130,30 +122,50 @@ const AuthenticatorTable = ({
   onEdit,
   onDelete,
 }: AuthenticatorTableProps) => (
-  <div className="border rounded-lg overflow-hidden mt-6">
+  <div className="overflow-x-auto rounded-lg border border-gray-200 shadow-sm">
     <table className="min-w-full divide-y divide-gray-200">
       <thead className="bg-gray-50">
         <tr>
-          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+          <th
+            scope="col"
+            className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+          >
             Nombre
           </th>
-          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+          <th
+            scope="col"
+            className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+          >
             URL
           </th>
-          <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+          <th
+            scope="col"
+            className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
+          >
             Acciones
           </th>
         </tr>
       </thead>
       <tbody className="bg-white divide-y divide-gray-200">
-        {authenticators.map(auth => (
-          <AuthenticatorRow
-            key={auth.id}
-            auth={auth}
-            onEdit={onEdit}
-            onDelete={onDelete}
-          />
-        ))}
+        {authenticators.length === 0 ? (
+          <tr>
+            <td
+              colSpan={3}
+              className="px-6 py-4 text-center text-sm text-gray-500"
+            >
+              No hay autenticadores configurados
+            </td>
+          </tr>
+        ) : (
+          authenticators.map(auth => (
+            <AuthenticatorRow
+              key={auth.id}
+              auth={auth}
+              onEdit={onEdit}
+              onDelete={onDelete}
+            />
+          ))
+        )}
       </tbody>
     </table>
   </div>
@@ -170,20 +182,24 @@ const AuthenticatorRow = ({
   onEdit,
   onDelete,
 }: AuthenticatorRowProps) => (
-  <tr>
-    <td className="px-6 py-4 whitespace-nowrap">{auth.name}</td>
-    <td className="px-6 py-4 whitespace-nowrap">{auth.config.url}</td>
-    <td className="px-6 py-4 whitespace-nowrap text-right">
+  <tr className="hover:bg-gray-50 transition-colors">
+    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 max-w-[10rem] truncate">
+      {auth.name}
+    </td>
+    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 max-w-[10rem] truncate">
+      {auth.config.url}
+    </td>
+    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
       <button
         type="button"
-        className="text-blue-600 hover:text-blue-800 mr-2"
+        className="text-blue-600 hover:text-blue-900 mr-3 inline-flex items-center"
         onClick={() => onEdit(auth)}
       >
         <FaEdit className="h-4 w-4" />
       </button>
       <button
         type="button"
-        className="text-red-600 hover:text-red-800"
+        className="text-red-600 hover:text-red-900 inline-flex items-center"
         onClick={() => onDelete(auth.id!)}
       >
         <FaTrash className="h-4 w-4" />
