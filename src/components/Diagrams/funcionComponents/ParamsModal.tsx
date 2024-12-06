@@ -28,7 +28,10 @@ export const ParamsModal = ({
   setParams,
 }: ParamsModalProps) => {
   const [showParamForm, setShowParamForm] = useState(false);
-  const [editingParam, setEditingParam] = useState<{ param: FunctionParam; index: number } | null>(null);
+  const [editingParam, setEditingParam] = useState<{
+    param: FunctionParam;
+    index: number;
+  } | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const itemsPerPage = 5;

@@ -1,3 +1,4 @@
+import { FunctionParam } from "@interfaces/function-params.interface";
 import {
   FunctionData,
   HttpRequestFunction,
@@ -37,7 +38,8 @@ const useLoadingState = () => {
 
 export const useFunctionData = (
   functionId: number | undefined,
-  selected: boolean
+  selected: boolean,
+  setParams: (params: FunctionParam[]) => void
 ) => {
   const { state, setLoading, setData } = useLoadingState();
 
@@ -48,6 +50,7 @@ export const useFunctionData = (
     try {
       const fetchedFunction = await functionsService.getById(functionId);
       setData(fetchedFunction);
+      setParams(fetchedFunction.config.requestBody || []);
     } catch (error) {
       console.error("Error fetching function:", error);
       throw new Error("Error al cargar la función");
