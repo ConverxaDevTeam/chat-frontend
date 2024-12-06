@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   BaseEdge,
   EdgeLabelRenderer,
@@ -5,6 +6,9 @@ import {
   getBezierPath,
 } from "@xyflow/react";
 import { FaKey } from "react-icons/fa";
+import { useSelector } from "react-redux";
+import { RootState } from "@store";
+import { AuthenticatorModal } from "../authComponents/AuthenticatorModal";
 
 export function AuthEdge({
   sourceX,
@@ -16,6 +20,11 @@ export function AuthEdge({
   style = {},
   markerEnd,
 }: EdgeProps) {
+  const [showModal, setShowModal] = useState(false);
+  const organizationId = useSelector(
+    (state: RootState) => state.auth.selectOrganizationId
+  );
+
   const [edgePath, labelX, labelY] = getBezierPath({
     sourceX,
     sourceY,
@@ -35,11 +44,22 @@ export function AuthEdge({
             transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
           }}
         >
-          <div className="flex items-center bg-white rounded-full shadow-md p-3 ">
+          <button
+            onClick={() => setShowModal(true)}
+            className="flex items-center bg-white rounded-full shadow-md p-3 hover:bg-gray-50 transition-colors"
+          >
             <FaKey className="text-blue-600 mr-1" size={20} />
-          </div>
+          </button>
         </div>
       </EdgeLabelRenderer>
+
+      {organizationId && (
+        <AuthenticatorModal
+          show={showModal}
+          onClose={() => setShowModal(false)}
+          organizationId={organizationId}
+        />
+      )}
     </>
   );
 }
