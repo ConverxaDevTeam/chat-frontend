@@ -1,10 +1,10 @@
 import { formatDateString } from "@utils/format";
 import { IMessage } from ".";
-import { configChat } from "../ChatEditor";
+import { ConfigWebChat } from "../CustomizeChat";
 
 interface MessageSofiaProps {
   menssage: IMessage;
-  config: configChat;
+  config: ConfigWebChat;
 }
 
 const MessageSofia = ({ menssage, config }: MessageSofiaProps) => {
@@ -16,9 +16,10 @@ const MessageSofia = ({ menssage, config }: MessageSofiaProps) => {
       </div>
       <div className="flex flex-1 flex-col gap-[4px] items-start">
         <p
-          className="p-[16px] rounded-[16px] text-sofiaCall-dark leading-[18px] font-poppinsRegular text-[14px]"
+          className="p-[16px] text-sofiaCall-dark leading-[18px] font-poppinsRegular text-[14px]"
           style={{
             backgroundColor: config.bg_assistant,
+            borderRadius: `${config.message_radius}px`,
           }}
         >
           {menssage.text}
