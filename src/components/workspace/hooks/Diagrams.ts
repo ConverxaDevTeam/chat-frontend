@@ -1,6 +1,5 @@
-import { CustomNodeProps } from "@interfaces/workflow";
 import { addEdge, Connection } from "@xyflow/react";
-import { EdgeBase } from "@xyflow/system";
+import { EdgeBase, NodeBase } from "@xyflow/system";
 import { useCallback, useEffect } from "react";
 
 export const useEdges = (
@@ -14,6 +13,7 @@ export const useEdges = (
         target: params.target ?? "",
         sourceHandle: params.sourceHandle ?? undefined,
         targetHandle: params.targetHandle ?? undefined,
+        type: params.source === "agent" ? "auth" : undefined, // Usar edge de autenticación si el origen es un agente
       };
       setEdges(currentEdges => addEdge(newEdge, currentEdges));
     },
@@ -24,7 +24,7 @@ export const useEdges = (
 };
 
 export const useZoomToFit = (
-  nodes: CustomNodeProps[],
+  nodes: NodeBase[],
   setCenter: (
     x: number,
     y: number,
