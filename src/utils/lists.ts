@@ -141,28 +141,6 @@ export const themeColors: themeColor[] = [
     textDate: "#BFBFBF",
     buttonColor: "#15ECDA",
   },
-  {
-    id: 8,
-    bgColor: "#252525",
-    bgChat: "#F5F5F5",
-    bgUser: "#82c0cf",
-    bgAssistant: "#8D14E9",
-    name: "Black",
-    textColor: "#ffffff",
-    textDate: "#BFBFBF",
-    buttonColor: "#15ECDA",
-  },
-  {
-    id: 9,
-    bgColor: "#252525",
-    bgChat: "#F5F5F5",
-    bgUser: "#82c0cf",
-    bgAssistant: "#8D14E9",
-    name: "Black",
-    textColor: "#ffffff",
-    textDate: "#BFBFBF",
-    buttonColor: "#15ECDA",
-  },
 ];
 
 export const conversationsExample: IConversation[] = [

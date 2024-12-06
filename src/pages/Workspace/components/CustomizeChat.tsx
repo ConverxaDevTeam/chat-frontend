@@ -1,12 +1,12 @@
 import Loading from "@components/Loading";
-import { urlFiles } from "@config/config";
 import { getIntegrationWebChat } from "@services/integration";
 import { RootState } from "@store";
-import { alertConfirm } from "@utils/alerts";
 import { useEffect, useState } from "react";
-import { HiOutlineClipboard } from "react-icons/hi";
 import { useSelector } from "react-redux";
 import ChatEditor from "./ChatEditor";
+import { getDefaultDepartment } from "@services/department";
+import EditTexts from "./EditTexts";
+import EditCors from "./EditCors";
 
 interface CustomizeChatProps {
   onClose: () => void;
@@ -18,14 +18,26 @@ export enum IntegracionType {
 }
 
 export interface ConfigWebChat {
+  id: number;
+  name: string;
+  cors: string[];
+  url_assets: string;
   title: string;
   sub_title: string;
   description: string;
-  cors: string[];
   logo: string;
-  horizontal_logo: string | null;
+  horizontal_logo: string;
   icon_chat: string;
   icon_close: string;
+  edge_radius: number;
+  bg_color: string;
+  bg_chat: string;
+  bg_user: string;
+  bg_assistant: string;
+  text_color: string;
+  text_date: string;
+  button_color: string;
+  bgColor: string;
 }
 
 export interface Integracion {
@@ -38,18 +50,17 @@ export interface Integracion {
 
 const CustomizeChat = ({ onClose }: CustomizeChatProps) => {
   const [integration, setIntegration] = useState<Integracion | null>(null);
-  const { department } = useSelector((state: RootState) => state.chat);
-  const [viwer, setViwer] = useState("interface");
+  const [viwer, setViwer] = useState("cors");
   const { selectOrganizationId } = useSelector(
     (state: RootState) => state.auth
   );
 
-  const searchIntegrationWebChat = async (
-    departmentId: number,
-    selectOrganizationId: number
-  ) => {
+  const searchIntegrationWebChat = async (selectOrganizationId: number) => {
+    const responseDepartament =
+      await getDefaultDepartment(selectOrganizationId);
+
     const response = await getIntegrationWebChat(
-      departmentId,
+      responseDepartament.department.id,
       selectOrganizationId
     );
     if (response) {
@@ -57,20 +68,9 @@ const CustomizeChat = ({ onClose }: CustomizeChatProps) => {
     }
   };
 
-  const handleCopy = () => {
-    if (!integration) return alertConfirm("No se ha podido copiar el script");
-    navigator.clipboard
-      .writeText(generatedScript(integration?.id))
-      .then(() => alertConfirm("Script copiado al portapapeles"))
-      .catch(error => console.error("Error al copiar:", error));
-  };
-
-  const generatedScript = (integrationId: number) =>
-    `<script src="${urlFiles}/sofia-chat/CI${integrationId}.js"></script>`;
-
   useEffect(() => {
-    if (department && selectOrganizationId) {
-      searchIntegrationWebChat(department?.id, selectOrganizationId);
+    if (selectOrganizationId) {
+      searchIntegrationWebChat(selectOrganizationId);
     }
   }, []);
 
@@ -80,9 +80,9 @@ const CustomizeChat = ({ onClose }: CustomizeChatProps) => {
         <div className="flex flex-col gap-[20px] min-h-[400px]">
           <div className="flex w-full">
             <button
-              onClick={() => setViwer("script")}
+              onClick={() => setViwer("cors")}
               className={`${
-                viwer === "script"
+                viwer === "cors"
                   ? "bg-blue-600 text-white"
                   : "bg-gray-200 text-gray-600"
               } flex-1 py-2 rounded-tl-md`}
@@ -110,65 +110,24 @@ const CustomizeChat = ({ onClose }: CustomizeChatProps) => {
               Interface
             </button>
           </div>
-          {viwer === "script" && (
-            <div className="flex flex-col gap-[10px]">
-              <label className="block text-sm font-medium text-gray-600">
-                Script de Integración
-              </label>
-              <div className="grid grid-cols-[1fr_auto] bg-gray-50 p-4 rounded-md border border-gray-200 shadow-inner">
-                <div className="text-gray-800 text-sm font-mono leading-tight whitespace-pre-wrap break-all">
-                  {generatedScript(integration.id)}
-                </div>
-                <button
-                  onClick={handleCopy}
-                  type="button"
-                  className="text-gray-500 hover:text-gray-700 ml-2"
-                  aria-label="Copiar script"
-                >
-                  <HiOutlineClipboard size={24} className="h-5 w-5" />
-                </button>
-              </div>
-            </div>
+          {viwer === "cors" && (
+            <EditCors
+              integration={integration}
+              setIntegration={setIntegration}
+            />
           )}
           {viwer === "text" && (
-            <div className="flex flex-col gap-[10px]">
-              <label className="block text-sm font-medium text-gray-600">
-                Textos
-              </label>
-              <div className="grid grid-cols-[1fr_auto] gap-4">
-                <div className="flex flex-col gap-2">
-                  <label className="text-sm font-medium text-gray-600">
-                    Título
-                  </label>
-                  <input
-                    type="text"
-                    className="w-full border border-gray-200 rounded-md p-2"
-                    value={integration.config.title}
-                  />
-                </div>
-                <div className="flex flex-col gap-2">
-                  <label className="text-sm font-medium text-gray-600">
-                    Subtítulo
-                  </label>
-                  <input
-                    type="text"
-                    className="w-full border border-gray-200 rounded-md p-2"
-                    value={integration.config.sub_title}
-                  />
-                </div>
-                <div className="flex flex-col gap-2">
-                  <label className="text-sm font-medium text-gray-600">
-                    Descripción
-                  </label>
-                  <textarea
-                    className="w-full border border-gray-200 rounded-md p-2"
-                    value={integration.config.description}
-                  />
-                </div>
-              </div>
-            </div>
+            <EditTexts
+              integration={integration}
+              setIntegration={setIntegration}
+            />
           )}
-          {viwer === "interface" && <ChatEditor integration={integration} />}
+          {viwer === "interface" && (
+            <ChatEditor
+              integration={integration}
+              setIntegration={setIntegration}
+            />
+          )}
           <div className="flex justify-end space-x-2 mt-auto">
             <button
               type="button"

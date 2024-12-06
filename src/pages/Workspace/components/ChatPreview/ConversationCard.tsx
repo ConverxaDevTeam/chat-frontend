@@ -1,12 +1,12 @@
 import { convertISOToReadableMonthDayYear } from "@utils/format";
 import { useEffect, useState } from "react";
-import { configChat } from "../ChatEditor";
 import { IConversation } from ".";
+import { ConfigWebChat } from "../CustomizeChat";
 
 interface ConversationCardProps {
   setConversation: (conversation: IConversation) => void;
   conversation: IConversation;
-  config: configChat;
+  config: ConfigWebChat;
 }
 
 const ConversationCard = ({

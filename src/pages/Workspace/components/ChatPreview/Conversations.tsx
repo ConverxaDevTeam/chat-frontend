@@ -1,11 +1,11 @@
 import { useState } from "react";
 import ConversationCard from "./ConversationCard";
 import { IConversation } from ".";
-import { configChat } from "../ChatEditor";
+import { ConfigWebChat } from "../CustomizeChat";
 
 interface ConversationsProps {
   conversations: IConversation[];
-  config: configChat;
+  config: ConfigWebChat;
   setConversation: (conversation: IConversation) => void;
 }
 

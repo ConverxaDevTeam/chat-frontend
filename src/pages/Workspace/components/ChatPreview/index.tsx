@@ -2,11 +2,11 @@ import { useEffect, useState } from "react";
 import Header from "./Header";
 import Chat from "./Chat";
 import Conversations from "./Conversations";
-import { configChat } from "../ChatEditor";
 import { conversationsExample } from "@utils/lists";
+import { ConfigWebChat } from "../CustomizeChat";
 
 interface ChatPreviewProps {
-  config: configChat;
+  config: ConfigWebChat;
 }
 
 export interface IConversation {

@@ -1,9 +1,9 @@
 import { IConversation } from ".";
-import { configChat } from "../ChatEditor";
+import { ConfigWebChat } from "../CustomizeChat";
 
 interface HeaderProps {
   conversation: IConversation | null;
-  config: configChat;
+  config: ConfigWebChat;
   setConversation: (conversation: IConversation | null) => void;
 }
 
@@ -33,7 +33,7 @@ const Header = ({ conversation, config, setConversation }: HeaderProps) => {
             className="select-none w-[50px] h-[50px] cursor-pointer bg-white rounded-full p-[6px]"
             alt="Chat"
           />
-          <p className="font-medium text-[20px]">{config.name}</p>
+          <p className="font-medium text-[20px]">{config.title}</p>
         </div>
       ) : (
         <>
