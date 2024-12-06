@@ -8,6 +8,7 @@ import {
 import { FaEdit, FaPlus, FaTrash } from "react-icons/fa";
 import { paramsService } from "@services/params.service";
 import { toast } from "react-toastify";
+import { useSweetAlert } from "@hooks/useSweetAlert";
 
 interface ParamsModalProps {
   isOpen: boolean;
@@ -35,6 +36,7 @@ export const ParamsModal = ({
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const itemsPerPage = 5;
+  const { showConfirmation, handleOperation } = useSweetAlert();
 
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
@@ -52,20 +54,29 @@ export const ParamsModal = ({
   };
 
   const handleDelete = async (index: number) => {
-    if (window.confirm("¿Está seguro de eliminar este parámetro?")) {
-      try {
-        setIsLoading(true);
-        await paramsService.delete(functionData.id, index.toString());
-        toast.success("Parámetro eliminado exitosamente");
+    const confirmed = await showConfirmation({
+      title: "¿Eliminar parámetro?",
+      text: "¿Estás seguro de que deseas eliminar este parámetro? Esta acción no se puede deshacer.",
+      confirmButtonText: "Sí, eliminar",
+      cancelButtonText: "Cancelar",
+    });
+
+    if (confirmed) {
+      const result = await handleOperation(
+        () => paramsService.delete(functionData.id, index.toString()),
+        {
+          title: "Eliminando parámetro",
+          successTitle: "¡Parámetro eliminado!",
+          successText: "El parámetro se ha eliminado exitosamente",
+          errorTitle: "Error al eliminar el parámetro",
+        }
+      );
+
+      if (result.success) {
         // Actualizamos localmente
         const newParams = [...params];
         newParams.splice(index, 1);
         setParams(newParams);
-      } catch (error) {
-        console.error("Error deleting param:", error);
-        toast.error("Error al eliminar el parámetro");
-      } finally {
-        setIsLoading(false);
       }
     }
   };
