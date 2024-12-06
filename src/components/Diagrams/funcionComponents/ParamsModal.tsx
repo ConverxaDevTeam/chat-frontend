@@ -28,7 +28,7 @@ export const ParamsModal = ({
   setParams,
 }: ParamsModalProps) => {
   const [showParamForm, setShowParamForm] = useState(false);
-  const [editingParam, setEditingParam] = useState<FunctionParam | null>(null);
+  const [editingParam, setEditingParam] = useState<{ param: FunctionParam; index: number } | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const itemsPerPage = 5;
@@ -43,19 +43,21 @@ export const ParamsModal = ({
     setShowParamForm(true);
   };
 
-  const handleEdit = (param: FunctionParam) => {
-    setEditingParam(param);
+  const handleEdit = (param: FunctionParam, index: number) => {
+    setEditingParam({ param, index });
     setShowParamForm(true);
   };
 
-  const handleDelete = async (paramId: string) => {
+  const handleDelete = async (index: number) => {
     if (window.confirm("¿Está seguro de eliminar este parámetro?")) {
       try {
         setIsLoading(true);
-        await paramsService.delete(functionData.id, paramId);
+        await paramsService.delete(functionData.id, index.toString());
         toast.success("Parámetro eliminado exitosamente");
         // Actualizamos localmente
-        setParams(params.filter(p => p.id !== paramId));
+        const newParams = [...params];
+        newParams.splice(index, 1);
+        setParams(newParams);
       } catch (error) {
         console.error("Error deleting param:", error);
         toast.error("Error al eliminar el parámetro");
@@ -71,13 +73,13 @@ export const ParamsModal = ({
       if (editingParam) {
         const updatedParam = await paramsService.update(
           functionData.id,
-          editingParam.id,
+          editingParam.index.toString(),
           param
         );
         // Actualizamos localmente
-        setParams(
-          params.map(p => (p.id === editingParam.id ? updatedParam : p))
-        );
+        const newParams = [...params];
+        newParams[editingParam.index] = updatedParam;
+        setParams(newParams);
         toast.success("Parámetro actualizado exitosamente");
       } else {
         const newParam = await paramsService.create(
@@ -135,9 +137,9 @@ export const ParamsModal = ({
                 </p>
               </div>
             ) : (
-              currentParams.map(param => (
+              currentParams.map((param, index) => (
                 <div
-                  key={param.id}
+                  key={startIndex + index}
                   className="grid grid-cols-[1fr,auto] gap-4 items-center p-4 bg-white rounded-lg border border-gray-100 hover:border-blue-100 transition-all duration-200 group"
                 >
                   <div className="space-y-1.5">
@@ -157,7 +159,7 @@ export const ParamsModal = ({
                   </div>
                   <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                     <button
-                      onClick={() => handleEdit(param)}
+                      onClick={() => handleEdit(param, startIndex + index)}
                       disabled={isLoading}
                       className="p-2 text-gray-400 hover:text-blue-500 rounded-md hover:bg-blue-50 transition-colors"
                       title="Editar parámetro"
@@ -165,7 +167,7 @@ export const ParamsModal = ({
                       <FaEdit size={16} />
                     </button>
                     <button
-                      onClick={() => handleDelete(param.id)}
+                      onClick={() => handleDelete(startIndex + index)}
                       disabled={isLoading}
                       className="p-2 text-gray-400 hover:text-red-500 rounded-md hover:bg-red-50 transition-colors"
                       title="Eliminar parámetro"
@@ -201,7 +203,7 @@ export const ParamsModal = ({
           <ParamFormModal
             isOpen={showParamForm}
             onClose={() => setShowParamForm(false)}
-            param={editingParam}
+            param={editingParam?.param || null}
             onSubmit={handleSubmit}
           />
         )}

@@ -1,4 +1,4 @@
-import { memo, useState, useEffect } from "react";
+import { memo, useState } from "react";
 import { MdCode } from "react-icons/md";
 import DefaultNode from "./DefaultNode";
 import { CustomTypeNodeProps } from "@interfaces/workflow";
@@ -54,13 +54,15 @@ const handleNodeDelete = async (
 const useNodeOperations = (
   initialData: FunctionData<HttpRequestFunction>,
   id: string,
+  setParams: (params: FunctionParam[]) => void,
   selected: boolean
 ) => {
   const { setNodes, setEdges } = useReactFlow();
   const actions = useFunctionActions(initialData);
   const { data: functionData } = useFunctionData(
     initialData.functionId,
-    selected
+    selected,
+    setParams
   );
 
   return {
@@ -85,6 +87,7 @@ const FunctionModals = ({
   isLoading,
   error,
   params,
+  setParams,
   onSuccess,
 }: {
   showEdit: boolean;
@@ -96,6 +99,7 @@ const FunctionModals = ({
   isLoading: boolean;
   error: string | null;
   params: FunctionParam[];
+  setParams: (params: FunctionParam[]) => void;
   onSuccess: (data: FunctionData<HttpRequestFunction>) => void;
 }) => (
   <>
@@ -117,7 +121,7 @@ const FunctionModals = ({
         requestBody: initialData.config?.requestBody,
       }}
       params={params}
-      setParams={params => params}
+      setParams={setParams}
     />
   </>
 );
@@ -153,12 +157,6 @@ const FuncionNode = memo((props: FunctionNodeProps) => {
   const [showParamsModal, setShowParamsModal] = useState(false);
   const [params, setParams] = useState<FunctionParam[]>([]);
 
-  useEffect(() => {
-    if (initialData.config?.requestBody) {
-      setParams(initialData.config.requestBody);
-    }
-  }, [initialData.config?.requestBody]);
-
   const handleShowParamsModal = () => {
     setShowParamsModal(true);
   };
@@ -168,7 +166,7 @@ const FuncionNode = memo((props: FunctionNodeProps) => {
   };
 
   const { currentData, isLoading, error, handleSuccess, handleDelete } =
-    useNodeOperations(initialData, id, selected ?? false);
+    useNodeOperations(initialData, id, setParams, selected ?? false);
 
   return (
     <>
@@ -196,23 +194,12 @@ const FuncionNode = memo((props: FunctionNodeProps) => {
         isLoading={isLoading}
         error={error}
         params={params}
+        setParams={setParams}
         onSuccess={async data => {
           const success = await handleSuccess(data);
           if (success) setShowEditModal(false);
         }}
       />
-      {initialData.functionId && (
-        <ParamsModal
-          isOpen={showParamsModal}
-          onClose={handleCloseParamsModal}
-          functionData={{
-            id: initialData.functionId,
-            requestBody: initialData.config?.requestBody,
-          }}
-          params={params}
-          setParams={setParams}
-        />
-      )}
     </>
   );
 });
