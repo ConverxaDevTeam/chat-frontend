@@ -24,7 +24,6 @@ export const useContextMenu = () => {
 
       const { clientX, clientY } =
         event instanceof MouseEvent ? event : event.touches[0];
-      console.log(connectionState.fromNode);
       const fromNodeProps = {
         id: connectionState.fromNode.id,
         type: connectionState.fromNode.type,

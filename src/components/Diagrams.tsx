@@ -32,6 +32,7 @@ import { useNodeSelection } from "./Diagrams/hooks/useNodeSelection";
 import { useContextMenu } from "./Diagrams/hooks/useContextMenu";
 import { useNodeCreation } from "./Diagrams/hooks/useNodeCreation";
 import { useEdges, useZoomToFit } from "./workspace/hooks/Diagrams";
+import { AuthEdge } from "./Diagrams/edges/AuthEdge";
 
 // Tipos y interfaces
 interface ContextMenuState {
@@ -209,14 +210,20 @@ const edgeFactory = {
       agentPos,
       functionNode.position
     );
-    return edgeFactory.createEdge(
-      `e-agent-${functionNode.id}`,
-      "agent",
-      functionNode.id,
+
+    return {
+      id: `e${functionNode.id}`,
+      source: "agent",
+      target: functionNode.id,
       sourceHandle,
-      targetHandle
-    );
+      targetHandle,
+      type: "auth", // Usar nuestro edge personalizado
+    };
   },
+};
+
+const edgeTypes = {
+  auth: AuthEdge,
 };
 
 const createInitialNodes = (
@@ -306,6 +313,7 @@ const DiagramFlow = ({
       agente: AgenteNode,
       funcion: FuncionNode,
     }}
+    edgeTypes={edgeTypes}
     fitView
   >
     <Controls />
