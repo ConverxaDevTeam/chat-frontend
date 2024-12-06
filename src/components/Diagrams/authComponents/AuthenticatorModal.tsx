@@ -5,27 +5,12 @@ import { FaTrash, FaEdit, FaPlus } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { AuthenticatorFormModal } from "./AuthenticatorFormModal";
 import {
-  AutenticadorType,
-  injectPlaces,
+  Autenticador,
+  HttpAutenticador,
+  BearerConfig,
 } from "@interfaces/autenticators.interface";
-import { HttpMethod } from "@interfaces/functions.interface";
 
-interface AuthenticatorFormData {
-  id?: number;
-  name: string;
-  organizationId: number;
-  type: AutenticadorType;
-  config: {
-    url: string;
-    method: HttpMethod;
-    params: Record<string, string>;
-    injectPlace: injectPlaces;
-    injectConfig: {
-      tokenPath: string;
-      refreshPath: string;
-    };
-  };
-}
+type AuthenticatorType = Autenticador<HttpAutenticador<BearerConfig>>;
 
 interface AuthenticatorModalProps {
   show: boolean;
@@ -38,12 +23,10 @@ export function AuthenticatorModal({
   onClose,
   organizationId,
 }: AuthenticatorModalProps) {
-  const [authenticators, setAuthenticators] = useState<AuthenticatorFormData[]>(
-    []
-  );
+  const [authenticators, setAuthenticators] = useState<AuthenticatorType[]>([]);
   const [showFormModal, setShowFormModal] = useState(false);
   const [editingAuthenticator, setEditingAuthenticator] = useState<
-    AuthenticatorFormData | undefined
+    AuthenticatorType | undefined
   >();
 
   const fetchAuthenticators = async () => {
@@ -57,7 +40,7 @@ export function AuthenticatorModal({
     }
   };
 
-  const handleSubmit = async (data: AuthenticatorFormData) => {
+  const handleSubmit = async (data: AuthenticatorType) => {
     try {
       if (editingAuthenticator?.id) {
         const response = await axiosInstance.patch(
@@ -71,7 +54,11 @@ export function AuthenticatorModal({
         );
         toast.success("Autenticador actualizado exitosamente");
       } else {
-        const response = await axiosInstance.post("/api/autenticadores", data);
+        const response = await axiosInstance.post("/api/autenticadores", {
+          ...data,
+          life_time: 3600,
+          value: "",
+        });
         setAuthenticators(prev => [...prev, response.data]);
         toast.success("Autenticador creado exitosamente");
       }
@@ -93,7 +80,7 @@ export function AuthenticatorModal({
     }
   };
 
-  const handleEdit = (authenticator: AuthenticatorFormData) => {
+  const handleEdit = (authenticator: AuthenticatorType) => {
     setEditingAuthenticator(authenticator);
     setShowFormModal(true);
   };

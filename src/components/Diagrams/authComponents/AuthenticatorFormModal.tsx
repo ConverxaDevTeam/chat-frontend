@@ -6,18 +6,23 @@ import {
   Autenticador,
   AutenticadorType,
   injectPlaces,
+  HttpAutenticador,
+  BearerConfig,
 } from "@interfaces/autenticators.interface";
 import { HttpMethod } from "@interfaces/functions.interface";
+import { useEffect } from "react";
+
+type AuthenticatorType = Autenticador<HttpAutenticador<BearerConfig>>;
 
 interface AuthenticatorFormModalProps {
   show: boolean;
   onClose: () => void;
-  onSubmit: (data: Autenticador) => Promise<void>;
-  initialData?: Autenticador;
+  onSubmit: (data: AuthenticatorType) => Promise<void>;
+  initialData?: AuthenticatorType;
   organizationId: number;
 }
 
-type NestedFieldErrors = FieldErrors<Autenticador>;
+type NestedFieldErrors = FieldErrors<AuthenticatorType>;
 type NestedKeys =
   | keyof NestedFieldErrors
   | "config.url"
@@ -37,10 +42,12 @@ export function AuthenticatorFormModal({
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<Autenticador>({
+  } = useForm<AuthenticatorType>({
     defaultValues: initialData || {
       name: "",
       organizationId,
+      value: "",
+      life_time: 3600,
       type: AutenticadorType.ENDPOINT,
       config: {
         url: "",
@@ -55,7 +62,31 @@ export function AuthenticatorFormModal({
     },
   });
 
-  const handleFormSubmit = async (data: Autenticador) => {
+  useEffect(() => {
+    if (show) {
+      reset(
+        initialData || {
+          name: "",
+          organizationId,
+          value: "",
+          life_time: 3600,
+          type: AutenticadorType.ENDPOINT,
+          config: {
+            url: "",
+            method: HttpMethod.POST,
+            params: {},
+            injectPlace: injectPlaces.BEARER_HEADER,
+            injectConfig: {
+              tokenPath: "",
+              refreshPath: "",
+            },
+          },
+        }
+      );
+    }
+  }, [show, initialData, organizationId, reset]);
+
+  const handleFormSubmit = async (data: AuthenticatorType) => {
     await onSubmit(data);
     reset();
   };
