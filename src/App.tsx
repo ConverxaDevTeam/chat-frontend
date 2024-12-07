@@ -2,6 +2,7 @@ import Interface from "@components/Interface";
 import Loading from "@components/Loading";
 import ProtectedAuth from "@components/ProtectedAuth";
 import ProtectedSuperAdmin from "@components/ProtectedSuperAdmin";
+import Conversations from "@pages/Conversations";
 import Dashboard from "@pages/Home";
 import LogIn from "@pages/LogIn";
 import Organizations from "@pages/Organizations";
@@ -45,6 +46,7 @@ const App = (): JSX.Element => {
             </ProtectedSuperAdmin>
           }
         />
+        <Route path="conversations" element={<Conversations />} />
         <Route path="workspace" element={<Workspace />} />
       </Route>
       <Route path="*" element={<Navigate to="/" />} />
