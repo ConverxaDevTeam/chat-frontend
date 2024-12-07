@@ -3,6 +3,7 @@ import { AiFillHome } from "react-icons/ai";
 import { FaLayerGroup } from "react-icons/fa";
 import { BsPersonWorkspace } from "react-icons/bs";
 import { IConversation } from "@pages/Workspace/components/ChatPreview";
+import { BsWechat } from "react-icons/bs";
 
 export const sidebarLinks = [
   {
@@ -16,6 +17,12 @@ export const sidebarLinks = [
     text: "Espacios de trabajo",
     active: ["/workspace"],
     Icon: BsPersonWorkspace,
+  },
+  {
+    to: "/conversations",
+    text: "Conversaciones",
+    active: ["/conversations"],
+    Icon: BsWechat,
   },
 ];
 
