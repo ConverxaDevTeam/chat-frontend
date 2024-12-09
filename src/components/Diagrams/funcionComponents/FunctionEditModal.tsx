@@ -13,7 +13,7 @@ interface FunctionEditModalProps {
   onSuccess?: (data: FunctionData<HttpRequestFunction>) => void;
   isLoading?: boolean;
   error?: string | null;
-  agentId?: number;
+  agentId: number;
 }
 
 export const FunctionEditModal = ({

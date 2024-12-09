@@ -153,7 +153,11 @@ const NodeContent = ({
 
 const FuncionNode = memo((props: FunctionNodeProps) => {
   const { data: initialData, selected, id } = props;
-  const [showEditModal, setShowEditModal] = useState(!initialData.functionId);
+  if (!initialData.functionId) {
+    console.error("FuncionNode requires a functionId");
+    return null;
+  }
+  const [showEditModal, setShowEditModal] = useState(false);
   const [showParamsModal, setShowParamsModal] = useState(false);
   const [params, setParams] = useState<FunctionParam[]>([]);
 

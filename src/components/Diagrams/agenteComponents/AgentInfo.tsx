@@ -1,6 +1,11 @@
 import { MdEdit, MdAddCircleOutline } from "react-icons/md";
 import { useUnifiedNodeCreation } from "../hooks/useUnifiedNodeCreation";
-import { useCallback } from "react";
+import { useState } from "react";
+import { FunctionEditModal } from "../funcionComponents/FunctionEditModal";
+import {
+  FunctionData,
+  HttpRequestFunction,
+} from "@interfaces/functions.interface";
 
 interface AgentData {
   name: string;
@@ -23,16 +28,17 @@ const InfoField = ({ label, value, defaultValue }: InfoFieldProps) => (
 interface ActionButtonsProps {
   onEdit: () => void;
   nodeId: string;
+  agentId?: number;
 }
 
-const ActionButtons = ({ onEdit, nodeId }: ActionButtonsProps) => {
+const ActionButtons = ({ onEdit, nodeId, agentId }: ActionButtonsProps) => {
   const { createWithSpacing } = useUnifiedNodeCreation();
-  const addFunctionNode = useCallback(
-    (sourceNodeId: string) => {
-      createWithSpacing(sourceNodeId);
-    },
-    [createWithSpacing]
-  );
+  const [showFunctionModal, setShowFunctionModal] = useState(false);
+
+  const handleFunctionSuccess = (data: FunctionData<HttpRequestFunction>) => {
+    createWithSpacing(nodeId, agentId, data);
+    setShowFunctionModal(false);
+  };
 
   return (
     <div className="flex flex-col gap-2 w-full">
@@ -43,11 +49,19 @@ const ActionButtons = ({ onEdit, nodeId }: ActionButtonsProps) => {
         <MdEdit className="mr-2" /> Editar
       </button>
       <button
-        onClick={() => addFunctionNode(nodeId)}
+        onClick={() => setShowFunctionModal(true)}
         className="flex items-center justify-center w-full px-4 py-2 text-sm text-blue-600 bg-blue-100 rounded-lg hover:bg-blue-200 transition-colors duration-200"
       >
         <MdAddCircleOutline className="mr-2" /> Agregar Funciones
       </button>
+      {agentId && (
+        <FunctionEditModal
+          isShown={showFunctionModal}
+          onClose={() => setShowFunctionModal(false)}
+          onSuccess={handleFunctionSuccess}
+          agentId={agentId}
+        />
+      )}
     </div>
   );
 };
@@ -65,6 +79,7 @@ interface AgentInfoProps {
   agentData: AgentData | null;
   onEdit: () => void;
   nodeId: string;
+  agentId?: number;
 }
 
 export const AgentInfo = ({
@@ -72,9 +87,10 @@ export const AgentInfo = ({
   agentData,
   onEdit,
   nodeId,
+  agentId,
 }: AgentInfoProps) => {
   if (isLoading) {
-    return <LoadingState message="Cargando agente..." />;
+    return <LoadingState message="Cargando información del agente..." />;
   }
 
   return (
@@ -89,7 +105,7 @@ export const AgentInfo = ({
         value={agentData?.description}
         defaultValue="Sin descripción"
       />
-      <ActionButtons onEdit={onEdit} nodeId={nodeId} />
+      <ActionButtons onEdit={onEdit} nodeId={nodeId} agentId={agentId} />
     </div>
   );
 };

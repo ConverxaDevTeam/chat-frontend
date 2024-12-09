@@ -15,6 +15,7 @@ import {
   FunctionData,
   FunctionNodeTypes,
 } from "@interfaces/functions.interface";
+import { functionsService } from "@services/functions.service";
 
 // Tipos y constantes
 interface FunctionFormValues {
@@ -75,7 +76,20 @@ const useFunctionForm = (props: FunctionFormProps) => {
         },
       };
 
-      onSuccess?.(functionData);
+      // Crear o actualizar la función en el backend
+      let savedFunction;
+      if (isCreating) {
+        savedFunction = await functionsService.create(functionData);
+      } else {
+        savedFunction = await functionsService.update(
+          functionId!,
+          functionData
+        );
+      }
+
+      if (savedFunction) {
+        onSuccess?.(savedFunction);
+      }
     } catch (error) {
       console.error("Error saving function:", error);
     } finally {

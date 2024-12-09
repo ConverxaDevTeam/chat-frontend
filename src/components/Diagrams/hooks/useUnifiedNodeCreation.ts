@@ -15,7 +15,6 @@ import {
   HttpRequestFunction,
   FunctionNodeTypes,
 } from "@interfaces/functions.interface";
-import { useAppSelector } from "@store/hooks";
 import { AgentData, CustomTypeNodeProps } from "@interfaces/workflow";
 
 interface Position2D {
@@ -54,6 +53,7 @@ const createNewNode = ({
     type,
     position,
     data: {
+      ...initialData,
       name: initialData.name || "Nueva Función",
       description: initialData.description || "",
       label: initialData.name || "Nueva Función",
@@ -123,7 +123,8 @@ const handleCreateWithSpacing = (
   fitBounds: (
     bounds: Rect,
     options?: { duration?: number; padding?: number }
-  ) => void
+  ) => void,
+  functionData?: FunctionData<HttpRequestFunction>
 ) => {
   if (!currentAgentId) return;
 
@@ -145,6 +146,7 @@ const handleCreateWithSpacing = (
     agentId: currentAgentId,
     sourceNodeId,
     parentNodeId: sourceNodeId,
+    initialData: functionData,
   });
 
   addNodes(node);
@@ -197,7 +199,6 @@ export const useUnifiedNodeCreation = () => {
     addNodes,
     addEdges,
   } = useReactFlow();
-  const currentAgentId = useAppSelector(state => state.chat.currentAgent?.id);
 
   const createNode = useCallback(
     ({
@@ -219,6 +220,12 @@ export const useUnifiedNodeCreation = () => {
       let newEdge: Edge | undefined;
       if (sourceNodeId) {
         newEdge = createNewEdge(sourceNodeId, newNode.id);
+        if (newEdge.type === "auth") {
+          newEdge.data = {
+            functionId: initialData.functionId ?? initialData.id,
+            authenticatorId: undefined,
+          };
+        }
       }
       return { node: newNode, edge: newEdge };
     },
@@ -239,7 +246,11 @@ export const useUnifiedNodeCreation = () => {
   );
 
   const createWithSpacing = useCallback(
-    (sourceNodeId: string) => {
+    (
+      sourceNodeId: string,
+      currentAgentId?: number,
+      functionData?: FunctionData<HttpRequestFunction>
+    ) => {
       return handleCreateWithSpacing(
         sourceNodeId,
         currentAgentId,
@@ -249,11 +260,11 @@ export const useUnifiedNodeCreation = () => {
         addNodes,
         addEdges,
         getNodesBounds,
-        fitBounds
+        fitBounds,
+        functionData
       );
     },
     [
-      currentAgentId,
       getNode,
       getNodes,
       createNode,

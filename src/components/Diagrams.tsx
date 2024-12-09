@@ -14,7 +14,7 @@ import {
   Edge,
 } from "@xyflow/react";
 import { EdgeBase } from "@xyflow/system";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import "@xyflow/react/dist/style.css";
 import { useAppSelector } from "@store/hooks";
 import {
@@ -37,6 +37,7 @@ import { useContextMenu } from "./Diagrams/hooks/useContextMenu";
 import { useUnifiedNodeCreation } from "./Diagrams/hooks/useUnifiedNodeCreation";
 import { useEdges, useZoomToFit } from "./workspace/hooks/Diagrams";
 import { AuthEdge } from "./Diagrams/edges/AuthEdge";
+import { FunctionEditModal } from "./Diagrams/funcionComponents/FunctionEditModal";
 
 // Tipos y interfaces
 interface ContextMenuState {
@@ -325,10 +326,16 @@ const DiagramFlow = ({
 
 const ZoomTransition = () => {
   const currentAgentId = useAppSelector(state => state.chat.currentAgent?.id);
-  const { nodes, initialEdges } = createInitialNodes(currentAgentId);
-  const [nodesState, setNodes, onNodesChange] = useNodesState<Node>(nodes);
-  const [edges, setEdges, onEdgesChange] =
-    useEdgesState<EdgeBase>(initialEdges);
+  const [nodesState, setNodes, onNodesChange] = useNodesState<Node>(
+    createInitialNodes(currentAgentId).nodes
+  );
+  const [edges, setEdges, onEdgesChange] = useEdgesState<EdgeBase>(
+    createInitialNodes(currentAgentId).initialEdges
+  );
+
+  const [showFunctionModal, setShowFunctionModal] = useState(false);
+  const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
+  const [selectedAgentId, setSelectedAgentId] = useState<number | null>(null);
 
   useEffect(() => {
     if (!currentAgentId) return;
@@ -343,14 +350,37 @@ const ZoomTransition = () => {
 
   const { handleNodeDragStart, handleNodeDragStop } = useNodeSelection();
   const { contextMenu, setContextMenu, handleConnectEnd } = useContextMenu();
-  const { createFromContextMenu } = useUnifiedNodeCreation();
+  const { createWithSpacing } = useUnifiedNodeCreation();
+
+  const handleFunctionSuccess = useCallback(
+    (data: FunctionData<HttpRequestFunction>) => {
+      console.log(data);
+      if (selectedNodeId && selectedAgentId) {
+        createWithSpacing(selectedNodeId, selectedAgentId, {
+          ...data,
+          functionId: data.functionId ?? data.id,
+        });
+        setShowFunctionModal(false);
+        setSelectedNodeId(null);
+      }
+    },
+    [createWithSpacing, selectedNodeId, selectedAgentId]
+  );
+
   const handleCreateFunction = useCallback(
     (contextMenu: ContextMenuState) => {
-      createFromContextMenu(contextMenu);
+      if (!contextMenu.fromNode.data.agentId) {
+        console.error("El nodo seleccionado no tiene un agente asignado");
+        return;
+      }
+      setSelectedNodeId(contextMenu.fromNode.id);
+      setSelectedAgentId(contextMenu.fromNode.data.agentId);
+      setShowFunctionModal(true);
       setContextMenu(null);
     },
-    [createFromContextMenu, setContextMenu]
+    [setContextMenu]
   );
+
   const { onConnect } = useEdges(setEdges);
   const { setCenter } = useReactFlow();
   useZoomToFit(nodesState, setCenter);
@@ -372,6 +402,17 @@ const ZoomTransition = () => {
         onClose={() => setContextMenu(null)}
         onCreateFunction={handleCreateFunction}
       />
+      {selectedAgentId && (
+        <FunctionEditModal
+          isShown={showFunctionModal}
+          onClose={() => {
+            setShowFunctionModal(false);
+            setSelectedNodeId(null);
+          }}
+          onSuccess={handleFunctionSuccess}
+          agentId={selectedAgentId}
+        />
+      )}
     </div>
   );
 };

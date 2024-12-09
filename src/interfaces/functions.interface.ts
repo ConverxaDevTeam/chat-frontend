@@ -25,6 +25,7 @@ export interface HttpRequestFunction {
 export interface FunctionData<
   T extends { type: string; config: Record<string, unknown> },
 > extends NodeData {
+  id?: number;
   functionId?: number;
   agentId: number;
   description: string;

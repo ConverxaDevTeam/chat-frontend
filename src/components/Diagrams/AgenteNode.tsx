@@ -39,6 +39,7 @@ const AgenteNode = (props: CustomTypeNodeProps<AgentData>) => {
             agentData={agentData}
             onEdit={() => setIsModalOpen(true)}
             nodeId={props.id}
+            agentId={data.agentId}
           />
         </div>
       </DefaultNode>
