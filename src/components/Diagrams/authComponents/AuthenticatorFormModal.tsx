@@ -15,7 +15,7 @@ import {
   BearerConfig,
 } from "@interfaces/autenticators.interface";
 import { HttpMethod } from "@interfaces/functions.interface";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 type AuthenticatorType = Autenticador<HttpAutenticador<BearerConfig>>;
 
@@ -44,7 +44,10 @@ const DEFAULT_VALUES = (organizationId: number): AuthenticatorType => ({
   config: {
     url: "",
     method: HttpMethod.POST,
-    params: {},
+    params: {
+      username: "",
+      password: "",
+    },
     injectPlace: injectPlaces.BEARER_HEADER,
     injectConfig: {
       tokenPath: "",
@@ -65,6 +68,7 @@ const useAuthenticatorForm = ({
     handleSubmit,
     formState: { errors },
     reset,
+    setValue,
   } = useForm<AuthenticatorType>({
     defaultValues: DEFAULT_VALUES(organizationId),
   });
@@ -85,6 +89,7 @@ const useAuthenticatorForm = ({
     errors,
     getNestedError,
     reset,
+    setValue,
   };
 };
 
@@ -188,52 +193,94 @@ const FORM_FIELDS: FormFieldConfig[] = [
   },
 ];
 
-interface FormActionsProps {
-  onCancel: () => void;
-  isEditing: boolean;
+interface DynamicParam {
+  key: string;
+  value: string;
 }
 
-const FormActions = ({ onCancel, isEditing }: FormActionsProps) => (
-  <div className="flex justify-end space-x-2 pt-4">
-    <button
-      type="button"
-      className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
-      onClick={onCancel}
-    >
-      Cancelar
-    </button>
-    <button
-      type="submit"
-      className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
-    >
-      {isEditing ? "Actualizar" : "Crear"}
-    </button>
-  </div>
-);
-
-export function AuthenticatorFormModal({
+const AuthenticatorFormModal = ({
   show,
   onClose,
   onSubmit,
   initialData,
   organizationId,
-}: AuthenticatorFormModalProps) {
-  const { register, handleSubmit, getNestedError } = useAuthenticatorForm({
-    initialData,
-    organizationId,
-    show,
-    onSubmit,
-  });
+}: AuthenticatorFormModalProps) => {
+  const { register, handleSubmit, getNestedError, setValue, reset } =
+    useAuthenticatorForm({
+      initialData,
+      organizationId,
+      show,
+      onSubmit,
+    });
+
+  const [dynamicParams, setDynamicParams] = useState<DynamicParam[]>([
+    { key: "username", value: "" },
+    { key: "password", value: "" },
+  ]);
+
+  useEffect(() => {
+    if (initialData?.config?.params) {
+      const entries = Object.entries(initialData.config.params);
+      setDynamicParams(
+        entries.length > 0
+          ? [
+              { key: entries[0][0], value: entries[0][1] },
+              entries[1]
+                ? { key: entries[1][0], value: entries[1][1] }
+                : { key: "password", value: "" },
+            ]
+          : [
+              { key: "username", value: "" },
+              { key: "password", value: "" },
+            ]
+      );
+    }
+  }, [initialData]);
+
+  const updateParam = (
+    index: number,
+    field: "key" | "value",
+    value: string
+  ) => {
+    const newParams = [...dynamicParams];
+    newParams[index][field] = value;
+    setDynamicParams(newParams);
+    updateFormParams(newParams);
+  };
+
+  const updateFormParams = (params: DynamicParam[]) => {
+    const paramsObject = params.reduce(
+      (acc, param) => {
+        if (param.key) {
+          acc[param.key] = param.value;
+        }
+        return acc;
+      },
+      {} as Record<string, string>
+    );
+
+    setValue("config.params", paramsObject);
+  };
 
   const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    updateFormParams(dynamicParams);
     handleSubmit(async (data: AuthenticatorType) => {
       await onSubmit(data);
     })(e);
   };
 
+  const handleClose = () => {
+    reset(DEFAULT_VALUES(organizationId));
+    setDynamicParams([
+      { key: "username", value: "" },
+      { key: "password", value: "" },
+    ]);
+    onClose();
+  };
+
   return (
-    <Modal isShown={show} onClose={onClose}>
+    <Modal isShown={show} onClose={handleClose}>
       <form onSubmit={handleFormSubmit}>
         {FORM_FIELDS.map(field => (
           <FormField
@@ -245,8 +292,50 @@ export function AuthenticatorFormModal({
             }
           />
         ))}
-        <FormActions onCancel={onClose} isEditing={!!initialData} />
+
+        <div className="space-y-4 mt-4">
+          <div className="flex justify-between items-center">
+            <h3 className="text-lg font-medium">Parámetros</h3>
+          </div>
+
+          {dynamicParams.map((param, index) => (
+            <div key={index} className="flex gap-2 items-start">
+              <InputGroup label="Parámetro">
+                <Input
+                  placeholder="Nombre del parámetro"
+                  value={param.key}
+                  onChange={e => updateParam(index, "key", e.target.value)}
+                />
+              </InputGroup>
+              <InputGroup label="Valor">
+                <Input
+                  placeholder="Valor"
+                  value={param.value}
+                  onChange={e => updateParam(index, "value", e.target.value)}
+                />
+              </InputGroup>
+            </div>
+          ))}
+        </div>
+
+        <div className="flex justify-end space-x-2 pt-4">
+          <button
+            type="button"
+            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+            onClick={handleClose}
+          >
+            Cancelar
+          </button>
+          <button
+            type="submit"
+            className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
+          >
+            {initialData ? "Actualizar" : "Crear"}
+          </button>
+        </div>
       </form>
     </Modal>
   );
-}
+};
+
+export default AuthenticatorFormModal;
