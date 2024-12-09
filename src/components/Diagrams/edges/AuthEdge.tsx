@@ -14,7 +14,6 @@ import { AuthenticatorModal } from "../authComponents/AuthenticatorModal";
 interface AuthEdgeData {
   functionId: number;
   authenticatorId?: number;
-  onAuthenticatorChange?: (functionId: number, authenticatorId: number) => void;
 }
 
 interface AuthEdgeProps extends Omit<EdgeProps, "data"> {
@@ -31,8 +30,8 @@ export function AuthEdge({
   style = {},
   markerEnd,
   data,
+  id,
 }: AuthEdgeProps) {
-  console.log(data);
   const [showModal, setShowModal] = useState(false);
   const { setEdges } = useReactFlow();
   const organizationId = useSelector(
@@ -43,7 +42,7 @@ export function AuthEdge({
     (authenticatorId: number | undefined) => {
       setEdges(edges =>
         edges.map(edge => {
-          if (edge.source === data.functionId.toString()) {
+          if (edge.id === id) {
             return {
               ...edge,
               data: {
@@ -56,7 +55,7 @@ export function AuthEdge({
         })
       );
     },
-    [data.functionId, setEdges]
+    [id, setEdges]
   );
 
   const [edgePath, labelX, labelY] = getBezierPath({
@@ -103,7 +102,6 @@ export function AuthEdge({
           functionId={data.functionId}
           selectedAuthenticatorId={data.authenticatorId}
           handleAuthenticatorUpdate={handleAuthenticatorUpdate}
-          onAuthenticatorChange={data.onAuthenticatorChange}
         />
       )}
     </>
