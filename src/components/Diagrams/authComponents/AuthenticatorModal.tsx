@@ -2,7 +2,6 @@ import Modal from "@components/Modal";
 import { useState, useEffect, useCallback } from "react";
 import { FaTrash, FaEdit, FaPlus } from "react-icons/fa";
 import { toast } from "react-toastify";
-import { AuthenticatorFormModal } from "./AuthenticatorFormModal";
 import { useSweetAlert } from "@/hooks/useSweetAlert";
 import { authenticatorService } from "@/services/authenticator.service";
 import {
@@ -10,6 +9,7 @@ import {
   BearerConfig,
   HttpAutenticador,
 } from "@interfaces/autenticators.interface";
+import AuthenticatorFormModal from "./AuthenticatorFormModal";
 
 type AuthenticatorType = Autenticador<HttpAutenticador<BearerConfig>>;
 
