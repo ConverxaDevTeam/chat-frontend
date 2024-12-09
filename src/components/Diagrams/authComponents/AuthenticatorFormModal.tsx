@@ -44,7 +44,7 @@ type FormFieldType = {
   label: string;
   placeholder: string;
   name: NestedKeys;
-  type: "text" | "select";
+  type: "text" | "select" | "number";
   required?: boolean;
   options?: Array<{ value: string; label: string }>;
 };
@@ -194,6 +194,15 @@ const FormField = ({
           </option>
         ))}
       </select>
+    ) : type === "number" ? (
+      <input
+        type="number"
+        min="0"
+        {...register(name, {
+          required: required ? "Este campo es requerido" : false,
+        })}
+        className="w-full rounded-md bg-gray-100 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-3 py-2 sm:text-sm"
+      />
     ) : (
       <Input
         placeholder={placeholder}
@@ -266,7 +275,7 @@ const DEFAULT_VALUES = (organizationId: number): AuthenticatorType => ({
   name: "",
   organizationId,
   value: "",
-  life_time: 3600,
+  life_time: 0,
   type: AutenticadorType.ENDPOINT,
   config: {
     url: "",
@@ -289,6 +298,12 @@ const FORM_FIELDS: FormFieldType[] = [
     placeholder: "Nombre del autenticador",
     name: "name",
     type: "text",
+  },
+  {
+    label: "Tiempo de vida (segundos)",
+    placeholder: "Tiempo de vida",
+    name: "life_time",
+    type: "number",
   },
   {
     label: "URL",
@@ -365,7 +380,9 @@ const AuthenticatorFormModal = ({
             error={getNestedError(field.name)}
           />
         ))}
-
+        {getNestedError("life_time") && (
+          <p className="mt-1 text-sm text-red-500">0 significa que no expira</p>
+        )}
         <DynamicParamsSection params={params} onUpdateParam={updateParam} />
 
         <FormActions onClose={handleClose} isEditing={!!initialData} />

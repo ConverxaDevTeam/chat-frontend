@@ -21,7 +21,7 @@ class AuthenticatorService {
       apiUrls.authenticators.base(),
       {
         ...data,
-        life_time: 3600,
+        life_time: 0,
         value: "",
       }
     );
