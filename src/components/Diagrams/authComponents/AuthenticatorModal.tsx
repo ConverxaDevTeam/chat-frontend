@@ -17,6 +17,8 @@ interface AuthenticatorModalProps {
   show: boolean;
   onClose: () => void;
   organizationId: number;
+  functionId?: number;
+  selectedAuthenticatorId?: number;
 }
 
 const useAuthenticatorState = () => {
@@ -120,7 +122,8 @@ const useAuthenticatorDelete = (
 const useAuthenticatorActions = (
   organizationId: number,
   setAuthenticators: React.Dispatch<React.SetStateAction<AuthenticatorType[]>>,
-  onClose: () => void
+  onClose: () => void,
+  onSelect: (id: number) => void
 ) => {
   const fetchAuthenticators = useFetchAuthenticators(
     organizationId,
@@ -129,10 +132,18 @@ const useAuthenticatorActions = (
   const handleSubmit = useAuthenticatorSubmit(setAuthenticators, onClose);
   const handleDelete = useAuthenticatorDelete(setAuthenticators);
 
+  const handleSelect = useCallback(
+    async (authenticatorId: number) => {
+      onSelect(authenticatorId);
+    },
+    [onSelect]
+  );
+
   return {
     fetchAuthenticators,
     handleSubmit,
     handleDelete,
+    handleSelect,
   };
 };
 
@@ -140,12 +151,16 @@ interface AuthenticatorTableProps {
   authenticators: AuthenticatorType[];
   onEdit: (auth: AuthenticatorType) => void;
   onDelete: (id: number) => void;
+  onSelect: (id: number) => void;
+  selectedAuthenticatorId?: number;
 }
 
 const AuthenticatorTable = ({
   authenticators,
   onEdit,
   onDelete,
+  onSelect,
+  selectedAuthenticatorId,
 }: AuthenticatorTableProps) => (
   <div className="overflow-x-auto rounded-lg border border-gray-200 shadow-sm">
     <table className="min-w-full divide-y divide-gray-200">
@@ -169,13 +184,19 @@ const AuthenticatorTable = ({
           >
             Acciones
           </th>
+          <th
+            scope="col"
+            className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
+          >
+            Seleccionar
+          </th>
         </tr>
       </thead>
       <tbody className="bg-white divide-y divide-gray-200">
         {authenticators.length === 0 ? (
           <tr>
             <td
-              colSpan={3}
+              colSpan={4}
               className="px-6 py-4 text-center text-sm text-gray-500"
             >
               No hay autenticadores configurados
@@ -188,6 +209,8 @@ const AuthenticatorTable = ({
               auth={auth}
               onEdit={onEdit}
               onDelete={onDelete}
+              onSelect={onSelect}
+              isSelected={auth.id === selectedAuthenticatorId}
             />
           ))
         )}
@@ -200,12 +223,16 @@ interface AuthenticatorRowProps {
   auth: AuthenticatorType;
   onEdit: (auth: AuthenticatorType) => void;
   onDelete: (id: number) => void;
+  onSelect: (id: number) => void;
+  isSelected: boolean;
 }
 
 const AuthenticatorRow = ({
   auth,
   onEdit,
   onDelete,
+  onSelect,
+  isSelected,
 }: AuthenticatorRowProps) => (
   <tr className="hover:bg-gray-50 transition-colors">
     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 max-w-[10rem] truncate">
@@ -230,6 +257,14 @@ const AuthenticatorRow = ({
         <FaTrash className="h-4 w-4" />
       </button>
     </td>
+    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+      <input
+        type="radio"
+        checked={isSelected}
+        onChange={() => onSelect(auth.id!)}
+        className="form-radio h-4 w-4 text-blue-600"
+      />
+    </td>
   </tr>
 );
 
@@ -251,6 +286,8 @@ export function AuthenticatorModal({
   show,
   onClose,
   organizationId,
+  functionId,
+  selectedAuthenticatorId,
 }: AuthenticatorModalProps) {
   const {
     authenticators,
@@ -262,8 +299,18 @@ export function AuthenticatorModal({
     handleEdit,
   } = useAuthenticatorState();
 
-  const { fetchAuthenticators, handleSubmit, handleDelete } =
-    useAuthenticatorActions(organizationId, setAuthenticators, handleCloseForm);
+  const { fetchAuthenticators, handleSubmit, handleDelete, handleSelect } =
+    useAuthenticatorActions(
+      organizationId,
+      setAuthenticators,
+      handleCloseForm,
+      id => {
+        if (functionId) {
+          // TODO: Implement updateEdgeAuthenticator here
+          onClose();
+        }
+      }
+    );
 
   useEffect(() => {
     if (show) {
@@ -288,6 +335,8 @@ export function AuthenticatorModal({
             authenticators={authenticators}
             onEdit={handleEdit}
             onDelete={handleDelete}
+            onSelect={handleSelect}
+            selectedAuthenticatorId={selectedAuthenticatorId}
           />
         </div>
       </Modal>

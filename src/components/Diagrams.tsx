@@ -215,7 +215,11 @@ const edgeFactory = {
       target: functionNode.id,
       sourceHandle,
       targetHandle,
-      type: "auth", // Usar nuestro edge personalizado
+      type: "auth",
+      data: {
+        functionId: functionNode.data.functionId,
+        authenticatorId: undefined,
+      },
     };
   },
 };
