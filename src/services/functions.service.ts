@@ -21,6 +21,10 @@ class FunctionsService {
   }
 
   async update(id: number, data: Partial<FunctionData<HttpRequestFunction>>) {
+    if (!data.agentId) {
+      console.error("Agent ID is required", data);
+      throw new Error("Agent ID is required");
+    }
     const response = await axiosInstance.patch<
       FunctionData<HttpRequestFunction>
     >(apiUrls.functions.byId(id), data);

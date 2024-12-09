@@ -15,7 +15,6 @@ import {
   FunctionData,
   FunctionNodeTypes,
 } from "@interfaces/functions.interface";
-import { functionsService } from "@services/functions.service";
 
 // Tipos y constantes
 interface FunctionFormValues {
@@ -63,38 +62,18 @@ const useFunctionForm = (props: FunctionFormProps) => {
   const onSubmit: SubmitHandler<FunctionFormValues> = async formData => {
     if (externalLoading) return;
     setIsLoading(true);
-    try {
-      const functionData: FunctionData<HttpRequestFunction> = {
-        functionId,
-        name: formData.name,
-        agentId: props.agentId || -1,
-        description: formData.description,
-        type: FunctionNodeTypes.API_ENDPOINT,
-        config: {
-          url: formData.url,
-          method: formData.method,
-        },
-      };
-
-      // Crear o actualizar la función en el backend
-      let savedFunction;
-      if (isCreating) {
-        savedFunction = await functionsService.create(functionData);
-      } else {
-        savedFunction = await functionsService.update(
-          functionId!,
-          functionData
-        );
-      }
-
-      if (savedFunction) {
-        onSuccess?.(savedFunction);
-      }
-    } catch (error) {
-      console.error("Error saving function:", error);
-    } finally {
-      setIsLoading(false);
-    }
+    const functionData: FunctionData<HttpRequestFunction> = {
+      functionId,
+      name: formData.name,
+      agentId: props.agentId || -1,
+      description: formData.description,
+      type: FunctionNodeTypes.API_ENDPOINT,
+      config: {
+        url: formData.url,
+        method: formData.method,
+      },
+    };
+    onSuccess?.(functionData);
   };
 
   return {

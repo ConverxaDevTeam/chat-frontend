@@ -84,7 +84,7 @@ const useUpdateFunction = (
 
   return useCallback(
     async (functionData: Partial<FunctionData<HttpRequestFunction>>) => {
-      if (!functionId) return;
+      if (!functionId) throw new Error("Function ID is required");
 
       try {
         setLoadingState(true);
@@ -166,6 +166,10 @@ const useDeleteFunction = (
 export const useFunctionActions = (
   initialData: FunctionData<HttpRequestFunction>
 ) => {
+  if (!initialData.agentId) {
+    if (!initialData.id) throw new Error("Function ID is required");
+    initialData.agentId = initialData.id;
+  }
   const state = useFunctionState(initialData);
   const createFunction = useCreateFunction(initialData.agentId, state);
   const updateFunction = useUpdateFunction(state.data.functionId, state);
