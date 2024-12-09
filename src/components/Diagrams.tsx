@@ -38,6 +38,7 @@ import { useUnifiedNodeCreation } from "./Diagrams/hooks/useUnifiedNodeCreation"
 import { useEdges, useZoomToFit } from "./workspace/hooks/Diagrams";
 import { AuthEdge } from "./Diagrams/edges/AuthEdge";
 import { FunctionEditModal } from "./Diagrams/funcionComponents/FunctionEditModal";
+import { useFunctionSuccess } from "./Diagrams/hooks/useFunctionActions";
 
 // Tipos y interfaces
 interface ContextMenuState {
@@ -366,19 +367,14 @@ const ZoomTransition = () => {
   const { contextMenu, setContextMenu, handleConnectEnd } = useContextMenu();
   const { createWithSpacing } = useUnifiedNodeCreation();
 
-  const handleFunctionSuccess = useCallback(
-    (data: FunctionData<HttpRequestFunction>) => {
-      console.log(data);
-      if (selectedNodeId && selectedAgentId) {
-        createWithSpacing(selectedNodeId, selectedAgentId, {
-          ...data,
-          functionId: data.functionId ?? data.id,
-        });
-        setShowFunctionModal(false);
-        setSelectedNodeId(null);
-      }
-    },
-    [createWithSpacing, selectedNodeId, selectedAgentId]
+  const handleFunctionSuccess = useFunctionSuccess(
+    createWithSpacing,
+    selectedNodeId,
+    selectedAgentId || -1,
+    () => {
+      setShowFunctionModal(false);
+      setSelectedNodeId(null);
+    }
   );
 
   const handleCreateFunction = useCallback(
@@ -424,7 +420,7 @@ const ZoomTransition = () => {
             setSelectedNodeId(null);
           }}
           onSuccess={handleFunctionSuccess}
-          agentId={selectedAgentId}
+          agentId={selectedAgentId ?? undefined}
         />
       )}
     </div>

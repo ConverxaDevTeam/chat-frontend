@@ -2,10 +2,7 @@ import { MdEdit, MdAddCircleOutline } from "react-icons/md";
 import { useUnifiedNodeCreation } from "../hooks/useUnifiedNodeCreation";
 import { useState } from "react";
 import { FunctionEditModal } from "../funcionComponents/FunctionEditModal";
-import {
-  FunctionData,
-  HttpRequestFunction,
-} from "@interfaces/functions.interface";
+import { useFunctionSuccess } from "../hooks/useFunctionActions";
 
 interface AgentData {
   name: string;
@@ -35,10 +32,12 @@ const ActionButtons = ({ onEdit, nodeId, agentId }: ActionButtonsProps) => {
   const { createWithSpacing } = useUnifiedNodeCreation();
   const [showFunctionModal, setShowFunctionModal] = useState(false);
 
-  const handleFunctionSuccess = (data: FunctionData<HttpRequestFunction>) => {
-    createWithSpacing(nodeId, agentId, data);
-    setShowFunctionModal(false);
-  };
+  const handleFunctionSuccess = useFunctionSuccess(
+    createWithSpacing,
+    nodeId,
+    agentId || -1,
+    () => setShowFunctionModal(false)
+  );
 
   return (
     <div className="flex flex-col gap-2 w-full">

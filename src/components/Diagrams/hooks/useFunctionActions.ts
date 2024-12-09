@@ -162,6 +162,48 @@ const useDeleteFunction = (
   ]);
 };
 
+// Hook para manejar el éxito de la función
+export const useFunctionSuccess = (
+  createWithSpacing: (
+    selectedNodeId: string,
+    selectedAgentId: number,
+    data: FunctionData<HttpRequestFunction>
+  ) => void,
+  selectedNodeId: string | null,
+  selectedAgentId: number | null,
+  onSuccess?: () => void
+) => {
+  const state = useFunctionState({} as FunctionData<HttpRequestFunction>);
+  const createFunction = useCreateFunction(selectedAgentId || -1, state);
+
+  return useCallback(
+    async (data: FunctionData<HttpRequestFunction>) => {
+      if (selectedNodeId && selectedAgentId) {
+        try {
+          const savedFunction = await createFunction(data);
+
+          if (savedFunction) {
+            createWithSpacing(selectedNodeId, selectedAgentId, {
+              ...savedFunction,
+              functionId: savedFunction.functionId ?? savedFunction.id,
+            });
+            onSuccess?.();
+          }
+        } catch (error) {
+          console.error("Error creating function:", error);
+        }
+      }
+    },
+    [
+      createFunction,
+      createWithSpacing,
+      onSuccess,
+      selectedNodeId,
+      selectedAgentId,
+    ]
+  );
+};
+
 // Hook principal que combina todos los subhooks
 export const useFunctionActions = (
   initialData: FunctionData<HttpRequestFunction>

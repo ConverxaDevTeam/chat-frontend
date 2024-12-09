@@ -124,7 +124,6 @@ export const useSweetAlert = () => {
           Swal.showLoading();
           try {
             result = await operation();
-            console.log("Operation result:", result);
             Swal.close();
             await Swal.fire({
               icon: "success",
