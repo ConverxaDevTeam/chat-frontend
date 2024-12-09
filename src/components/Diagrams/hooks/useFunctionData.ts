@@ -67,5 +67,6 @@ export const useFunctionData = (
   return {
     ...state,
     refetch: fetchFunction,
+    setData,
   };
 };

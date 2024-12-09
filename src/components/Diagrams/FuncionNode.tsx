@@ -59,7 +59,7 @@ const useNodeOperations = (
 ) => {
   const { setNodes, setEdges } = useReactFlow();
   const actions = useFunctionActions(initialData);
-  const { data: functionData } = useFunctionData(
+  const { data: functionData, setData } = useFunctionData(
     initialData.functionId,
     selected,
     setParams
@@ -69,8 +69,11 @@ const useNodeOperations = (
     currentData: functionData || actions.data,
     isLoading: actions.isLoading,
     error: actions.error,
-    handleSuccess: (data: FunctionData<HttpRequestFunction>) =>
-      handleFunctionSave(data, actions),
+    handleSuccess: async (data: FunctionData<HttpRequestFunction>) => {
+      const saved = await handleFunctionSave(data, actions);
+      if (saved) setData(data);
+      return saved;
+    },
     handleDelete: () =>
       handleNodeDelete(id, actions.deleteFunction, setNodes, setEdges),
   };
