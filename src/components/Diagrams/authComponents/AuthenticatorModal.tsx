@@ -293,7 +293,7 @@ export function AuthenticatorModal({
       </Modal>
 
       <AuthenticatorFormModal
-        show={showFormModal}
+        isShown={showFormModal}
         onClose={handleCloseForm}
         onSubmit={handleSubmit}
         initialData={editingAuthenticator}
