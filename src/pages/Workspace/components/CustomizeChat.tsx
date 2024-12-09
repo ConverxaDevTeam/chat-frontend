@@ -1,5 +1,8 @@
 import Loading from "@components/Loading";
-import { getIntegrationWebChat } from "@services/integration";
+import {
+  getIntegrationWebChat,
+  updateIntegrationWebChat,
+} from "@services/integration";
 import { RootState } from "@store";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
@@ -27,8 +30,6 @@ export interface ConfigWebChat {
   description: string;
   logo: string;
   horizontal_logo: string;
-  icon_chat: string;
-  icon_close: string;
   edge_radius: number;
   bg_color: string;
   bg_chat: string;
@@ -37,7 +38,9 @@ export interface ConfigWebChat {
   text_color: string;
   text_date: string;
   button_color: string;
-  bgColor: string;
+  text_title: string;
+  message_radius: number;
+  button_text: string;
 }
 
 export interface Integracion {
@@ -54,6 +57,27 @@ const CustomizeChat = ({ onClose }: CustomizeChatProps) => {
   const { selectOrganizationId } = useSelector(
     (state: RootState) => state.auth
   );
+
+  const handleSaveChat = async () => {
+    if (!integration) return;
+    const data = {
+      cors: integration?.config.cors,
+      title: integration?.config.title,
+      name: integration?.config.name,
+      sub_title: integration?.config.sub_title,
+      description: integration?.config.description,
+      bg_color: integration?.config.bg_color,
+      text_title: integration?.config.text_title,
+      bg_chat: integration?.config.bg_chat,
+      text_color: integration?.config.text_color,
+      bg_assistant: integration?.config.bg_assistant,
+      bg_user: integration?.config.bg_user,
+      button_color: integration?.config.button_color,
+      button_text: integration?.config.button_text,
+      text_date: integration?.config.text_date,
+    };
+    await updateIntegrationWebChat(integration!.id, data);
+  };
 
   const searchIntegrationWebChat = async (selectOrganizationId: number) => {
     const responseDepartament =
@@ -137,7 +161,8 @@ const CustomizeChat = ({ onClose }: CustomizeChatProps) => {
               Cancelar
             </button>
             <button
-              type="submit"
+              type="button"
+              onClick={handleSaveChat}
               className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 shadow"
             >
               Guardar

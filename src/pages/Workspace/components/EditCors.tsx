@@ -3,6 +3,7 @@ import { Integracion } from "./CustomizeChat";
 import { urlFiles } from "@config/config";
 import { HiOutlineClipboard } from "react-icons/hi";
 import { MdClose } from "react-icons/md";
+import { useState } from "react";
 
 interface EditCorsProps {
   integration: Integracion;
@@ -10,12 +11,27 @@ interface EditCorsProps {
 }
 
 const EditCors = ({ integration, setIntegration }: EditCorsProps) => {
+  const [domain, setDomain] = useState<string>("");
+
   const handleCopy = () => {
     if (!integration) return alertConfirm("No se ha podido copiar el script");
     navigator.clipboard
       .writeText(generatedScript(integration?.id))
       .then(() => alertConfirm("Script copiado al portapapeles"))
       .catch(error => console.error("Error al copiar:", error));
+  };
+
+  const handleAddDomain = () => {
+    if (!domain) return;
+    if (integration.config.cors.includes(domain)) return;
+    setIntegration({
+      ...integration,
+      config: {
+        ...integration.config,
+        cors: [...integration.config.cors, domain],
+      },
+    });
+    setDomain("");
   };
 
   const generatedScript = (integrationId: number) =>
@@ -50,6 +66,20 @@ const EditCors = ({ integration, setIntegration }: EditCorsProps) => {
           );
         })}
       </div>
+      <div className="flex flex-col gap-[10px]">
+        <label className="block text-sm font-medium text-gray-600">Cors</label>
+        <input
+          type="text"
+          value={domain}
+          className="w-full border border-gray-200 rounded-md p-2"
+          placeholder="https://tu-dominio.com"
+          onChange={e => setDomain(e.target.value)}
+        />
+        <button type="button" onClick={handleAddDomain}>
+          Agregar
+        </button>
+      </div>
+
       <label className="block text-sm font-medium text-gray-600">
         Script de Integración
       </label>
