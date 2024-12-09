@@ -1,9 +1,10 @@
 import Modal from "@components/Modal";
 import { useState, useEffect, useCallback } from "react";
-import { FaTrash, FaEdit, FaPlus } from "react-icons/fa";
+import { FaTrash, FaEdit, FaPlus, FaCheck, FaSquare } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { useSweetAlert } from "@/hooks/useSweetAlert";
 import { authenticatorService } from "@/services/authenticator.service";
+import { functionsService } from "@/services/functions.service"; // Import the functionsService
 import {
   Autenticador,
   BearerConfig,
@@ -19,6 +20,8 @@ interface AuthenticatorModalProps {
   organizationId: number;
   functionId?: number;
   selectedAuthenticatorId?: number;
+  handleAuthenticatorUpdate?: (authenticatorId: number | undefined) => void;
+  onAuthenticatorChange?: (functionId: number, authenticatorId: number) => void;
 }
 
 const useAuthenticatorState = () => {
@@ -184,19 +187,13 @@ const AuthenticatorTable = ({
           >
             Acciones
           </th>
-          <th
-            scope="col"
-            className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
-          >
-            Seleccionar
-          </th>
         </tr>
       </thead>
       <tbody className="bg-white divide-y divide-gray-200">
         {authenticators.length === 0 ? (
           <tr>
             <td
-              colSpan={4}
+              colSpan={3}
               className="px-6 py-4 text-center text-sm text-gray-500"
             >
               No hay autenticadores configurados
@@ -241,29 +238,36 @@ const AuthenticatorRow = ({
     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 max-w-[10rem] truncate">
       {auth.config.url}
     </td>
-    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-3">
+      {auth.id && (
+        <>
+          <button
+            type="button"
+            className={`${isSelected ? "text-blue-600" : "text-gray-400"} hover:text-blue-900 inline-flex items-center`}
+            onClick={() => onSelect(auth.id!)}
+          >
+            {isSelected ? (
+              <FaCheck className="h-4 w-4" />
+            ) : (
+              <FaSquare className="h-4 w-4" />
+            )}
+          </button>
+          <button
+            type="button"
+            className="text-red-600 hover:text-red-900 inline-flex items-center"
+            onClick={() => onDelete(auth.id!)}
+          >
+            <FaTrash className="h-4 w-4" />
+          </button>
+        </>
+      )}
       <button
         type="button"
-        className="text-blue-600 hover:text-blue-900 mr-3 inline-flex items-center"
+        className="text-blue-600 hover:text-blue-900 inline-flex items-center"
         onClick={() => onEdit(auth)}
       >
         <FaEdit className="h-4 w-4" />
       </button>
-      <button
-        type="button"
-        className="text-red-600 hover:text-red-900 inline-flex items-center"
-        onClick={() => onDelete(auth.id!)}
-      >
-        <FaTrash className="h-4 w-4" />
-      </button>
-    </td>
-    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-      <input
-        type="radio"
-        checked={isSelected}
-        onChange={() => onSelect(auth.id!)}
-        className="form-radio h-4 w-4 text-blue-600"
-      />
     </td>
   </tr>
 );
@@ -288,6 +292,8 @@ export function AuthenticatorModal({
   organizationId,
   functionId,
   selectedAuthenticatorId,
+  handleAuthenticatorUpdate,
+  onAuthenticatorChange,
 }: AuthenticatorModalProps) {
   const {
     authenticators,
@@ -304,9 +310,29 @@ export function AuthenticatorModal({
       organizationId,
       setAuthenticators,
       handleCloseForm,
-      id => {
+      async id => {
         if (functionId) {
-          // TODO: Implement updateEdgeAuthenticator here
+          try {
+            // If the authenticator is already selected, deselect it by sending null
+            const newAuthenticatorId =
+              id === selectedAuthenticatorId ? null : id;
+            await functionsService.assignAuthenticator(
+              functionId,
+              newAuthenticatorId
+            );
+            handleAuthenticatorUpdate?.(newAuthenticatorId || undefined);
+            if (newAuthenticatorId) {
+              onAuthenticatorChange?.(functionId, newAuthenticatorId);
+            }
+            toast.success(
+              newAuthenticatorId
+                ? "Autenticador asignado exitosamente"
+                : "Autenticador removido exitosamente"
+            );
+          } catch (error) {
+            toast.error("Error al asignar el autenticador");
+            return;
+          }
           onClose();
         }
       }

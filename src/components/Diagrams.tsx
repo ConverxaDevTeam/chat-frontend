@@ -203,7 +203,8 @@ const edgeFactory = {
 
   createAgentFunctionEdge: (
     agentPos: Position2D,
-    functionNode: Node<FunctionData<HttpRequestFunction>>
+    functionNode: Node<FunctionData<HttpRequestFunction>>,
+    authenticatorId?: number
   ): Edge => {
     const { sourceHandle, targetHandle } = nodePositioning.getHandlePositions(
       agentPos,
@@ -219,7 +220,7 @@ const edgeFactory = {
       type: "auth",
       data: {
         functionId: functionNode.data.functionId,
-        authenticatorId: undefined,
+        authenticatorId: authenticatorId,
       },
     };
   },
@@ -263,9 +264,22 @@ const createInitialNodes = (
       );
 
     nodes.push(...functionNodes);
+    const authenticatorsIdsDict = agentFunctions
+      .filter(func => func.autenticador)
+      .reduce(
+        (acc, func) => ({ ...acc, [func.id]: func.autenticador!.id }),
+        {} as { [key: number]: number }
+      );
+
     initialEdges.push(
       ...functionNodes.map(node =>
-        edgeFactory.createAgentFunctionEdge(agentNode.position, node)
+        edgeFactory.createAgentFunctionEdge(
+          agentNode.position,
+          node,
+          node.data?.functionId
+            ? authenticatorsIdsDict[node.data.functionId]
+            : undefined
+        )
       )
     );
   }

@@ -45,6 +45,18 @@ class FunctionsService {
     >(apiUrls.functions.byAgent(agentId));
     return response.data;
   }
+
+  async assignAuthenticator(
+    functionId: number,
+    authenticatorId: number | null
+  ) {
+    const response = await axiosInstance.patch<
+      FunctionData<HttpRequestFunction>
+    >(apiUrls.functions.assignAuthenticator(functionId), {
+      authorizerId: authenticatorId === null ? null : authenticatorId,
+    });
+    return response.data;
+  }
 }
 
 export const functionsService = new FunctionsService();

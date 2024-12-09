@@ -43,6 +43,8 @@ export const apiUrls = {
     byAgent: (agentId: number) => `/api/functions/agent/${agentId}`,
     paramsBase: (functionId: number) =>
       `/api/functions/${functionId}/parameters`,
+    assignAuthenticator: (functionId: number) =>
+      `/api/functions/${functionId}/assign-authorizer`,
   },
 
   // authenticators

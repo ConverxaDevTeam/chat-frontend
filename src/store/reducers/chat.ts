@@ -12,6 +12,9 @@ interface Department {
 interface AgentFunction {
   id: number;
   name: string;
+  autenticador?: {
+    id: number;
+  };
 }
 
 interface Agent {

@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import {
   BaseEdge,
   EdgeLabelRenderer,
   EdgeProps,
   getBezierPath,
+  useReactFlow,
 } from "@xyflow/react";
 import { FaKey } from "react-icons/fa";
 import { useSelector } from "react-redux";
@@ -13,6 +14,7 @@ import { AuthenticatorModal } from "../authComponents/AuthenticatorModal";
 interface AuthEdgeData {
   functionId: number;
   authenticatorId?: number;
+  onAuthenticatorChange?: (functionId: number, authenticatorId: number) => void;
 }
 
 interface AuthEdgeProps extends Omit<EdgeProps, "data"> {
@@ -32,8 +34,29 @@ export function AuthEdge({
 }: AuthEdgeProps) {
   console.log(data);
   const [showModal, setShowModal] = useState(false);
+  const { setEdges } = useReactFlow();
   const organizationId = useSelector(
     (state: RootState) => state.auth.selectOrganizationId
+  );
+
+  const handleAuthenticatorUpdate = useCallback(
+    (authenticatorId: number | undefined) => {
+      setEdges(edges =>
+        edges.map(edge => {
+          if (edge.source === data.functionId.toString()) {
+            return {
+              ...edge,
+              data: {
+                ...edge.data,
+                authenticatorId,
+              },
+            };
+          }
+          return edge;
+        })
+      );
+    },
+    [data.functionId, setEdges]
   );
 
   const [edgePath, labelX, labelY] = getBezierPath({
@@ -79,6 +102,8 @@ export function AuthEdge({
           organizationId={organizationId}
           functionId={data.functionId}
           selectedAuthenticatorId={data.authenticatorId}
+          handleAuthenticatorUpdate={handleAuthenticatorUpdate}
+          onAuthenticatorChange={data.onAuthenticatorChange}
         />
       )}
     </>
