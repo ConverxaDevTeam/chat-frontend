@@ -38,7 +38,7 @@ export const AgenteForm = ({
   });
 
   const onSubmit: SubmitHandler<AgentFormValues> = async formData => {
-    if (!agentId) return;
+    if (!agentId) throw new Error("Agent ID is required");
 
     setIsLoading(true);
     try {
@@ -48,7 +48,7 @@ export const AgenteForm = ({
           instruccion: formData.description,
         },
       };
-      await agentService.updateAgent(agentId, agentData);
+      await agentService.update(agentId, agentData);
       onSuccess?.();
     } catch (error) {
       console.error("Error updating agent:", error);

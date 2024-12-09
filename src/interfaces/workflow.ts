@@ -1,23 +1,19 @@
 import { Node, NodeProps } from "@xyflow/react";
 
 // Tipado para los datos que se pasarán al nodo
-interface NodeData extends Record<string, unknown> {
+export interface NodeData extends Record<string, unknown> {
   name: string;
   description: string;
 }
 
-interface AgentData extends NodeData {
+export interface AgentData extends NodeData {
   agentId: number;
 }
 
-export interface CustomTypeNodeProps extends NodeProps {
-  data: NodeData; // Asegura que los datos tengan el tipo adecuado
+export interface CustomTypeNodeProps<T extends NodeData> extends NodeProps {
+  data: T;
 }
 
-export interface CustomNodeProps extends Node {
-  data: NodeData;
-}
-
-export interface AgentNodeProps extends CustomTypeNodeProps {
-  data: AgentData;
+export interface CustomNodeProps<T extends Node> {
+  data: T;
 }
