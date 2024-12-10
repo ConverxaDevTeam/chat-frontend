@@ -3,6 +3,8 @@ import DefaultNode from "./DefaultNode";
 import { HiLink, HiPlusCircle } from "react-icons/hi";
 import AddWebchat from "@pages/Workspace/components/AddWebChat";
 import { CustomTypeNodeProps } from "@interfaces/workflow";
+import Modal from "@components/Modal";
+import NewIntegration from "./NewIntegration";
 
 const SubMenu: React.FC<{ openModal: () => void }> = ({ openModal }) => {
   return (
@@ -24,7 +26,7 @@ const IntegracionesNode = ({
   selected,
   ...rest
 }: CustomTypeNodeProps) => {
-  const [isMenuVisible, setIsMenuVisible] = useState(false);
+  const [isMenuVisible, setIsMenuVisible] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const toggleMenu = () => {
@@ -33,6 +35,20 @@ const IntegracionesNode = ({
 
   return (
     <>
+      <Modal
+        isShown={isMenuVisible}
+        children={<NewIntegration setIsMenuVisible={setIsMenuVisible}/>}
+        onClose={toggleMenu}
+        header={<h2 className="text-xl font-bold">Agregar Integración</h2>}
+        footer={
+          <button
+            onClick={toggleMenu}
+            className="w-full py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition duration-300"
+          >
+            Cerrar
+          </button>
+        }
+      />
       <DefaultNode
         selected={selected}
         data={{
@@ -52,8 +68,7 @@ const IntegracionesNode = ({
             <HiPlusCircle className="w-6 h-6" size={24} color="blue" />
             Agregar Integración
           </button>
-
-          {isMenuVisible && <SubMenu openModal={() => setIsModalOpen(true)} />}
+          <SubMenu openModal={() => setIsModalOpen(true)} />
         </div>
       </DefaultNode>
       <AddWebchat isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
