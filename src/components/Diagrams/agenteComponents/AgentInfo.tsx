@@ -1,7 +1,9 @@
 import { MdEdit, MdAddCircleOutline } from "react-icons/md";
+import { FaDatabase } from "react-icons/fa";
 import { useUnifiedNodeCreation } from "../hooks/useUnifiedNodeCreation";
 import { useState } from "react";
 import { FunctionEditModal } from "../funcionComponents/FunctionEditModal";
+import { KnowledgeBaseModal } from "./KnowledgeBaseModal";
 import { useFunctionSuccess } from "../hooks/useFunctionActions";
 
 interface AgentData {
@@ -31,6 +33,7 @@ interface ActionButtonsProps {
 const ActionButtons = ({ onEdit, nodeId, agentId }: ActionButtonsProps) => {
   const { createWithSpacing } = useUnifiedNodeCreation();
   const [showFunctionModal, setShowFunctionModal] = useState(false);
+  const [showKnowledgeBaseModal, setShowKnowledgeBaseModal] = useState(false);
 
   const handleFunctionSuccess = useFunctionSuccess(
     createWithSpacing,
@@ -53,13 +56,26 @@ const ActionButtons = ({ onEdit, nodeId, agentId }: ActionButtonsProps) => {
       >
         <MdAddCircleOutline className="mr-2" /> Agregar Funciones
       </button>
+      <button
+        onClick={() => setShowKnowledgeBaseModal(true)}
+        className="flex items-center justify-center w-full px-4 py-2 text-sm text-blue-600 bg-blue-100 rounded-lg hover:bg-blue-200 transition-colors duration-200"
+      >
+        <FaDatabase className="mr-2" /> Base de Conocimientos
+      </button>
       {agentId && (
-        <FunctionEditModal
-          isShown={showFunctionModal}
-          onClose={() => setShowFunctionModal(false)}
-          onSuccess={handleFunctionSuccess}
-          agentId={agentId}
-        />
+        <>
+          <FunctionEditModal
+            isShown={showFunctionModal}
+            onClose={() => setShowFunctionModal(false)}
+            onSuccess={handleFunctionSuccess}
+            agentId={agentId}
+          />
+          <KnowledgeBaseModal
+            isShown={showKnowledgeBaseModal}
+            onClose={() => setShowKnowledgeBaseModal(false)}
+            agentId={agentId}
+          />
+        </>
       )}
     </div>
   );

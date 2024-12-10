@@ -4,7 +4,7 @@ import {
   FunctionParam,
   ParamType,
 } from "@interfaces/function-params.interface";
-import { useCallback } from "react";
+import { useEffect } from "react";
 import { InputGroup } from "@components/forms/inputGroup";
 import { Input } from "@components/forms/input";
 import { TextArea } from "@components/forms/textArea";
@@ -39,20 +39,28 @@ const useParamForm = (initialParam?: FunctionParam | null) => {
     },
   });
 
-  const resetForm = useCallback(() => {
-    reset({
-      name: "",
-      type: ParamType.STRING,
-      description: "",
-      required: false,
-    });
-  }, [reset]);
+  useEffect(() => {
+    if (initialParam) {
+      reset({
+        name: initialParam.name,
+        type: initialParam.type,
+        description: initialParam.description || "",
+        required: initialParam.required || false,
+      });
+    }
+  }, [initialParam, reset]);
 
   return {
     register,
     handleSubmit,
     errors,
-    resetForm,
+    resetForm: () =>
+      reset({
+        name: "",
+        type: ParamType.STRING,
+        description: "",
+        required: false,
+      }),
   };
 };
 
@@ -144,10 +152,21 @@ export const ParamFormModal = ({
     onClose();
   });
 
+  const handleClose = () => {
+    resetForm();
+    onClose();
+  };
+
+  useEffect(() => {
+    if (!isShown) {
+      resetForm();
+    }
+  }, [isShown, resetForm]);
+
   return (
     <Modal
       isShown={isShown}
-      onClose={onClose}
+      onClose={handleClose}
       header={
         <h2 className="text-xl font-semibold">
           {param ? "Editar Parámetro" : "Nuevo Parámetro"}
@@ -156,7 +175,7 @@ export const ParamFormModal = ({
     >
       <form onSubmit={onFormSubmit} className="space-y-4">
         <ParamFormFields register={register} errors={errors} />
-        <ParamFormActions onClose={onClose} isEdit={!!param} />
+        <ParamFormActions onClose={handleClose} isEdit={!!param} />
       </form>
     </Modal>
   );
