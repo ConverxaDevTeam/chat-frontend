@@ -51,6 +51,18 @@ export const onWebSocketEvent = <T>(
   websocket.on(event, callback);
 };
 
+// Remover un event listener
+export const removeWebSocketEvent = <T>(
+  event: string,
+  callback: (data: T) => void
+): void => {
+  if (!websocket) {
+    console.warn("WebSocket no está conectado.");
+    return;
+  }
+  websocket.off(event, callback);
+};
+
 // Emitir eventos al servidor
 export const emitWebSocketEvent = (event: string, data: unknown): void => {
   if (!websocket) {
