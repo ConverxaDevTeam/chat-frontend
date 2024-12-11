@@ -58,6 +58,13 @@ export const apiUrls = {
     byOrganization: (organizationId: number) =>
       `/api/autenticadores/${organizationId}`,
   },
+
+  // knowledge base
+  knowledgeBase: {
+    base: () => `/api/agent-knowledgebase`,
+    byId: (id: number) => `/api/agent-knowledgebase/${id}`,
+    byAgent: (agentId: number) => `/api/agent-knowledgebase/agent/${agentId}`,
+  },
 } as const;
 
 export const tokenAccess = {

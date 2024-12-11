@@ -5,6 +5,9 @@ import { jwtDecode } from "jwt-decode";
 const axiosInstance = axios.create({
   baseURL: baseUrl,
   timeout: 30000,
+  headers: {
+    Accept: "application/json",
+  },
 });
 
 const getToken = () => localStorage.getItem(tokenAccess.tokenName) || "";
