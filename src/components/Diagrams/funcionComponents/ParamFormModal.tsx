@@ -4,7 +4,7 @@ import {
   FunctionParam,
   ParamType,
 } from "@interfaces/function-params.interface";
-import { useEffect } from "react";
+import { useCallback, useMemo, useEffect } from "react";
 import { InputGroup } from "@components/forms/inputGroup";
 import { Input } from "@components/forms/input";
 import { TextArea } from "@components/forms/textArea";
@@ -25,19 +25,28 @@ interface ParamFormFieldsProps {
 
 // Form Hook
 const useParamForm = (initialParam?: FunctionParam | null) => {
+  const defaultValues = useMemo(
+    () => ({
+      name: "",
+      type: ParamType.STRING,
+      description: "",
+      required: false,
+    }),
+    []
+  );
+
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors },
   } = useForm<CreateFunctionParamDto>({
-    defaultValues: {
-      name: initialParam?.name || "",
-      type: initialParam?.type || ParamType.STRING,
-      description: initialParam?.description || "",
-      required: initialParam?.required || false,
-    },
+    defaultValues,
   });
+
+  const resetForm = useCallback(() => {
+    reset(defaultValues);
+  }, [reset, defaultValues]);
 
   useEffect(() => {
     if (initialParam) {
@@ -47,20 +56,16 @@ const useParamForm = (initialParam?: FunctionParam | null) => {
         description: initialParam.description || "",
         required: initialParam.required || false,
       });
+    } else {
+      resetForm();
     }
-  }, [initialParam, reset]);
+  }, [initialParam, reset, resetForm]);
 
   return {
     register,
     handleSubmit,
     errors,
-    resetForm: () =>
-      reset({
-        name: "",
-        type: ParamType.STRING,
-        description: "",
-        required: false,
-      }),
+    resetForm,
   };
 };
 
@@ -146,16 +151,19 @@ export const ParamFormModal = ({
 }: ParamFormModalProps) => {
   const { register, handleSubmit, errors, resetForm } = useParamForm(param);
 
-  const onFormSubmit = handleSubmit(data => {
-    onSubmit(data);
-    resetForm();
-    onClose();
-  });
+  const onFormSubmit = useCallback(
+    handleSubmit(data => {
+      onSubmit(data);
+      resetForm();
+      onClose();
+    }),
+    [handleSubmit, onSubmit, resetForm, onClose]
+  );
 
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     resetForm();
     onClose();
-  };
+  }, [resetForm, onClose]);
 
   useEffect(() => {
     if (!isShown) {
@@ -163,16 +171,17 @@ export const ParamFormModal = ({
     }
   }, [isShown, resetForm]);
 
+  const modalHeader = useMemo(
+    () => (
+      <h2 className="text-xl font-semibold">
+        {param ? "Editar Parámetro" : "Nuevo Parámetro"}
+      </h2>
+    ),
+    [param]
+  );
+
   return (
-    <Modal
-      isShown={isShown}
-      onClose={handleClose}
-      header={
-        <h2 className="text-xl font-semibold">
-          {param ? "Editar Parámetro" : "Nuevo Parámetro"}
-        </h2>
-      }
-    >
+    <Modal isShown={isShown} onClose={handleClose} header={modalHeader}>
       <form onSubmit={onFormSubmit} className="space-y-4">
         <ParamFormFields register={register} errors={errors} />
         <ParamFormActions onClose={handleClose} isEdit={!!param} />
