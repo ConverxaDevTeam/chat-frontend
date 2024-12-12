@@ -3,8 +3,8 @@ import { FaDatabase } from "react-icons/fa";
 import { useUnifiedNodeCreation } from "../hooks/useUnifiedNodeCreation";
 import { useState } from "react";
 import { FunctionEditModal } from "../funcionComponents/FunctionEditModal";
-import { KnowledgeBaseModal } from "./KnowledgeBaseModal";
 import { useFunctionSuccess } from "../hooks/useFunctionActions";
+import KnowledgeBaseModal from "./KnowledgeBaseModal";
 
 interface AgentData {
   name: string;

@@ -38,7 +38,9 @@ export interface TestAgentIdentifier {
 }
 
 export interface KnowledgeBase {
+  updated_at: string;
   id?: number;
+  filename: string;
   vectorStoreId: string;
   expirationTime?: Date;
   agent_id?: number;

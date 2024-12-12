@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { IoClose } from "react-icons/io5";
 import { FaUpload, FaTrash, FaPlus } from "react-icons/fa";
 import { KnowledgeBase } from "@interfaces/agents";
 import { toast } from "react-toastify";
@@ -7,7 +6,11 @@ import {
   createKnowledgeBase,
   deleteKnowledgeBase,
   getKnowledgeBaseByAgent,
+  ALLOWED_FILE_EXTENSIONS,
 } from "@services/knowledgeBase.service";
+import { useSweetAlert } from "@hooks/useSweetAlert";
+import Modal from "@components/Modal";
+import { useRef } from "react";
 
 interface KnowledgeBaseModalProps {
   isShown: boolean;
@@ -50,10 +53,10 @@ const FileList = ({
             className="flex items-center justify-between p-3 bg-white rounded-lg border"
           >
             <div>
-              <p className="font-medium">{file.vectorStoreId}</p>
+              <p className="font-medium">{file.filename}</p>
               <p className="text-sm text-gray-500">
-                {file.expirationTime &&
-                  new Date(file.expirationTime).toLocaleDateString()}
+                {file.updated_at &&
+                  new Date(file.updated_at).toLocaleDateString()}
               </p>
             </div>
             <button
@@ -96,175 +99,220 @@ const UploadForm = ({
   onSuccess: () => void;
 }) => {
   const [isDragging, setIsDragging] = useState(false);
-  const [isUploading, setIsUploading] = useState(false);
+  const { handleOperation } = useSweetAlert();
+  const dropRef = useRef<HTMLDivElement>(null);
 
-  const handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(true);
-  };
+  const acceptedFileTypes = ALLOWED_FILE_EXTENSIONS.map(ext => `.${ext}`).join(
+    ","
+  );
 
-  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(true);
-  };
+  const validateFiles = (files: File[]): File[] => {
+    const validFiles: File[] = [];
+    const invalidFiles: string[] = [];
+    console.log("files", files);
 
-  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(false);
-  };
+    files.forEach(file => {
+      const fileExtension = file.name.split(".").pop()?.toLowerCase();
+      if (
+        fileExtension &&
+        ALLOWED_FILE_EXTENSIONS.includes(
+          fileExtension as (typeof ALLOWED_FILE_EXTENSIONS)[number]
+        )
+      ) {
+        validFiles.push(file);
+      } else {
+        invalidFiles.push(file.name);
+      }
+    });
 
-  const handleDrop = async (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(false);
-
-    console.log("Drop event triggered");
-    console.log("Files in drop event:", e.dataTransfer.files);
-
-    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      const droppedFiles = Array.from(e.dataTransfer.files);
-      console.log("Dropped files:", droppedFiles);
-      await handleFiles(droppedFiles);
-    } else {
-      console.log("No files were dropped");
+    if (invalidFiles.length > 0) {
+      toast.error(
+        `Los siguientes archivos no son permitidos: ${invalidFiles.join(", ")}`
+      );
     }
+
+    return validFiles;
   };
+
+  useEffect(() => {
+    const dropArea = dropRef.current;
+    if (!dropArea) return;
+
+    const handleDrag = (e: DragEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+    };
+
+    const handleDragIn = (e: DragEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (e.dataTransfer?.items && e.dataTransfer.items.length > 0) {
+        setIsDragging(true);
+      }
+    };
+
+    const handleDragOut = (e: DragEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setIsDragging(false);
+    };
+
+    const handleDrop = (e: DragEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setIsDragging(false);
+
+      console.log("Drop event triggered");
+      console.log("DataTransfer:", e.dataTransfer);
+      console.log("Items:", e.dataTransfer?.items);
+      console.log("Files:", e.dataTransfer?.files);
+
+      const files: File[] = [];
+
+      if (e.dataTransfer?.items) {
+        // Usar DataTransferItemList
+        console.log("Usando DataTransferItemList");
+        for (let i = 0; i < e.dataTransfer.items.length; i++) {
+          const item = e.dataTransfer.items[i];
+          console.log("Item:", item);
+          console.log("Kind:", item.kind);
+          console.log("Type:", item.type);
+          if (item.kind === "file") {
+            const file = item.getAsFile();
+            if (file) {
+              console.log("File:", file);
+              files.push(file);
+            }
+          }
+        }
+      } else if (e.dataTransfer?.files) {
+        // Fallback a DataTransfer
+        console.log("Usando DataTransfer files");
+        for (let i = 0; i < e.dataTransfer.files.length; i++) {
+          const file = e.dataTransfer.files[i];
+          console.log("File:", file);
+          files.push(file);
+        }
+      }
+
+      console.log("Files collected:", files);
+
+      if (files.length > 0) {
+        const validFiles = validateFiles(files);
+        if (validFiles.length > 0) {
+          handleFiles(validFiles);
+        }
+      } else {
+        console.log("No se encontraron archivos en el evento drop");
+      }
+    };
+
+    dropArea.addEventListener("dragenter", handleDragIn);
+    dropArea.addEventListener("dragleave", handleDragOut);
+    dropArea.addEventListener("dragover", handleDrag);
+    dropArea.addEventListener("drop", handleDrop);
+
+    return () => {
+      dropArea.removeEventListener("dragenter", handleDragIn);
+      dropArea.removeEventListener("dragleave", handleDragOut);
+      dropArea.removeEventListener("dragover", handleDrag);
+      dropArea.removeEventListener("drop", handleDrop);
+    };
+  }, []);
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const selectedFiles = Array.from(e.target.files);
-      console.log("Selected files:", selectedFiles);
-      await handleFiles(selectedFiles);
-    } else {
-      console.log("No files were selected");
+      const validFiles = validateFiles(selectedFiles);
+      if (validFiles.length > 0) {
+        await handleFiles(validFiles);
+      }
     }
   };
 
   const handleFiles = async (files: File[]) => {
-    if (files.length === 0) {
-      console.log("No files to process");
-      return;
-    }
+    if (files.length === 0) return;
 
-    try {
-      setIsUploading(true);
-      console.log("Processing files:", files);
+    const result = await handleOperation(
+      async () => {
+        let hasSuccess = false;
+        let hasError = false;
 
-      let hasSuccess = false;
-      let hasError = false;
-
-      for (const file of files) {
-        console.log(
-          "Uploading file:",
-          file.name,
-          "Size:",
-          file.size,
-          "Type:",
-          file.type
-        );
-        try {
-          const response = await createKnowledgeBase(agentId, file);
-          console.log("Upload response:", response);
-          hasSuccess = true;
-        } catch (error: unknown) {
-          console.error(`Error uploading file ${file.name}:`, error);
-          hasError = true;
-          // Solo mostramos el mensaje de error si hay un mensaje específico
-          if (
-            error &&
-            typeof error === "object" &&
-            "response" in error &&
-            error.response &&
-            typeof error.response === "object" &&
-            "data" in error.response &&
-            error.response.data &&
-            typeof error.response.data === "object" &&
-            "message" in error.response.data &&
-            typeof error.response.data.message === "string"
-          ) {
-            toast.error(error.response.data.message);
+        for (const file of files) {
+          try {
+            await createKnowledgeBase(agentId, file);
+            hasSuccess = true;
+          } catch (error) {
+            hasError = true;
+            throw error;
           }
         }
-      }
-      // Solo mostramos mensajes después de procesar todos los archivos
-      if (hasSuccess && !hasError) {
-        toast.success("Archivos subidos exitosamente");
-        onSuccess();
-        onClose();
-      } else if (!hasSuccess && hasError) {
-        // Si no hubo éxitos y hubo errores, mostramos un mensaje general solo si no se mostró uno específico
-        if (!toast.isActive("upload-error")) {
-          toast.error("Error al subir los archivos", {
-            toastId: "upload-error",
-          });
+
+        if (hasSuccess) {
+          onSuccess();
+          onClose();
         }
+
+        return { hasSuccess, hasError };
+      },
+      {
+        title: "Subiendo archivos",
+        loadingTitle: "Subiendo archivos",
+        successTitle: "¡Éxito!",
+        successText: "Archivos subidos correctamente",
+        errorTitle: "Error al subir archivos",
       }
-      // Si hay éxitos y errores mezclados, los errores específicos ya se mostraron
-    } catch (error) {
-      console.error("Error general al subir archivos:", error);
-      if (!toast.isActive("upload-error")) {
-        toast.error("Error al subir los archivos", { toastId: "upload-error" });
-      }
-    } finally {
-      setIsUploading(false);
+    );
+
+    if (!result.success) {
+      console.error("Error al subir archivos:", result.error);
     }
   };
 
   return (
     <div
-      className={`border-2 border-dashed rounded-lg p-8 text-center ${
+      ref={dropRef}
+      className={`relative border-2 border-dashed rounded-lg p-8 text-center ${
         isDragging ? "border-blue-500 bg-blue-50" : "border-gray-300"
       }`}
-      onDragEnter={handleDragEnter}
-      onDragOver={handleDragOver}
-      onDragLeave={handleDragLeave}
-      onDrop={handleDrop}
     >
       <div className="flex flex-col items-center">
         <FaUpload className="text-4xl text-gray-400 mb-2" />
-        <p className="text-gray-600 mb-2">
-          {isUploading
-            ? "Subiendo archivos..."
-            : "Arrastra y suelta archivos aquí o"}
-        </p>
-        <label
-          className={`cursor-pointer bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 ${
-            isUploading ? "opacity-50 cursor-not-allowed" : ""
-          }`}
-        >
+        <p className="text-gray-600 mb-2">Arrastra y suelta archivos aquí o</p>
+        <label className="cursor-pointer bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
           Seleccionar Archivos
           <input
             type="file"
             className="hidden"
             multiple
             onChange={handleFileUpload}
-            disabled={isUploading}
-            accept=".txt,.pdf,.doc,.docx"
+            accept={acceptedFileTypes}
           />
         </label>
+        <p className="text-xs text-gray-500 mt-2">
+          Formatos permitidos: {ALLOWED_FILE_EXTENSIONS.join(", ")}
+        </p>
       </div>
     </div>
   );
 };
 
-export const KnowledgeBaseModal = ({
+const KnowledgeBaseModal = ({
   isShown,
   onClose,
   agentId,
 }: KnowledgeBaseModalProps) => {
   const [files, setFiles] = useState<KnowledgeBase[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
   const [showUploadForm, setShowUploadForm] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [isLoading, setIsLoading] = useState(false);
-  const itemsPerPage = 5;
+  const itemsPerPage = 10;
   const totalPages = Math.ceil(files.length / itemsPerPage);
+  const { handleOperation } = useSweetAlert();
 
   const fetchFiles = async () => {
+    setIsLoading(true);
     try {
-      setIsLoading(true);
       const response = await getKnowledgeBaseByAgent(agentId);
       setFiles(response.data);
     } catch (error) {
@@ -282,74 +330,84 @@ export const KnowledgeBaseModal = ({
   }, [isShown, agentId]);
 
   const handleDelete = async (fileId: number) => {
-    try {
-      await deleteKnowledgeBase(fileId);
-      toast.success("Archivo eliminado exitosamente");
-      await fetchFiles();
-    } catch (error) {
-      console.error("Error deleting file:", error);
-      toast.error("Error al eliminar el archivo");
+    const result = await handleOperation(
+      async () => {
+        await deleteKnowledgeBase(fileId);
+        await fetchFiles();
+        return true;
+      },
+      {
+        title: "Eliminando archivo",
+        loadingTitle: "Eliminando archivo",
+        successTitle: "¡Éxito!",
+        successText: "Archivo eliminado correctamente",
+        errorTitle: "Error al eliminar archivo",
+      }
+    );
+
+    if (!result.success) {
+      console.error("Error al eliminar archivo:", result.error);
     }
   };
 
-  if (!isShown) return null;
-
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-6 w-full max-w-2xl">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold">
-            {showUploadForm ? "Subir Archivos" : "Base de Conocimientos"}
-          </h2>
-          <button
-            onClick={onClose}
-            className="text-gray-500 hover:text-gray-700"
-          >
-            <IoClose size={24} />
-          </button>
-        </div>
-
-        {showUploadForm ? (
-          <div>
-            <div className="mb-4">
-              <button
-                onClick={() => setShowUploadForm(false)}
-                className="flex items-center justify-center px-4 py-2 text-sm text-blue-600 bg-blue-100 rounded-lg hover:bg-blue-200 transition-colors duration-200"
-              >
-                Volver al listado
-              </button>
-            </div>
-            <UploadForm
-              onClose={() => setShowUploadForm(false)}
-              agentId={agentId}
-              onSuccess={fetchFiles}
-            />
+    <Modal
+      isShown={isShown}
+      onClose={onClose}
+      header={
+        <h2 className="text-xl font-semibold">
+          {showUploadForm ? "Subir Archivos" : "Base de Conocimientos"}
+        </h2>
+      }
+    >
+      {showUploadForm ? (
+        <div>
+          <div className="mb-4">
+            <button
+              onClick={() => setShowUploadForm(false)}
+              className="flex items-center justify-center px-4 py-2 text-sm text-blue-600 bg-blue-100 rounded-lg hover:bg-blue-200 transition-colors duration-200"
+            >
+              Volver al listado
+            </button>
           </div>
-        ) : (
-          <>
-            <div className="mb-4">
-              <button
-                onClick={() => setShowUploadForm(true)}
-                className="flex items-center justify-center px-4 py-2 text-sm text-blue-600 bg-blue-100 rounded-lg hover:bg-blue-200 transition-colors duration-200"
-              >
-                <FaPlus className="mr-2" /> Agregar Archivos
-              </button>
+          <UploadForm
+            onClose={() => setShowUploadForm(false)}
+            agentId={agentId}
+            onSuccess={fetchFiles}
+          />
+        </div>
+      ) : (
+        <>
+          <div className="grid grid-cols-1 gap-4 mb-4">
+            <div className="w-full text-sm text-amber-600 bg-amber-50 px-4 py-3 rounded-lg">
+              <p>
+                ⚠️ Los archivos que no se utilicen en una conversación se
+                eliminarán automáticamente después de 7 días.
+              </p>
             </div>
-            <FileList
-              files={files.slice(
-                (currentPage - 1) * itemsPerPage,
-                currentPage * itemsPerPage
-              )}
-              onDelete={handleDelete}
-              currentPage={currentPage}
-              itemsPerPage={itemsPerPage}
-              totalPages={totalPages}
-              onPageChange={setCurrentPage}
-              isLoading={isLoading}
-            />
-          </>
-        )}
-      </div>
-    </div>
+            <button
+              onClick={() => setShowUploadForm(true)}
+              className="w-full flex items-center justify-center px-4 py-2 text-sm text-blue-600 bg-blue-100 rounded-lg hover:bg-blue-200 transition-colors duration-200"
+            >
+              <FaPlus className="mr-2" /> Agregar Archivos
+            </button>
+          </div>
+          <FileList
+            files={files.slice(
+              (currentPage - 1) * itemsPerPage,
+              currentPage * itemsPerPage
+            )}
+            onDelete={handleDelete}
+            currentPage={currentPage}
+            itemsPerPage={itemsPerPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+            isLoading={isLoading}
+          />
+        </>
+      )}
+    </Modal>
   );
 };
+
+export default KnowledgeBaseModal;
