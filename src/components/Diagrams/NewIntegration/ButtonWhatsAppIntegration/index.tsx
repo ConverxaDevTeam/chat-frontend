@@ -3,7 +3,7 @@ import ButtonIntegracion from "../ButtonIntegracion";
 import { createIntegrationWhatsApp } from "@services/facebook";
 import { useSelector } from "react-redux";
 import { RootState } from "@store";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 interface ButtonWhatsAppIntegrationProps {
   getDataIntegrations: () => void;
@@ -14,8 +14,10 @@ const ButtonWhatsAppIntegration = ({
   getDataIntegrations,
   departmentId,
 }: ButtonWhatsAppIntegrationProps) => {
-  const [trigger, setTrigger] = useState(false);
-  const dataRef = useRef<{
+  const { selectOrganizationId } = useSelector(
+    (state: RootState) => state.auth
+  );
+  const [data, setData] = useState<{
     code: string | null;
     phone_number_id: string | null;
     waba_id: string | null;
@@ -24,16 +26,17 @@ const ButtonWhatsAppIntegration = ({
     phone_number_id: null,
     waba_id: null,
   });
-  const { selectOrganizationId } = useSelector(
-    (state: RootState) => state.auth
-  );
+
+  const isDataComplete = useMemo(() => {
+    return data.code && data.phone_number_id && data.waba_id;
+  }, [data]);
 
   const handleConnectFacebook = async () => {
     FB.login(
       (response: any) => {
         if (response.authResponse) {
-          dataRef.current.code = response.authResponse.code;
-          setTrigger(!trigger);
+          const code = response.authResponse.code;
+          setData(prev => ({ ...prev, code }));
         }
       },
       {
@@ -59,48 +62,34 @@ const ButtonWhatsAppIntegration = ({
 
     const info = JSON.parse(event.data);
     if (info.type === "WA_EMBEDDED_SIGNUP") {
-      dataRef.current.phone_number_id = info.data.phone_number_id;
-      dataRef.current.waba_id = info.data.waba_id;
-      setTrigger(!trigger);
+      setData(prev => ({
+        ...prev,
+        phone_number_id: info.data.phone_number_id,
+        waba_id: info.data.waba_id,
+      }));
     }
   };
 
   const handleCreateIntegration = async () => {
-    if (departmentId && selectOrganizationId) {
-      const { code, phone_number_id, waba_id } = dataRef.current;
-      if (!code || !phone_number_id || !waba_id) {
-        return;
-      }
+    if (departmentId && selectOrganizationId && isDataComplete) {
       const integration = await createIntegrationWhatsApp(
         departmentId,
         selectOrganizationId,
-        {
-          code,
-          phone_number_id,
-          waba_id,
-        }
+        data
       );
       if (integration) {
         getDataIntegrations();
       }
-      dataRef.current = {
-        code: null,
-        phone_number_id: null,
-        waba_id: null,
-      };
-      setTrigger(!trigger);
+      // Limpiar datos después de procesar la integración
+      setData({ code: null, phone_number_id: null, waba_id: null });
     }
   };
 
   useEffect(() => {
-    if (
-      dataRef.current.code &&
-      dataRef.current.phone_number_id &&
-      dataRef.current.waba_id
-    ) {
+    if (isDataComplete) {
       handleCreateIntegration();
     }
-  }, [trigger]);
+  }, [isDataComplete]);
 
   useEffect(() => {
     window.addEventListener("message", handleMessage);
