@@ -2,6 +2,7 @@ import Interface from "@components/Interface";
 import Loading from "@components/Loading";
 import ProtectedAuth from "@components/ProtectedAuth";
 import ProtectedSuperAdmin from "@components/ProtectedSuperAdmin";
+import ConversationDetail from "@pages/ConversationDetail";
 import Conversations from "@pages/Conversations";
 import Dashboard from "@pages/Home";
 import LogIn from "@pages/LogIn";
@@ -48,6 +49,10 @@ const App = (): JSX.Element => {
         />
         <Route path="conversations" element={<Conversations />} />
         <Route path="workspace" element={<Workspace />} />
+        <Route
+          path="conversation/detail/:id"
+          element={<ConversationDetail />}
+        />
       </Route>
       <Route path="*" element={<Navigate to="/" />} />
     </Routes>

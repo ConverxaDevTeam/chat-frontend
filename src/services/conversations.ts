@@ -32,3 +32,37 @@ export const getConversationsByOrganizationId = async (
     return [];
   }
 };
+
+export const getConversationByOrganizationIdAndById = async (
+  organizationId: number,
+  conversationId: number
+) => {
+  try {
+    const response = await axiosInstance.get(
+      apiUrls.getConversationByOrganizationIdAndById(
+        organizationId,
+        conversationId
+      )
+    );
+    if (response.data.ok) {
+      return response.data.conversation;
+    } else {
+      alertError(response.data.message);
+      return null;
+    }
+  } catch (error) {
+    let message = "Error inesperado";
+    if (axios.isAxiosError(error)) {
+      if (error.response) {
+        message =
+          error.response.data?.message || "Error inesperado del servidor";
+      } else if (error.request) {
+        message = "No se pudo conectar con el servidor";
+      } else {
+        message = error.message;
+      }
+    }
+    alertError(message);
+    return null;
+  }
+};
