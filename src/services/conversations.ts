@@ -38,6 +38,9 @@ export const assignConversationToHitl = async (conversationId: number) => {
     const response = await axiosInstance.post(
       `/api/conversation/${conversationId}/assign-hitl`
     );
+    if (response.data.ok) {
+      return response.data.conversation;
+    }
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {

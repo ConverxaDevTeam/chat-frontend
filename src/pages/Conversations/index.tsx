@@ -27,7 +27,9 @@ export interface Conversation {
   created_at: string;
   updated_at: string;
   type: ConversationType;
-  userId: number;
+  user: {
+    id: number;
+  } | null;
   user_deleted: boolean;
   messages: Message[];
 }
@@ -47,6 +49,14 @@ const Conversations = () => {
   const handleTakeChat = async (conversationId: number) => {
     // TODO: Implement backend integration for taking over the chat
     console.log(`Taking over chat ${conversationId}`);
+  };
+
+  const handleUpdateConversation = (updatedConversation: Conversation) => {
+    setConversations(prevConversations =>
+      prevConversations.map(conv =>
+        conv.id === updatedConversation.id ? updatedConversation : conv
+      )
+    );
   };
 
   return (
@@ -106,6 +116,7 @@ const Conversations = () => {
               key={conversation.id}
               conversation={conversation}
               onTakeChat={handleTakeChat}
+              onUpdateConversation={handleUpdateConversation}
             />
           ))}
         </tbody>

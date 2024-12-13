@@ -6,13 +6,18 @@ import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import { useSelector } from "react-redux";
 import { RootState } from "@store";
+import { AxiosError } from "axios";
 
 interface ConversationCardProps {
   conversation: Conversation;
+  onUpdateConversation: (conversation: Conversation) => void;
   onTakeChat: (conversationId: number) => void;
 }
 
-const ConversationCard = ({ conversation }: ConversationCardProps) => {
+const ConversationCard = ({
+  conversation,
+  onUpdateConversation,
+}: ConversationCardProps) => {
   const user = useSelector((state: RootState) => state.auth.user);
 
   const handleViewConversation = () => {
@@ -22,14 +27,19 @@ const ConversationCard = ({ conversation }: ConversationCardProps) => {
 
   const handleHitlAction = async () => {
     try {
-      await assignConversationToHitl(conversation.id);
-      toast.success(
-        conversation.userId === user?.id
-          ? "Conversación desasignada exitosamente"
-          : "Conversación asignada exitosamente"
+      const updatedConversation = await assignConversationToHitl(
+        conversation.id
       );
+      if (updatedConversation) {
+        onUpdateConversation(updatedConversation);
+        toast.success(
+          conversation.user?.id === user?.id
+            ? "Conversación desasignada exitosamente"
+            : "Conversación asignada exitosamente"
+        );
+      }
     } catch (error: unknown) {
-      if (error?.response?.status === 400) {
+      if ((error as AxiosError).response?.status === 400) {
         const result = await Swal.fire({
           title: "Conversación ya asignada",
           text: "¿Deseas reasignar esta conversación?",
@@ -41,15 +51,20 @@ const ConversationCard = ({ conversation }: ConversationCardProps) => {
 
         if (result.isConfirmed) {
           try {
-            await assignConversationToHitl(conversation.id);
-            toast.success("Conversación reasignada exitosamente");
+            const reassignedConversation = await assignConversationToHitl(
+              conversation.id
+            );
+            if (reassignedConversation) {
+              onUpdateConversation(reassignedConversation);
+              toast.success("Conversación reasignada exitosamente");
+            }
           } catch (reassignError) {
             toast.error("Error al reasignar la conversación");
           }
         }
       } else {
         toast.error(
-          conversation.userId === user?.id
+          conversation.user?.id === user?.id
             ? "Error al desasignar la conversación"
             : "Error al asignar la conversación"
         );
@@ -115,23 +130,23 @@ const ConversationCard = ({ conversation }: ConversationCardProps) => {
           <button
             onClick={handleHitlAction}
             className={`flex items-center gap-1 px-1 py-2 rounded-full transition-colors ${
-              conversation.userId === user?.id
+              conversation.user?.id === user?.id
                 ? "text-red-600 hover:bg-red-50"
                 : "text-purple-600 hover:bg-purple-50"
             }`}
             title={
-              conversation.userId === user?.id
+              conversation.user?.id === user?.id
                 ? "Unassign from HITL"
                 : "Assign to HITL"
             }
           >
-            {conversation.userId === user?.id ? (
+            {conversation.user?.id === user?.id ? (
               <BsPersonDash className="w-5 h-5" />
             ) : (
               <BsHeadset className="w-5 h-5" />
             )}
             <span className="hidden md:inline">
-              {conversation.userId === user?.id ? "Unassign" : "HITL"}
+              {conversation.user?.id === user?.id ? "Unassign" : "HITL"}
             </span>
           </button>
           <button
