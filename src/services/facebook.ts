@@ -7,9 +7,9 @@ export const createIntegrationWhatsApp = async (
   departmentId: number,
   selectOrganizationId: number,
   data: {
-    code: string;
-    phone_number_id: string;
-    waba_id: string;
+    code: string | null;
+    phone_number_id: string | null;
+    waba_id: string | null;
   }
 ) => {
   try {
