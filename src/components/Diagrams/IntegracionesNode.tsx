@@ -1,21 +1,55 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import DefaultNode from "./DefaultNode";
 import { HiLink, HiPlusCircle } from "react-icons/hi";
 import AddWebchat from "@pages/Workspace/components/AddWebChat";
-import { CustomTypeNodeProps } from "@interfaces/workflow";
+import { CustomTypeNodeProps, NodeData } from "@interfaces/workflow";
+import Modal from "@components/Modal";
+import NewIntegration from "./NewIntegration";
+import { RootState } from "@store";
+import { useSelector } from "react-redux";
+import { ConfigWebChat } from "@pages/Workspace/components/CustomizeChat";
+import { getDefaultDepartment } from "@services/department";
+import { getIntegrations } from "@services/integration";
+import ButtonIntegrationActive from "./ButtonIntegrationActive";
+import { MdOutlineWebAsset } from "react-icons/md";
+
+export enum IntegrationType {
+  CHAT_WEB = "chat_web",
+  WHATSAPP = "whatsapp",
+  MESSENGER = "messenger",
+}
+
+export interface ConfigWhatsApp {
+  name_app: string | null;
+  phone: string | null;
+  token_expire: string | null;
+}
+
+export interface ConfigMessenger {
+  page_id: string;
+  app_id: string;
+  app_secret: string;
+}
+
+export interface IIntegration {
+  id: number;
+  created_at: string;
+  updated_at: string;
+  type: IntegrationType;
+  config: ConfigWebChat | ConfigWhatsApp | ConfigMessenger;
+}
 
 const SubMenu: React.FC<{ openModal: () => void }> = ({ openModal }) => {
   return (
-    <div className="mt-4">
-      <ul className="mt-2 space-y-2">
-        <li
-          className="cursor-pointer p-2 rounded-md hover:bg-blue-100 transition-all"
-          onClick={openModal}
-        >
-          Webchat
-        </li>
-      </ul>
-    </div>
+    <button
+      title="Webchat"
+      type="button"
+      className="flex gap-[6px] items-center justify-center h-[40px] rounded-md bg-blue-300 hover:bg-blue-100 w-full"
+      onClick={openModal}
+    >
+      <MdOutlineWebAsset className="w-5 h-5" />
+      <p>Webchat</p>
+    </button>
   );
 };
 
@@ -23,16 +57,57 @@ const IntegracionesNode = ({
   data,
   selected,
   ...rest
-}: CustomTypeNodeProps) => {
+}: CustomTypeNodeProps<NodeData>) => {
+  const { selectOrganizationId } = useSelector(
+    (state: RootState) => state.auth
+  );
+  const [integrations, setIntegrations] = useState<IIntegration[]>([]);
   const [isMenuVisible, setIsMenuVisible] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [departmentId, setDepartmentId] = useState<number | null>(null);
 
   const toggleMenu = () => {
     setIsMenuVisible(!isMenuVisible);
   };
 
+  const getDataIntegrations = async () => {
+    if (!selectOrganizationId) return;
+    const responseDepartament =
+      await getDefaultDepartment(selectOrganizationId);
+    setDepartmentId(responseDepartament.department.id);
+    const responseIntegrations = await getIntegrations(
+      responseDepartament.department.id,
+      selectOrganizationId
+    );
+    setIntegrations(responseIntegrations);
+  };
+
+  useEffect(() => {
+    getDataIntegrations();
+  }, []);
+
   return (
     <>
+      <Modal
+        isShown={isMenuVisible}
+        children={
+          <NewIntegration
+            setIsMenuVisible={setIsMenuVisible}
+            getDataIntegrations={getDataIntegrations}
+            departmentId={departmentId}
+          />
+        }
+        onClose={toggleMenu}
+        header={<h2 className="text-xl font-bold">Agregar Integración</h2>}
+        footer={
+          <button
+            onClick={toggleMenu}
+            className="w-full py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition duration-300"
+          >
+            Cerrar
+          </button>
+        }
+      />
       <DefaultNode
         selected={selected}
         data={{
@@ -44,7 +119,7 @@ const IntegracionesNode = ({
         icon={<HiLink size={24} className="w-8 h-8 text-gray-800" />}
         {...rest}
       >
-        <div className="mt-4 bg-transparent rounded-md text-black">
+        <div className="bg-transparent rounded-md text-black flex flex-col gap-[10px]">
           <button
             onClick={toggleMenu}
             className="w-full py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition duration-300 flex items-center justify-center gap-2"
@@ -52,8 +127,17 @@ const IntegracionesNode = ({
             <HiPlusCircle className="w-6 h-6" size={24} color="blue" />
             Agregar Integración
           </button>
-
-          {isMenuVisible && <SubMenu openModal={() => setIsModalOpen(true)} />}
+          <SubMenu openModal={() => setIsModalOpen(true)} />
+          {integrations
+            .filter(
+              integration => integration.type !== IntegrationType.CHAT_WEB
+            )
+            .map(integration => (
+              <ButtonIntegrationActive
+                key={integration.id}
+                integration={integration}
+              />
+            ))}
         </div>
       </DefaultNode>
       <AddWebchat isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />

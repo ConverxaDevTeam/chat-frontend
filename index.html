@@ -6,6 +6,17 @@
     <link rel="stylesheet" href="/styles.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Sofia Chat</title>
+    <script async defer crossorigin="anonymous" src="https://connect.facebook.net/es_LA/sdk.js"></script>
+    <script>
+      window.fbAsyncInit = function () {
+        FB.init({
+          appId: "866499462058686",
+          autoLogAppEvents: true,
+          xfbml: true,
+          version: "v21.0",
+        });
+      };
+    </script>
   </head>
   <body>
     <div id="root"></div>
