@@ -24,8 +24,12 @@
     "baseUrl": "",
     "paths": {
       "@*": ["./src/*"]
-    }
+    },
+    "typeRoots": [
+      "./node_modules/@types",
+      "./src/ts.types" // Asegúrate de incluir la carpeta de tipos personalizada
+    ]
   },
-  "include": ["src"],
+  "include": ["src", "facebook.d.ts"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

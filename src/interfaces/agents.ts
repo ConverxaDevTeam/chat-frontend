@@ -31,9 +31,19 @@ export interface ChatAgentIdentifier {
 
 export interface TestAgentIdentifier {
   threatId: string;
-  agentId: string;
+  LLMAgentId: string;
+  agentId: number;
   agent: AgenteType;
   type: AgentIdentifierType.TEST;
+}
+
+export interface KnowledgeBase {
+  updated_at: string;
+  id?: number;
+  filename: string;
+  vectorStoreId: string;
+  expirationTime?: Date;
+  agent_id?: number;
 }
 
 export type AgentIdentifier = ChatAgentIdentifier | TestAgentIdentifier;

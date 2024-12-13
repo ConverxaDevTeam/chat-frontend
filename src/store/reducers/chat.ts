@@ -9,6 +9,14 @@ interface Department {
   id: number;
 }
 
+interface AgentFunction {
+  id: number;
+  name: string;
+  autenticador?: {
+    id: number;
+  };
+}
+
 interface Agent {
   id: number;
 }
@@ -18,6 +26,7 @@ interface ChatState {
   connected: boolean;
   department: Department | null;
   currentAgent: Agent | null;
+  agentFunctions: AgentFunction[];
 }
 
 const initialState: ChatState = {
@@ -25,6 +34,7 @@ const initialState: ChatState = {
   connected: false,
   department: null,
   currentAgent: null,
+  agentFunctions: [],
 };
 
 const chatSlice = createSlice({
@@ -42,14 +52,17 @@ const chatSlice = createSlice({
       action: PayloadAction<{
         department: Department;
         agent: Agent;
+        functions: AgentFunction[];
       }>
     ) => {
       state.department = action.payload.department;
       state.currentAgent = action.payload.agent;
+      state.agentFunctions = action.payload.functions;
     },
     clearWorkspaceData: state => {
       state.department = null;
       state.currentAgent = null;
+      state.agentFunctions = [];
     },
   },
 });

@@ -16,14 +16,63 @@ export const apiUrls = {
   myOrganizations: () => `/api/organization/my-organizations`,
   //socket
   socket: () => `${baseUrl}/api/socket`,
-  //web-chat
-  getIntegrationWebChat: (departmentId: number, selectOrganizationId: number) =>
-    `/api/integration/web-chat/${selectOrganizationId}/${departmentId}`,
+  //integrations
+  createIntegrationWhatsApp: (departmentId: number, organizationId: number) =>
+    `/api/facebook/create/${organizationId}/${departmentId}`,
+  getIntegrationWebChat: (departmentId: number, organizationId: number) =>
+    `/api/integration/web-chat/${organizationId}/${departmentId}`,
   updateIntegrationWebChat: (id: number) => `/api/integration/web-chat/${id}`,
   //conversations
   getConversationsByOrganizationId: (organizationId: number) =>
     `/api/conversation/organization/${organizationId}`,
-};
+  getIntegrations: (departmentId: number, organizationId: number) =>
+    `/api/integration/all/${organizationId}/${departmentId}`,
+  getConversationByOrganizationIdAndById: (
+    organizationId: number,
+    conversationId: number
+  ) => `/api/conversation/${organizationId}/${conversationId}`,
+  // departments
+  departments: {
+    base: () => `/api/departments`,
+    byId: (id: number) => `/api/departments/${id}`,
+    default: (organizationId: number) =>
+      `/api/departments/default/${organizationId}`,
+  },
+
+  // agents
+  agents: {
+    base: () => `/api/agent`,
+    byId: (id: number) => `/api/agent/${id}`,
+    byDepartment: (departmentId: number) =>
+      `/api/agent/department/${departmentId}`,
+  },
+
+  // functions
+  functions: {
+    base: () => `/api/functions`,
+    byId: (id: number) => `/api/functions/${id}`,
+    byAgent: (agentId: number) => `/api/functions/agent/${agentId}`,
+    paramsBase: (functionId: number) =>
+      `/api/functions/${functionId}/parameters`,
+    assignAuthenticator: (functionId: number) =>
+      `/api/functions/${functionId}/assign-authorizer`,
+  },
+
+  // authenticators
+  authenticators: {
+    base: () => `/api/autenticadores`,
+    byId: (id: number) => `/api/autenticadores/${id}`,
+    byOrganization: (organizationId: number) =>
+      `/api/autenticadores/${organizationId}`,
+  },
+
+  // knowledge base
+  knowledgeBase: {
+    base: () => `/api/agent-knowledgebase`,
+    byId: (id: number) => `/api/agent-knowledgebase/${id}`,
+    byAgent: (agentId: number) => `/api/agent-knowledgebase/agent/${agentId}`,
+  },
+} as const;
 
 export const tokenAccess = {
   tokenName: import.meta.env.VITE_PUBLIC_TOKEN_NAME || "token",

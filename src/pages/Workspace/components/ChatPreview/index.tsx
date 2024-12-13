@@ -12,6 +12,9 @@ interface ChatPreviewProps {
 export interface IConversation {
   id: number;
   messages: IMessage[];
+  user: {
+    id: number;
+  };
   created_at: string;
 }
 

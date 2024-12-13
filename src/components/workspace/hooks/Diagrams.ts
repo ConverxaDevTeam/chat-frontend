@@ -1,36 +1,38 @@
-import { CustomNodeProps } from '@interfaces/workflow';
-import { addEdge, Connection, Position } from '@xyflow/react';
-import { EdgeBase } from '@xyflow/system';
-import { useCallback, useEffect } from 'react';
+import { useUnifiedNodeCreation } from "@components/Diagrams/hooks/useUnifiedNodeCreation";
+import { addEdge, Connection } from "@xyflow/react";
+import { EdgeBase, NodeBase } from "@xyflow/system";
+import { useCallback, useEffect } from "react";
 
+export const useEdges = (
+  setEdges: React.Dispatch<React.SetStateAction<EdgeBase[]>>
+) => {
+  const { createEdge } = useUnifiedNodeCreation(); // Use the hook
 
-
-export const useEdges = (setEdges: Function) => {
   const onConnect = useCallback(
     (params: Connection) => {
-      const newEdge: EdgeBase = {
-        id: `${params.source}-${params.target}`,
-        source: params.source,
-        target: params.target,
-        sourceHandle: Position.Left,
-        targetHandle: Position.Right,
-        type: "smoothstep",
-      };
-      setEdges((eds: EdgeBase[]) => addEdge(newEdge, eds));
+      const newEdge = createEdge(params);
+      setEdges(currentEdges => addEdge(newEdge, currentEdges));
     },
-    [setEdges]
+    [setEdges, createEdge]
   );
 
   return { onConnect };
 };
 
-export const useZoomToFit = (nodes: CustomNodeProps[], setCenter: Function) => {
+export const useZoomToFit = (
+  nodes: NodeBase[],
+  setCenter: (
+    x: number,
+    y: number,
+    options: { duration: number; zoom: number }
+  ) => void
+) => {
   useEffect(() => {
     if (nodes.length === 0) return;
-    if (nodes.some((node) => !node.selected)) return;
-    
-    const xValues = nodes.map((node) => node.position.x);
-    const yValues = nodes.map((node) => node.position.y);
+    if (nodes.some(node => !node.selected)) return;
+
+    const xValues = nodes.map(node => node.position.x);
+    const yValues = nodes.map(node => node.position.y);
 
     const minX = Math.min(...xValues);
     const maxX = Math.max(...xValues);
