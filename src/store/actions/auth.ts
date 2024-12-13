@@ -9,6 +9,8 @@ import {
   disconnectWebSocket,
   onWebSocketEvent,
 } from "@services/websocket.service";
+import { newMessageChat } from "./conversations";
+import { IMessage } from "@pages/Workspace/components/ChatPreview";
 
 export const axiosInstance = axios.create({
   baseURL: baseUrl,
@@ -386,9 +388,22 @@ export const connectSocketAsync = createAsyncThunk(
       throw new Error("Error al conectar el WebSocket");
     }
 
-    onWebSocketEvent<{ action: string }>("message", message => {
+    onWebSocketEvent<{
+      action: string;
+      data?: IMessage | null;
+      conversation_id?: number;
+    }>("message", message => {
       if (message.action === "update-user") {
         dispatch(getUserAsync());
+      } else if (message.action === "new-message") {
+        if (!message.data) return;
+        if (!message.conversation_id) return;
+        dispatch(
+          newMessageChat({
+            message: message.data,
+            conversationId: message.conversation_id,
+          })
+        );
       }
     });
 

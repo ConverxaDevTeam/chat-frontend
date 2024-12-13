@@ -27,6 +27,10 @@ export const apiUrls = {
     `/api/conversation/organization/${organizationId}`,
   getIntegrations: (departmentId: number, organizationId: number) =>
     `/api/integration/all/${organizationId}/${departmentId}`,
+  getConversationByOrganizationIdAndById: (
+    organizationId: number,
+    conversationId: number
+  ) => `/api/conversation/${organizationId}/${conversationId}`,
   // departments
   departments: {
     base: () => `/api/departments`,
