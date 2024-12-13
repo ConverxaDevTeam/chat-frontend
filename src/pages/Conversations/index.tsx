@@ -2,37 +2,7 @@ import { getConversationsByOrganizationId } from "@services/conversations";
 import { useEffect, useState } from "react";
 import ConversationCard from "./ConversationCard";
 import { RiArrowUpDownFill } from "react-icons/ri";
-
-export enum ConversationType {
-  CHAT_WEB = "chat_web",
-  WHATSAPP = "whatsapp",
-  MESSENGER = "messenger",
-}
-
-export enum MessageType {
-  USER = "user",
-  AGENT = "agent",
-}
-
-export interface Message {
-  id: number;
-  created_at: string;
-  updated_at: string;
-  text: string;
-  type: MessageType;
-}
-
-export interface Conversation {
-  id: number;
-  created_at: string;
-  updated_at: string;
-  type: ConversationType;
-  user: {
-    id: number;
-  } | null;
-  user_deleted: boolean;
-  messages: Message[];
-}
+import { Conversation } from "@interfaces/conversation";
 
 const Conversations = () => {
   const [conversations, setConversations] = useState<Conversation[]>([]);
@@ -45,11 +15,6 @@ const Conversations = () => {
   useEffect(() => {
     fetchConversations();
   }, []);
-
-  const handleTakeChat = async (conversationId: number) => {
-    // TODO: Implement backend integration for taking over the chat
-    console.log(`Taking over chat ${conversationId}`);
-  };
 
   const handleUpdateConversation = (updatedConversation: Conversation) => {
     setConversations(prevConversations =>
@@ -115,7 +80,6 @@ const Conversations = () => {
             <ConversationCard
               key={conversation.id}
               conversation={conversation}
-              onTakeChat={handleTakeChat}
               onUpdateConversation={handleUpdateConversation}
             />
           ))}

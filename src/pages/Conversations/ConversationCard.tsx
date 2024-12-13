@@ -1,29 +1,28 @@
-import { Conversation, ConversationType, MessageType } from ".";
 import { convertISOToReadable } from "@utils/format";
 import { BsEye, BsHeadset, BsPersonDash } from "react-icons/bs";
 import { assignConversationToHitl } from "@services/conversations";
 import { toast } from "react-toastify";
-import Swal from "sweetalert2";
 import { useSelector } from "react-redux";
 import { RootState } from "@store";
 import { AxiosError } from "axios";
+import { Link } from "react-router-dom";
+import Swal from "sweetalert2";
+import {
+  Conversation,
+  MessageType,
+  ConversationType,
+} from "@interfaces/conversation";
 
-interface ConversationCardProps {
+interface HitlButtonProps {
   conversation: Conversation;
   onUpdateConversation: (conversation: Conversation) => void;
-  onTakeChat: (conversationId: number) => void;
 }
 
-const ConversationCard = ({
+const HitlButton = ({
   conversation,
   onUpdateConversation,
-}: ConversationCardProps) => {
+}: HitlButtonProps) => {
   const user = useSelector((state: RootState) => state.auth.user);
-
-  const handleViewConversation = () => {
-    // TODO: Implement view conversation logic
-    console.log(`Viewing conversation ${conversation.id}`);
-  };
 
   const handleHitlAction = async () => {
     try {
@@ -72,6 +71,41 @@ const ConversationCard = ({
     }
   };
 
+  return (
+    <button
+      onClick={handleHitlAction}
+      className={`flex items-center gap-1 px-1 py-2 rounded-full transition-colors ${
+        conversation.user?.id === user?.id
+          ? "text-red-600 hover:bg-red-50"
+          : "text-purple-600 hover:bg-purple-50"
+      }`}
+      title={
+        conversation.user?.id === user?.id
+          ? "Unassign from HITL"
+          : "Assign to HITL"
+      }
+    >
+      {conversation.user?.id === user?.id ? (
+        <BsPersonDash className="w-5 h-5" />
+      ) : (
+        <BsHeadset className="w-5 h-5" />
+      )}
+      <span className="hidden md:inline">
+        {conversation.user?.id === user?.id ? "Unassign" : "HITL"}
+      </span>
+    </button>
+  );
+};
+
+interface ConversationCardProps {
+  conversation: Conversation;
+  onUpdateConversation: (conversation: Conversation) => void;
+}
+
+const ConversationCard = ({
+  conversation,
+  onUpdateConversation,
+}: ConversationCardProps) => {
   const lastMessage = conversation.messages[conversation.messages.length - 1];
 
   return (
@@ -127,36 +161,18 @@ const ConversationCard = ({
       </td>
       <td className="w-[calc(100%/24*4)]">
         <div className="flex items-center">
-          <button
-            onClick={handleHitlAction}
-            className={`flex items-center gap-1 px-1 py-2 rounded-full transition-colors ${
-              conversation.user?.id === user?.id
-                ? "text-red-600 hover:bg-red-50"
-                : "text-purple-600 hover:bg-purple-50"
-            }`}
-            title={
-              conversation.user?.id === user?.id
-                ? "Unassign from HITL"
-                : "Assign to HITL"
-            }
-          >
-            {conversation.user?.id === user?.id ? (
-              <BsPersonDash className="w-5 h-5" />
-            ) : (
-              <BsHeadset className="w-5 h-5" />
-            )}
-            <span className="hidden md:inline">
-              {conversation.user?.id === user?.id ? "Unassign" : "HITL"}
-            </span>
-          </button>
-          <button
-            onClick={handleViewConversation}
+          <HitlButton
+            conversation={conversation}
+            onUpdateConversation={onUpdateConversation}
+          />
+          <Link
+            to={`/conversation/detail/${conversation.id}`}
             className="flex items-center gap-1 px-1 py-2 text-gray-600 hover:bg-gray-50 rounded-full transition-colors"
             title="View Conversation"
           >
             <BsEye className="w-5 h-5" />
             <span className="hidden md:inline">View</span>
-          </button>
+          </Link>
         </div>
       </td>
     </tr>
