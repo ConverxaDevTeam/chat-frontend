@@ -32,3 +32,31 @@ export const getConversationsByOrganizationId = async (
     return [];
   }
 };
+
+export const assignConversationToHitl = async (conversationId: number) => {
+  try {
+    const response = await axiosInstance.post(
+      `/api/conversation/${conversationId}/assign-hitl`
+    );
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      throw error;
+    }
+    throw new Error("Error inesperado");
+  }
+};
+
+export const reassignConversationToHitl = async (conversationId: number) => {
+  try {
+    const response = await axiosInstance.post(
+      `/api/conversation/${conversationId}/reassign-hitl`
+    );
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      throw error;
+    }
+    throw new Error("Error inesperado");
+  }
+};

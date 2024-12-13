@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import DefaultNode from "./DefaultNode";
 import { HiLink, HiPlusCircle } from "react-icons/hi";
 import AddWebchat from "@pages/Workspace/components/AddWebChat";
-import { CustomTypeNodeProps } from "@interfaces/workflow";
+import { CustomTypeNodeProps, NodeData } from "@interfaces/workflow";
 
 const SubMenu: React.FC<{ openModal: () => void }> = ({ openModal }) => {
   return (
@@ -23,7 +23,7 @@ const IntegracionesNode = ({
   data,
   selected,
   ...rest
-}: CustomTypeNodeProps) => {
+}: CustomTypeNodeProps<NodeData>) => {
   const [isMenuVisible, setIsMenuVisible] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
 

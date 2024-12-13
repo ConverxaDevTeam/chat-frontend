@@ -1,20 +1,60 @@
 import { Conversation, ConversationType, MessageType } from ".";
 import { convertISOToReadable } from "@utils/format";
-import { HiUserCircle } from "react-icons/hi";
-import { BsEye } from "react-icons/bs";
+import { BsEye, BsHeadset, BsPersonDash } from "react-icons/bs";
+import { assignConversationToHitl } from "@services/conversations";
+import { toast } from "react-toastify";
+import Swal from "sweetalert2";
+import { useSelector } from "react-redux";
+import { RootState } from "@store";
 
 interface ConversationCardProps {
   conversation: Conversation;
   onTakeChat: (conversationId: number) => void;
 }
 
-const ConversationCard = ({
-  conversation,
-  onTakeChat,
-}: ConversationCardProps) => {
+const ConversationCard = ({ conversation }: ConversationCardProps) => {
+  const user = useSelector((state: RootState) => state.auth.user);
+
   const handleViewConversation = () => {
     // TODO: Implement view conversation logic
     console.log(`Viewing conversation ${conversation.id}`);
+  };
+
+  const handleHitlAction = async () => {
+    try {
+      await assignConversationToHitl(conversation.id);
+      toast.success(
+        conversation.userId === user?.id
+          ? "Conversación desasignada exitosamente"
+          : "Conversación asignada exitosamente"
+      );
+    } catch (error: unknown) {
+      if (error?.response?.status === 400) {
+        const result = await Swal.fire({
+          title: "Conversación ya asignada",
+          text: "¿Deseas reasignar esta conversación?",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonText: "Sí, reasignar",
+          cancelButtonText: "Cancelar",
+        });
+
+        if (result.isConfirmed) {
+          try {
+            await assignConversationToHitl(conversation.id);
+            toast.success("Conversación reasignada exitosamente");
+          } catch (reassignError) {
+            toast.error("Error al reasignar la conversación");
+          }
+        }
+      } else {
+        toast.error(
+          conversation.userId === user?.id
+            ? "Error al desasignar la conversación"
+            : "Error al asignar la conversación"
+        );
+      }
+    }
   };
 
   const lastMessage = conversation.messages[conversation.messages.length - 1];
@@ -72,20 +112,28 @@ const ConversationCard = ({
       </td>
       <td className="w-[calc(100%/24*4)]">
         <div className="flex items-center">
-          {!conversation.userId ? (
-            <button
-              onClick={() => onTakeChat(conversation.id)}
-              className="flex items-center gap-1 px-1 py-2 text-blue-600 hover:bg-blue-50 rounded-full transition-colors"
-              title="Take Chat"
-            >
-              <HiUserCircle className="w-5 h-5" />
-              <span className="hidden md:inline">Take</span>
-            </button>
-          ) : (
-            <span className="px-2 py-1 bg-green-50 text-green-600 rounded-full text-sm font-medium">
-              Active
+          <button
+            onClick={handleHitlAction}
+            className={`flex items-center gap-1 px-1 py-2 rounded-full transition-colors ${
+              conversation.userId === user?.id
+                ? "text-red-600 hover:bg-red-50"
+                : "text-purple-600 hover:bg-purple-50"
+            }`}
+            title={
+              conversation.userId === user?.id
+                ? "Unassign from HITL"
+                : "Assign to HITL"
+            }
+          >
+            {conversation.userId === user?.id ? (
+              <BsPersonDash className="w-5 h-5" />
+            ) : (
+              <BsHeadset className="w-5 h-5" />
+            )}
+            <span className="hidden md:inline">
+              {conversation.userId === user?.id ? "Unassign" : "HITL"}
             </span>
-          )}
+          </button>
           <button
             onClick={handleViewConversation}
             className="flex items-center gap-1 px-1 py-2 text-gray-600 hover:bg-gray-50 rounded-full transition-colors"
