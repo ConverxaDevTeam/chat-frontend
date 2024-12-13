@@ -6,6 +6,7 @@ export interface CreateAgentDto {
 export interface Agent {
   id: number;
   name: string;
+  canEscalateToHuman: boolean;
   config: {
     instruccion: string;
   };
