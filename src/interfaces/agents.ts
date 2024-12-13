@@ -37,4 +37,13 @@ export interface TestAgentIdentifier {
   type: AgentIdentifierType.TEST;
 }
 
+export interface KnowledgeBase {
+  updated_at: string;
+  id?: number;
+  filename: string;
+  vectorStoreId: string;
+  expirationTime?: Date;
+  agent_id?: number;
+}
+
 export type AgentIdentifier = ChatAgentIdentifier | TestAgentIdentifier;
