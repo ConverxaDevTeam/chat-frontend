@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import DefaultNode from "./DefaultNode";
 import { HiLink, HiPlusCircle } from "react-icons/hi";
 import AddWebchat from "@pages/Workspace/components/AddWebChat";
-import { CustomTypeNodeProps } from "@interfaces/workflow";
+import { CustomTypeNodeProps, NodeData } from "@interfaces/workflow";
 import Modal from "@components/Modal";
 import NewIntegration from "./NewIntegration";
 import { RootState } from "@store";
@@ -57,7 +57,7 @@ const IntegracionesNode = ({
   data,
   selected,
   ...rest
-}: CustomTypeNodeProps) => {
+}: CustomTypeNodeProps<NodeData>) => {
   const { selectOrganizationId } = useSelector(
     (state: RootState) => state.auth
   );

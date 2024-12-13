@@ -33,8 +33,8 @@ const ButtonWhatsAppIntegration = ({
 
   const handleConnectFacebook = async () => {
     FB.login(
-      (response: any) => {
-        if (response.authResponse) {
+      response => {
+        if (response.authResponse && response.authResponse.code) {
           const code = response.authResponse.code;
           setData(prev => ({ ...prev, code }));
         }
