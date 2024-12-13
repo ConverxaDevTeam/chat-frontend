@@ -27,13 +27,13 @@ export interface Conversation {
   created_at: string;
   updated_at: string;
   type: ConversationType;
+  userId: number;
   user_deleted: boolean;
   messages: Message[];
 }
 
 const Conversations = () => {
   const [conversations, setConversations] = useState<Conversation[]>([]);
-  const [isChecked, setIsChecked] = useState<boolean>(false);
 
   const fetchConversations = async () => {
     const response = await getConversationsByOrganizationId(1);
@@ -44,68 +44,70 @@ const Conversations = () => {
     fetchConversations();
   }, []);
 
-  const handleCheckBoxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setIsChecked(event.target.checked);
+  const handleTakeChat = async (conversationId: number) => {
+    // TODO: Implement backend integration for taking over the chat
+    console.log(`Taking over chat ${conversationId}`);
   };
 
   return (
-    <div>
-      <p>Conversations</p>
+    <div className="bg-white rounded-xl shadow-sm p-6">
+      <div className="mb-6">
+        <h1 className="text-xl font-semibold text-gray-900">Conversations</h1>
+      </div>
       <table className="w-full border-spacing-0">
         <thead className="border-b-[1px]">
           <tr className="h-[60px] text-[16px]">
-            <th className="w-[calc(100%/17)]">
-              <div className="flex items-center">
-                <input
-                  type="checkbox"
-                  className="w-[16px] 2xl:w-[20px] h-[16px] 2xl:h-[20px] mr-[20px] 2xl:mr-[30px]"
-                  checked={isChecked}
-                  onChange={handleCheckBoxChange}
-                />
-              </div>
-            </th>
-            <th className="w-[calc(100%/17*2)]">
+            <th className="w-[calc(100%/24*2)]">
               <div className="flex gap-[10px] items-center">
                 <p>ID</p>
                 <RiArrowUpDownFill className="text-[#212121] cursor-pointer" />
               </div>
             </th>
-            <th className="w-[calc(100%/17*2)]">
+            <th className="w-[calc(100%/24*2)]">
               <div className="flex gap-[10px] items-center">
                 <p>Status</p>
                 <RiArrowUpDownFill className="text-[#212121] cursor-pointer" />
               </div>
             </th>
-            <th className="w-[calc(100%/17*2)]">
+            <th className="hidden md:table-cell w-[calc(100%/24*2)]">
               <div className="flex gap-[10px] items-center">
                 <p>Iniciado</p>
                 <RiArrowUpDownFill className="text-[#212121] cursor-pointer" />
               </div>
             </th>
-            <th className="w-[calc(100%/17*7)]">
+            <th className="w-2">
               <div className="flex gap-[10px] items-center">
-                <p>Ultimo mensaje</p>
+                <p>Último mensaje</p>
                 <RiArrowUpDownFill className="text-[#212121] cursor-pointer" />
               </div>
             </th>
-            <th className="w-[calc(100%/17*3)]">
+            <th className="w-[calc(100%/24*2)]">
               <div className="flex gap-[10px] items-center">
                 <p>Plataforma</p>
                 <RiArrowUpDownFill className="text-[#212121] cursor-pointer" />
               </div>
             </th>
+            <th className="w-[calc(100%/24*2)]">
+              <div className="flex gap-[10px] items-center">
+                <p>Need HITL</p>
+                <RiArrowUpDownFill className="text-[#212121] cursor-pointer" />
+              </div>
+            </th>
+            <th className="w-[calc(100%/24*4)]">
+              <div className="flex gap-[10px] items-center">
+                <p>Actions</p>
+              </div>
+            </th>
           </tr>
         </thead>
         <tbody>
-          {conversations.map(conversation => {
-            return (
-              <ConversationCard
-                key={conversation.id}
-                conversation={conversation}
-                checkAll={isChecked}
-              />
-            );
-          })}
+          {conversations.map(conversation => (
+            <ConversationCard
+              key={conversation.id}
+              conversation={conversation}
+              onTakeChat={handleTakeChat}
+            />
+          ))}
         </tbody>
       </table>
     </div>
