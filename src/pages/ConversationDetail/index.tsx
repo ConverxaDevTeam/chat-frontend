@@ -2,7 +2,10 @@ import { useForm } from "react-hook-form";
 import { useHitl } from "@hooks/useHitl";
 import { HitlButton } from "@components/HitlButton";
 import { SendMessageButton } from "@components/SendMessageButton";
-import { getConversationByOrganizationIdAndById } from "@services/conversations";
+import {
+  getConversationByOrganizationIdAndById,
+  sendMessage,
+} from "@services/conversations";
 import { AppDispatch, RootState } from "@store";
 import { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -64,8 +67,17 @@ const ConversationDetail = () => {
 
   const onSubmit = async (data: FormInputs) => {
     if (!data.message.trim()) return;
-    // Implement your send message logic here
-    reset();
+
+    try {
+      const success = await sendMessage(Number(id), data.message);
+      if (success) {
+        reset();
+        // Actualizar la conversación para mostrar el nuevo mensaje
+        await getConversationDetailById();
+      }
+    } catch (error) {
+      console.error("Error al enviar mensaje:", error);
+    }
   };
 
   useEffect(() => {
