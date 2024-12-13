@@ -16,14 +16,21 @@ export const apiUrls = {
   myOrganizations: () => `/api/organization/my-organizations`,
   //socket
   socket: () => `${baseUrl}/api/socket`,
-  //web-chat
-  getIntegrationWebChat: (departmentId: number, selectOrganizationId: number) =>
-    `/api/integration/web-chat/${selectOrganizationId}/${departmentId}`,
+  //integrations
+  createIntegrationWhatsApp: (departmentId: number, organizationId: number) =>
+    `/api/facebook/create/${organizationId}/${departmentId}`,
+  getIntegrationWebChat: (departmentId: number, organizationId: number) =>
+    `/api/integration/web-chat/${organizationId}/${departmentId}`,
   updateIntegrationWebChat: (id: number) => `/api/integration/web-chat/${id}`,
   //conversations
   getConversationsByOrganizationId: (organizationId: number) =>
     `/api/conversation/organization/${organizationId}`,
-
+  getIntegrations: (departmentId: number, organizationId: number) =>
+    `/api/integration/all/${organizationId}/${departmentId}`,
+  getConversationByOrganizationIdAndById: (
+    organizationId: number,
+    conversationId: number
+  ) => `/api/conversation/${organizationId}/${conversationId}`,
   // departments
   departments: {
     base: () => `/api/departments`,

@@ -1,17 +1,12 @@
 import ReactDOM from "react-dom";
 import React from "react";
 
-interface ModalWebChatProps {
+interface RawModalProps {
   isShown: boolean;
   children: React.ReactNode;
   onClose: () => void;
 }
-
-const ModalWebChat: React.FC<ModalWebChatProps> = ({
-  isShown,
-  children,
-  onClose,
-}) => {
+const RawModal: React.FC<RawModalProps> = ({ isShown, children, onClose }) => {
   const modal = document.getElementById("modal");
   if (!modal) return null;
 
@@ -35,4 +30,4 @@ const ModalWebChat: React.FC<ModalWebChatProps> = ({
     : null;
 };
 
-export default ModalWebChat;
+export default RawModal;

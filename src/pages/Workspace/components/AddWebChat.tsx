@@ -1,6 +1,6 @@
 import React from "react";
 import CustomizeChat from "./CustomizeChat";
-import ModalWebChat from "./ModalWebChat";
+import RawModal from "@components/RawModal";
 
 interface AddWebchatProps {
   isOpen: boolean;
@@ -9,9 +9,9 @@ interface AddWebchatProps {
 
 const AddWebchat: React.FC<AddWebchatProps> = ({ isOpen, onClose }) => {
   return (
-    <ModalWebChat isShown={isOpen} onClose={onClose}>
+    <RawModal isShown={isOpen} onClose={onClose}>
       <CustomizeChat onClose={onClose} />
-    </ModalWebChat>
+    </RawModal>
   );
 };
 

@@ -3,13 +3,19 @@ import { axiosInstance } from "@store/actions/auth";
 import { alertConfirm, alertError } from "@utils/alerts";
 import axios from "axios";
 
-export const getIntegrationWebChat = async (
+export const createIntegrationWhatsApp = async (
   departmentId: number,
-  selectOrganizationId: number
+  selectOrganizationId: number,
+  data: {
+    code: string | null;
+    phone_number_id: string | null;
+    waba_id: string | null;
+  }
 ) => {
   try {
-    const response = await axiosInstance.get(
-      apiUrls.getIntegrationWebChat(departmentId, selectOrganizationId)
+    const response = await axiosInstance.post(
+      apiUrls.createIntegrationWhatsApp(departmentId, selectOrganizationId),
+      data
     );
     if (response.data.ok) {
       return response.data.integration;
@@ -63,37 +69,6 @@ export const updateIntegrationWebChat = async (
       return true;
     } else {
       return false;
-    }
-  } catch (error) {
-    let message = "Error inesperado";
-    if (axios.isAxiosError(error)) {
-      if (error.response) {
-        message =
-          error.response.data?.message || "Error inesperado del servidor";
-      } else if (error.request) {
-        message = "No se pudo conectar con el servidor";
-      } else {
-        message = error.message;
-      }
-    }
-    alertError(message);
-    return [];
-  }
-};
-
-export const getIntegrations = async (
-  departmentId: number,
-  selectOrganizationId: number
-) => {
-  try {
-    const response = await axiosInstance.get(
-      apiUrls.getIntegrations(departmentId, selectOrganizationId)
-    );
-    if (response.data.ok) {
-      return response.data.integrations;
-    } else {
-      alertError(response.data.message);
-      return [];
     }
   } catch (error) {
     let message = "Error inesperado";
