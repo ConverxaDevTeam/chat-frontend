@@ -1,5 +1,6 @@
 import Interface from "@components/Interface";
 import Loading from "@components/Loading";
+import NotificationHandler from "@components/NotificationHandler";
 import ProtectedAuth from "@components/ProtectedAuth";
 import ProtectedSuperAdmin from "@components/ProtectedSuperAdmin";
 import ConversationDetail from "@pages/ConversationDetail";
@@ -10,9 +11,11 @@ import Organizations from "@pages/Organizations";
 import Workspace from "@pages/Workspace";
 import { AppDispatch, RootState } from "@store";
 import { verifySessionAsync } from "@store/actions/auth";
-import { useEffect } from "react";
+import { Fragment, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Navigate, Route, Routes } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const App = (): JSX.Element => {
   const dispatch = useDispatch<AppDispatch>();
@@ -27,35 +30,39 @@ const App = (): JSX.Element => {
   }
 
   return (
-    <Routes>
-      <Route index element={<LogIn />} />
-      <Route
-        path="/*"
-        element={
-          <ProtectedAuth>
-            <Interface />
-          </ProtectedAuth>
-        }
-      >
-        <Route index element={<Dashboard />} />
-        <Route path="dashboard" element={<Dashboard />} />
+    <Fragment>
+      <NotificationHandler />
+      <ToastContainer />
+      <Routes>
+        <Route index element={<LogIn />} />
         <Route
-          path="organizations"
+          path="/*"
           element={
-            <ProtectedSuperAdmin>
-              <Organizations />
-            </ProtectedSuperAdmin>
+            <ProtectedAuth>
+              <Interface />
+            </ProtectedAuth>
           }
-        />
-        <Route path="conversations" element={<Conversations />} />
-        <Route path="workspace" element={<Workspace />} />
+        >
+          <Route index element={<Dashboard />} />
+          <Route path="dashboard" element={<Dashboard />} />
+          <Route
+            path="organizations"
+            element={
+              <ProtectedSuperAdmin>
+                <Organizations />
+              </ProtectedSuperAdmin>
+            }
+          />
+          <Route path="conversations" element={<Conversations />} />
+          <Route path="workspace" element={<Workspace />} />
         <Route
           path="conversation/detail/:id"
           element={<ConversationDetail />}
         />
-      </Route>
-      <Route path="*" element={<Navigate to="/" />} />
-    </Routes>
+        </Route>
+        <Route path="*" element={<Navigate to="/" />} />
+      </Routes>
+    </Fragment>
   );
 };
 

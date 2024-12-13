@@ -6,7 +6,7 @@ interface MessageCardProps {
 }
 
 const MessageCard = ({ menssage }: MessageCardProps) => {
-  return menssage.type === "agent" ? (
+  return menssage.type !== "user" ? (
     <div className="flex gap-[10px]">
       <div className="bg-white w-[40px] h-[40px] relative rounded-full flex justify-center items-center">
         <img src="/img/sofia.svg" alt="sofia" />
