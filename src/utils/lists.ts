@@ -217,6 +217,9 @@ export const conversationsExample: IConversation[] = [
         created_at: "2024-12-05 03:35:36.824",
       },
     ],
+    user: {
+      id: 0,
+    },
   },
   {
     id: 2,
@@ -247,5 +250,8 @@ export const conversationsExample: IConversation[] = [
         created_at: "2024-12-05 03:35:36.824",
       },
     ],
+    user: {
+      id: 0,
+    },
   },
 ];
