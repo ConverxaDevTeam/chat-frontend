@@ -27,6 +27,7 @@ export interface Conversation {
   } | null;
   user_deleted: boolean;
   messages: Message[];
+  need_human: boolean;
 }
 
 export interface FormInputs {

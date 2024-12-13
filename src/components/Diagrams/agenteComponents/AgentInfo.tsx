@@ -6,7 +6,7 @@ import { FunctionEditModal } from "../funcionComponents/FunctionEditModal";
 import { useFunctionSuccess } from "../hooks/useFunctionActions";
 import KnowledgeBaseModal from "./KnowledgeBaseModal";
 import { agentService } from "@services/agent";
-import { toast } from "react-toastify";
+import { useSweetAlert } from "@hooks/useSweetAlert";
 
 interface AgentData {
   name: string;
@@ -37,6 +37,7 @@ const ActionButtons = ({ onEdit, nodeId, agentId }: ActionButtonsProps) => {
   const [showFunctionModal, setShowFunctionModal] = useState(false);
   const [showKnowledgeBaseModal, setShowKnowledgeBaseModal] = useState(false);
   const [humanCommunication, setHumanCommunication] = useState(true);
+  const { handleOperation } = useSweetAlert();
 
   useEffect(() => {
     if (agentId) {
@@ -48,11 +49,30 @@ const ActionButtons = ({ onEdit, nodeId, agentId }: ActionButtonsProps) => {
 
   const handleHumanCommunicationToggle = async () => {
     if (!agentId) return;
-    try {
-      await agentService.updateEscalateToHuman(agentId, !humanCommunication);
-      setHumanCommunication(prev => !prev);
-    } catch (error) {
-      toast.error("Error al actualizar la comunicación humana");
+
+    const result = await handleOperation(
+      async () => {
+        const updatedAgent = await agentService.updateEscalateToHuman(
+          agentId,
+          !humanCommunication
+        );
+        setHumanCommunication(updatedAgent.canEscalateToHuman);
+        return updatedAgent;
+      },
+      {
+        title: "Actualizando comunicación humana",
+        successTitle: humanCommunication
+          ? "Comunicación humana desactivada"
+          : "Comunicación humana activada",
+        successText: humanCommunication
+          ? "El agente ya no podrá escalar conversaciones a un humano"
+          : "El agente ahora podrá escalar conversaciones a un humano",
+        errorTitle: "Error al actualizar la comunicación humana",
+      }
+    );
+
+    if (!result.success) {
+      console.error("Error updating human communication:", result.error);
     }
   };
 
