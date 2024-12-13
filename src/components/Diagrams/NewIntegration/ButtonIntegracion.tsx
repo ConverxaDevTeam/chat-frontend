@@ -21,7 +21,7 @@ const ButtonIntegracion = ({
           ? "bg-gray-200 text-gray-400 cursor-not-allowed"
           : "bg-blue-100 hover:bg-blue-200 text-blue-900"
       }`}
-      disabled={disabled}
+      // disabled={disabled}
       onClick={action}
     >
       <Icon size={24} className="w-8 h-8" />
