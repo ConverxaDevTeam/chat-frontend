@@ -45,6 +45,7 @@ export const apiUrls = {
     byId: (id: number) => `/api/agent/${id}`,
     byDepartment: (departmentId: number) =>
       `/api/agent/department/${departmentId}`,
+    escalateToHuman: (id: number) => `/api/agent/${id}/escalate-to-human`,
   },
 
   // functions

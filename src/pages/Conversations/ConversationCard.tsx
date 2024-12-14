@@ -150,12 +150,12 @@ const ConversationCard = ({
         <div className="flex justify-center">
           <span
             className={`px-2 py-1 rounded-full text-sm font-medium ${
-              lastMessage.type === MessageType.USER
+              conversation.need_human
                 ? "bg-yellow-50 text-yellow-600"
                 : "bg-gray-50 text-gray-600"
             }`}
           >
-            {lastMessage.type === MessageType.USER ? "Yes" : "No"}
+            {conversation.need_human ? "Yes" : "No"}
           </span>
         </div>
       </td>

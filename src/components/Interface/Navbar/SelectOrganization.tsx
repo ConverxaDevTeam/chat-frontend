@@ -1,9 +1,10 @@
 import { AppDispatch, RootState } from "@store";
 import { useDispatch, useSelector } from "react-redux";
 import { HiOutlineSelector } from "react-icons/hi";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { setOrganizationId } from "@store/actions/auth";
 import { useNavigate } from "react-router-dom";
+import { joinRoom, leaveRoom } from "@services/websocket.service";
 
 type SelectOrganizationProps = {
   mobileResolution: boolean;
@@ -16,6 +17,17 @@ const SelectOrganization = ({ mobileResolution }: SelectOrganizationProps) => {
   const dispatch = useDispatch<AppDispatch>();
   const [open, setOpen] = useState<boolean>(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    myOrganizations.every(organization => {
+      joinRoom(`organization-${organization.organization.id}`);
+    });
+    return () => {
+      myOrganizations.every(organization => {
+        leaveRoom(`organization-${organization.organization.id}`);
+      });
+    };
+  }, []);
 
   const text = user?.is_super_admin
     ? selectOrganizationId === 0 || selectOrganizationId === null

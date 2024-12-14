@@ -1,10 +1,12 @@
 import { MdEdit, MdAddCircleOutline } from "react-icons/md";
-import { FaDatabase } from "react-icons/fa";
+import { FaDatabase, FaHeadset } from "react-icons/fa";
 import { useUnifiedNodeCreation } from "../hooks/useUnifiedNodeCreation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FunctionEditModal } from "../funcionComponents/FunctionEditModal";
 import { useFunctionSuccess } from "../hooks/useFunctionActions";
 import KnowledgeBaseModal from "./KnowledgeBaseModal";
+import { agentService } from "@services/agent";
+import { useSweetAlert } from "@hooks/useSweetAlert";
 
 interface AgentData {
   name: string;
@@ -34,6 +36,45 @@ const ActionButtons = ({ onEdit, nodeId, agentId }: ActionButtonsProps) => {
   const { createWithSpacing } = useUnifiedNodeCreation();
   const [showFunctionModal, setShowFunctionModal] = useState(false);
   const [showKnowledgeBaseModal, setShowKnowledgeBaseModal] = useState(false);
+  const [humanCommunication, setHumanCommunication] = useState(true);
+  const { handleOperation } = useSweetAlert();
+
+  useEffect(() => {
+    if (agentId) {
+      agentService.getById(agentId).then(agent => {
+        setHumanCommunication(agent.canEscalateToHuman);
+      });
+    }
+  }, [agentId]);
+
+  const handleHumanCommunicationToggle = async () => {
+    if (!agentId) return;
+
+    const result = await handleOperation(
+      async () => {
+        const updatedAgent = await agentService.updateEscalateToHuman(
+          agentId,
+          !humanCommunication
+        );
+        setHumanCommunication(updatedAgent.canEscalateToHuman);
+        return updatedAgent;
+      },
+      {
+        title: "Actualizando comunicación humana",
+        successTitle: humanCommunication
+          ? "Comunicación humana desactivada"
+          : "Comunicación humana activada",
+        successText: humanCommunication
+          ? "El agente ya no podrá escalar conversaciones a un humano"
+          : "El agente ahora podrá escalar conversaciones a un humano",
+        errorTitle: "Error al actualizar la comunicación humana",
+      }
+    );
+
+    if (!result.success) {
+      console.error("Error updating human communication:", result.error);
+    }
+  };
 
   const handleFunctionSuccess = useFunctionSuccess(
     createWithSpacing,
@@ -61,6 +102,17 @@ const ActionButtons = ({ onEdit, nodeId, agentId }: ActionButtonsProps) => {
         className="flex items-center justify-center w-full px-4 py-2 text-sm text-blue-600 bg-blue-100 rounded-lg hover:bg-blue-200 transition-colors duration-200"
       >
         <FaDatabase className="mr-2" /> Base de Conocimientos
+      </button>
+      <button
+        onClick={handleHumanCommunicationToggle}
+        className={`flex items-center justify-center w-full px-4 py-2 text-sm ${
+          humanCommunication
+            ? "text-green-600 bg-green-100 hover:bg-green-200"
+            : "text-gray-600 bg-gray-100 hover:bg-gray-200"
+        } rounded-lg transition-colors duration-200`}
+      >
+        <FaHeadset className="mr-2" /> Comunicación Humana{" "}
+        {humanCommunication ? "(Activado)" : "(Desactivado)"}
       </button>
       {agentId && (
         <>

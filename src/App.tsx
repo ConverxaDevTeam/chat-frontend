@@ -55,10 +55,10 @@ const App = (): JSX.Element => {
           />
           <Route path="conversations" element={<Conversations />} />
           <Route path="workspace" element={<Workspace />} />
-        <Route
-          path="conversation/detail/:id"
-          element={<ConversationDetail />}
-        />
+          <Route
+            path="conversation/detail/:id"
+            element={<ConversationDetail />}
+          />
         </Route>
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
