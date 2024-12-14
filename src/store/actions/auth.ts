@@ -7,6 +7,7 @@ import { jwtDecode } from "jwt-decode";
 import {
   connectWebSocket,
   disconnectWebSocket,
+  joinRoom,
   onWebSocketEvent,
 } from "@services/websocket.service";
 import { newMessageChat } from "./conversations";
