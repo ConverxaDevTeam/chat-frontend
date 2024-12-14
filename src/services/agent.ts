@@ -38,6 +38,22 @@ class AgentService {
     );
     return response.data;
   }
+
+  /**
+   * Actualiza la capacidad de escalar a humano de un agente.
+   * @param id ID del agente.
+   * @param canEscalate Si el agente puede escalar a humano.
+   */
+  async updateEscalateToHuman(
+    id: number,
+    canEscalate: boolean
+  ): Promise<Agent> {
+    const response = await axiosInstance.put<Agent>(
+      apiUrls.agents.escalateToHuman(id),
+      { canEscalateToHuman: canEscalate }
+    );
+    return response.data;
+  }
 }
 
 // Exporta una instancia del servicio para ser reutilizado
