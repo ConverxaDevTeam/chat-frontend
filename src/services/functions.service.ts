@@ -1,5 +1,5 @@
-import axiosInstance from "@config/axios";
 import { apiUrls } from "@config/config";
+import { axiosInstance } from "@store/actions/auth";
 import {
   FunctionData,
   HttpRequestFunction,

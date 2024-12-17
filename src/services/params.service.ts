@@ -1,9 +1,9 @@
-import axiosInstance from "@config/axios";
 import { apiUrls } from "@config/config";
 import {
   FunctionParam,
   CreateFunctionParamDto,
 } from "@interfaces/function-params.interface";
+import { axiosInstance } from "@store/actions/auth";
 
 class ParamsService {
   async create(data: CreateFunctionParamDto, functionId: number) {
