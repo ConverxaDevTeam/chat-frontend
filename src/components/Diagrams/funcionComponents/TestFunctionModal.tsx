@@ -5,11 +5,14 @@ import { InputGroup } from "@components/forms/inputGroup";
 import { Input } from "@components/forms/input";
 import { useState } from "react";
 import { TestResponseModal } from "./TestResponseModal";
+import { getErrorResponse } from "@utils/format";
 
 interface TestFunctionModalProps {
   isShown: boolean;
   onClose: () => void;
-  onTest: (params: Record<string, any>) => Promise<any>;
+  onTest: (
+    params: Record<string, unknown>
+  ) => Promise<{ status: number; data: unknown }>;
   params: FunctionParam[];
 }
 
@@ -22,18 +25,18 @@ export const TestFunctionModal = ({
   const { register, handleSubmit } = useForm();
   const [testResponse, setTestResponse] = useState<{
     status: number;
-    data: any;
+    data: unknown;
   } | null>(null);
 
-  const onSubmit = async (data: Record<string, any>) => {
+  const onSubmit = async (data: Record<string, unknown>) => {
     try {
       const response = await onTest(data);
-      setTestResponse(response);
-    } catch (error: any) {
       setTestResponse({
-        status: error.response?.status || 500,
-        data: error.response?.data || error.message,
+        status: response.status,
+        data: response.data,
       });
+    } catch (error: unknown) {
+      setTestResponse(getErrorResponse(error));
     }
   };
 

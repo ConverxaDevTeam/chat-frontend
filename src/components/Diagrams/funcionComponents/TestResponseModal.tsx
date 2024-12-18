@@ -7,7 +7,7 @@ interface TestResponseModalProps {
   onClose: () => void;
   response: {
     status: number;
-    data: any;
+    data: unknown;
   };
 }
 
@@ -33,7 +33,7 @@ const getStatusInfo = (status: number) => {
   };
 };
 
-const showFullResponse = (data: any) => {
+const showFullResponse = (data: unknown) => {
   Swal.fire({
     title: "Respuesta Completa",
     html: `<pre class="text-left overflow-auto max-h-[70vh] whitespace-pre-wrap" style="max-width: 800px">${JSON.stringify(

@@ -62,8 +62,8 @@ class FunctionsService {
     return response.data;
   }
 
-  async testEndpoint(functionId: number, params: Record<string, any>) {
-    const response = await axiosInstance.post<any>(
+  async testEndpoint(functionId: number, params: Record<string, unknown>) {
+    const response = await axiosInstance.post<unknown>(
       apiUrls.functions.testEndpoint(functionId),
       { params }
     );

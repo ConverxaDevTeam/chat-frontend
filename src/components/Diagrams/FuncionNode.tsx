@@ -180,7 +180,7 @@ const FuncionNode = memo((props: FunctionNodeProps) => {
     setShowTestModal(true);
   };
 
-  const handleTest = async (params: Record<string, any>) => {
+  const handleTest = async (params: Record<string, unknown>) => {
     return await functionsService.testEndpoint(initialData.functionId!, params);
   };
 
