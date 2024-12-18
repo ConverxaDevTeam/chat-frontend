@@ -19,6 +19,8 @@ export const apiUrls = {
   //integrations
   createIntegrationWhatsApp: (departmentId: number, organizationId: number) =>
     `/api/facebook/create/${organizationId}/${departmentId}`,
+  createIntegrationMessager: (departmentId: number, organizationId: number) =>
+    `/api/facebook/create-messager/${organizationId}/${departmentId}`,
   getIntegrationWebChat: (departmentId: number, organizationId: number) =>
     `/api/integration/web-chat/${organizationId}/${departmentId}`,
   updateIntegrationWebChat: (id: number) => `/api/integration/web-chat/${id}`,
