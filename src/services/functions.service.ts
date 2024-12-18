@@ -1,5 +1,5 @@
-import axiosInstance from "@config/axios";
 import { apiUrls } from "@config/config";
+import { axiosInstance } from "@store/actions/auth";
 import {
   FunctionData,
   HttpRequestFunction,
@@ -60,6 +60,17 @@ class FunctionsService {
       authorizerId: authenticatorId === null ? null : authenticatorId,
     });
     return response.data;
+  }
+
+  async testEndpoint(functionId: number, params: Record<string, unknown>) {
+    const response = await axiosInstance.post<unknown>(
+      apiUrls.functions.testEndpoint(functionId),
+      { params }
+    );
+    return {
+      status: response.status,
+      data: response.data,
+    };
   }
 }
 

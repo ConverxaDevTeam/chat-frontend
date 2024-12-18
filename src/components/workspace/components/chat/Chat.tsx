@@ -12,7 +12,8 @@ interface ChatProps {
 
 const Chat = memo(({ onClose }: ChatProps) => {
   const agentId = useAppSelector(state => state.chat.currentAgent?.id);
-  const roomName = `test-chat-${agentId}`;
+  const userId = useAppSelector(state => state.auth.user?.id);
+  const roomName = `test-chat-${userId}`;
 
   const {
     inputValue,

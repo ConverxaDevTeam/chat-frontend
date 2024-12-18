@@ -57,6 +57,7 @@ export const apiUrls = {
       `/api/functions/${functionId}/parameters`,
     assignAuthenticator: (functionId: number) =>
       `/api/functions/${functionId}/assign-authorizer`,
+    testEndpoint: (functionId: number) => `/api/functions/test/${functionId}`,
   },
 
   // authenticators

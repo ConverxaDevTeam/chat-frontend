@@ -1,4 +1,4 @@
-import { MdDelete, MdEdit } from "react-icons/md";
+import { MdDelete, MdEdit, MdPlayArrow } from "react-icons/md";
 
 interface FunctionInfoProps {
   isLoading?: boolean;
@@ -37,12 +37,15 @@ interface ActionButtonsProps {
   onEdit: () => void;
   onParamsClick: () => void;
   onDelete: () => void;
+  onTestEndpoint: () => void;
 }
+
 export const ActionButtons = ({
   params,
   onEdit,
   onParamsClick,
   onDelete,
+  onTestEndpoint,
 }: ActionButtonsProps) => {
   return (
     <div className="grid gap-2 w-full">
@@ -65,6 +68,14 @@ export const ActionButtons = ({
       >
         <MdDelete size={16} className="mr-2" />
         Eliminar Funci&oacute;n
+      </button>
+      <button
+        onClick={onTestEndpoint}
+        className="w-full px-3 py-1.5 text-sm text-blue-600 hover:text-blue-700 hover:bg-blue-100 rounded transition-colors flex items-center justify-center"
+        title="Probar endpoint"
+      >
+        <MdPlayArrow size={16} className="mr-2" />
+        Probar Endpoint
       </button>
     </div>
   );

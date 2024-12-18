@@ -1,3 +1,4 @@
+import { AxiosError } from "axios";
 import { parseISO, format } from "date-fns";
 import { es } from "date-fns/locale";
 
@@ -146,3 +147,16 @@ export function getFormattedDate() {
 
   return `${day}, ${month}, ${year}`;
 }
+
+export const getErrorResponse = (error: unknown) => {
+  if (error instanceof AxiosError) {
+    return {
+      status: error.response?.status || 500,
+      data: error.response?.data || error.message,
+    };
+  }
+  return {
+    status: 500,
+    data: error instanceof Error ? error.message : "Error desconocido",
+  };
+};

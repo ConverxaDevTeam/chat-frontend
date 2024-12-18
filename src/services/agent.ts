@@ -1,6 +1,6 @@
-import axiosInstance from "@config/axios";
 import { apiUrls } from "@config/config";
 import { Agent, CreateAgentDto } from "@interfaces/agents";
+import { axiosInstance } from "@store/actions/auth";
 
 // URL base del backend desde las variables de entorno
 

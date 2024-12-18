@@ -4,9 +4,10 @@ import { FaMessage } from "react-icons/fa6";
 import { IoMdNotifications } from "react-icons/io";
 import { logOutAsync } from "@store/actions/auth";
 import { getFormattedDate } from "@utils/format";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { AppDispatch, RootState } from "@store";
 import { useDispatch, useSelector } from "react-redux";
+import ContextMenu from "@components/ContextMenu";
 
 type NavbarProps = {
   windowWidth: number;
@@ -22,7 +23,34 @@ const Navbar = ({
   const { user } = useSelector((state: RootState) => state.auth);
   const dispatch = useDispatch<AppDispatch>();
   const [fixed, setFixed] = useState<boolean>(false);
-  const [setting, setSetting] = useState<boolean>(false);
+  const [contextMenu, setContextMenu] = useState<{
+    x: number;
+    y: number;
+  } | null>(null);
+  const settingsRef = useRef<HTMLDivElement>(null);
+
+  const handleSettingClick = (event: React.MouseEvent) => {
+    event.preventDefault();
+    const button = event.currentTarget.getBoundingClientRect();
+    setContextMenu(current =>
+      current
+        ? null
+        : {
+            x: button.right,
+            y: button.bottom + 5,
+          }
+    );
+  };
+
+  const handleBlur = (event: React.FocusEvent) => {
+    // Verificar si el nuevo elemento enfocado está dentro del menú
+    if (
+      settingsRef.current &&
+      !settingsRef.current.contains(event.relatedTarget as Node)
+    ) {
+      setContextMenu(null);
+    }
+  };
 
   return (
     <div
@@ -62,35 +90,43 @@ const Navbar = ({
               <p className="text-app-white text-[10px]">52</p>
             </div>
           </div>
-          <div className="relative">
+          <div ref={settingsRef} className="relative" onBlur={handleBlur}>
             <button
               className="select-none rounded-full bg-app-electricGreen cursor-pointer h-[30px] w-[30px] flex justify-center items-center"
-              onClick={() => setSetting(!setting)}
+              onClick={handleSettingClick}
               type="button"
             >
               <IoMdSettings className="text-app-dark text-[20px]" />
             </button>
-            {setting && (
-              <div className="absolute flex flex-col gap-[10px] w-[150px] right-0 items-start bg-app-white shadow-lg p-[10px] top-[50px] rounded-lg">
-                <button
-                  className="text-app-dark font-poppinsRegular text-[14px] cursor-pointer"
-                  onClick={() => {
-                    setFixed(!fixed);
-                    setSetting(false);
-                  }}
-                  type="button"
-                >
-                  {fixed ? "Desbloquear" : "Bloquear"}
-                </button>
-                <p
-                  onClick={() => {
-                    dispatch(logOutAsync());
-                    setSetting(false);
-                  }}
-                >
-                  Cerrar sesión
-                </p>
-              </div>
+            {contextMenu && (
+              <ContextMenu
+                x={contextMenu.x}
+                y={contextMenu.y}
+                onClose={() => setContextMenu(null)}
+              >
+                <div className="flex flex-col gap-[10px]">
+                  <button
+                    className="text-app-dark font-poppinsRegular text-[14px] cursor-pointer hover:bg-gray-100 w-full text-left px-2 py-1 rounded"
+                    onClick={() => {
+                      setFixed(!fixed);
+                      setContextMenu(null);
+                    }}
+                    type="button"
+                  >
+                    {fixed ? "Desbloquear" : "Bloquear"}
+                  </button>
+                  <button
+                    className="text-app-dark font-poppinsRegular text-[14px] cursor-pointer hover:bg-gray-100 w-full text-left px-2 py-1 rounded"
+                    onClick={() => {
+                      dispatch(logOutAsync());
+                      setContextMenu(null);
+                    }}
+                    type="button"
+                  >
+                    Cerrar sesión
+                  </button>
+                </div>
+              </ContextMenu>
             )}
           </div>
         </div>

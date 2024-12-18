@@ -116,7 +116,7 @@ export const useSweetAlert = () => {
     try {
       await Swal.fire({
         title: options.loadingTitle || options.title,
-        html: "Tiempo restante: <b></b>",
+        html: "Procesando... Espere un momento",
         allowOutsideClick: false,
         allowEscapeKey: false,
         showConfirmButton: false,
