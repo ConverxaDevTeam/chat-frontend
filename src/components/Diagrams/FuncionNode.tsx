@@ -5,6 +5,7 @@ import { CustomTypeNodeProps } from "@interfaces/workflow";
 import { ActionButtons, FunctionInfo } from "./funcionComponents/FunctionInfo";
 import { FunctionEditModal } from "./funcionComponents/FunctionEditModal";
 import { ParamsModal } from "./funcionComponents/ParamsModal";
+import { TestFunctionModal } from "./funcionComponents/TestFunctionModal";
 import {
   FunctionData,
   HttpRequestFunction,
@@ -13,6 +14,7 @@ import { FunctionParam } from "@interfaces/function-params.interface";
 import { useFunctionData } from "./hooks/useFunctionData";
 import { useFunctionActions } from "./hooks/useFunctionActions";
 import { useReactFlow } from "@xyflow/react";
+import { functionsService } from "@services/functions.service";
 
 interface FunctionNodeProps
   extends CustomTypeNodeProps<FunctionData<HttpRequestFunction>> {}
@@ -136,12 +138,14 @@ const NodeContent = ({
   onEditClick,
   onParamsClick,
   onDelete,
+  onTestEndpoint,
 }: {
   currentData: FunctionData<HttpRequestFunction>;
   params: FunctionParam[];
   onEditClick: () => void;
   onParamsClick: () => void;
   onDelete: () => void;
+  onTestEndpoint: () => void;
 }) => (
   <div className="grid gap-4 p-4 bg-white rounded-md shadow-lg">
     <FunctionInfo functionData={currentData} />
@@ -149,19 +153,21 @@ const NodeContent = ({
       onEdit={onEditClick}
       onParamsClick={onParamsClick}
       onDelete={onDelete}
+      onTestEndpoint={onTestEndpoint}
       params={params}
     />
   </div>
 );
 
 const FuncionNode = memo((props: FunctionNodeProps) => {
-  const { data: initialData, selected, id } = props;
+  const { data: initialData, id, selected } = props;
   if (!initialData.functionId) {
     console.error("FuncionNode requires a functionId");
     return null;
   }
   const [showEditModal, setShowEditModal] = useState(false);
   const [showParamsModal, setShowParamsModal] = useState(false);
+  const [showTestModal, setShowTestModal] = useState(false);
   const [params, setParams] = useState<FunctionParam[]>([]);
 
   const handleShowParamsModal = () => setShowParamsModal(true);
@@ -169,6 +175,14 @@ const FuncionNode = memo((props: FunctionNodeProps) => {
 
   const { currentData, isLoading, error, handleSuccess, handleDelete } =
     useNodeOperations(initialData, id, setParams, selected ?? false);
+
+  const handleTestEndpoint = () => {
+    setShowTestModal(true);
+  };
+
+  const handleTest = async (params: Record<string, unknown>) => {
+    return await functionsService.testEndpoint(initialData.functionId!, params);
+  };
 
   return (
     <>
@@ -183,6 +197,7 @@ const FuncionNode = memo((props: FunctionNodeProps) => {
           onEditClick={() => setShowEditModal(true)}
           onParamsClick={handleShowParamsModal}
           onDelete={handleDelete}
+          onTestEndpoint={handleTestEndpoint}
         />
       </DefaultNode>
 
@@ -202,6 +217,14 @@ const FuncionNode = memo((props: FunctionNodeProps) => {
           if (success) setShowEditModal(false);
         }}
       />
+      {showTestModal && (
+        <TestFunctionModal
+          isShown={showTestModal}
+          onClose={() => setShowTestModal(false)}
+          onTest={handleTest}
+          params={params}
+        />
+      )}
     </>
   );
 });

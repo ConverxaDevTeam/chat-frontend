@@ -109,7 +109,6 @@ const UploadForm = ({
   const validateFiles = (files: File[]): File[] => {
     const validFiles: File[] = [];
     const invalidFiles: string[] = [];
-    console.log("files", files);
 
     files.forEach(file => {
       const fileExtension = file.name.split(".").pop()?.toLowerCase();
@@ -162,40 +161,26 @@ const UploadForm = ({
       e.stopPropagation();
       setIsDragging(false);
 
-      console.log("Drop event triggered");
-      console.log("DataTransfer:", e.dataTransfer);
-      console.log("Items:", e.dataTransfer?.items);
-      console.log("Files:", e.dataTransfer?.files);
-
       const files: File[] = [];
 
       if (e.dataTransfer?.items) {
         // Usar DataTransferItemList
-        console.log("Usando DataTransferItemList");
         for (let i = 0; i < e.dataTransfer.items.length; i++) {
           const item = e.dataTransfer.items[i];
-          console.log("Item:", item);
-          console.log("Kind:", item.kind);
-          console.log("Type:", item.type);
           if (item.kind === "file") {
             const file = item.getAsFile();
             if (file) {
-              console.log("File:", file);
               files.push(file);
             }
           }
         }
       } else if (e.dataTransfer?.files) {
         // Fallback a DataTransfer
-        console.log("Usando DataTransfer files");
         for (let i = 0; i < e.dataTransfer.files.length; i++) {
           const file = e.dataTransfer.files[i];
-          console.log("File:", file);
           files.push(file);
         }
       }
-
-      console.log("Files collected:", files);
 
       if (files.length > 0) {
         const validFiles = validateFiles(files);

@@ -1,10 +1,10 @@
-import axiosInstance from "@config/axios";
 import { apiUrls } from "@config/config";
 import {
   Autenticador,
   HttpAutenticador,
   BearerConfig,
 } from "@interfaces/autenticators.interface";
+import { axiosInstance } from "@store/actions/auth";
 
 type AuthenticatorType = Autenticador<HttpAutenticador<BearerConfig>>;
 
