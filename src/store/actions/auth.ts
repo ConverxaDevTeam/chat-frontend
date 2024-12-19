@@ -155,6 +155,7 @@ const setupAxiosInterceptors = (
         } else {
           config.headers["Authorization"] = `Bearer ${token}`;
         }
+        config.headers["ngrok-skip-browser-warning"] = true;
       } catch (error) {
         return Promise.reject(error);
       }

@@ -11,6 +11,7 @@ import { useAppSelector } from "@store/hooks";
 export interface Message {
   sender: "user" | "agent";
   text: string;
+  images?: string[];
   threat_id?: string;
 }
 

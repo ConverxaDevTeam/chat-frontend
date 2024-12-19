@@ -13,7 +13,7 @@ const transformMessageToIMessage = (message: Message): IMessage => ({
   type: message.sender === "user" ? MessageType.USER : MessageType.AGENT,
   format: MessageFormatType.TEXT,
   audio: null,
-  images: [],
+  images: message.images ?? [],
 });
 
 export const ChatHistory = ({ messages }: ChatHistoryProps) => {
