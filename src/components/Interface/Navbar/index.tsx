@@ -107,7 +107,9 @@ const Navbar = ({
                 <div className="flex flex-col gap-[10px]">
                   <button
                     className="text-app-dark font-poppinsRegular text-[14px] cursor-pointer hover:bg-gray-100 w-full text-left px-2 py-1 rounded"
-                    onClick={() => {
+                    onClick={e => {
+                      e.preventDefault();
+                      e.stopPropagation();
                       setFixed(!fixed);
                       setContextMenu(null);
                     }}
@@ -117,7 +119,9 @@ const Navbar = ({
                   </button>
                   <button
                     className="text-app-dark font-poppinsRegular text-[14px] cursor-pointer hover:bg-gray-100 w-full text-left px-2 py-1 rounded"
-                    onClick={() => {
+                    onMouseDown={e => {
+                      e.preventDefault();
+                      e.stopPropagation();
                       dispatch(logOutAsync());
                       setContextMenu(null);
                     }}

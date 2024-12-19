@@ -3,12 +3,17 @@ import { useEffect, useState } from "react";
 import ConversationCard from "./ConversationCard";
 import { RiArrowUpDownFill } from "react-icons/ri";
 import { Conversation } from "@interfaces/conversation";
+import { useAppSelector } from "@store/hooks";
 
 const Conversations = () => {
+  const organizationId = useAppSelector(
+    state => state.auth.selectOrganizationId
+  );
+  if (!organizationId) throw new Error("Organization ID not found");
   const [conversations, setConversations] = useState<Conversation[]>([]);
 
   const fetchConversations = async () => {
-    const response = await getConversationsByOrganizationId(1);
+    const response = await getConversationsByOrganizationId(organizationId);
     setConversations(response);
   };
 
