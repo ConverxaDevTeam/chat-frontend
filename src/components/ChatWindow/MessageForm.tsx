@@ -1,6 +1,6 @@
 import { UseFormHandleSubmit, UseFormRegister } from "react-hook-form";
-import { SendMessageButton } from "./SendMessageButton";
-import { HitlButton } from "./HitlButton";
+import { SendMessageButton } from "../SendMessageButton";
+import { HitlButton } from "../HitlButton";
 import { useHitl } from "@/hooks/useHitl";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/store";

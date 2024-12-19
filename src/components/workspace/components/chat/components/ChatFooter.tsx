@@ -1,4 +1,4 @@
-import { MessageForm } from "@/components/MessageForm";
+import { MessageForm } from "@components/ChatWindow/MessageForm";
 import { useForm } from "react-hook-form";
 import { FormInputs } from "@interfaces/conversation";
 

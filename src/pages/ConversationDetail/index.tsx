@@ -1,5 +1,5 @@
 import { useForm } from "react-hook-form";
-import { MessageForm } from "@/components/MessageForm";
+import { MessageForm } from "@components/ChatWindow/MessageForm";
 import {
   getConversationByOrganizationIdAndById,
   sendMessage,
@@ -8,7 +8,7 @@ import { AppDispatch, RootState } from "@store";
 import { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
-import MessageCard from "./MessageCard";
+import MessageCard from "../../components/ChatWindow/MessageCard";
 import { uploadConversation } from "@store/actions/conversations";
 import { FormInputs } from "@interfaces/conversation";
 import { IConversation } from "@pages/Workspace/components/ChatPreview";

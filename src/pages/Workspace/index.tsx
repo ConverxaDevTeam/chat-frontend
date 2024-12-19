@@ -25,7 +25,7 @@ const ChatWrapper = () => {
       ) : (
         <button
           onClick={toggleChat}
-          className="absolute top-24 right-0 z-50 px-4 py-2 bg-blue-500 text-white rounded-l-full shadow-lg hover:bg-blue-600 focus:outline-none transition-transform"
+          className="absolute top-24 right-0 z-50 px-4 py-2 bg-[#15ECDA] text-white rounded-l-full shadow-lg hover:bg-[#15ECDA] focus:outline-none transition-transform"
         >
           <span className="text-sm font-medium">Chat</span>
         </button>
