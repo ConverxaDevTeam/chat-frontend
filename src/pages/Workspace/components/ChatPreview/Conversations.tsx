@@ -1,7 +1,7 @@
 import { useState } from "react";
 import ConversationCard from "./ConversationCard";
-import { IConversation } from ".";
 import { ConfigWebChat } from "../CustomizeChat";
+import { IConversation } from "@utils/interfaces";
 
 interface ConversationsProps {
   conversations: IConversation[];

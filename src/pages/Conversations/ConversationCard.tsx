@@ -106,7 +106,12 @@ const ConversationCard = ({
   conversation,
   onUpdateConversation,
 }: ConversationCardProps) => {
-  const lastMessage = conversation.messages[conversation.messages.length - 1];
+  const lastMessage = conversation.messages[
+    conversation.messages.length - 1
+  ] || {
+    type: MessageType.USER,
+    text: "Sin mensajes",
+  };
 
   return (
     <tr className="h-[60px] text-[14px] border-b-[1px] hover:bg-gray-50">

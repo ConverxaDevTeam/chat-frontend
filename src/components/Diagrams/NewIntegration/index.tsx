@@ -1,7 +1,7 @@
-import { FaFacebook } from "react-icons/fa";
 import { FaSlack } from "react-icons/fa";
 import ButtonIntegracion from "./ButtonIntegracion";
 import ButtonWhatsAppIntegration from "./ButtonWhatsAppIntegration";
+import ButtonMessagerIntegration from "./ButtonMessagerIntegration";
 
 interface NewIntegrationProps {
   setIsMenuVisible: (value: boolean) => void;
@@ -21,11 +21,10 @@ const NewIntegration = ({
           getDataIntegrations={getDataIntegrations}
           departmentId={departmentId}
         />
-        <ButtonIntegracion
-          action={() => setIsMenuVisible(false)}
-          Icon={FaFacebook}
-          text="Messenger"
-          disabled
+        <ButtonMessagerIntegration
+          getDataIntegrations={getDataIntegrations}
+          departmentId={departmentId}
+          close={() => setIsMenuVisible(false)}
         />
         <ButtonIntegracion
           action={() => setIsMenuVisible(false)}
