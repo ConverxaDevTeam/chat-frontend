@@ -10,7 +10,7 @@ import {
   onWebSocketEvent,
 } from "@services/websocket.service";
 import { newMessageChat } from "./conversations";
-import { IMessage } from "@pages/Workspace/components/ChatPreview";
+import { IMessage } from "@utils/interfaces";
 
 export const axiosInstance = axios.create({
   baseURL: baseUrl,

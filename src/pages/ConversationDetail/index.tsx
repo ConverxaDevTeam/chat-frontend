@@ -13,7 +13,7 @@ import { useParams } from "react-router-dom";
 import MessageCard from "./MessageCard";
 import { uploadConversation } from "@store/actions/conversations";
 import { FormInputs } from "@interfaces/conversation";
-import { IConversation } from "@pages/Workspace/components/ChatPreview";
+import { IConversation } from "@utils/interfaces";
 
 const ConversationDetail = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -92,7 +92,7 @@ const ConversationDetail = () => {
     <div className="flex flex-col flex-1 gap-[10px] bg-app-c2 border-[2px] border-app-c3 rounded-2xl p-[10px]">
       <div className="flex flex-col flex-1 bg-app-c1 rounded-2xl p-[10px] gap-[10px] overflow-auto border-[1px] border-app-c3">
         {conversation?.messages?.map(message => (
-          <MessageCard key={`chat-msg-${message.id}`} menssage={message} />
+          <MessageCard key={`chat-msg-${message.id}`} message={message} />
         ))}
         <div ref={messagesEndRef} />
       </div>

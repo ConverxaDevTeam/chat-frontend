@@ -1,6 +1,6 @@
 import { formatDateString } from "@utils/format";
-import { IMessage } from ".";
 import { ConfigWebChat } from "../CustomizeChat";
+import { IMessage } from "@utils/interfaces";
 
 interface MessageUserProps {
   menssage: IMessage;

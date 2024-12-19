@@ -1,13 +1,9 @@
-import { IConversation } from "@pages/Workspace/components/ChatPreview";
 import { createSlice } from "@reduxjs/toolkit";
 import {
   newMessageChat,
   uploadConversation,
 } from "@store/actions/conversations";
-
-interface ConversationsState {
-  conversations: IConversation[];
-}
+import { ConversationsState } from "@utils/interfaces";
 
 const initialState: ConversationsState = {
   conversations: [],

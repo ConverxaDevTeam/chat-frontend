@@ -33,6 +33,8 @@ export const apiUrls = {
     organizationId: number,
     conversationId: number
   ) => `/api/conversation/${organizationId}/${conversationId}`,
+  //files
+  mediaAudio: (audio: string) => `${urlFiles}/audio/${audio}`,
   // departments
   departments: {
     base: () => `/api/departments`,
