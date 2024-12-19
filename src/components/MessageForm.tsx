@@ -12,6 +12,7 @@ interface FormInputs {
 }
 
 interface MessageFormProps {
+  showHitl?: boolean;
   form: {
     register: UseFormRegister<FormInputs>;
     handleSubmit: UseFormHandleSubmit<FormInputs>;
@@ -24,9 +25,10 @@ interface MessageFormProps {
       id: number;
     };
   };
-  user: {
+  user?: {
     id: number;
-  } | null;
+  };
+  buttonText?: string;
 }
 
 export const MessageForm = ({
@@ -34,6 +36,8 @@ export const MessageForm = ({
   onSubmit,
   conversation,
   user,
+  showHitl = true,
+  buttonText = "Enviar",
 }: MessageFormProps) => {
   const dispatch = useDispatch<AppDispatch>();
   const { handleHitlAction, isLoading } = useHitl({
@@ -46,27 +50,29 @@ export const MessageForm = ({
   });
 
   return (
-    <form
-      onSubmit={handleSubmit(onSubmit)}
-      className="flex gap-[10px] items-center"
-    >
-      <input
-        {...register("message", { required: true })}
-        type="text"
-        placeholder="Escribe un mensaje..."
-        className="flex-1 bg-app-c1 border-[1px] border-app-c3 rounded-lg p-[10px] text-[14px] text-black"
-      />
-
-      {conversation?.user?.id === user?.id ? (
-        <SendMessageButton isSubmitting={isSubmitting} />
-      ) : (
-        <HitlButton
-          onClick={handleHitlAction}
-          isLoading={isLoading}
-          isAssigned={!!conversation?.user}
-          currentUserHasConversation={conversation?.user?.id === user?.id}
+    <div className="w-full p-4 border-t border-gray-300">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="grid grid-cols-[1fr,auto] gap-[10px] items-center w-full"
+      >
+        <input
+          {...register("message", { required: true })}
+          type="text"
+          placeholder="Escribe un mensaje..."
+          className="w-full bg-app-c1 border-[1px] border-app-c3 rounded-lg p-[10px] text-[14px] text-black"
         />
-      )}
-    </form>
+
+        {!showHitl || conversation?.user?.id === user?.id ? (
+          <SendMessageButton isSubmitting={isSubmitting} text={buttonText} />
+        ) : (
+          <HitlButton
+            onClick={handleHitlAction}
+            isLoading={isLoading}
+            isAssigned={!!conversation?.user}
+            currentUserHasConversation={conversation?.user?.id === user?.id}
+          />
+        )}
+      </form>
+    </div>
   );
 };

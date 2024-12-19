@@ -16,7 +16,6 @@ export interface Message {
 
 export const useChat = (roomName: string) => {
   const [messages, setMessages] = useState<Message[]>([]);
-  const [inputValue, setInputValue] = useState("");
   const [threatId, setThreatId] = useState<string | undefined>();
   const [LLMAgentId, setLLMAgentId] = useState<string | undefined>();
   const agentId = useAppSelector(state => state.chat.currentAgent?.id);
@@ -33,37 +32,37 @@ export const useChat = (roomName: string) => {
     setMessages(prevMessages => [...prevMessages, message]);
   }, []);
 
-  const handleSendMessage = useCallback(() => {
-    if (inputValue.trim() === "") return;
-    let identifier: ChatAgentIdentifier | TestAgentIdentifier;
-    if (messages.length === 0) {
-      // Primer mensaje: usar ChatAgentIdentifier
-      identifier = {
-        agentId: agentId,
-        type: AgentIdentifierType.CHAT_TEST,
-      } as ChatAgentIdentifier;
-    } else {
-      identifier = {
-        type: AgentIdentifierType.TEST,
-        threatId: threatId,
-        LLMAgentId: LLMAgentId,
-        agentId: agentId,
-        agent: AgenteType.SOFIA_ASISTENTE,
-      } as TestAgentIdentifier;
-    }
+  const handleSendMessage = useCallback(
+    (val: string) => {
+      if (val.trim() === "") return;
+      let identifier: ChatAgentIdentifier | TestAgentIdentifier;
+      if (messages.length === 0) {
+        // Primer mensaje: usar ChatAgentIdentifier
+        identifier = {
+          agentId: agentId,
+          type: AgentIdentifierType.CHAT_TEST,
+        } as ChatAgentIdentifier;
+      } else {
+        identifier = {
+          type: AgentIdentifierType.TEST,
+          threatId: threatId,
+          LLMAgentId: LLMAgentId,
+          agentId: agentId,
+          agent: AgenteType.SOFIA_ASISTENTE,
+        } as TestAgentIdentifier;
+      }
 
-    emitWebSocketEvent("message", {
-      text: inputValue,
-      room: roomName,
-      identifier,
-    });
-    setInputValue("");
-  }, [inputValue, roomName, addMessage, messages.length, threatId, LLMAgentId]);
+      emitWebSocketEvent("message", {
+        text: val,
+        room: roomName,
+        identifier,
+      });
+    },
+    [roomName, addMessage, messages.length, threatId, LLMAgentId]
+  );
 
   return {
     messages,
-    inputValue,
-    setInputValue,
     addMessage,
     handleSendMessage,
     setThreatId,

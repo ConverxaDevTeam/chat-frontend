@@ -88,7 +88,7 @@ const ConversationDetail = () => {
         form={{ register, handleSubmit, isSubmitting }}
         onSubmit={onSubmit}
         conversation={conversation}
-        user={user}
+        user={{ id: user?.id ?? -1 }}
       />
     </div>
   );

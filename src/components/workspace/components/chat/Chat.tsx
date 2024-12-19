@@ -16,8 +16,6 @@ const Chat = memo(({ onClose }: ChatProps) => {
   const roomName = `test-chat-${userId}`;
 
   const {
-    inputValue,
-    setInputValue,
     addMessage,
     messages,
     handleSendMessage,
@@ -50,9 +48,9 @@ const Chat = memo(({ onClose }: ChatProps) => {
       <ChatHeader onClose={handleChatClose} />
       <ChatHistory messages={messages} />
       <ChatFooter
-        inputValue={inputValue}
-        onInputChange={setInputValue}
         onSendMessage={handleSendMessage}
+        conversation={{ id: -1, user: { id: -1 } }}
+        user={{ id: userId || 0 }}
       />
     </div>
   );
