@@ -1,14 +1,18 @@
 import { UseFormHandleSubmit, UseFormRegister } from "react-hook-form";
-import { SendMessageButton } from "../SendMessageButton";
-import { HitlButton } from "../HitlButton";
+import { IoImage, IoClose } from "react-icons/io5";
 import { useHitl } from "@/hooks/useHitl";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/store";
 import { uploadConversation } from "@store/actions/conversations";
-import { IConversation } from "@pages/Workspace/components/ChatPreview";
+import { FormInputs } from "@interfaces/conversation";
+import { useState } from "react";
+import { SendMessageButton } from "../SendMessageButton";
+import { HitlButton } from "../HitlButton";
+import { IConversation, IMessage, MessageFormatType } from "@utils/interfaces";
 
-interface FormInputs {
-  message: string;
+interface ImagePreview {
+  file: File;
+  url: string;
 }
 
 interface MessageFormProps {
@@ -18,16 +22,15 @@ interface MessageFormProps {
     handleSubmit: UseFormHandleSubmit<FormInputs>;
     isSubmitting: boolean;
   };
-  onSubmit: (data: FormInputs) => Promise<void>;
+  onSubmit: (data: FormInputs & { images?: File[] }) => void;
   conversation?: {
     id: number;
     user?: {
       id: number;
     };
+    messages?: IMessage[];
   };
-  user?: {
-    id: number;
-  };
+  user?: { id: number };
   buttonText?: string;
 }
 
@@ -39,28 +42,109 @@ export const MessageForm = ({
   showHitl = true,
   buttonText = "Enviar",
 }: MessageFormProps) => {
+  const [selectedImages, setSelectedImages] = useState<ImagePreview[]>([]);
+
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    const newImages = files.map(file => ({
+      file,
+      url: URL.createObjectURL(file),
+    }));
+    setSelectedImages(prev => [...prev, ...newImages]);
+  };
+
+  const removeImage = (index: number) => {
+    setSelectedImages(prev => {
+      const newImages = [...prev];
+      URL.revokeObjectURL(newImages[index].url);
+      newImages.splice(index, 1);
+      return newImages;
+    });
+  };
+
+  const clearImages = () => {
+    selectedImages.forEach(img => URL.revokeObjectURL(img.url));
+    setSelectedImages([]);
+  };
+
+  const handleFormSubmit = (data: FormInputs) => {
+    onSubmit({ ...data, images: selectedImages.map(img => img.file) });
+    clearImages();
+  };
+
   const dispatch = useDispatch<AppDispatch>();
   const { handleHitlAction, isLoading } = useHitl({
     conversationId: conversation?.id || 0,
     onUpdateConversation: updatedConversation => {
-      // Ensure user property is not null before dispatching
       if (!updatedConversation.user) throw new Error("User is null");
-      dispatch(uploadConversation(updatedConversation as IConversation));
+      dispatch(
+        uploadConversation({
+          ...updatedConversation,
+          user: updatedConversation.user,
+          messages: updatedConversation.messages.map(message => ({
+            id: Math.random(),
+            text: message.text,
+            type: message.type,
+            format: MessageFormatType.TEXT,
+            audio: null,
+            created_at: new Date().toISOString(),
+          })),
+        } as IConversation)
+      );
     },
   });
 
   return (
     <div className="w-full p-4 border-t border-gray-300">
       <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="grid grid-cols-[1fr,auto] gap-[10px] items-center w-full"
+        onSubmit={handleSubmit(handleFormSubmit)}
+        className="grid grid-cols-[auto,1fr,auto] gap-[10px] items-center w-full"
       >
-        <input
-          {...register("message", { required: true })}
-          type="text"
-          placeholder="Escribe un mensaje..."
-          className="w-full bg-app-c1 border-[1px] border-app-c3 rounded-lg p-[10px] text-[14px] text-black"
-        />
+        <label
+          htmlFor="image-upload"
+          className="cursor-pointer p-2 hover:bg-gray-100 rounded-full transition-colors"
+        >
+          <input
+            type="file"
+            id="image-upload"
+            className="hidden"
+            accept="image/*"
+            multiple
+            onChange={handleImageSelect}
+          />
+          <IoImage className="w-5 h-5 text-gray-500 hover:text-app-c4" />
+        </label>
+
+        <div className="relative">
+          <input
+            {...register("message", { required: selectedImages.length === 0 })}
+            type="text"
+            placeholder="Escribe un mensaje..."
+            className="w-full bg-app-c1 border-[1px] border-app-c3 rounded-lg p-[10px] text-[14px] text-black pr-[40px]"
+          />
+          {selectedImages.length > 0 && (
+            <div className="absolute bottom-full mb-2 left-0">
+              <div className="flex gap-2 overflow-x-auto max-w-[300px] p-1">
+                {selectedImages.map((img, index) => (
+                  <div key={index} className="relative flex-shrink-0">
+                    <img
+                      src={img.url}
+                      alt={`Preview ${index + 1}`}
+                      className="w-[100px] h-[100px] object-cover rounded-lg border border-gray-300"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeImage(index)}
+                      className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                    >
+                      <IoClose className="w-4 h-4" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
 
         {!showHitl || conversation?.user?.id === user?.id ? (
           <SendMessageButton isSubmitting={isSubmitting} text={buttonText} />
