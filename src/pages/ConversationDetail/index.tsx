@@ -1,7 +1,5 @@
 import { useForm } from "react-hook-form";
-import { useHitl } from "@hooks/useHitl";
-import { HitlButton } from "@components/HitlButton";
-import { SendMessageButton } from "@components/SendMessageButton";
+import { MessageForm } from "@/components/MessageForm";
 import {
   getConversationByOrganizationIdAndById,
   sendMessage,
@@ -20,13 +18,6 @@ const ConversationDetail = () => {
   const { id } = useParams<{ id: string }>();
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { isSubmitting },
-  } = useForm<FormInputs>();
-
   const { selectOrganizationId, user } = useSelector(
     (state: RootState) => state.auth
   );
@@ -37,16 +28,6 @@ const ConversationDetail = () => {
   const conversation = conversations.find(
     (conversation: IConversation) => conversation.id === Number(id)
   );
-
-  const { handleHitlAction, isLoading } = useHitl({
-    conversationId: Number(id),
-    userId: conversation?.user?.id?.toString(),
-    currentUserId: user?.id?.toString(),
-    onUpdateConversation: updatedConversation => {
-      if (!updatedConversation.user) throw new Error("User not found");
-      dispatch(uploadConversation(updatedConversation as IConversation));
-    },
-  });
 
   const getConversationDetailById = async () => {
     try {
@@ -65,6 +46,21 @@ const ConversationDetail = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
+  useEffect(() => {
+    scrollToBottom();
+  }, [conversation?.messages?.length]);
+
+  useEffect(() => {
+    getConversationDetailById();
+  }, []);
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { isSubmitting },
+  } = useForm<FormInputs>();
+
   const onSubmit = async (data: FormInputs) => {
     if (!data.message.trim()) return;
 
@@ -72,21 +68,12 @@ const ConversationDetail = () => {
       const success = await sendMessage(Number(id), data.message);
       if (success) {
         reset();
-        // Actualizar la conversación para mostrar el nuevo mensaje
         await getConversationDetailById();
       }
     } catch (error) {
       console.error("Error al enviar mensaje:", error);
     }
   };
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [conversation?.messages?.length]);
-
-  useEffect(() => {
-    getConversationDetailById();
-  }, [id, selectOrganizationId]);
 
   return (
     <div className="flex flex-col flex-1 gap-[10px] bg-app-c2 border-[2px] border-app-c3 rounded-2xl p-[10px]">
@@ -97,28 +84,12 @@ const ConversationDetail = () => {
         <div ref={messagesEndRef} />
       </div>
 
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="flex gap-[10px] items-center"
-      >
-        <input
-          {...register("message", { required: true })}
-          type="text"
-          placeholder="Escribe un mensaje..."
-          className="flex-1 bg-app-c1 border-[1px] border-app-c3 rounded-lg p-[10px] text-[14px] text-black"
-        />
-
-        {conversation?.user?.id === user?.id ? (
-          <SendMessageButton isSubmitting={isSubmitting} />
-        ) : (
-          <HitlButton
-            onClick={handleHitlAction}
-            isLoading={isLoading}
-            isAssigned={!!conversation?.user}
-            currentUserHasConversation={conversation?.user?.id === user?.id}
-          />
-        )}
-      </form>
+      <MessageForm
+        form={{ register, handleSubmit, isSubmitting }}
+        onSubmit={onSubmit}
+        conversation={conversation}
+        user={user}
+      />
     </div>
   );
 };
