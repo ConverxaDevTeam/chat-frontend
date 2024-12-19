@@ -33,11 +33,10 @@ export const useChat = (roomName: string) => {
   }, []);
 
   const handleSendMessage = useCallback(
-    (val: string) => {
-      if (val.trim() === "") return;
+    (val: string, images?: string[]) => {
+      if (!val.trim() && !images?.length) return;
       let identifier: ChatAgentIdentifier | TestAgentIdentifier;
       if (messages.length === 0) {
-        // Primer mensaje: usar ChatAgentIdentifier
         identifier = {
           agentId: agentId,
           type: AgentIdentifierType.CHAT_TEST,
@@ -54,6 +53,7 @@ export const useChat = (roomName: string) => {
 
       emitWebSocketEvent("message", {
         text: val,
+        images,
         room: roomName,
         identifier,
       });

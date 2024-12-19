@@ -74,6 +74,7 @@ export interface IMessage {
   format: MessageFormatType;
   audio: string | null;
   created_at: string;
+  images?: string[];
 }
 
 export interface ConversationsState {
