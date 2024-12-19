@@ -61,10 +61,10 @@ export const useWebSocketConnection = ({
     };
 
     // Escuchar el evento 'typing'
-    const typingHandler = (message: string) => {
+    const typingHandler = (data: { message: string }) => {
       addMessage({
         sender: "user",
-        text: message,
+        text: data.message,
       });
     };
 
@@ -79,7 +79,7 @@ export const useWebSocketConnection = ({
 
     // Registrar los handlers
     onWebSocketEvent<WebSocketChatTestResponse>("message", messageHandler);
-    onWebSocketEvent<string>("typing", typingHandler);
+    onWebSocketEvent<{ message: string }>("typing", typingHandler);
     onWebSocketEvent<void>("agent:updated", agentUpdateHandler);
 
     return () => {
