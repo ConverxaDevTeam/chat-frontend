@@ -2,8 +2,8 @@ import { FaUsers } from "react-icons/fa";
 import { AiFillHome } from "react-icons/ai";
 import { FaLayerGroup } from "react-icons/fa";
 import { BsPersonWorkspace } from "react-icons/bs";
-import { IConversation } from "@pages/Workspace/components/ChatPreview";
 import { BsWechat } from "react-icons/bs";
+import { IConversation, MessageFormatType, MessageType } from "./interfaces";
 
 export const sidebarLinks = [
   {
@@ -189,31 +189,41 @@ export const conversationsExample: IConversation[] = [
       {
         id: 1,
         text: "Hola, ¿cómo estás?",
-        type: "agent",
+        type: MessageType.AGENT,
+        format: MessageFormatType.TEXT,
+        audio: null,
         created_at: "2024-12-05 03:35:36.824",
       },
       {
         id: 2,
         text: "Hola, bien, gracias",
-        type: "user",
+        type: MessageType.USER,
+        format: MessageFormatType.TEXT,
+        audio: null,
         created_at: "2024-12-05 03:35:36.824",
       },
       {
         id: 3,
         text: "¿En qué puedo ayudarte?",
-        type: "agent",
+        type: MessageType.AGENT,
+        format: MessageFormatType.TEXT,
+        audio: null,
         created_at: "2024-12-05 03:35:36.824",
       },
       {
         id: 4,
         text: "Quiero saber más sobre tu producto",
-        type: "user",
+        type: MessageType.USER,
+        format: MessageFormatType.TEXT,
+        audio: null,
         created_at: "2024-12-05 03:35:36.824",
       },
       {
         id: 5,
         text: "Claro, ¿qué te gustaría saber?",
-        type: "agent",
+        type: MessageType.AGENT,
+        format: MessageFormatType.TEXT,
+        audio: null,
         created_at: "2024-12-05 03:35:36.824",
       },
     ],
@@ -228,25 +238,33 @@ export const conversationsExample: IConversation[] = [
       {
         id: 1,
         text: "Hola, ¿cómo estás?",
-        type: "agent",
+        type: MessageType.AGENT,
+        format: MessageFormatType.TEXT,
+        audio: null,
         created_at: "2024-12-05 03:35:36.824",
       },
       {
         id: 2,
         text: "Hola, bien, gracias",
-        type: "user",
+        type: MessageType.USER,
+        format: MessageFormatType.TEXT,
+        audio: null,
         created_at: "2024-12-05 03:35:36.824",
       },
       {
         id: 3,
         text: "¿En qué puedo ayudarte?",
-        type: "agent",
+        type: MessageType.AGENT,
+        format: MessageFormatType.TEXT,
+        audio: null,
         created_at: "2024-12-05 03:35:36.824",
       },
       {
         id: 4,
         text: "Quiero saber más sobre tu producto",
-        type: "user",
+        type: MessageType.USER,
+        format: MessageFormatType.TEXT,
+        audio: null,
         created_at: "2024-12-05 03:35:36.824",
       },
     ],

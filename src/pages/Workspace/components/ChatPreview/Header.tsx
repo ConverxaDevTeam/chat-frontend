@@ -1,4 +1,4 @@
-import { IConversation } from ".";
+import { IConversation } from "@utils/interfaces";
 import { ConfigWebChat } from "../CustomizeChat";
 import IconArrow from "./IconArrow";
 import IconClose from "./IconClose";
