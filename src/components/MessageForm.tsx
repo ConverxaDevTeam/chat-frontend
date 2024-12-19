@@ -2,6 +2,10 @@ import { UseFormHandleSubmit, UseFormRegister } from "react-hook-form";
 import { SendMessageButton } from "./SendMessageButton";
 import { HitlButton } from "./HitlButton";
 import { useHitl } from "@/hooks/useHitl";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "@/store";
+import { uploadConversation } from "@store/actions/conversations";
+import { IConversation } from "@pages/Workspace/components/ChatPreview";
 
 interface FormInputs {
   message: string;
@@ -31,9 +35,14 @@ export const MessageForm = ({
   conversation,
   user,
 }: MessageFormProps) => {
+  const dispatch = useDispatch<AppDispatch>();
   const { handleHitlAction, isLoading } = useHitl({
     conversationId: conversation?.id || 0,
-    onUpdateConversation: () => {},
+    onUpdateConversation: updatedConversation => {
+      // Ensure user property is not null before dispatching
+      if (!updatedConversation.user) throw new Error("User is null");
+      dispatch(uploadConversation(updatedConversation as IConversation));
+    },
   });
 
   return (
