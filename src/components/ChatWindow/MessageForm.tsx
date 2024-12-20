@@ -17,6 +17,7 @@ interface ImagePreview {
 
 interface MessageFormProps {
   showHitl?: boolean;
+  showImageButton?: boolean;
   form: {
     register: UseFormRegister<FormInputs>;
     handleSubmit: UseFormHandleSubmit<FormInputs>;
@@ -41,6 +42,7 @@ export const MessageForm = ({
   user,
   showHitl = true,
   buttonText = "Enviar",
+  showImageButton = false,
 }: MessageFormProps) => {
   const [selectedImages, setSelectedImages] = useState<ImagePreview[]>([]);
 
@@ -98,22 +100,24 @@ export const MessageForm = ({
     <div className="w-full p-4 border-t border-gray-300">
       <form
         onSubmit={handleSubmit(handleFormSubmit)}
-        className="grid grid-cols-[auto,1fr,auto] gap-[10px] items-center w-full"
+        className={`grid grid-cols-${showImageButton ? "[1fr,auto,auto]" : "[1fr,auto]"} gap-[10px] items-center w-full`}
       >
-        <label
-          htmlFor="image-upload"
-          className="cursor-pointer p-2 hover:bg-gray-100 rounded-full transition-colors"
-        >
-          <input
-            type="file"
-            id="image-upload"
-            className="hidden"
-            accept="image/*"
-            multiple
-            onChange={handleImageSelect}
-          />
-          <IoImage className="w-5 h-5 text-gray-500 hover:text-app-c4" />
-        </label>
+        {showImageButton && (
+          <label
+            htmlFor="image-upload"
+            className="cursor-pointer p-2 hover:bg-gray-100 rounded-full transition-colors"
+          >
+            <input
+              type="file"
+              id="image-upload"
+              className="hidden"
+              accept="image/*"
+              multiple
+              onChange={handleImageSelect}
+            />
+            <IoImage className="w-5 h-5 text-gray-500 hover:text-app-c4" />
+          </label>
+        )}
 
         <div className="relative">
           <input
