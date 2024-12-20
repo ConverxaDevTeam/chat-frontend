@@ -59,6 +59,7 @@ export const ChatFooter = ({
       }}
       onSubmit={handleSubmitMessage}
       conversation={conversation}
+      showImageButton={true}
       user={user}
       showHitl={false}
       buttonText=""
