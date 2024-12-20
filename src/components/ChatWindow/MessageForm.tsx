@@ -1,5 +1,5 @@
 import { UseFormHandleSubmit, UseFormRegister } from "react-hook-form";
-import { IoImage, IoClose } from "react-icons/io5";
+import { IoImage } from "react-icons/io5";
 import { useHitl } from "@/hooks/useHitl";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/store";
@@ -9,6 +9,7 @@ import { useState } from "react";
 import { SendMessageButton } from "../SendMessageButton";
 import { HitlButton } from "../HitlButton";
 import { IConversation, IMessage, MessageFormatType } from "@utils/interfaces";
+import { ImagePreview } from "./ImagePreview";
 
 interface ImagePreview {
   file: File;
@@ -100,7 +101,11 @@ export const MessageForm = ({
     <div className="w-full p-4 border-t border-gray-300">
       <form
         onSubmit={handleSubmit(handleFormSubmit)}
-        className={`grid grid-cols-${showImageButton ? "[1fr,auto,auto]" : "[1fr,auto]"} gap-[10px] items-center w-full`}
+        className={
+          showImageButton
+            ? "grid grid-cols-[auto,1fr,auto] gap-[10px] items-center w-full"
+            : "grid grid-cols-[1fr,auto] gap-[10px] items-center w-full"
+        }
       >
         {showImageButton && (
           <label
@@ -127,26 +132,7 @@ export const MessageForm = ({
             className="w-full bg-app-c1 border-[1px] border-app-c3 rounded-lg p-[10px] text-[14px] text-black pr-[40px]"
           />
           {selectedImages.length > 0 && (
-            <div className="absolute bottom-full mb-2 left-0">
-              <div className="flex gap-2 overflow-x-auto max-w-[300px] p-1">
-                {selectedImages.map((img, index) => (
-                  <div key={index} className="relative flex-shrink-0">
-                    <img
-                      src={img.url}
-                      alt={`Preview ${index + 1}`}
-                      className="w-[100px] h-[100px] object-cover rounded-lg border border-gray-300"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => removeImage(index)}
-                      className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
-                    >
-                      <IoClose className="w-4 h-4" />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
+            <ImagePreview images={selectedImages} onRemove={removeImage} />
           )}
         </div>
 
