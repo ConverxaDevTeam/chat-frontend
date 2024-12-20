@@ -89,7 +89,7 @@ const NodeContent: React.FC<NodeContentProps> = ({
   }
 
   return (
-    <div className="mt-4 text-center text-black">
+    <div className="mt-4 text-center text-black max-w-[600px]">
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
           {icon}
@@ -97,7 +97,9 @@ const NodeContent: React.FC<NodeContentProps> = ({
         </div>
         {headerActions}
       </div>
-      <div className="text-sm">{description}</div>
+      <div className="text-sm overflow-hidden truncate max-h-[4.5rem]">
+        {description}
+      </div>
       <div className="mt-4 bg-transparent rounded-md">{children}</div>
     </div>
   );

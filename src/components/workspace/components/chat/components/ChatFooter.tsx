@@ -1,29 +1,68 @@
+import { useForm } from "react-hook-form";
+import { MessageForm } from "@components/ChatWindow/MessageForm";
+import { FormInputs } from "@interfaces/conversation";
+
 interface ChatFooterProps {
-  inputValue: string;
-  onInputChange: (value: string) => void;
-  onSendMessage: () => void;
+  onSendMessage: (message: string, images?: string[]) => void;
+  conversation: {
+    id: number;
+    user?: {
+      id: number;
+    };
+  };
+  user?: {
+    id: number;
+  };
 }
 
 export const ChatFooter = ({
-  inputValue,
-  onInputChange,
   onSendMessage,
+  conversation,
+  user,
 }: ChatFooterProps) => {
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { isSubmitting },
+  } = useForm<FormInputs>();
+
+  const handleSubmitMessage = async (
+    data: FormInputs & { images?: File[] }
+  ) => {
+    if (!data.message.trim() && !data.images?.length) return;
+
+    // Convertimos las imágenes a base64
+    const imageBase64s = data.images
+      ? await Promise.all(
+          data.images.map(
+            file =>
+              new Promise<string>(resolve => {
+                const reader = new FileReader();
+                reader.onloadend = () => resolve(reader.result as string);
+                reader.readAsDataURL(file);
+              })
+          )
+        )
+      : [];
+
+    await onSendMessage(data.message, imageBase64s);
+    reset();
+  };
+
   return (
-    <div className="grid grid-cols-[1fr,auto] gap-2 p-4 border-t border-gray-300">
-      <input
-        type="text"
-        value={inputValue}
-        onChange={e => onInputChange(e.target.value)}
-        className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-        placeholder="Escribe un mensaje..."
-      />
-      <button
-        onClick={onSendMessage}
-        className="p-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-      >
-        Enviar
-      </button>
-    </div>
+    <MessageForm
+      form={{
+        register,
+        handleSubmit,
+        isSubmitting,
+      }}
+      onSubmit={handleSubmitMessage}
+      conversation={conversation}
+      showImageButton={true}
+      user={user}
+      showHitl={false}
+      buttonText=""
+    />
   );
 };

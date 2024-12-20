@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import { IConversation } from ".";
 import MessageSofia from "./MessageSofia";
 import MessageUser from "./MessageUser";
 import { ConfigWebChat } from "../CustomizeChat";
+import { IConversation } from "@utils/interfaces";
 
 interface ChatProps {
   config: ConfigWebChat;

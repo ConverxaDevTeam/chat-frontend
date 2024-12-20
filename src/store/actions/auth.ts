@@ -10,7 +10,7 @@ import {
   onWebSocketEvent,
 } from "@services/websocket.service";
 import { newMessageChat } from "./conversations";
-import { IMessage } from "@pages/Workspace/components/ChatPreview";
+import { IMessage } from "@utils/interfaces";
 
 export const axiosInstance = axios.create({
   baseURL: baseUrl,
@@ -155,6 +155,8 @@ const setupAxiosInterceptors = (
         } else {
           config.headers["Authorization"] = `Bearer ${token}`;
         }
+        if (import.meta.env.NGROK_DEV === 1)
+          config.headers["ngrok-skip-browser-warning"] = true;
       } catch (error) {
         return Promise.reject(error);
       }

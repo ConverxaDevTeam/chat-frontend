@@ -1,7 +1,7 @@
 import { convertISOToReadableMonthDayYear } from "@utils/format";
 import { useEffect, useState } from "react";
-import { IConversation } from ".";
 import { ConfigWebChat } from "../CustomizeChat";
+import { IConversation } from "@utils/interfaces";
 
 interface ConversationCardProps {
   setConversation: (conversation: IConversation) => void;

@@ -4,25 +4,10 @@ import Chat from "./Chat";
 import Conversations from "./Conversations";
 import { conversationsExample } from "@utils/lists";
 import { ConfigWebChat } from "../CustomizeChat";
+import { IConversation } from "@utils/interfaces";
 
 interface ChatPreviewProps {
   config: ConfigWebChat;
-}
-
-export interface IConversation {
-  id: number;
-  messages: IMessage[];
-  user: {
-    id: number;
-  };
-  created_at: string;
-}
-
-export interface IMessage {
-  id: number;
-  text: string;
-  type: "agent" | "user";
-  created_at: string;
 }
 
 const ChatPreview = ({ config }: ChatPreviewProps) => {

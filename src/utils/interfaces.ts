@@ -45,3 +45,38 @@ export interface IAuthState {
   selectOrganizationId: number | null;
   myOrganizations: IOrganizarion[];
 }
+
+export interface IConversation {
+  id: number;
+  messages: IMessage[];
+  user: {
+    id: number;
+  };
+  created_at: string;
+}
+
+export enum MessageFormatType {
+  TEXT = "text",
+  IMAGE = "image",
+  AUDIO = "audio",
+}
+
+export enum MessageType {
+  USER = "user",
+  AGENT = "agent",
+  HITL = "hitl",
+}
+
+export interface IMessage {
+  id: number;
+  text: string;
+  type: MessageType;
+  format: MessageFormatType;
+  audio: string | null;
+  created_at: string;
+  images?: string[];
+}
+
+export interface ConversationsState {
+  conversations: IConversation[];
+}

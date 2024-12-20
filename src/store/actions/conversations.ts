@@ -1,8 +1,5 @@
-import {
-  IConversation,
-  IMessage,
-} from "@pages/Workspace/components/ChatPreview";
 import { createAction } from "@reduxjs/toolkit";
+import { IConversation, IMessage } from "@utils/interfaces";
 
 export const newMessageChat = createAction(
   "conversations/newMessageChat",
