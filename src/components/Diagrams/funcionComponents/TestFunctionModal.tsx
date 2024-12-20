@@ -31,6 +31,14 @@ export const TestFunctionModal = ({
   const onSubmit = async (data: Record<string, unknown>) => {
     try {
       const response = await onTest(data);
+      const responseData = response.data as Record<string, unknown>;
+      if ("error" in responseData) {
+        setTestResponse({
+          status: (responseData?.error as { status: number })?.status || 500,
+          data: (responseData?.error as { message: string })?.message,
+        });
+        return;
+      }
       setTestResponse({
         status: response.status,
         data: response.data,
