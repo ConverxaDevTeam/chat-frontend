@@ -15,7 +15,11 @@ interface UseWebSocketConnectionProps {
   threatId: string | undefined;
   setThreatId: (id: string) => void;
   setAgentId: (id: string) => void;
-  addMessage: (message: { sender: "user" | "agent"; text: string }) => void;
+  addMessage: (message: {
+    sender: "user" | "agent";
+    text: string;
+    images?: string[];
+  }) => void;
   resetChat: () => void;
 }
 
@@ -61,10 +65,11 @@ export const useWebSocketConnection = ({
     };
 
     // Escuchar el evento 'typing'
-    const typingHandler = (message: string) => {
+    const typingHandler = (data: { message: string; images?: string[] }) => {
       addMessage({
         sender: "user",
-        text: message,
+        text: data.message,
+        images: data.images,
       });
     };
 
@@ -79,7 +84,10 @@ export const useWebSocketConnection = ({
 
     // Registrar los handlers
     onWebSocketEvent<WebSocketChatTestResponse>("message", messageHandler);
-    onWebSocketEvent<string>("typing", typingHandler);
+    onWebSocketEvent<{ message: string; images?: string[] }>(
+      "typing",
+      typingHandler
+    );
     onWebSocketEvent<void>("agent:updated", agentUpdateHandler);
 
     return () => {
