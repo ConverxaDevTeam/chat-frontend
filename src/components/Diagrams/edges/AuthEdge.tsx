@@ -1,15 +1,10 @@
 import { useState, useCallback } from "react";
-import {
-  BaseEdge,
-  EdgeLabelRenderer,
-  EdgeProps,
-  getBezierPath,
-  useReactFlow,
-} from "@xyflow/react";
+import { EdgeLabelRenderer, EdgeProps, useReactFlow } from "@xyflow/react";
 import { FaKey } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { RootState } from "@store";
 import { AuthenticatorModal } from "../authComponents/AuthenticatorModal";
+import { CustomEdge, getEdgeParams } from "./CustomEdge";
 
 interface AuthEdgeData {
   functionId: number;
@@ -28,9 +23,9 @@ export function AuthEdge({
   sourcePosition,
   targetPosition,
   style = {},
-  markerEnd,
   data,
   id,
+  ...props
 }: AuthEdgeProps) {
   const [showModal, setShowModal] = useState(false);
   const { setEdges } = useReactFlow();
@@ -58,18 +53,28 @@ export function AuthEdge({
     [id, setEdges]
   );
 
-  const [edgePath, labelX, labelY] = getBezierPath({
+  const { labelX, labelY } = getEdgeParams({
     sourceX,
     sourceY,
-    sourcePosition,
     targetX,
     targetY,
+    sourcePosition,
     targetPosition,
   });
 
   return (
     <>
-      <BaseEdge path={edgePath} markerEnd={markerEnd} style={style} />
+      <CustomEdge
+        id={id}
+        sourceX={sourceX}
+        sourceY={sourceY}
+        targetX={targetX}
+        targetY={targetY}
+        sourcePosition={sourcePosition}
+        targetPosition={targetPosition}
+        style={style}
+        {...props}
+      />
       <EdgeLabelRenderer>
         <div
           style={{

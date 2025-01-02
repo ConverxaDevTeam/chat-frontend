@@ -39,6 +39,7 @@ import { useEdges, useZoomToFit } from "./workspace/hooks/Diagrams";
 import { AuthEdge } from "./Diagrams/edges/AuthEdge";
 import { FunctionEditModal } from "./Diagrams/funcionComponents/FunctionEditModal";
 import { useFunctionSuccess } from "./Diagrams/hooks/useFunctionActions";
+import { CustomEdge } from "./Diagrams/edges/CustomEdge";
 
 // Tipos y interfaces
 interface ContextMenuState {
@@ -229,6 +230,7 @@ const edgeFactory = {
 
 const edgeTypes = {
   auth: AuthEdge,
+  custom: CustomEdge,
 };
 
 const createInitialNodes = (
@@ -317,26 +319,44 @@ const DiagramFlow = ({
   onNodeDragStart,
   onNodeDragStop,
 }: DiagramFlowProps) => (
-  <ReactFlow
-    nodes={nodes}
-    edges={edges}
-    onNodesChange={onNodesChange}
-    onEdgesChange={onEdgesChange}
-    onConnect={onConnect}
-    onConnectEnd={onConnectEnd}
-    onNodeDragStart={onNodeDragStart}
-    onNodeDragStop={onNodeDragStop}
-    nodeTypes={{
-      integraciones: IntegracionesNode,
-      agente: AgenteNode,
-      funcion: FuncionNode,
-    }}
-    edgeTypes={edgeTypes}
-    fitView
-  >
-    <Controls />
-    <MiniMap />
-  </ReactFlow>
+  <div className="relative w-full h-full">
+    <div
+      className="absolute inset-0"
+      style={{
+        backgroundSize: "20px 20px",
+        backgroundImage:
+          "linear-gradient(to right, #f0f0f0 2px, transparent 2px), linear-gradient(to bottom, #f0f0f0 2px, transparent 2px)",
+      }}
+    />
+    <ReactFlow
+      className="relative"
+      nodes={nodes}
+      edges={edges}
+      onNodesChange={onNodesChange}
+      onEdgesChange={onEdgesChange}
+      onConnect={onConnect}
+      onConnectEnd={onConnectEnd}
+      onNodeDragStart={onNodeDragStart}
+      onNodeDragStop={onNodeDragStop}
+      nodeTypes={{
+        integraciones: IntegracionesNode,
+        agente: AgenteNode,
+        funcion: FuncionNode,
+      }}
+      edgeTypes={edgeTypes}
+      defaultEdgeOptions={{
+        type: "custom",
+      }}
+      fitView
+      style={{
+        background:
+          "radial-gradient(circle at center, transparent 0%, white 70%)",
+      }}
+    >
+      <Controls />
+      <MiniMap />
+    </ReactFlow>
+  </div>
 );
 
 const ZoomTransition = () => {
