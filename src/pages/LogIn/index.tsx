@@ -34,96 +34,86 @@ const LogIn = () => {
   }
 
   return (
-    <div className="flex flex-col w-full h-full bg-app-background relative overflow-hidden">
-      <div className="w-full h-full absolute bg-[url('demo/more.png')] bg-repeat z-10"></div>
-      <div className="h-[66px] w-full flex items-center px-[12px] justify-between z-20">
-        <img className="h-[40px]" src="/demo/logo_black.svg" alt="logo" />
-        <div className="flex items-center gap-[20px]">
-          <p className="font-poppinsMedium text-app-dark text-[12px]">
-            ¿Aún no tenés cuenta?
-          </p>
-          <button
-            type="button"
-            className="text-app-electricGreen rounded-[4px] h-[40px] px-[20px] text-[14px] font-poppinsSemiBold bg-app-dark"
-          >
-            Registrarse
-          </button>
+    <div className="flex flex-col w-full h-full bg-sofia-background">
+      <div className="flex flex-col w-[446px] bg-custom-gradient p-[12px] rounded-2xl border-[1px] border-[#B8CCE0] border-inherit m-auto">
+        <div className="bg-[#F1F5F9] rounded-lg px-[32px] pt-[53px] pb-[40px] [box-shadow:0px_4px_8px_0px_rgba(201,_217,_232,_0.8)]">
+          <img className="mx-auto mb-[48px]" src="/mvp/logo.png" alt="logo" />
+          <h2 className="font-semibold text-[30px] text-sofia-superDark mb-[16px] text-center">
+            Inicia sesión
+          </h2>
+          <form onSubmit={handleSubmit}>
+            <div className="flex flex-col">
+              <label
+                className="text-[14px] font-medium text-[#414651] mb-[6px]"
+                htmlFor="email"
+              >
+                Email
+              </label>
+              <input
+                className="rounded-lg mb-[16px] py-[10px] px-[14px] border-[1px] text-[#717680] text-[16px] font-normal"
+                type="email"
+                id="email"
+                placeholder="Ingresa tu correo"
+                onChange={handleChange}
+                value={data.email}
+                name="email"
+                required
+              />
+              <label
+                className="text-[14px] font-medium text-[#414651] mb-[6px]"
+                htmlFor="password"
+              >
+                Contraseña
+              </label>
+              <input
+                className="rounded-lg mb-[16px] py-[10px] px-[14px] border-[1px] text-[#717680] text-[16px] font-normal"
+                type="password"
+                id="password"
+                placeholder="Contraseña"
+                onChange={handleChange}
+                value={data.password}
+                name="password"
+                required
+              />
+            </div>
+            <div className="flex items-center justify-between mb-[24px]">
+              <div className="flex items-center gap-[8px]">
+                <input
+                  type="checkbox"
+                  className="w-[16px] h-[16px]"
+                  id="remember"
+                />
+                <p className="text-[14px] font-medium text-[#414651]">
+                  Recordar contraseña
+                </p>
+              </div>
+              <p className="text-[14px] font-medium text-sofia-superDark">
+                Olvidé mi contraseña
+              </p>
+            </div>
+            <button
+              className="w-full rounded-[8px] py-[10px] bg-sofia-electricGreen text-sofia-superDark text-[16px] font-semibold mb-[24px] disabled:bg-app-lightGray"
+              type="submit"
+              disabled={active}
+            >
+              Iniciar sesión
+            </button>
+            {error && (
+              <p className="text-red-600 text-sm text-center max-h-5 px-2 mb-2">
+                {error}
+              </p>
+            )}
+            <p className="text-[14px] text-[#535862] font-normal text-center">
+              ¿Aun no tienes un cuenta? <strong>Creala aquí</strong>
+            </p>
+          </form>
         </div>
       </div>
-      <div className="w-[calc(100%+20px)] h-[525px] absolute -bottom-[10px] -left-[10px] opacity-30">
-        <img className="w-full h-full" src="demo/slime.svg" alt="background" />
-      </div>
-      <div className="flex flex-col w-[520px] m-auto z-10 bg-app-white px-[56px] pt-[24px] rounded-lg border-[8px] border-app-dark relative">
-        <h2 className="font-poppinsBold text-[28px]  text-app-dark mb-[16px]">
-          ¡Bienvenido de vuelta!
-        </h2>
-        <form onSubmit={handleSubmit}>
-          <div className="flex flex-col">
-            <label
-              className="text-[11px] font-poppinsSemiBold text-app-dark mb-[8px]"
-              htmlFor="email"
-            >
-              Email
-            </label>
-            <input
-              className="rounded-[4px] mb-[16px] h-[34px] px-[12px] border-1 text-[12px] font-poppinsRegular"
-              type="email"
-              id="email"
-              placeholder="Email"
-              onChange={handleChange}
-              value={data.email}
-              name="email"
-              required
-            />
-            <label
-              className="text-[11px] font-poppinsSemiBold text-app-dark mb-[8px]"
-              htmlFor="password"
-            >
-              Contraseña
-            </label>
-            <input
-              className="rounded-[4px] mb-[8px] h-[34px] px-[12px] border-1 text-[12px] font-poppinsRegular"
-              type="password"
-              id="password"
-              placeholder="Contraseña"
-              onChange={handleChange}
-              value={data.password}
-              name="password"
-              required
-            />
-          </div>
 
-          <p className="text-[13px] text-right font-poppinsSemiBold text-app-dark mb-[12px]">
-            ¿Olvidaste tu contraseña?
-          </p>
-          <button
-            className="w-full rounded-[4px] h-[50px] bg-app-dark border-[1px] border-app-dark text-app-electricGreen text-[14px] font-poppinsSemiBold mb-[24px] disabled:bg-app-lightGray"
-            type="submit"
-            disabled={active}
-          >
-            Iniciar sesion
-          </button>
-          {error && (
-            <p className="text-app-error text-sm font-poppinsRegular text-center max-h-5 px-2 mb-2">
-              {error}
-            </p>
-          )}
-          <p className="text-[12px] text-app-text font-poppinsRegular text-center">
-            Al hacer clic en el botón de arriba, acepta nuestros Términos de
-            servicio y Política de privacidad.
-          </p>
-          <img
-            className="h-[40px] ml-[40px] mt-[24px]"
-            src="/demo/logo_black.svg"
-            alt="logo"
-          />
-          <img
-            className="h-[8px] absolute -bottom-[8px] mx-auto"
-            src="/demo/line.png"
-            alt="line"
-          />
-        </form>
-      </div>
+      <p className="mx-auto text-[12px] mb-[38px] font-normal text-center text-sofia-superDark">
+        Version 2.0
+        <br /> SOF.IA LLM © 2024 Derechos Reservados
+      </p>
     </div>
   );
 };

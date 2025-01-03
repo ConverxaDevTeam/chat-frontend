@@ -1,0 +1,65 @@
+import { apiUrls } from "@config/config";
+import { axiosInstance } from "@store/actions/auth";
+import { alertError } from "@utils/alerts";
+import axios from "axios";
+
+export const getUserMyOrganization = async (organizationId: number) => {
+  try {
+    const response = await axiosInstance.get(
+      apiUrls.getUserMyOrganization(organizationId)
+    );
+    if (response.data.ok) {
+      return response.data.users;
+    } else {
+      alertError(response.data.message);
+      return [];
+    }
+  } catch (error) {
+    let message = "Error inesperado";
+    if (axios.isAxiosError(error)) {
+      if (error.response) {
+        message =
+          error.response.data?.message || "Error inesperado del servidor";
+      } else if (error.request) {
+        message = "No se pudo conectar con el servidor";
+      } else {
+        message = error.message;
+      }
+    }
+    alertError(message);
+    return [];
+  }
+};
+
+export const addUserInOrganizationById = async (
+  organizationId: number,
+  data: {
+    email: string;
+  }
+) => {
+  try {
+    const response = await axiosInstance.post(
+      apiUrls.addUserInOrganizationById(organizationId),
+      data
+    );
+    if (response.data.ok) {
+      return true;
+    } else {
+      return false;
+    }
+  } catch (error) {
+    let message = "Error inesperado";
+    if (axios.isAxiosError(error)) {
+      if (error.response) {
+        message =
+          error.response.data?.message || "Error inesperado del servidor";
+      } else if (error.request) {
+        message = "No se pudo conectar con el servidor";
+      } else {
+        message = error.message;
+      }
+    }
+    alertError(message);
+    return false;
+  }
+};
