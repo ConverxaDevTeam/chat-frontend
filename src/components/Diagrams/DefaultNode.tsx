@@ -1,6 +1,7 @@
 import React, { useRef } from "react";
 import { Handle, Position, NodeProps } from "@xyflow/react";
-import { NodeData } from "@interfaces/workflow";
+import { NodeData, NodeStyle } from "@interfaces/workflow";
+import { NeumorphicButton } from "../NeumorphicButton";
 
 interface CustomNodeProps extends NodeProps {
   data: NodeData;
@@ -115,29 +116,49 @@ const DefaultNode: React.FC<CustomNodeProps> = ({
   headerActions,
 }) => {
   const ref = useRef<HTMLDivElement>(null);
-  const { name, description } = data;
+  const { name, description, style } = data;
+
+  const nodeContent = (
+    <NodeContent
+      name={name}
+      description={description}
+      icon={icon}
+      isSelected={selected ?? false}
+      headerActions={headerActions}
+    >
+      {children}
+    </NodeContent>
+  );
 
   return (
     <div className="relative" ref={ref}>
       <NodeLabel name={name} selected={selected} />
-      <div
-        className={`flex flex-col justify-center items-center border-2 transition-all p-6 ${
-          selected
-            ? `w-${width} h-auto bg-blue-500 text-white rounded-lg shadow-xl`
-            : "w-20 h-20 bg-white text-black rounded-full"
-        } font-medium`}
-      >
-        <NodeContent
-          name={name}
-          description={description}
-          icon={icon}
-          isSelected={selected ?? false}
-          headerActions={headerActions}
-        >
-          {children}
-        </NodeContent>
-        <NodeHandles allowedConnections={allowedConnections} />
-      </div>
+      {(() => {
+        switch (style) {
+          case NodeStyle.CENTRAL:
+            return (
+              <div
+                className={`flex flex-col justify-center items-center border-2 transition-all p-6 ${
+                  selected
+                    ? `w-${width} h-auto bg-blue-500 text-white rounded-lg shadow-xl`
+                    : "w-20 h-20 bg-white text-black rounded-full"
+                } font-medium`}
+              >
+                {nodeContent}
+                <NodeHandles allowedConnections={allowedConnections} />
+              </div>
+            );
+          default:
+            return (
+              <>
+                <NodeHandles allowedConnections={allowedConnections} />
+                <NeumorphicButton withContainer={false}>
+                  {nodeContent}
+                </NeumorphicButton>
+              </>
+            );
+        }
+      })()}
     </div>
   );
 };

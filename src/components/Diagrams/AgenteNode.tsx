@@ -1,6 +1,10 @@
 import { useState } from "react";
 import { MdOutlineSupportAgent } from "react-icons/md";
-import { AgentData, CustomTypeNodeProps } from "@interfaces/workflow";
+import {
+  AgentData,
+  CustomTypeNodeProps,
+  NodeStyle,
+} from "@interfaces/workflow";
 import DefaultNode from "./DefaultNode";
 import { AgentInfo } from "./agenteComponents/AgentInfo";
 import { AgentEditModal } from "./agenteComponents/AgentEditModal";
@@ -27,6 +31,7 @@ const AgenteNode = (props: CustomTypeNodeProps<AgentData>) => {
           ...data,
           name: "Agente",
           description: "Agente conversacional",
+          style: NodeStyle.CENTRAL,
         }}
         icon={
           <MdOutlineSupportAgent size={24} className="w-8 h-8 text-gray-800" />
