@@ -296,11 +296,11 @@ const DiagramFlow = ({
       style={{
         backgroundSize: "20px 20px",
         backgroundImage:
-          "linear-gradient(to right, #f0f0f0 2px, transparent 2px), linear-gradient(to bottom, #f0f0f0 2px, transparent 2px)",
+          "linear-gradient(to right, #f0f0f0 3px, transparent 3px), linear-gradient(to bottom, #f0f0f0 3px, transparent 3px)",
       }}
     />
     <ReactFlow
-      className="relative"
+      className="relative bg-diagram-gradient"
       nodes={nodes}
       edges={edges}
       onNodesChange={onNodesChange}
@@ -319,10 +319,6 @@ const DiagramFlow = ({
         type: "default",
       }}
       fitView
-      style={{
-        background:
-          "radial-gradient(circle at center, transparent 0%, white 70%)",
-      }}
     >
       <Controls />
       <MiniMap />
