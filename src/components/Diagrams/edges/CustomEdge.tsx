@@ -156,7 +156,6 @@ export default function CustomEdge({
   markerEnd,
   source,
   target,
-  className,
 }: CustomEdgeProps) {
   const sourcePoint = {
     x: sourceX,
@@ -191,15 +190,17 @@ export default function CustomEdge({
   const pathProps = {
     d: edgePath,
     fill: "none",
-    className: `react-flow__edge-path ${className || ""}`,
     markerEnd,
     style: {
       strokeWidth: 1.5,
-      stroke: "#000000",
       strokeDasharray: "2.5 2",
       ...style,
     },
   };
 
-  return <path {...pathProps} />;
+  return (
+    <svg className="stroke-sofia-superDark">
+      <path {...pathProps} />
+    </svg>
+  );
 }
