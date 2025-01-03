@@ -36,6 +36,8 @@ export default {
         grabbing: "grabbing",
       },
       backgroundImage: {
+        "custom-gradient":
+          "linear-gradient(130deg, #f6f9fb 0%, #f0f4f9 40%, #edf2f7 100%)",
         "diagram-gradient":
           "radial-gradient(circle at center, transparent 0%, #F6F6F6 80%)",
       },
