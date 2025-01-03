@@ -184,7 +184,7 @@ const edgeFactory = {
       target: functionNode.id,
       sourceHandle: `node-source-${Position.Top}`,
       targetHandle: `node-target-${Position.Top}`,
-      type: authenticatorId ? "auth" : "default",
+      type: "auth",
       data: authenticatorId
         ? {
             functionId: functionNode.data.functionId,
