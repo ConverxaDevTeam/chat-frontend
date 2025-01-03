@@ -50,7 +50,7 @@ function getControlPoints(
   targetY: number,
   sourcePosition: Position,
   targetPosition: Position,
-  { offset = 1, sourceSplit = 0.35, targetSplit = 0.65 }: CurveParams = {}
+  { offset = 0.6, sourceSplit = 0.35, targetSplit = 0.65 }: CurveParams = {}
 ) {
   const dx = targetX - sourceX;
   const dy = targetY - sourceY;
