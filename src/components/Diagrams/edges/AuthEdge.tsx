@@ -1,6 +1,5 @@
 import { useState, useCallback } from "react";
 import { EdgeLabelRenderer, EdgeProps, useReactFlow } from "@xyflow/react";
-import { FaKey } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { RootState } from "@store";
 import { AuthenticatorModal } from "../authComponents/AuthenticatorModal";
@@ -90,14 +89,11 @@ export function AuthEdge({
             onClick={() => setShowModal(true)}
             className={`flex items-center rounded-full shadow-md p-3 transition-colors ${
               data?.authenticatorId
-                ? "bg-blue-50 hover:bg-blue-100"
+                ? "bg-sofia-secundario hover:bg-blue-100"
                 : "bg-white hover:bg-gray-50"
             }`}
           >
-            <FaKey
-              className={`${data?.authenticatorId ? "text-blue-600" : "text-gray-400"} mr-1`}
-              size={20}
-            />
+            <img src="/mvp/lock.svg" alt="Autenticador" />
           </button>
         </div>
       </EdgeLabelRenderer>

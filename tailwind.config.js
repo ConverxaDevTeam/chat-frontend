@@ -25,7 +25,7 @@ export default {
           superDark: "#001126",
           electricGreen: "#15ECDA",
           background: "#F6F6F6",
-          secundario: "#EDEDED",
+          secundario: "#d0fbf8",
         },
       },
       fontFamily: {
