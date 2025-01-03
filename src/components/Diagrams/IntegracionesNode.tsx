@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import DefaultNode from "./DefaultNode";
-import { HiLink, HiPlusCircle } from "react-icons/hi";
+import { HiPlusCircle } from "react-icons/hi";
 import AddWebchat from "@pages/Workspace/components/AddWebChat";
 import { CustomTypeNodeProps, NodeData } from "@interfaces/workflow";
 import Modal from "@components/Modal";

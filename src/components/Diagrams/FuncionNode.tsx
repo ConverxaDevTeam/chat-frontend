@@ -1,5 +1,4 @@
 import { memo, useState } from "react";
-import { MdCode } from "react-icons/md";
 import DefaultNode from "./DefaultNode";
 import { CustomTypeNodeProps } from "@interfaces/workflow";
 import { ActionButtons, FunctionInfo } from "./funcionComponents/FunctionInfo";

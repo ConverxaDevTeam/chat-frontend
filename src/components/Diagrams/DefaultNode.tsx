@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { Fragment, useRef } from "react";
 import { Handle, Position, NodeProps } from "@xyflow/react";
 import { NodeData, NodeStyle } from "@interfaces/workflow";
 import { NeumorphicButton } from "../NeumorphicButton";
@@ -112,7 +112,6 @@ const DefaultNode: React.FC<CustomNodeProps> = ({
   allowedConnections = [],
   icon,
   children,
-  width = 72,
   headerActions,
 }) => {
   const ref = useRef<HTMLDivElement>(null);
@@ -137,25 +136,29 @@ const DefaultNode: React.FC<CustomNodeProps> = ({
         switch (style) {
           case NodeStyle.CENTRAL:
             return (
-              <div
-                className={`flex flex-col justify-center items-center border-2 transition-all p-6 ${
-                  selected
-                    ? `w-${width} h-auto bg-blue-500 text-white rounded-lg shadow-xl`
-                    : "w-20 h-20 bg-white text-black rounded-full"
-                } font-medium`}
-              >
-                {nodeContent}
+              <Fragment>
                 <NodeHandles allowedConnections={allowedConnections} />
-              </div>
+                <NeumorphicButton
+                  externalProps={{
+                    radius: "full",
+                  }}
+                  internalProps={{
+                    radius: "full",
+                    backgroundColor: "node-gradient",
+                  }}
+                >
+                  {nodeContent}
+                </NeumorphicButton>
+              </Fragment>
             );
           default:
             return (
-              <>
+              <Fragment>
                 <NodeHandles allowedConnections={allowedConnections} />
                 <NeumorphicButton withContainer={false}>
                   {nodeContent}
                 </NeumorphicButton>
-              </>
+              </Fragment>
             );
         }
       })()}

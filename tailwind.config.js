@@ -40,6 +40,8 @@ export default {
           "linear-gradient(130deg, #f6f9fb 0%, #f0f4f9 40%, #edf2f7 100%)",
         "diagram-gradient":
           "radial-gradient(circle at center, transparent 0%, #F6F6F6 80%)",
+        "node-gradient":
+          "radial-gradient(89.63% 89.63% at 50% 50%, #F1F5F9 0%, #D0FBF8 100%)",
       },
     },
   },

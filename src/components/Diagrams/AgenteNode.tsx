@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { MdOutlineSupportAgent } from "react-icons/md";
 import {
   AgentData,
   CustomTypeNodeProps,
@@ -33,9 +32,7 @@ const AgenteNode = (props: CustomTypeNodeProps<AgentData>) => {
           description: "Agente conversacional",
           style: NodeStyle.CENTRAL,
         }}
-        icon={
-          <MdOutlineSupportAgent size={24} className="w-8 h-8 text-gray-800" />
-        }
+        icon={<img src="/icon.svg" alt="Agente" />}
         allowedConnections={["source", "target"]}
       >
         <div className="grid gap-4 p-4 bg-white rounded-md shadow-lg">
