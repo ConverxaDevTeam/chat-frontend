@@ -203,8 +203,15 @@ const edgeTypes = {
 const createInitialNodes = (
   agentId?: number
 ): { nodes: Node[]; initialEdges: Edge[] } => {
-  const agentNode = nodeFactory.createAgentNode(agentId || 0, { x: 500, y: 0 });
-  const integrationsNode = nodeFactory.createIntegrationsNode({ x: 0, y: 0 });
+  // Centramos los nodos iniciales
+  const agentNode = nodeFactory.createAgentNode(agentId || 0, {
+    x: 400,
+    y: 100,
+  });
+  const integrationsNode = nodeFactory.createIntegrationsNode({
+    x: 100,
+    y: 100,
+  });
   const nodes: Node[] = [integrationsNode, agentNode];
 
   const agentFunctions = useAppSelector(state => state.chat.agentFunctions);
