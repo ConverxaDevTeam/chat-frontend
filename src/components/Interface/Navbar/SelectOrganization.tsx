@@ -1,6 +1,5 @@
 import { AppDispatch, RootState } from "@store";
 import { useDispatch, useSelector } from "react-redux";
-import { HiOutlineSelector } from "react-icons/hi";
 import { useEffect, useState } from "react";
 import { setOrganizationId } from "@store/actions/auth";
 import { useNavigate } from "react-router-dom";
@@ -56,11 +55,15 @@ const SelectOrganization = ({ mobileResolution }: SelectOrganizationProps) => {
 
   return (
     <div
-      className={`bg-app-c1 h-[36px] border-[1px] border-app-c3 relative rounded-lg flex justify-between items-center p-[6px] cursor-pointer ${mobileResolution ? "w-full" : "w-[200px]"}`}
+      className={` bg-custom-gradient border-[2px] border-[#B8CCE0] border-inherit h-[36px] relative rounded-lg flex justify-between items-center p-[6px] cursor-pointer ${mobileResolution ? "w-full" : "w-[200px]"}`}
       onClick={() => setOpen(!open)}
     >
       <p>{text}</p>
-      <HiOutlineSelector />
+      <img
+        className="w-6 h-6 fill-current"
+        src="/mvp/chevron-down.svg"
+        alt="arrow"
+      />
       {open && (
         <div className="absolute w-full bg-app-c2 top-[36px] left-0 rounded-lg border-[1px] border-app-c3 z-50">
           {user?.is_super_admin && (
