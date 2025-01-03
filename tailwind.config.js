@@ -1,5 +1,7 @@
 /** @type {import("tailwindcss").Config} */
 
+import plugin from "tailwindcss";
+
 export default {
   content: ["src/**/*.{html,js,jsx,ts,tsx}", "index.html"],
   theme: {
@@ -19,16 +21,22 @@ export default {
           c3: "#ebebeb",
           c4: "#020202",
         },
+        sofia: {
+          superDark: "#001126",
+          electricGreen: "#15ECDA",
+          background: "#F6F6F6",
+        },
       },
       fontFamily: {
-        poppinsRegular: ["Poppins Regular", "sans-serif"],
-        poppinsMedium: ["Poppins Medium", "sans-serif"],
-        poppinsSemiBold: ["Poppins SemiBold", "sans-serif"],
-        poppinsBold: ["Poppins Bold", "sans-serif"],
+        roboto: ["Roboto", "serif"],
       },
       cursor: {
         grab: "grab",
         grabbing: "grabbing",
+      },
+      backgroundImage: {
+        "custom-gradient":
+          "linear-gradient(130deg, #f6f9fb 0%, #f0f4f9 40%, #edf2f7 100%)",
       },
     },
   },
@@ -37,5 +45,61 @@ export default {
       cursor: ["active", "focus"],
     },
   },
-  plugins: [require("tailwindcss"), require("autoprefixer")],
+  plugins: [
+    require("tailwindcss"),
+    require("autoprefixer"),
+    plugin(function ({ addUtilities }) {
+      const newUtilities = {
+        ".roboto-thin": {
+          fontWeight: "100",
+          fontStyle: "normal",
+        },
+        ".roboto-light": {
+          fontWeight: "300",
+          fontStyle: "normal",
+        },
+        ".roboto-regular": {
+          fontWeight: "400",
+          fontStyle: "normal",
+        },
+        ".roboto-medium": {
+          fontWeight: "500",
+          fontStyle: "normal",
+        },
+        ".roboto-bold": {
+          fontWeight: "700",
+          fontStyle: "normal",
+        },
+        ".roboto-black": {
+          fontWeight: "900",
+          fontStyle: "normal",
+        },
+        ".roboto-thin-italic": {
+          fontWeight: "100",
+          fontStyle: "italic",
+        },
+        ".roboto-light-italic": {
+          fontWeight: "300",
+          fontStyle: "italic",
+        },
+        ".roboto-regular-italic": {
+          fontWeight: "400",
+          fontStyle: "italic",
+        },
+        ".roboto-medium-italic": {
+          fontWeight: "500",
+          fontStyle: "italic",
+        },
+        ".roboto-bold-italic": {
+          fontWeight: "700",
+          fontStyle: "italic",
+        },
+        ".roboto-black-italic": {
+          fontWeight: "900",
+          fontStyle: "italic",
+        },
+      };
+      addUtilities(newUtilities);
+    }),
+  ],
 };
