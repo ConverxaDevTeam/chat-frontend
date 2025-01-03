@@ -28,37 +28,37 @@ const NodeLabel: React.FC<NodeLabelProps> = ({ name, selected }) => {
   );
 };
 
-interface HandleProps {
-  type: "source" | "target";
-  position: Position;
-}
-
-const NodeHandle: React.FC<HandleProps> = ({ type, position }) => (
-  <Handle
-    type={type}
-    id={`node-${type}-${position}`}
-    position={position}
-    className="w-6 h-6 bg-gray-500"
-  />
-);
-
 const NodeHandles: React.FC<{
   allowedConnections: ("source" | "target")[];
 }> = ({ allowedConnections }) => (
   <>
     {allowedConnections.includes("target") && (
-      <>
-        {Object.values(Position).map(position => (
-          <NodeHandle key={position} type="target" position={position} />
-        ))}
-      </>
+      <Handle
+        type="target"
+        position={Position.Top}
+        id={`node-target-${Position.Top}`}
+        style={{
+          opacity: 0,
+          // Posicionamos el handle en el centro
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+        }}
+      />
     )}
     {allowedConnections.includes("source") && (
-      <>
-        {Object.values(Position).map(position => (
-          <NodeHandle key={position} type="source" position={position} />
-        ))}
-      </>
+      <Handle
+        type="source"
+        position={Position.Top}
+        id={`node-source-${Position.Top}`}
+        style={{
+          opacity: 0,
+          // Posicionamos el handle en el centro
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+        }}
+      />
     )}
   </>
 );

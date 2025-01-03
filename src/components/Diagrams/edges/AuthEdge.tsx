@@ -4,7 +4,7 @@ import { FaKey } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { RootState } from "@store";
 import { AuthenticatorModal } from "../authComponents/AuthenticatorModal";
-import { CustomEdge, getEdgeParams } from "./CustomEdge";
+import CustomEdge, { getEdgeParams } from "./CustomEdge";
 
 interface AuthEdgeData {
   functionId: number;
@@ -53,14 +53,14 @@ export function AuthEdge({
     [id, setEdges]
   );
 
-  const { labelX, labelY } = getEdgeParams({
+  const { labelX, labelY } = getEdgeParams(
     sourceX,
     sourceY,
     targetX,
     targetY,
     sourcePosition,
-    targetPosition,
-  });
+    targetPosition
+  );
 
   return (
     <>
@@ -72,7 +72,10 @@ export function AuthEdge({
         targetY={targetY}
         sourcePosition={sourcePosition}
         targetPosition={targetPosition}
-        style={style}
+        style={{
+          ...style,
+          strokeDasharray: "none",
+        }}
         {...props}
       />
       <EdgeLabelRenderer>

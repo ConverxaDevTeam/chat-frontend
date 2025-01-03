@@ -39,7 +39,7 @@ import { useEdges, useZoomToFit } from "./workspace/hooks/Diagrams";
 import { AuthEdge } from "./Diagrams/edges/AuthEdge";
 import { FunctionEditModal } from "./Diagrams/funcionComponents/FunctionEditModal";
 import { useFunctionSuccess } from "./Diagrams/hooks/useFunctionActions";
-import { CustomEdge } from "./Diagrams/edges/CustomEdge";
+import CustomEdge from "./Diagrams/edges/CustomEdge";
 
 // Tipos y interfaces
 interface ContextMenuState {
@@ -92,36 +92,6 @@ const nodePositioning = {
     return {
       x: centerPos.x + radius * Math.cos(angle),
       y: centerPos.y + radius * Math.sin(angle),
-    };
-  },
-
-  getHandlePositions: (
-    sourcePos: Position2D,
-    targetPos: Position2D
-  ): { sourceHandle: string; targetHandle: string } => {
-    const dx = targetPos.x - sourcePos.x;
-    const dy = targetPos.y - sourcePos.y;
-    const angle = Math.atan2(dy, dx) * (180 / Math.PI);
-
-    if (angle >= -45 && angle < 45) {
-      return {
-        sourceHandle: `node-source-${Position.Right}`,
-        targetHandle: `node-target-${Position.Left}`,
-      };
-    } else if (angle >= 45 && angle < 135) {
-      return {
-        sourceHandle: `node-source-${Position.Bottom}`,
-        targetHandle: `node-target-${Position.Top}`,
-      };
-    } else if (angle >= -135 && angle < -45) {
-      return {
-        sourceHandle: `node-source-${Position.Top}`,
-        targetHandle: `node-target-${Position.Bottom}`,
-      };
-    }
-    return {
-      sourceHandle: `node-source-${Position.Left}`,
-      targetHandle: `node-target-${Position.Right}`,
     };
   },
 };
@@ -201,36 +171,33 @@ const edgeFactory = {
     target,
     sourceHandle,
     targetHandle,
+    type: "default",
   }),
 
   createAgentFunctionEdge: (
-    agentPos: Position2D,
     functionNode: Node<FunctionData<HttpRequestFunction>>,
     authenticatorId?: number
   ): Edge => {
-    const { sourceHandle, targetHandle } = nodePositioning.getHandlePositions(
-      agentPos,
-      functionNode.position
-    );
-
     return {
       id: `e${functionNode.id}`,
       source: "agent",
       target: functionNode.id,
-      sourceHandle,
-      targetHandle,
-      type: "auth",
-      data: {
-        functionId: functionNode.data.functionId,
-        authenticatorId: authenticatorId,
-      },
+      sourceHandle: `node-source-${Position.Top}`,
+      targetHandle: `node-target-${Position.Top}`,
+      type: authenticatorId ? "auth" : "default",
+      data: authenticatorId
+        ? {
+            functionId: functionNode.data.functionId,
+            authenticatorId: authenticatorId,
+          }
+        : undefined,
     };
   },
 };
 
 const edgeTypes = {
   auth: AuthEdge,
-  custom: CustomEdge,
+  default: CustomEdge,
 };
 
 const createInitialNodes = (
@@ -246,8 +213,8 @@ const createInitialNodes = (
       "e1-2",
       "integrations",
       "agent",
-      `node-source-${Position.Right}`,
-      `node-target-${Position.Left}`
+      `node-source-${Position.Top}`,
+      `node-target-${Position.Top}`
     ),
   ];
 
@@ -277,7 +244,6 @@ const createInitialNodes = (
     initialEdges.push(
       ...functionNodes.map(node =>
         edgeFactory.createAgentFunctionEdge(
-          agentNode.position,
           node,
           node.data?.functionId
             ? authenticatorsIdsDict[node.data.functionId]
@@ -345,7 +311,7 @@ const DiagramFlow = ({
       }}
       edgeTypes={edgeTypes}
       defaultEdgeOptions={{
-        type: "custom",
+        type: "default",
       }}
       fitView
       style={{

@@ -1,18 +1,46 @@
-import { EdgeProps, Position } from "@xyflow/react";
-
-interface EdgePositionProps {
-  sourceX: number;
-  sourceY: number;
-  targetX: number;
-  targetY: number;
-  sourcePosition: Position;
-  targetPosition: Position;
-}
+import { EdgeProps, Position, Node } from "@xyflow/react";
 
 interface CurveParams {
   offset?: number; // Controla qué tanto se desvía la curva (default: 0.2)
   sourceSplit?: number; // Controla la posición del primer punto de control (default: 0.25)
   targetSplit?: number; // Controla la posición del segundo punto de control (default: 0.75)
+}
+
+interface Point {
+  x: number;
+  y: number;
+  id: string;
+  node?: Node;
+}
+
+function getNodeIntersection(source: Point, target: Point): Point {
+  // Obtenemos las dimensiones del nodo
+  const nodeWidth = source.node?.width || 0;
+  const nodeHeight = source.node?.height || 0;
+
+  // Calculamos el centro del nodo
+  const centerX = source.x;
+  const centerY = source.y;
+
+  // Vector desde el centro del nodo al target
+  const dx = target.x - centerX;
+  const dy = target.y - centerY;
+  const angle = Math.atan2(dy, dx);
+
+  // Calculamos la intersección usando el centro como punto de referencia
+  const intersectX = centerX + (nodeWidth / 2) * Math.cos(angle);
+  const intersectY = centerY + (nodeHeight / 2) * Math.sin(angle);
+
+  return {
+    x: intersectX,
+    y: intersectY,
+    id: source.id,
+  };
+}
+
+function getEdgePosition(): Position {
+  // Siempre retornamos el centro
+  return Position.Top;
 }
 
 function getControlPoints(
@@ -70,71 +98,33 @@ function getControlPoints(
     control1Y,
     control2X,
     control2Y,
-    labelX: midX + normalX * length * sourceOffset * 0.5, // Promedio de los offsets
+    labelX: midX + normalX * length * sourceOffset * 0.5,
     labelY: midY + normalY * length * sourceOffset * 0.5,
   };
 }
 
-export function getEdgeParams({
-  sourceX,
-  sourceY,
-  targetX,
-  targetY,
-  sourcePosition,
-  targetPosition,
-  curveParams,
-}: EdgePositionProps & { curveParams?: CurveParams }) {
-  // Ajustamos los puntos de inicio/fin según la posición
-  let startX = sourceX;
-  let startY = sourceY;
-  let endX = targetX;
-  let endY = targetY;
-
-  // Ajustamos según la posición del source
-  switch (sourcePosition) {
-    case Position.Left:
-      startX -= 1;
-      break;
-    case Position.Right:
-      startX += 1;
-      break;
-    case Position.Top:
-      startY -= 1;
-      break;
-    case Position.Bottom:
-      startY += 1;
-      break;
-  }
-
-  // Ajustamos según la posición del target
-  switch (targetPosition) {
-    case Position.Left:
-      endX -= 1;
-      break;
-    case Position.Right:
-      endX += 1;
-      break;
-    case Position.Top:
-      endY -= 1;
-      break;
-    case Position.Bottom:
-      endY += 1;
-      break;
-  }
-
+export function getEdgeParams(
+  sourceX: number,
+  sourceY: number,
+  targetX: number,
+  targetY: number,
+  sourcePosition: Position,
+  targetPosition: Position,
+  curveParams?: CurveParams
+) {
   const { control1X, control1Y, control2X, control2Y, labelX, labelY } =
     getControlPoints(
-      startX,
-      startY,
-      endX,
-      endY,
+      sourceX,
+      sourceY,
+      targetX,
+      targetY,
       sourcePosition,
       targetPosition,
       curveParams
     );
 
   // Creamos el path SVG usando una curva cúbica de Bezier
-  const path = `M ${startX} ${startY} C ${control1X} ${control1Y}, ${control2X} ${control2Y}, ${endX} ${endY}`;
+  const path = `M ${sourceX} ${sourceY} C ${control1X} ${control1Y}, ${control2X} ${control2Y}, ${targetX} ${targetY}`;
 
   return {
     edgePath: path,
@@ -147,41 +137,68 @@ export function getEdgeParams({
   };
 }
 
-export function CustomEdge({
+type CustomEdgeProps = EdgeProps & {
+  curveParams?: CurveParams;
+  sourceNode?: Node;
+  targetNode?: Node;
+  className?: string;
+};
+
+export default function CustomEdge({
   sourceX,
   sourceY,
   targetX,
   targetY,
-  sourcePosition,
-  targetPosition,
-  style = {},
-  markerEnd,
+  sourceNode,
+  targetNode,
   curveParams,
-  ...props
-}: EdgeProps & { curveParams?: CurveParams }) {
-  const { edgePath } = getEdgeParams({
-    sourceX,
-    sourceY,
-    targetX,
-    targetY,
-    sourcePosition,
-    targetPosition,
-    curveParams,
-  });
+  style,
+  markerEnd,
+  source,
+  target,
+  className,
+}: CustomEdgeProps) {
+  const sourcePoint = {
+    x: sourceX,
+    y: sourceY,
+    id: source,
+    node: sourceNode,
+  };
+  const targetPoint = {
+    x: targetX,
+    y: targetY,
+    id: target,
+    node: targetNode,
+  };
 
-  return (
-    <path
-      d={edgePath}
-      fill="none"
-      className="react-flow__edge-path"
-      markerEnd={markerEnd}
-      style={{
-        strokeWidth: 1,
-        stroke: "#000000",
-        strokeDasharray: "2,2",
-        ...style,
-      }}
-      {...props}
-    />
+  const sourceIntersect = getNodeIntersection(sourcePoint, targetPoint);
+  const targetIntersect = getNodeIntersection(targetPoint, sourcePoint);
+
+  const sourcePos = getEdgePosition();
+  const targetPos = getEdgePosition();
+
+  const { edgePath } = getEdgeParams(
+    sourceIntersect.x,
+    sourceIntersect.y,
+    targetIntersect.x,
+    targetIntersect.y,
+    sourcePos,
+    targetPos,
+    curveParams
   );
+
+  // Solo pasamos las props seguras del DOM
+  const pathProps = {
+    d: edgePath,
+    fill: "none",
+    className: `react-flow__edge-path ${className || ""}`,
+    markerEnd,
+    style: {
+      strokeWidth: 1.5,
+      stroke: "#b1b1b7",
+      ...style,
+    },
+  };
+
+  return <path {...pathProps} />;
 }
