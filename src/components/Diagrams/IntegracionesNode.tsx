@@ -116,7 +116,7 @@ const IntegracionesNode = ({
           description: "Conecta la plataforma con otras herramientas.",
         }}
         allowedConnections={["source"]}
-        icon={<HiLink size={24} className="w-8 h-8 text-gray-800" />}
+        icon={<img src="/mvp/cable.svg" alt="Integraciones" />}
         {...rest}
       >
         <div className="bg-transparent rounded-md text-black flex flex-col gap-[10px]">
