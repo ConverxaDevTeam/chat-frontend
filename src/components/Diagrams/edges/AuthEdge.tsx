@@ -74,7 +74,6 @@ export function AuthEdge({
         targetPosition={targetPosition}
         style={{
           ...style,
-          strokeDasharray: "none",
         }}
         {...props}
       />

@@ -98,8 +98,8 @@ function getControlPoints(
     control1Y,
     control2X,
     control2Y,
-    labelX: midX + normalX * length * sourceOffset * 0.5,
-    labelY: midY + normalY * length * sourceOffset * 0.5,
+    labelX: midX,
+    labelY: midY,
   };
 }
 
@@ -195,7 +195,8 @@ export default function CustomEdge({
     markerEnd,
     style: {
       strokeWidth: 1.5,
-      stroke: "#b1b1b7",
+      stroke: "#000000",
+      strokeDasharray: "2.5 2",
       ...style,
     },
   };

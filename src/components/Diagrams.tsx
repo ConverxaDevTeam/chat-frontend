@@ -185,12 +185,10 @@ const edgeFactory = {
       sourceHandle: `node-source-${Position.Top}`,
       targetHandle: `node-target-${Position.Top}`,
       type: "auth",
-      data: authenticatorId
-        ? {
-            functionId: functionNode.data.functionId,
-            authenticatorId: authenticatorId,
-          }
-        : undefined,
+      data: {
+        functionId: functionNode.data.functionId,
+        authenticatorId,
+      },
     };
   },
 };
