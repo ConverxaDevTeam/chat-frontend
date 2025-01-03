@@ -1,7 +1,5 @@
 import {
   ReactFlow,
-  MiniMap,
-  Controls,
   useNodesState,
   useEdgesState,
   Position,
@@ -40,6 +38,7 @@ import { AuthEdge } from "./Diagrams/edges/AuthEdge";
 import { FunctionEditModal } from "./Diagrams/funcionComponents/FunctionEditModal";
 import { useFunctionSuccess } from "./Diagrams/hooks/useFunctionActions";
 import CustomEdge from "./Diagrams/edges/CustomEdge";
+import { CustomControls } from "./Diagrams/CustomControls";
 
 // Tipos y interfaces
 interface ContextMenuState {
@@ -319,10 +318,8 @@ const DiagramFlow = ({
         type: "default",
       }}
       fitView
-    >
-      <Controls />
-      <MiniMap />
-    </ReactFlow>
+    />
+    <CustomControls />
   </div>
 );
 
