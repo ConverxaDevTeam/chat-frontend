@@ -189,7 +189,7 @@ const FuncionNode = memo((props: FunctionNodeProps) => {
       <DefaultNode
         {...props}
         allowedConnections={["source", "target"]}
-        icon={<MdCode size={20} className="text-gray-700" />}
+        icon={<img src="/mvp/square-code.svg" className="w-8 h-8" />}
       >
         <NodeContent
           currentData={currentData}

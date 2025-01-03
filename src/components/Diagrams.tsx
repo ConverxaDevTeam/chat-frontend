@@ -294,7 +294,7 @@ const DiagramFlow = ({
     <div
       className="absolute inset-0"
       style={{
-        backgroundSize: "30px 30px",
+        backgroundSize: "25px 25px",
         backgroundImage:
           "linear-gradient(to right, #f0f0f0 2px, transparent 2px), linear-gradient(to bottom, #f0f0f0 2px, transparent 2px)",
       }}
