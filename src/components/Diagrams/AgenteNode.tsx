@@ -7,10 +7,12 @@ import {
 import DefaultNode from "./DefaultNode";
 import { ContextMenuOption } from "./DiagramContextMenu";
 import { ActionButtons, ActionType } from "./agenteComponents/AgentInfo";
+import { useHumanCommunication } from "./hooks/useHumanCommunication";
 
 const AgenteNode = (props: CustomTypeNodeProps<AgentData>) => {
-  const { data } = props;
+  const { data, selected } = props;
   const [eventOpen, setEventOpen] = useState<string | null>(null);
+  const { humanCommunication, handleHumanCommunicationToggle } = useHumanCommunication(data.agentId);
 
   const contextMenuOptions: ContextMenuOption[] = [
     {
@@ -26,8 +28,13 @@ const AgenteNode = (props: CustomTypeNodeProps<AgentData>) => {
       onClick: () => setEventOpen(ActionType.ADD_DOCUMENT),
     },
     {
-      child: <img src="/mvp/headset.svg" alt="Enviar a agente humano" />,
-      onClick: () => setEventOpen(ActionType.SEND_TO_HUMAN),
+      child: (
+        <img
+          src={`/mvp/${humanCommunication ? "headset" : "headphone-off"}.svg`}
+          alt="Enviar a agente humano"
+        />
+      ),
+      onClick: handleHumanCommunicationToggle,
     },
   ];
 
@@ -50,6 +57,7 @@ const AgenteNode = (props: CustomTypeNodeProps<AgentData>) => {
         onClose={() => setEventOpen(null)}
         agentId={data.agentId}
         nodeId={props.id}
+        selected={selected}
       />
     </>
   );
