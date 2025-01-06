@@ -1,8 +1,5 @@
 import { useReactFlow } from "@xyflow/react";
 import { NeumorphicContainer } from "../NeumorphicContainer";
-import { AiOutlinePlus, AiOutlineMinus } from "react-icons/ai";
-import { BiReset } from "react-icons/bi";
-import { MdOutlineLock, MdOutlineLockOpen } from "react-icons/md";
 import { useState, MouseEvent, useCallback } from "react";
 
 export const CustomControls = () => {
@@ -48,39 +45,25 @@ export const CustomControls = () => {
     [reactFlowInstance]
   );
 
+  const buttonClass =
+    "w-8 h-8 flex items-center justify-center hover:text-[#001126] rounded-md transition-colors duration-200 cursor-pointer item stroke-current stroke-[1]";
+
+  const buttons = [
+    { onClick: handleZoomIn, icon: "mvp/circle-plus.svg" },
+    { onClick: handleZoomOut, icon: "mvp/circle-minus.svg" },
+    { onClick: handleFitView, icon: "mvp/scan.svg" },
+    { onClick: handleLock, icon: isLocked ? "mvp/lock.svg" : "mvp/unlock.svg" },
+  ];
+
   return (
-    <NeumorphicContainer className="absolute flex flex-col right-0 bottom-0">
-      <button
-        onClick={handleZoomIn}
-        className="w-8 h-8 flex items-center justify-center hover:text-gray-600 rounded-md transition-colors duration-200 cursor-pointer"
-      >
-        <AiOutlinePlus className="w-5 h-5" />
-      </button>
-
-      <button
-        onClick={handleZoomOut}
-        className="w-8 h-8 flex items-center justify-center hover:text-gray-600 rounded-md transition-colors duration-200 cursor-pointer"
-      >
-        <AiOutlineMinus className="w-5 h-5" />
-      </button>
-
-      <button
-        onClick={handleFitView}
-        className="w-8 h-8 flex items-center justify-center hover:text-gray-600 rounded-md transition-colors duration-200 cursor-pointer"
-      >
-        <BiReset className="w-5 h-5" />
-      </button>
-
-      <button
-        onClick={handleLock}
-        className="w-8 h-8 flex items-center justify-center hover:text-gray-600 rounded-md transition-colors duration-200 cursor-pointer"
-      >
-        {isLocked ? (
-          <MdOutlineLock className="w-5 h-5" />
-        ) : (
-          <MdOutlineLockOpen className="w-5 h-5" />
-        )}
-      </button>
+    <NeumorphicContainer className="absolute right-0 bottom-0">
+      <div className="flex flex-col w-[37.33px] h-[144px] top-[855px] left-[1007.78px] gap-[16px]">
+        {buttons.map(({ onClick, icon }, index) => (
+          <button key={index} onClick={onClick} className={buttonClass}>
+            <img src={icon} alt="icon" className="w-6 h-6" />
+          </button>
+        ))}
+      </div>
     </NeumorphicContainer>
   );
 };

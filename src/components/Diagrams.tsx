@@ -1,6 +1,5 @@
 import {
   ReactFlow,
-  Controls,
   useNodesState,
   useEdgesState,
   Position,
