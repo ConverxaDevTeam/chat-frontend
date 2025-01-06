@@ -22,8 +22,8 @@ const DiagramContextMenu: React.FC<DiagramContextMenuProps> = ({
 }) => {
   return createPortal(
     <div className="absolute" style={{ left: x, top: y }}>
-      <NeumorphicContainer width="200px" height="auto">
-        <div className="flex flex-col">
+      <NeumorphicContainer width="auto" height="auto">
+        <div className="flex flex-col m-[8px] gap-[8px]">
           {options.map((option, index) => (
             <button
               key={index}

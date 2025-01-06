@@ -74,6 +74,10 @@ interface NodeContentProps {
   isSelected: boolean;
   headerActions?: React.ReactNode;
   contextMenuOptions?: ContextMenuOption[];
+  menuPosition?: {
+    x: number;
+    y: number;
+  };
 }
 
 const NodeContent: React.FC<NodeContentProps> = ({
@@ -84,22 +88,8 @@ const NodeContent: React.FC<NodeContentProps> = ({
   icon,
   headerActions,
   contextMenuOptions,
+  menuPosition,
 }) => {
-  const [menuPosition, setMenuPosition] = useState<{
-    x: number;
-    y: number;
-  } | null>(null);
-  const nodeRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (nodeRef.current) {
-      const { left, top, width } = nodeRef.current.getBoundingClientRect();
-      const x = left + width; // Position to the right of the node
-      const y = top;
-      setMenuPosition({ x, y });
-    }
-  }, [isSelected]);
-
   const renderIcon = () => {
     return (
       <div className="flex justify-center items-center rounded-full w-16 h-16 bg-transparent text-black">
@@ -120,14 +110,14 @@ const NodeContent: React.FC<NodeContentProps> = ({
           options={contextMenuOptions}
           x={menuPosition?.x ?? 0}
           y={menuPosition?.y ?? 0}
-          onClose={() => setMenuPosition(null)}
+          onClose={() => {}}
         />
       </Fragment>
     );
   }
 
   return (
-    <div className="mt-4 text-center text-black max-w-[600px]" ref={nodeRef}>
+    <div className="mt-4 text-center text-black max-w-[600px]">
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
           {icon}
@@ -153,7 +143,23 @@ const DefaultNode: React.FC<CustomNodeProps> = ({
   contextMenuOptions,
 }) => {
   const ref = useRef<HTMLDivElement>(null);
+
+  const [menuPosition, setMenuPosition] = useState<
+    | {
+        x: number;
+        y: number;
+      }
+    | undefined
+  >();
+
   const { name, description, style } = data;
+
+  useEffect(() => {
+    if (ref.current) {
+      const { left, top, width } = ref.current.getBoundingClientRect();
+      setMenuPosition({ x: left + width + 25, y: top });
+    }
+  }, [selected]);
 
   const nodeContent = (
     <NodeContent
@@ -163,6 +169,7 @@ const DefaultNode: React.FC<CustomNodeProps> = ({
       isSelected={selected ?? false}
       headerActions={headerActions}
       contextMenuOptions={contextMenuOptions}
+      menuPosition={menuPosition}
     >
       {children}
     </NodeContent>

@@ -89,7 +89,11 @@ const IntegracionesNode = ({
 
   const contextMenuOptions: ContextMenuOption[] = [
     {
-      child: <span>Agregar Integración</span>,
+      child: <img src="/mvp/circle-plus.svg" alt="Nueva Integración" />,
+      onClick: () => setIsMenuVisible(true),
+    },
+    {
+      child: <img src="/mvp/globe.svg" alt="Webchat" />,
       onClick: () => setIsModalOpen(true),
     },
     // Add more options here if needed
