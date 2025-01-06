@@ -1,7 +1,8 @@
-import React, { Fragment, useRef } from "react";
+import React, { Fragment, useEffect, useRef, useState } from "react";
 import { Handle, Position, NodeProps } from "@xyflow/react";
 import { NodeData, NodeStyle } from "@interfaces/workflow";
 import { NeumorphicButton } from "../NeumorphicButton";
+import DiagramContextMenu, { ContextMenuOption } from "./DiagramContextMenu";
 
 interface CustomNodeProps extends NodeProps {
   data: NodeData;
@@ -10,6 +11,7 @@ interface CustomNodeProps extends NodeProps {
   children?: React.ReactNode;
   width?: number;
   headerActions?: React.ReactNode;
+  contextMenuOptions?: ContextMenuOption[];
 }
 
 interface NodeLabelProps {
@@ -71,6 +73,7 @@ interface NodeContentProps {
   icon?: React.ReactNode;
   isSelected: boolean;
   headerActions?: React.ReactNode;
+  contextMenuOptions?: ContextMenuOption[];
 }
 
 const NodeContent: React.FC<NodeContentProps> = ({
@@ -80,17 +83,51 @@ const NodeContent: React.FC<NodeContentProps> = ({
   description,
   icon,
   headerActions,
+  contextMenuOptions,
 }) => {
-  if (!isSelected) {
+  const [menuPosition, setMenuPosition] = useState<{
+    x: number;
+    y: number;
+  } | null>(null);
+  const nodeRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (nodeRef.current) {
+      const { left, top, width } = nodeRef.current.getBoundingClientRect();
+      const x = left + width; // Position to the right of the node
+      const y = top;
+      setMenuPosition({ x, y });
+    }
+  }, [isSelected]);
+
+  const renderIcon = () => {
     return (
       <div className="flex justify-center items-center rounded-full w-16 h-16 bg-transparent text-black">
         {icon}
       </div>
     );
+  };
+
+  if (!isSelected) {
+    return renderIcon();
+  }
+
+  if (contextMenuOptions) {
+    return (
+      <Fragment>
+        {renderIcon()}
+        <DiagramContextMenu
+          options={contextMenuOptions}
+          x={menuPosition?.x ?? 0}
+          y={menuPosition?.y ?? 0}
+          onClose={() => setMenuPosition(null)}
+        />
+      </Fragment>
+    );
   }
 
   return (
-    <div className="mt-4 text-center text-black max-w-[600px]">
+    <div className="mt-4 text-center text-black max-w-[600px]" ref={nodeRef}>
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
           {icon}
@@ -113,6 +150,7 @@ const DefaultNode: React.FC<CustomNodeProps> = ({
   icon,
   children,
   headerActions,
+  contextMenuOptions,
 }) => {
   const ref = useRef<HTMLDivElement>(null);
   const { name, description, style } = data;
@@ -124,6 +162,7 @@ const DefaultNode: React.FC<CustomNodeProps> = ({
       icon={icon}
       isSelected={selected ?? false}
       headerActions={headerActions}
+      contextMenuOptions={contextMenuOptions}
     >
       {children}
     </NodeContent>

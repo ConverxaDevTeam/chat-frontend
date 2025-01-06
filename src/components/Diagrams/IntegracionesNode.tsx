@@ -12,6 +12,7 @@ import { getDefaultDepartment } from "@services/department";
 import { getIntegrations } from "@services/integration";
 import ButtonIntegrationActive from "./ButtonIntegrationActive";
 import { MdOutlineWebAsset } from "react-icons/md";
+import { ContextMenuOption } from "./DiagramContextMenu";
 
 export enum IntegrationType {
   CHAT_WEB = "chat_web",
@@ -86,6 +87,14 @@ const IntegracionesNode = ({
     getDataIntegrations();
   }, []);
 
+  const contextMenuOptions: ContextMenuOption[] = [
+    {
+      child: <span>Agregar Integración</span>,
+      onClick: () => setIsModalOpen(true),
+    },
+    // Add more options here if needed
+  ];
+
   return (
     <>
       <Modal
@@ -117,6 +126,7 @@ const IntegracionesNode = ({
         }}
         allowedConnections={["source"]}
         icon={<img src="/mvp/cable.svg" alt="Integraciones" />}
+        contextMenuOptions={contextMenuOptions}
         {...rest}
       >
         <div className="bg-transparent rounded-md text-black flex flex-col gap-[10px]">
