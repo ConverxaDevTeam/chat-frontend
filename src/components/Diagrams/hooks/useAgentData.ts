@@ -2,7 +2,7 @@ import { Agent } from "@interfaces/agents";
 import { agentService } from "@services/agent";
 import { useState, useEffect, useCallback } from "react";
 
-interface AgentData {
+export interface AgentData {
   name: string;
   description: string;
 }
