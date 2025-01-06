@@ -12,20 +12,18 @@ interface NeumorphicContainerProps {
 
 export const NeumorphicContainer = ({
   children,
-  width = "3.5rem",
-  height = "10.375rem",
+  width = "56px",
+  height = "166px",
   className = "",
-  top,
-  left,
-  rotation = "0deg",
+  top = "844px",
+  left = "1000px",
 }: NeumorphicContainerProps) => {
   return (
     <div
       className={`
         bg-[#F1F5F9]
-        rounded-lg
-        shadow-[-0.125rem_-0.125rem_0.125rem_0px_#B8CCE0,-0.0625rem_-0.0625rem_0px_0px_#FFFFFF,-0.125rem_-0.125rem_0.125rem_0px_#B8CCE0_inset,-0.0625rem_-0.0625rem_0px_0px_#FFFFFF_inset]
-        absolute
+        rounded-[8px_8px_8px_8px]
+        shadow-[-2px_-2px_2px_0px_#B8CCE0,-1px_-1px_0px_0px_#FFFFFF,-2px_-2px_2px_0px_#B8CCE0_inset,-1px_-1px_0px_0px_#FFFFFF_inset]
         ${className}
       `}
       style={{
@@ -33,7 +31,6 @@ export const NeumorphicContainer = ({
         height,
         top,
         left,
-        transform: `rotate(${rotation})`,
       }}
     >
       {children}

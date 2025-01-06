@@ -31,7 +31,7 @@ export const NeumorphicButton = ({
   },
   internalProps = {
     radius: "[24px]",
-    backgroundColor: "[#F6F6F6]",
+    backgroundColor: "[#F1F5F9]",
   },
 }: NeumorphicButtonProps) => {
   const innerButton = (
