@@ -1,5 +1,6 @@
 import {
   ReactFlow,
+  Controls,
   useNodesState,
   useEdgesState,
   Position,
@@ -318,7 +319,7 @@ const DiagramFlow = ({
         type: "default",
       }}
       fitView
-    />
+    ></ReactFlow>
     <CustomControls />
   </div>
 );
@@ -380,7 +381,7 @@ const ZoomTransition = () => {
   useZoomToFit(nodesState, setCenter);
 
   return (
-    <div className="h-full">
+    <div className="relative h-full">
       <DiagramFlow
         nodes={nodesState}
         edges={edges}

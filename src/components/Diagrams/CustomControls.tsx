@@ -49,7 +49,7 @@ export const CustomControls = () => {
   );
 
   return (
-    <NeumorphicContainer className="right-4 bottom-4 flex flex-col gap-2 p-2 z-50">
+    <NeumorphicContainer className="absolute flex flex-col right-0 bottom-0">
       <button
         onClick={handleZoomIn}
         className="w-8 h-8 flex items-center justify-center hover:text-gray-600 rounded-md transition-colors duration-200 cursor-pointer"

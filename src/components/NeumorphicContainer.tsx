@@ -15,8 +15,6 @@ export const NeumorphicContainer = ({
   width = "56px",
   height = "166px",
   className = "",
-  top = "844px",
-  left = "1000px",
 }: NeumorphicContainerProps) => {
   return (
     <div
@@ -29,8 +27,6 @@ export const NeumorphicContainer = ({
       style={{
         width,
         height,
-        top,
-        left,
       }}
     >
       {children}
