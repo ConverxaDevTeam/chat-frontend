@@ -93,7 +93,11 @@ export function AuthEdge({
                 : "bg-white hover:bg-gray-50"
             }`}
           >
-            <img src="/mvp/lock.svg" alt="Autenticador" />
+            {data?.authenticatorId ? (
+              <img src="/mvp/lock.svg" alt="Autenticador" />
+            ) : (
+              <img src="/mvp/unlock.svg" alt="Autenticador" />
+            )}
           </button>
         </div>
       </EdgeLabelRenderer>
