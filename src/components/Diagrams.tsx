@@ -1,7 +1,5 @@
 import {
   ReactFlow,
-  MiniMap,
-  Controls,
   useNodesState,
   useEdgesState,
   Position,
@@ -31,6 +29,7 @@ import {
 import IntegracionesNode from "./Diagrams/IntegracionesNode";
 import AgenteNode from "./Diagrams/AgenteNode";
 import FuncionNode from "./Diagrams/FuncionNode";
+import IntegrationItemNode from "./Diagrams/IntegrationItemNode";
 import ContextMenu from "./ContextMenu";
 import { useNodeSelection } from "./Diagrams/hooks/useNodeSelection";
 import { useContextMenu } from "./Diagrams/hooks/useContextMenu";
@@ -39,6 +38,9 @@ import { useEdges, useZoomToFit } from "./workspace/hooks/Diagrams";
 import { AuthEdge } from "./Diagrams/edges/AuthEdge";
 import { FunctionEditModal } from "./Diagrams/funcionComponents/FunctionEditModal";
 import { useFunctionSuccess } from "./Diagrams/hooks/useFunctionActions";
+import CustomEdge from "./Diagrams/edges/CustomEdge";
+import { CustomControls } from "./Diagrams/CustomControls";
+import { IntegrationType } from "@interfaces/integrations";
 
 // Tipos y interfaces
 interface ContextMenuState {
@@ -65,7 +67,12 @@ interface DiagramFlowProps {
 }
 
 // Tipos para la creación de nodos
-type NodeType = "default" | "agente" | "integraciones" | "funcion";
+type NodeType =
+  | "default"
+  | "agente"
+  | "integraciones"
+  | "funcion"
+  | "integration-item";
 
 interface Position2D {
   x: number;
@@ -94,33 +101,29 @@ const nodePositioning = {
     };
   },
 
-  getHandlePositions: (
-    sourcePos: Position2D,
-    targetPos: Position2D
-  ): { sourceHandle: string; targetHandle: string } => {
-    const dx = targetPos.x - sourcePos.x;
-    const dy = targetPos.y - sourcePos.y;
-    const angle = Math.atan2(dy, dx) * (180 / Math.PI);
+  calculateTangentialPosition: (
+    index: number,
+    total: number,
+    integrationPos: Position2D,
+    agentPos: Position2D
+  ): Position2D => {
+    // Calculamos el ángulo entre el nodo de integración y el agente
+    const dx = agentPos.x - integrationPos.x;
+    const dy = agentPos.y - integrationPos.y;
+    const baseAngle = Math.atan2(dy, dx);
 
-    if (angle >= -45 && angle < 45) {
-      return {
-        sourceHandle: `node-source-${Position.Right}`,
-        targetHandle: `node-target-${Position.Left}`,
-      };
-    } else if (angle >= 45 && angle < 135) {
-      return {
-        sourceHandle: `node-source-${Position.Bottom}`,
-        targetHandle: `node-target-${Position.Top}`,
-      };
-    } else if (angle >= -135 && angle < -45) {
-      return {
-        sourceHandle: `node-source-${Position.Top}`,
-        targetHandle: `node-target-${Position.Bottom}`,
-      };
-    }
+    // Creamos un arco de 120 grados (-60 a +60 desde la perpendicular)
+    const arcRange = (120 * Math.PI) / 180;
+    const startAngle = baseAngle - Math.PI / 2 - arcRange / 2;
+    const angleStep = arcRange / (total - 1 || 1);
+
+    // Radio para los nodos de integración
+    const radius = 150;
+    const angle = startAngle + index * angleStep;
+
     return {
-      sourceHandle: `node-source-${Position.Left}`,
-      targetHandle: `node-target-${Position.Right}`,
+      x: integrationPos.x + radius * Math.cos(angle),
+      y: integrationPos.y + radius * Math.sin(angle),
     };
   },
 };
@@ -184,6 +187,21 @@ const nodeFactory = {
       },
       "funcion"
     ),
+  createIntegrationItemNode: (
+    id: number,
+    position: Position2D,
+    type: IntegrationType
+  ): Node<NodeData> =>
+    nodeFactory.createBaseNode(
+      id.toString(),
+      position,
+      {
+        name: type.toString(),
+        description: "Integration",
+        type,
+      } as NodeData,
+      "integration-item"
+    ),
 };
 
 // Factory de edges
@@ -200,28 +218,23 @@ const edgeFactory = {
     target,
     sourceHandle,
     targetHandle,
+    type: "default",
   }),
 
   createAgentFunctionEdge: (
-    agentPos: Position2D,
     functionNode: Node<FunctionData<HttpRequestFunction>>,
     authenticatorId?: number
   ): Edge => {
-    const { sourceHandle, targetHandle } = nodePositioning.getHandlePositions(
-      agentPos,
-      functionNode.position
-    );
-
     return {
       id: `e${functionNode.id}`,
       source: "agent",
       target: functionNode.id,
-      sourceHandle,
-      targetHandle,
+      sourceHandle: `node-source-${Position.Top}`,
+      targetHandle: `node-target-${Position.Top}`,
       type: "auth",
       data: {
         functionId: functionNode.data.functionId,
-        authenticatorId: authenticatorId,
+        authenticatorId,
       },
     };
   },
@@ -229,13 +242,21 @@ const edgeFactory = {
 
 const edgeTypes = {
   auth: AuthEdge,
+  default: CustomEdge,
 };
 
 const createInitialNodes = (
   agentId?: number
 ): { nodes: Node[]; initialEdges: Edge[] } => {
-  const agentNode = nodeFactory.createAgentNode(agentId || 0, { x: 500, y: 0 });
-  const integrationsNode = nodeFactory.createIntegrationsNode({ x: 0, y: 0 });
+  // Centramos los nodos iniciales
+  const agentNode = nodeFactory.createAgentNode(agentId || 0, {
+    x: 400,
+    y: 100,
+  });
+  const integrationsNode = nodeFactory.createIntegrationsNode({
+    x: 100,
+    y: 100,
+  });
   const nodes: Node[] = [integrationsNode, agentNode];
 
   const agentFunctions = useAppSelector(state => state.chat.agentFunctions);
@@ -244,8 +265,8 @@ const createInitialNodes = (
       "e1-2",
       "integrations",
       "agent",
-      `node-source-${Position.Right}`,
-      `node-target-${Position.Left}`
+      `node-source-${Position.Top}`,
+      `node-target-${Position.Top}`
     ),
   ];
 
@@ -275,11 +296,46 @@ const createInitialNodes = (
     initialEdges.push(
       ...functionNodes.map(node =>
         edgeFactory.createAgentFunctionEdge(
-          agentNode.position,
           node,
           node.data?.functionId
             ? authenticatorsIdsDict[node.data.functionId]
             : undefined
+        )
+      )
+    );
+  }
+
+  const integrationsList = useAppSelector(state => state.chat.integrations);
+  const defaultIntegrations =
+    integrationsList.length === 0
+      ? [{ id: -1, type: IntegrationType.CHAT_WEB }]
+      : [...integrationsList];
+
+  if (defaultIntegrations.length > 0) {
+    const integrationItemNodes: Node<NodeData>[] = defaultIntegrations.map(
+      (integration, index) =>
+        nodeFactory.createIntegrationItemNode(
+          integration.id,
+          nodePositioning.calculateTangentialPosition(
+            index,
+            defaultIntegrations.length,
+            { x: 100, y: 100 }, // posición del nodo de integración
+            agentNode.position
+          ),
+          integration.type
+        )
+    );
+    nodes.push(...integrationItemNodes);
+
+    // Crear edges desde cada nodo de integración al nodo principal de integración
+    initialEdges.push(
+      ...integrationItemNodes.map((node: Node<NodeData>) =>
+        edgeFactory.createEdge(
+          `eI${node.id}`,
+          node.id.toString(),
+          "integrations",
+          `node-source-${Position.Top}`,
+          `node-target-${Position.Top}`
         )
       )
     );
@@ -317,26 +373,39 @@ const DiagramFlow = ({
   onNodeDragStart,
   onNodeDragStop,
 }: DiagramFlowProps) => (
-  <ReactFlow
-    nodes={nodes}
-    edges={edges}
-    onNodesChange={onNodesChange}
-    onEdgesChange={onEdgesChange}
-    onConnect={onConnect}
-    onConnectEnd={onConnectEnd}
-    onNodeDragStart={onNodeDragStart}
-    onNodeDragStop={onNodeDragStop}
-    nodeTypes={{
-      integraciones: IntegracionesNode,
-      agente: AgenteNode,
-      funcion: FuncionNode,
-    }}
-    edgeTypes={edgeTypes}
-    fitView
-  >
-    <Controls />
-    <MiniMap />
-  </ReactFlow>
+  <div className="relative w-full h-full">
+    <div
+      className="absolute inset-0"
+      style={{
+        backgroundSize: "25px 25px",
+        backgroundImage:
+          "linear-gradient(to right, #f0f0f0 2px, transparent 2px), linear-gradient(to bottom, #f0f0f0 2px, transparent 2px)",
+      }}
+    />
+    <ReactFlow
+      className="relative bg-diagram-gradient"
+      nodes={nodes}
+      edges={edges}
+      onNodesChange={onNodesChange}
+      onEdgesChange={onEdgesChange}
+      onConnect={onConnect}
+      onConnectEnd={onConnectEnd}
+      onNodeDragStart={onNodeDragStart}
+      onNodeDragStop={onNodeDragStop}
+      nodeTypes={{
+        integraciones: IntegracionesNode,
+        agente: AgenteNode,
+        funcion: FuncionNode,
+        "integration-item": IntegrationItemNode,
+      }}
+      edgeTypes={edgeTypes}
+      defaultEdgeOptions={{
+        type: "default",
+      }}
+      fitView
+    ></ReactFlow>
+    <CustomControls />
+  </div>
 );
 
 const ZoomTransition = () => {
@@ -396,7 +465,7 @@ const ZoomTransition = () => {
   useZoomToFit(nodesState, setCenter);
 
   return (
-    <div className="h-full">
+    <div className="relative h-full">
       <DiagramFlow
         nodes={nodesState}
         edges={edges}

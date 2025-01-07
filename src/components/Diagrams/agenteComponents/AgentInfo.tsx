@@ -1,178 +1,75 @@
-import { MdEdit, MdAddCircleOutline } from "react-icons/md";
-import { FaDatabase, FaHeadset } from "react-icons/fa";
 import { useUnifiedNodeCreation } from "../hooks/useUnifiedNodeCreation";
-import { useState, useEffect } from "react";
 import { FunctionEditModal } from "../funcionComponents/FunctionEditModal";
 import { useFunctionSuccess } from "../hooks/useFunctionActions";
 import KnowledgeBaseModal from "./KnowledgeBaseModal";
-import { agentService } from "@services/agent";
-import { useSweetAlert } from "@hooks/useSweetAlert";
+import { AgentEditModal } from "./AgentEditModal";
+import { useAgentData } from "../hooks/useAgentData";
 
-interface AgentData {
-  name: string;
-  description: string;
+export enum ActionType {
+  EDIT_AGENT = "EDIT_AGENT",
+  ADD_FUNCTION = "ADD_FUNCTION",
+  ADD_DOCUMENT = "ADD_DOCUMENT",
+  SEND_TO_HUMAN = "SEND_TO_HUMAN",
 }
-
-interface InfoFieldProps {
-  label: string;
-  value: string | undefined;
-  defaultValue: string;
-}
-
-const InfoField = ({ label, value, defaultValue }: InfoFieldProps) => (
-  <div>
-    <h3 className="text-sm font-medium text-gray-700">{label}</h3>
-    <p className="mt-1 text-sm text-gray-900">{value || defaultValue}</p>
-  </div>
-);
 
 interface ActionButtonsProps {
-  onEdit: () => void;
+  eventShown: string | null;
+  onClose: () => void;
+  agentId: number;
   nodeId: string;
-  agentId?: number;
+  selected?: boolean;
 }
 
-const ActionButtons = ({ onEdit, nodeId, agentId }: ActionButtonsProps) => {
+export const ActionButtons = ({
+  eventShown,
+  onClose,
+  agentId,
+  nodeId,
+  selected,
+}: ActionButtonsProps) => {
+  const { agentData, refreshAgentData } = useAgentData(
+    agentId,
+    selected ?? false
+  );
+
   const { createWithSpacing } = useUnifiedNodeCreation();
-  const [showFunctionModal, setShowFunctionModal] = useState(false);
-  const [showKnowledgeBaseModal, setShowKnowledgeBaseModal] = useState(false);
-  const [humanCommunication, setHumanCommunication] = useState(true);
-  const { handleOperation } = useSweetAlert();
 
-  useEffect(() => {
-    if (agentId) {
-      agentService.getById(agentId).then(agent => {
-        setHumanCommunication(agent.canEscalateToHuman);
-      });
-    }
-  }, [agentId]);
-
-  const handleHumanCommunicationToggle = async () => {
-    if (!agentId) return;
-
-    const result = await handleOperation(
-      async () => {
-        const updatedAgent = await agentService.updateEscalateToHuman(
-          agentId,
-          !humanCommunication
-        );
-        setHumanCommunication(updatedAgent.canEscalateToHuman);
-        return updatedAgent;
-      },
-      {
-        title: "Actualizando comunicación humana",
-        successTitle: humanCommunication
-          ? "Comunicación humana desactivada"
-          : "Comunicación humana activada",
-        successText: humanCommunication
-          ? "El agente ya no podrá escalar conversaciones a un humano"
-          : "El agente ahora podrá escalar conversaciones a un humano",
-        errorTitle: "Error al actualizar la comunicación humana",
-      }
-    );
-
-    if (!result.success) {
-      console.error("Error updating human communication:", result.error);
-    }
+  const handleEditSuccess = () => {
+    onClose();
+    refreshAgentData();
   };
 
   const handleFunctionSuccess = useFunctionSuccess(
     createWithSpacing,
     nodeId,
     agentId || -1,
-    () => setShowFunctionModal(false)
+    () => onClose()
   );
 
   return (
     <div className="flex flex-col gap-2 w-full">
-      <button
-        onClick={onEdit}
-        className="flex items-center justify-center w-full px-4 py-2 text-sm text-blue-600 bg-blue-100 rounded-lg hover:bg-blue-200 transition-colors duration-200"
-      >
-        <MdEdit className="mr-2" /> Editar
-      </button>
-      <button
-        onClick={() => setShowFunctionModal(true)}
-        className="flex items-center justify-center w-full px-4 py-2 text-sm text-blue-600 bg-blue-100 rounded-lg hover:bg-blue-200 transition-colors duration-200"
-      >
-        <MdAddCircleOutline className="mr-2" /> Agregar Funciones
-      </button>
-      <button
-        onClick={() => setShowKnowledgeBaseModal(true)}
-        className="flex items-center justify-center w-full px-4 py-2 text-sm text-blue-600 bg-blue-100 rounded-lg hover:bg-blue-200 transition-colors duration-200"
-      >
-        <FaDatabase className="mr-2" /> Base de Conocimientos
-      </button>
-      <button
-        onClick={handleHumanCommunicationToggle}
-        className={`flex items-center justify-center w-full px-4 py-2 text-sm ${
-          humanCommunication
-            ? "text-green-600 bg-green-100 hover:bg-green-200"
-            : "text-gray-600 bg-gray-100 hover:bg-gray-200"
-        } rounded-lg transition-colors duration-200`}
-      >
-        <FaHeadset className="mr-2" /> Comunicación Humana{" "}
-        {humanCommunication ? "(Activado)" : "(Desactivado)"}
-      </button>
       {agentId && (
         <>
           <FunctionEditModal
-            isShown={showFunctionModal}
-            onClose={() => setShowFunctionModal(false)}
+            isShown={eventShown === ActionType.ADD_FUNCTION}
+            onClose={onClose}
             onSuccess={handleFunctionSuccess}
             agentId={agentId}
           />
           <KnowledgeBaseModal
-            isShown={showKnowledgeBaseModal}
-            onClose={() => setShowKnowledgeBaseModal(false)}
+            isShown={eventShown === ActionType.ADD_DOCUMENT}
+            onClose={onClose}
             agentId={agentId}
+          />
+          <AgentEditModal
+            isOpen={eventShown === ActionType.EDIT_AGENT}
+            onClose={onClose}
+            agentId={agentId}
+            initialData={agentData || undefined}
+            onSuccess={handleEditSuccess}
           />
         </>
       )}
-    </div>
-  );
-};
-
-interface LoadingStateProps {
-  message: string;
-}
-
-const LoadingState = ({ message }: LoadingStateProps) => (
-  <p className="text-gray-600">{message}</p>
-);
-
-interface AgentInfoProps {
-  isLoading: boolean;
-  agentData: AgentData | null;
-  onEdit: () => void;
-  nodeId: string;
-  agentId?: number;
-}
-
-export const AgentInfo = ({
-  isLoading,
-  agentData,
-  onEdit,
-  nodeId,
-  agentId,
-}: AgentInfoProps) => {
-  if (isLoading) {
-    return <LoadingState message="Cargando información del agente..." />;
-  }
-
-  return (
-    <div className="space-y-4">
-      <InfoField
-        label="Nombre"
-        value={agentData?.name}
-        defaultValue="Sin nombre"
-      />
-      <InfoField
-        label="Descripción"
-        value={agentData?.description}
-        defaultValue="Sin descripción"
-      />
-      <ActionButtons onEdit={onEdit} nodeId={nodeId} agentId={agentId} />
     </div>
   );
 };

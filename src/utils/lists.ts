@@ -1,28 +1,50 @@
-import { FaUsers } from "react-icons/fa";
-import { AiFillHome } from "react-icons/ai";
-import { FaLayerGroup } from "react-icons/fa";
-import { BsPersonWorkspace } from "react-icons/bs";
-import { BsWechat } from "react-icons/bs";
-import { IConversation, MessageFormatType, MessageType } from "./interfaces";
+import {
+  IConversation,
+  MessageFormatType,
+  MessageType,
+  OrganizationRoleType,
+} from "./interfaces";
 
 export const sidebarLinks = [
   {
     to: "/dashboard",
     text: "Dashboard",
     active: ["/", "/dashboard"],
-    Icon: AiFillHome,
+    img: "house.svg",
+    role: [
+      OrganizationRoleType.OWNER,
+      OrganizationRoleType.ADMIN,
+      OrganizationRoleType.USER,
+    ],
   },
   {
     to: "/workspace",
     text: "Espacios de trabajo",
     active: ["/workspace"],
-    Icon: BsPersonWorkspace,
+    img: "workflow.svg",
+    role: [
+      OrganizationRoleType.OWNER,
+      OrganizationRoleType.ADMIN,
+      OrganizationRoleType.USER,
+    ],
   },
   {
     to: "/conversations",
     text: "Conversaciones",
     active: ["/conversations"],
-    Icon: BsWechat,
+    img: "chat-dots.svg",
+    role: [
+      OrganizationRoleType.OWNER,
+      OrganizationRoleType.ADMIN,
+      OrganizationRoleType.USER,
+    ],
+  },
+  {
+    to: "/users",
+    text: "Usuarios",
+    active: ["/users"],
+    img: "share-android.svg",
+    role: [OrganizationRoleType.OWNER],
   },
 ];
 
@@ -31,19 +53,19 @@ export const sidebarAdminLinks = [
     to: "/dashboard",
     text: "Dashboard",
     active: ["/", "/dashboard"],
-    Icon: AiFillHome,
+    img: "house.svg",
   },
   {
     to: "/users",
     text: "Usuarios",
     active: ["/users"],
-    Icon: FaUsers,
+    img: "house.svg",
   },
   {
     to: "/organizations",
     text: "Organizaciones",
     active: ["/organizations"],
-    Icon: FaLayerGroup,
+    img: "house.svg",
   },
 ];
 

@@ -1,4 +1,6 @@
-import React from "react";
+import { RootState } from "@store";
+import { OrganizationRoleType } from "@utils/interfaces";
+import { useSelector } from "react-redux";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
 interface ItemSidebarProps {
@@ -6,71 +8,60 @@ interface ItemSidebarProps {
     to: string;
     text: string;
     active: string[];
-    Icon:
-      | React.FC<React.SVGProps<SVGSVGElement>>
-      | React.FC<React.ComponentProps<"svg">>;
+    img: string;
   };
   sidebarMinimized: boolean;
   mobileResolution: boolean;
+  role?: OrganizationRoleType[];
 }
 
 const ItemSidebar = ({
   link,
   sidebarMinimized,
   mobileResolution,
+  role = [],
 }: ItemSidebarProps) => {
   const location = useLocation();
   const navigate = useNavigate();
   const currentPath = location.pathname;
+  const { selectOrganizationId, myOrganizations } = useSelector(
+    (state: RootState) => state.auth
+  );
+
+  const actualRole = myOrganizations.find(
+    org => org.id === selectOrganizationId
+  )?.role;
 
   const active = currentPath === link.to || link.active.includes(currentPath);
 
-  const { Icon } = link;
+  if (role.length > 0 && !role.includes(actualRole!)) {
+    return null;
+  }
 
   return (
     <li
-      className={`relative flex rounded-l-full items-center h-[60px] border-[2px] border-r-0 gap-[12px] ${
-        active
-          ? "bg-app-c1 text-app-c4 border-app-c3"
-          : "text-app-gray  border-[#ffffff00]"
-      } ${active && (sidebarMinimized || mobileResolution) ? "" : "pl-[16px]"}`}
+      className={`relative flex h-[35px] items-center gap-[16px] ${
+        active ? "bg-sofia-electricGreen" : "text-app-gray"
+      } ${active && (sidebarMinimized || mobileResolution) ? "w-full justify-center" : "w-full pl-[12px]"}`}
     >
-      {active && (
-        <div className="absolute bg-app-c1 w-[24px] h-[24px] -right-[2px] -top-[24px] delay-0">
-          <div className="w-full h-full bg-app-c2 rounded-br-full border-r-[2px] border-b-[2px] border-app-c3"></div>
-        </div>
+      <img
+        className={`w-6 h-6 fill-current z-10 ${active ? "" : "cursor-pointer"}`}
+        src={`/mvp/${link.img}`}
+        onClick={() => {
+          navigate(link.to);
+        }}
+        alt="Logo"
+      />
+      {!(sidebarMinimized || mobileResolution) && (
+        <Link
+          to={link.to}
+          className={`z-10 font-normal text-[#001126] transition-all duration-300 ease-in-out ${
+            active ? "cursor-default" : "cursor-pointer"
+          }`}
+        >
+          {link.text}
+        </Link>
       )}
-      {active && (
-        <div className="absolute bg-app-c1 w-[2px] h-full -right-[2px] top-[0px]"></div>
-      )}
-      {active && (
-        <div className="absolute bg-app-c1 w-[24px] h-[24px] -right-[2px] -bottom-[24px]">
-          <div className="w-full h-full bg-app-c2 rounded-tr-full border-r-[2px] border-t-[2px] border-app-c3"></div>
-        </div>
-      )}
-
-      <div
-        className={
-          active && (sidebarMinimized || mobileResolution)
-            ? "bg-app-c2 w-[46px] h-[46px] rounded-full border-[2px] border-app-c3 ml-[6px] text-app-c4 flex justify-center items-center"
-            : ""
-        }
-      >
-        <Icon
-          className={`w-6 h-6 fill-current z-10 ${active ? "" : "cursor-pointer"}`}
-          onClick={() => {
-            navigate(link.to);
-          }}
-        />
-      </div>
-      <Link
-        to={link.to}
-        className={`z-10 font-poppinsMedium text-[16px] transition-all duration-300 ease-in-out ${
-          active ? "cursor-default" : "cursor-pointer"
-        } ${sidebarMinimized || mobileResolution ? "overflow-hidden w-0 opacity-0 scale-90" : "w-auto opacity-100 scale-100"}`}
-      >
-        {link.text}
-      </Link>
     </li>
   );
 };

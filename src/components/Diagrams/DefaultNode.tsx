@@ -1,6 +1,9 @@
-import React, { useRef } from "react";
+import React, { Fragment, useEffect, useRef, useState } from "react";
 import { Handle, Position, NodeProps } from "@xyflow/react";
-import { NodeData } from "@interfaces/workflow";
+import { NodeData, NodeStyle } from "@interfaces/workflow";
+import { NeumorphicButton } from "../NeumorphicButton";
+import DiagramContextMenu, { ContextMenuOption } from "./DiagramContextMenu";
+import { SmallNode } from "./nodes/SmallNode";
 
 interface CustomNodeProps extends NodeProps {
   data: NodeData;
@@ -9,6 +12,7 @@ interface CustomNodeProps extends NodeProps {
   children?: React.ReactNode;
   width?: number;
   headerActions?: React.ReactNode;
+  contextMenuOptions?: ContextMenuOption[];
 }
 
 interface NodeLabelProps {
@@ -28,37 +32,37 @@ const NodeLabel: React.FC<NodeLabelProps> = ({ name, selected }) => {
   );
 };
 
-interface HandleProps {
-  type: "source" | "target";
-  position: Position;
-}
-
-const NodeHandle: React.FC<HandleProps> = ({ type, position }) => (
-  <Handle
-    type={type}
-    id={`node-${type}-${position}`}
-    position={position}
-    className="w-6 h-6 bg-gray-500"
-  />
-);
-
 const NodeHandles: React.FC<{
   allowedConnections: ("source" | "target")[];
 }> = ({ allowedConnections }) => (
   <>
     {allowedConnections.includes("target") && (
-      <>
-        {Object.values(Position).map(position => (
-          <NodeHandle key={position} type="target" position={position} />
-        ))}
-      </>
+      <Handle
+        type="target"
+        position={Position.Top}
+        id={`node-target-${Position.Top}`}
+        style={{
+          opacity: 0,
+          // Posicionamos el handle en el centro
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+        }}
+      />
     )}
     {allowedConnections.includes("source") && (
-      <>
-        {Object.values(Position).map(position => (
-          <NodeHandle key={position} type="source" position={position} />
-        ))}
-      </>
+      <Handle
+        type="source"
+        position={Position.Top}
+        id={`node-source-${Position.Top}`}
+        style={{
+          opacity: 0,
+          // Posicionamos el handle en el centro
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+        }}
+      />
     )}
   </>
 );
@@ -70,6 +74,11 @@ interface NodeContentProps {
   icon?: React.ReactNode;
   isSelected: boolean;
   headerActions?: React.ReactNode;
+  contextMenuOptions?: ContextMenuOption[];
+  menuPosition?: {
+    x: number;
+    y: number;
+  };
 }
 
 const NodeContent: React.FC<NodeContentProps> = ({
@@ -79,12 +88,32 @@ const NodeContent: React.FC<NodeContentProps> = ({
   description,
   icon,
   headerActions,
+  contextMenuOptions,
+  menuPosition,
 }) => {
-  if (!isSelected) {
+  const renderIcon = () => {
     return (
       <div className="flex justify-center items-center rounded-full w-16 h-16 bg-transparent text-black">
         {icon}
       </div>
+    );
+  };
+
+  if (!isSelected) {
+    return renderIcon();
+  }
+
+  if (contextMenuOptions) {
+    return (
+      <Fragment>
+        {renderIcon()}
+        <DiagramContextMenu
+          options={contextMenuOptions}
+          x={menuPosition?.x ?? 0}
+          y={menuPosition?.y ?? 0}
+          onClose={() => {}}
+        />
+      </Fragment>
     );
   }
 
@@ -111,33 +140,82 @@ const DefaultNode: React.FC<CustomNodeProps> = ({
   allowedConnections = [],
   icon,
   children,
-  width = 72,
   headerActions,
+  contextMenuOptions,
 }) => {
   const ref = useRef<HTMLDivElement>(null);
-  const { name, description } = data;
+
+  const [menuPosition, setMenuPosition] = useState<
+    | {
+        x: number;
+        y: number;
+      }
+    | undefined
+  >();
+
+  const { name, description, style } = data;
+
+  useEffect(() => {
+    if (ref.current) {
+      const { left, top, width } = ref.current.getBoundingClientRect();
+      setMenuPosition({ x: left + width + 25, y: top });
+    }
+  }, [selected]);
+
+  const nodeContent = (
+    <NodeContent
+      name={name}
+      description={description}
+      icon={icon}
+      isSelected={selected ?? false}
+      headerActions={headerActions}
+      contextMenuOptions={contextMenuOptions}
+      menuPosition={menuPosition}
+    >
+      {children}
+    </NodeContent>
+  );
 
   return (
     <div className="relative" ref={ref}>
       <NodeLabel name={name} selected={selected} />
-      <div
-        className={`flex flex-col justify-center items-center border-2 transition-all p-6 ${
-          selected
-            ? `w-${width} h-auto bg-blue-500 text-white rounded-lg shadow-xl`
-            : "w-20 h-20 bg-white text-black rounded-full"
-        } font-medium`}
-      >
-        <NodeContent
-          name={name}
-          description={description}
-          icon={icon}
-          isSelected={selected ?? false}
-          headerActions={headerActions}
-        >
-          {children}
-        </NodeContent>
-        <NodeHandles allowedConnections={allowedConnections} />
-      </div>
+      {(() => {
+        switch (style) {
+          case NodeStyle.CENTRAL:
+            return (
+              <Fragment>
+                <NodeHandles allowedConnections={allowedConnections} />
+                <NeumorphicButton
+                  externalProps={{
+                    radius: "full",
+                  }}
+                  internalProps={{
+                    radius: "full",
+                    backgroundColor: "node-gradient",
+                  }}
+                >
+                  {nodeContent}
+                </NeumorphicButton>
+              </Fragment>
+            );
+          case NodeStyle.SMALL:
+            return (
+              <Fragment>
+                <NodeHandles allowedConnections={allowedConnections} />
+                <SmallNode>{nodeContent}</SmallNode>
+              </Fragment>
+            );
+          default:
+            return (
+              <Fragment>
+                <NodeHandles allowedConnections={allowedConnections} />
+                <NeumorphicButton withContainer={false}>
+                  {nodeContent}
+                </NeumorphicButton>
+              </Fragment>
+            );
+        }
+      })()}
     </div>
   );
 };

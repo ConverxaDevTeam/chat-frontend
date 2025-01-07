@@ -57,6 +57,6 @@ export const createOrganization = async (data: {
       }
     }
     alertError(message);
-    return [];
+    return false;
   }
 };

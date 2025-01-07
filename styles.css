@@ -13,33 +13,77 @@
 html,
 body {
   height: 100vh;
-  font-family: "Poppins Regular", "Montserrat";
+  font-family: "Roboto", serif;
 }
 
-@font-face {
-  font-family: "Poppins Regular";
-  src: url("/fonts/Poppins-Regular.ttf");
+.roboto-thin {
+  font-family: "Roboto", serif;
+  font-weight: 100;
+  font-style: normal;
 }
 
-@font-face {
-  font-family: "Poppins Medium";
-  src: url("/fonts/Poppins-Medium.ttf");
+.roboto-light {
+  font-family: "Roboto", serif;
+  font-weight: 300;
+  font-style: normal;
 }
 
-@font-face {
-  font-family: "Poppins SemiBold";
-  src: url("/fonts/Poppins-SemiBold.ttf");
+.roboto-regular {
+  font-family: "Roboto", serif;
+  font-weight: 400;
+  font-style: normal;
 }
 
-@font-face {
-  font-family: "Poppins Bold";
-  src: url("/fonts/Poppins-Bold.ttf");
+.roboto-medium {
+  font-family: "Roboto", serif;
+  font-weight: 500;
+  font-style: normal;
 }
 
+.roboto-bold {
+  font-family: "Roboto", serif;
+  font-weight: 700;
+  font-style: normal;
+}
 
-.theme {
-  --1: #e8e8e8;
-  --2: #af0400;
-  --3: #ff807d;
-  --4: #ffcac9;
+.roboto-black {
+  font-family: "Roboto", serif;
+  font-weight: 900;
+  font-style: normal;
+}
+
+.roboto-thin-italic {
+  font-family: "Roboto", serif;
+  font-weight: 100;
+  font-style: italic;
+}
+
+.roboto-light-italic {
+  font-family: "Roboto", serif;
+  font-weight: 300;
+  font-style: italic;
+}
+
+.roboto-regular-italic {
+  font-family: "Roboto", serif;
+  font-weight: 400;
+  font-style: italic;
+}
+
+.roboto-medium-italic {
+  font-family: "Roboto", serif;
+  font-weight: 500;
+  font-style: italic;
+}
+
+.roboto-bold-italic {
+  font-family: "Roboto", serif;
+  font-weight: 700;
+  font-style: italic;
+}
+
+.roboto-black-italic {
+  font-family: "Roboto", serif;
+  font-weight: 900;
+  font-style: italic;
 }
