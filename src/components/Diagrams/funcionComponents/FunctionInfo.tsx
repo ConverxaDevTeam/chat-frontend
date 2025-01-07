@@ -1,5 +1,3 @@
-import { MdDelete, MdEdit, MdPlayArrow } from "react-icons/md";
-
 interface FunctionInfoProps {
   isLoading?: boolean;
   functionData?: {

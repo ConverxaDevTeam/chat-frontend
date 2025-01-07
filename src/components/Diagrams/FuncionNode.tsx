@@ -1,10 +1,7 @@
 import { memo, useState } from "react";
 import DefaultNode from "./DefaultNode";
 import { CustomTypeNodeProps } from "@interfaces/workflow";
-import {
-  FunctionInfo,
-  contextMenuOptions,
-} from "./funcionComponents/FunctionInfo";
+import { contextMenuOptions } from "./funcionComponents/FunctionInfo";
 import { FunctionEditModal } from "./funcionComponents/FunctionEditModal";
 import { ParamsModal } from "./funcionComponents/ParamsModal";
 import { TestFunctionModal } from "./funcionComponents/TestFunctionModal";
