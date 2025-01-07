@@ -12,7 +12,8 @@ import { useHumanCommunication } from "./hooks/useHumanCommunication";
 const AgenteNode = (props: CustomTypeNodeProps<AgentData>) => {
   const { data, selected } = props;
   const [eventOpen, setEventOpen] = useState<string | null>(null);
-  const { humanCommunication, handleHumanCommunicationToggle } = useHumanCommunication(data.agentId);
+  const { humanCommunication, handleHumanCommunicationToggle } =
+    useHumanCommunication(data.agentId);
 
   const contextMenuOptions: ContextMenuOption[] = [
     {

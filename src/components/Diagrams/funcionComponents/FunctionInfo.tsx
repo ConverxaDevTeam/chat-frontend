@@ -40,46 +40,34 @@ interface ActionButtonsProps {
   onTestEndpoint: () => void;
 }
 
-export const ActionButtons = ({
+export const contextMenuOptions = ({
   params,
   onEdit,
   onParamsClick,
   onDelete,
   onTestEndpoint,
-}: ActionButtonsProps) => {
-  return (
-    <div className="grid gap-2 w-full">
-      <button
-        onClick={onEdit}
-        className="flex items-center justify-center w-full px-4 py-2 text-sm text-blue-600 bg-blue-100 rounded-lg hover:bg-blue-200 transition-colors duration-200"
-      >
-        <MdEdit className="mr-2" /> Editar
-      </button>
-      <button
-        onClick={onParamsClick}
-        className="w-full px-3 py-1.5 text-sm text-gray-700 bg-gray-100 rounded hover:bg-gray-200 transition-colors"
-      >
-        Ver Parámetros ({params.length})
-      </button>
-      <button
-        onClick={onDelete}
-        className="w-full px-3 py-1.5 text-sm text-red-600 hover:text-red-700 hover:bg-red-100 rounded transition-colors flex items-center justify-center"
-        title="Eliminar función"
-      >
-        <MdDelete size={16} className="mr-2" />
-        Eliminar Funci&oacute;n
-      </button>
-      <button
-        onClick={onTestEndpoint}
-        className="w-full px-3 py-1.5 text-sm text-blue-600 hover:text-blue-700 hover:bg-blue-100 rounded transition-colors flex items-center justify-center"
-        title="Probar endpoint"
-      >
-        <MdPlayArrow size={16} className="mr-2" />
-        Probar Endpoint
-      </button>
-    </div>
-  );
-};
+}: ActionButtonsProps) => [
+  {
+    child: <img src="/mvp/pencil.svg" alt="Editar función" />,
+    onClick: onEdit,
+    tooltip: "Editar función",
+  },
+  {
+    child: <img src="/mvp/variable.svg" alt="Ver parámetros" />,
+    onClick: onParamsClick,
+    tooltip: `Ver Parámetros (${params.length})`,
+  },
+  {
+    child: <img src="/mvp/play.svg" alt="Probar endpoint" />,
+    onClick: onTestEndpoint,
+    tooltip: "Probar endpoint",
+  },
+  {
+    child: <img src="/mvp/trash.svg" alt="Eliminar función" />,
+    onClick: onDelete,
+    tooltip: "Eliminar función",
+  },
+];
 
 export const FunctionInfo = ({
   isLoading,

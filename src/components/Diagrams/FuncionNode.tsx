@@ -1,7 +1,10 @@
 import { memo, useState } from "react";
 import DefaultNode from "./DefaultNode";
 import { CustomTypeNodeProps } from "@interfaces/workflow";
-import { ActionButtons, FunctionInfo } from "./funcionComponents/FunctionInfo";
+import {
+  FunctionInfo,
+  contextMenuOptions,
+} from "./funcionComponents/FunctionInfo";
 import { FunctionEditModal } from "./funcionComponents/FunctionEditModal";
 import { ParamsModal } from "./funcionComponents/ParamsModal";
 import { TestFunctionModal } from "./funcionComponents/TestFunctionModal";
@@ -130,34 +133,6 @@ const FunctionModals = ({
   </>
 );
 
-// Componente para el contenido del nodo
-const NodeContent = ({
-  currentData,
-  params,
-  onEditClick,
-  onParamsClick,
-  onDelete,
-  onTestEndpoint,
-}: {
-  currentData: FunctionData<HttpRequestFunction>;
-  params: FunctionParam[];
-  onEditClick: () => void;
-  onParamsClick: () => void;
-  onDelete: () => void;
-  onTestEndpoint: () => void;
-}) => (
-  <div className="grid gap-4 p-4 bg-white rounded-md shadow-lg">
-    <FunctionInfo functionData={currentData} />
-    <ActionButtons
-      onEdit={onEditClick}
-      onParamsClick={onParamsClick}
-      onDelete={onDelete}
-      onTestEndpoint={onTestEndpoint}
-      params={params}
-    />
-  </div>
-);
-
 const FuncionNode = memo((props: FunctionNodeProps) => {
   const { data: initialData, id, selected } = props;
   if (!initialData.functionId) {
@@ -189,16 +164,14 @@ const FuncionNode = memo((props: FunctionNodeProps) => {
         {...props}
         allowedConnections={["source", "target"]}
         icon={<img src="/mvp/square-code.svg" className="w-8 h-8" />}
-      >
-        <NodeContent
-          currentData={currentData}
-          params={params}
-          onEditClick={() => setShowEditModal(true)}
-          onParamsClick={handleShowParamsModal}
-          onDelete={handleDelete}
-          onTestEndpoint={handleTestEndpoint}
-        />
-      </DefaultNode>
+        contextMenuOptions={contextMenuOptions({
+          params,
+          onEdit: () => setShowEditModal(true),
+          onParamsClick: handleShowParamsModal,
+          onDelete: handleDelete,
+          onTestEndpoint: handleTestEndpoint,
+        })}
+      ></DefaultNode>
 
       <FunctionModals
         showEdit={showEditModal}
