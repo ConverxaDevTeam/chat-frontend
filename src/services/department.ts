@@ -1,4 +1,5 @@
 import { apiUrls } from "@config/config";
+import { IntegrationType } from "@interfaces/integrations";
 import { axiosInstance } from "@store/actions/auth";
 
 interface DepartmentResponse {
@@ -19,6 +20,10 @@ interface DepartmentResponse {
         };
       }>;
     };
+    integrations: Array<{
+      id: number;
+      type: IntegrationType;
+    }>;
   };
 }
 

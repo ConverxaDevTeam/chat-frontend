@@ -3,6 +3,7 @@ import { Handle, Position, NodeProps } from "@xyflow/react";
 import { NodeData, NodeStyle } from "@interfaces/workflow";
 import { NeumorphicButton } from "../NeumorphicButton";
 import DiagramContextMenu, { ContextMenuOption } from "./DiagramContextMenu";
+import { SmallNode } from "./nodes/SmallNode";
 
 interface CustomNodeProps extends NodeProps {
   data: NodeData;
@@ -195,6 +196,13 @@ const DefaultNode: React.FC<CustomNodeProps> = ({
                 >
                   {nodeContent}
                 </NeumorphicButton>
+              </Fragment>
+            );
+          case NodeStyle.SMALL:
+            return (
+              <Fragment>
+                <NodeHandles allowedConnections={allowedConnections} />
+                <SmallNode>{nodeContent}</SmallNode>
               </Fragment>
             );
           default:

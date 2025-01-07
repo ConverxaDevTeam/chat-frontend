@@ -26,6 +26,8 @@ export default {
           electricGreen: "#15ECDA",
           background: "#F6F6F6",
           secundario: "#d0fbf8",
+          blancoPuro: "#EFEFEF",
+          celeste: "#F2F9FF",
         },
       },
       fontFamily: {

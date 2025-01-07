@@ -1,4 +1,5 @@
-import { IIntegration, IntegrationType } from "./IntegracionesNode";
+import { IntegrationType } from "@interfaces/integrations";
+import { IIntegration } from "./IntegracionesNode";
 import { BsWhatsapp } from "react-icons/bs";
 import { FaFacebook } from "react-icons/fa";
 

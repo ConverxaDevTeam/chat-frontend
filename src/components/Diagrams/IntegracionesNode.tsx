@@ -13,12 +13,7 @@ import { getIntegrations } from "@services/integration";
 import ButtonIntegrationActive from "./ButtonIntegrationActive";
 import { MdOutlineWebAsset } from "react-icons/md";
 import { ContextMenuOption } from "./DiagramContextMenu";
-
-export enum IntegrationType {
-  CHAT_WEB = "chat_web",
-  WHATSAPP = "whatsapp",
-  MESSENGER = "messenger",
-}
+import { IntegrationType } from "@interfaces/integrations";
 
 export interface ConfigWhatsApp {
   name_app: string | null;
@@ -128,7 +123,7 @@ const IntegracionesNode = ({
           name: "Integraciones",
           description: "Conecta la plataforma con otras herramientas.",
         }}
-        allowedConnections={["source"]}
+        allowedConnections={["source", "target"]}
         icon={<img src="/mvp/cable.svg" alt="Integraciones" />}
         contextMenuOptions={contextMenuOptions}
         {...rest}
