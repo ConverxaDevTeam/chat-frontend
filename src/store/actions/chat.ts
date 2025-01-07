@@ -26,6 +26,7 @@ export const initializeWorkspace = createAsyncThunk(
             id: agente.id,
           },
           functions: agente.funciones || [], // Asignamos las funciones directamente al estado
+          integrations: response.department.integrations || [],
         })
       );
 

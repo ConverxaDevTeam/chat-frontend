@@ -75,9 +75,9 @@ const createNewEdge = (sourceNodeId: string, newNodeId: string) => {
     id: `e${sourceNodeId}-${newNodeId}`,
     source: sourceNodeId,
     target: newNodeId,
-    type: sourceNodeId === "agent" ? "auth" : undefined,
-    sourceHandle: `node-source-${Position.Right}`,
-    targetHandle: `node-target-${Position.Left}`,
+    type: sourceNodeId === "agent" ? "auth" : "default",
+    sourceHandle: `node-source-${Position.Top}`,
+    targetHandle: `node-target-${Position.Top}`,
   };
 };
 

@@ -1,3 +1,4 @@
+import { IntegrationType } from "@interfaces/integrations";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface Message {
@@ -17,6 +18,11 @@ interface AgentFunction {
   };
 }
 
+interface Integration {
+  id: number;
+  type: IntegrationType;
+}
+
 interface Agent {
   id: number;
 }
@@ -27,6 +33,7 @@ interface ChatState {
   department: Department | null;
   currentAgent: Agent | null;
   agentFunctions: AgentFunction[];
+  integrations: Integration[];
 }
 
 const initialState: ChatState = {
@@ -35,6 +42,7 @@ const initialState: ChatState = {
   department: null,
   currentAgent: null,
   agentFunctions: [],
+  integrations: [],
 };
 
 const chatSlice = createSlice({
@@ -53,16 +61,19 @@ const chatSlice = createSlice({
         department: Department;
         agent: Agent;
         functions: AgentFunction[];
+        integrations: Integration[];
       }>
     ) => {
       state.department = action.payload.department;
       state.currentAgent = action.payload.agent;
       state.agentFunctions = action.payload.functions;
+      state.integrations = action.payload.integrations;
     },
     clearWorkspaceData: state => {
       state.department = null;
       state.currentAgent = null;
       state.agentFunctions = [];
+      state.integrations = [];
     },
   },
 });

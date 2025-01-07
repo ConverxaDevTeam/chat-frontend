@@ -25,6 +25,9 @@ export default {
           superDark: "#001126",
           electricGreen: "#15ECDA",
           background: "#F6F6F6",
+          secundario: "#d0fbf8",
+          blancoPuro: "#EFEFEF",
+          celeste: "#F2F9FF",
         },
       },
       fontFamily: {
@@ -37,6 +40,10 @@ export default {
       backgroundImage: {
         "custom-gradient":
           "linear-gradient(130deg, #f6f9fb 0%, #f0f4f9 40%, #edf2f7 100%)",
+        "diagram-gradient":
+          "radial-gradient(circle at center, transparent 0%, #F6F6F6 80%)",
+        "node-gradient":
+          "radial-gradient(89.63% 89.63% at 50% 50%, #F1F5F9 0%, #D0FBF8 100%)",
       },
     },
   },

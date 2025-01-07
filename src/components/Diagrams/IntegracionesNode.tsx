@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import DefaultNode from "./DefaultNode";
-import { HiLink, HiPlusCircle } from "react-icons/hi";
+import { HiPlusCircle } from "react-icons/hi";
 import AddWebchat from "@pages/Workspace/components/AddWebChat";
 import { CustomTypeNodeProps, NodeData } from "@interfaces/workflow";
 import Modal from "@components/Modal";
@@ -12,12 +12,8 @@ import { getDefaultDepartment } from "@services/department";
 import { getIntegrations } from "@services/integration";
 import ButtonIntegrationActive from "./ButtonIntegrationActive";
 import { MdOutlineWebAsset } from "react-icons/md";
-
-export enum IntegrationType {
-  CHAT_WEB = "chat_web",
-  WHATSAPP = "whatsapp",
-  MESSENGER = "messenger",
-}
+import { ContextMenuOption } from "./DiagramContextMenu";
+import { IntegrationType } from "@interfaces/integrations";
 
 export interface ConfigWhatsApp {
   name_app: string | null;
@@ -86,6 +82,18 @@ const IntegracionesNode = ({
     getDataIntegrations();
   }, []);
 
+  const contextMenuOptions: ContextMenuOption[] = [
+    {
+      child: <img src="/mvp/circle-plus.svg" alt="Nueva Integración" />,
+      onClick: () => setIsMenuVisible(true),
+    },
+    {
+      child: <img src="/mvp/globe.svg" alt="Webchat" />,
+      onClick: () => setIsModalOpen(true),
+    },
+    // Add more options here if needed
+  ];
+
   return (
     <>
       <Modal
@@ -115,8 +123,9 @@ const IntegracionesNode = ({
           name: "Integraciones",
           description: "Conecta la plataforma con otras herramientas.",
         }}
-        allowedConnections={["source"]}
-        icon={<HiLink size={24} className="w-8 h-8 text-gray-800" />}
+        allowedConnections={["source", "target"]}
+        icon={<img src="/mvp/cable.svg" alt="Integraciones" />}
+        contextMenuOptions={contextMenuOptions}
         {...rest}
       >
         <div className="bg-transparent rounded-md text-black flex flex-col gap-[10px]">
