@@ -45,6 +45,8 @@ export const apiUrls = {
     byId: (id: number) => `/api/departments/${id}`,
     default: (organizationId: number) =>
       `/api/departments/default/${organizationId}`,
+    all: (organizationId: number) =>
+      `/api/departments/organization/${organizationId}`,
   },
 
   // agents
