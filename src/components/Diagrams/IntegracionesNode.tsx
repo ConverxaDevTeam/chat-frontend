@@ -7,7 +7,6 @@ import NewIntegration from "./NewIntegration";
 import { RootState } from "@store";
 import { useSelector } from "react-redux";
 import { ConfigWebChat } from "@pages/Workspace/components/CustomizeChat";
-import { getDefaultDepartment } from "@services/department";
 import { getIntegrations } from "@services/integration";
 import ButtonIntegrationActive from "./ButtonIntegrationActive";
 import { ContextMenuOption } from "./DiagramContextMenu";
@@ -41,29 +40,30 @@ const IntegracionesNode = ({
   const { selectOrganizationId } = useSelector(
     (state: RootState) => state.auth
   );
+  const selectedDepartmentId = useSelector(
+    (state: RootState) => state.department.selectedDepartmentId
+  );
   const [integrations, setIntegrations] = useState<IIntegration[]>([]);
   const [isMenuVisible, setIsMenuVisible] = useState(false);
-  const [departmentId, setDepartmentId] = useState<number | null>(null);
 
   const toggleMenu = () => {
     setIsMenuVisible(!isMenuVisible);
   };
 
   const getDataIntegrations = async () => {
-    if (!selectOrganizationId) return;
-    const responseDepartament =
-      await getDefaultDepartment(selectOrganizationId);
-    setDepartmentId(responseDepartament.department.id);
-    const responseIntegrations = await getIntegrations(
-      responseDepartament.department.id,
-      selectOrganizationId
-    );
-    setIntegrations(responseIntegrations);
+    if (!selectOrganizationId || !selectedDepartmentId) return;
+
+    try {
+      const response = await getIntegrations(selectedDepartmentId);
+      setIntegrations(response);
+    } catch (error) {
+      console.error("Error getting integrations:", error);
+    }
   };
 
   useEffect(() => {
     getDataIntegrations();
-  }, []);
+  }, [selectOrganizationId, selectedDepartmentId]);
 
   const contextMenuOptions: ContextMenuOption[] = [
     {
@@ -81,7 +81,7 @@ const IntegracionesNode = ({
           <NewIntegration
             setIsMenuVisible={setIsMenuVisible}
             getDataIntegrations={getDataIntegrations}
-            departmentId={departmentId}
+            departmentId={selectedDepartmentId}
           />
         }
         onClose={toggleMenu}

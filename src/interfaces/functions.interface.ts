@@ -14,6 +14,9 @@ export enum HttpMethod {
 }
 
 export interface HttpRequestFunction {
+  id: number;
+  name: string;
+  autenticador?: { id: number };
   type: FunctionNodeTypes.API_ENDPOINT;
   config: {
     url?: string;
@@ -26,6 +29,7 @@ export interface FunctionData<
   T extends { type: string; config: Record<string, unknown> },
 > extends NodeData {
   id?: number;
+  autenticador?: { id: number };
   functionId?: number;
   agentId: number;
   description: string;

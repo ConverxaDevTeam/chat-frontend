@@ -81,13 +81,10 @@ export const updateIntegrationWebChat = async (
   }
 };
 
-export const getIntegrations = async (
-  departmentId: number,
-  selectOrganizationId: number
-) => {
+export const getIntegrations = async (departmentId: number) => {
   try {
     const response = await axiosInstance.get(
-      apiUrls.getIntegrations(departmentId, selectOrganizationId)
+      apiUrls.getIntegrations(departmentId)
     );
     if (response.data.ok) {
       return response.data.integrations;

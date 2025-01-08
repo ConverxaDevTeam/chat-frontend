@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { RootState } from "@store";
 import Select from "@components/Select";
 import { getDepartments } from "@services/department";
@@ -8,13 +8,17 @@ import {
   setSelectedDepartmentId,
   clearSelectedDepartment,
 } from "@store/reducers/department";
+import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
+import { useAppDispatch } from "@store/hooks";
 
 interface SelectDepartmentProps {
   mobileResolution?: boolean;
 }
 
 const SelectDepartment: FC<SelectDepartmentProps> = ({ mobileResolution }) => {
-  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const { selectOrganizationId } = useSelector(
     (state: RootState) => state.auth
   );
@@ -29,6 +33,26 @@ const SelectDepartment: FC<SelectDepartmentProps> = ({ mobileResolution }) => {
       try {
         const data = await getDepartments(selectOrganizationId);
         setDepartments(data);
+
+        // Si hay departamentos y ninguno está seleccionado, seleccionar el primero
+        if (data.length > 0 && !selectedDepartmentId) {
+          dispatch(setSelectedDepartmentId(data[0].id));
+        }
+        // Si no hay departamentos, mostrar Swal
+        else if (data.length === 0) {
+          Swal.fire({
+            title: "No hay departamentos",
+            text: "Es necesario crear un departamento para continuar",
+            icon: "info",
+            showCancelButton: true,
+            confirmButtonText: "Ir a Departamentos",
+            cancelButtonText: "Cancelar",
+          }).then(result => {
+            if (result.isConfirmed) {
+              navigate("/departments");
+            }
+          });
+        }
       } catch (error) {
         console.error("Error fetching departments:", error);
       }
@@ -42,7 +66,7 @@ const SelectDepartment: FC<SelectDepartmentProps> = ({ mobileResolution }) => {
     dispatch(clearSelectedDepartment());
   }, [selectOrganizationId, dispatch]);
 
-  const handleChange = (id: number) => {
+  const handleChange = async (id: number) => {
     dispatch(setSelectedDepartmentId(id));
   };
 

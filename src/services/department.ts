@@ -28,10 +28,10 @@ interface DepartmentResponse {
   };
 }
 
-export const getDefaultDepartment = async (organization: number) => {
+export const getDepartmentsDiagrams = async (organization: number) => {
   try {
     const response = await axiosInstance.get<DepartmentResponse>(
-      apiUrls.departments.default(organization)
+      apiUrls.departments.workspace(organization)
     );
     return response.data;
   } catch (error) {
@@ -83,6 +83,18 @@ export const deleteDepartment = async (id: number) => {
     await axiosInstance.delete(apiUrls.departments.byId(id));
   } catch (error) {
     console.error("Error deleting department:", error);
+    throw error;
+  }
+};
+
+export const getWorkspaceData = async (departmentId: number) => {
+  try {
+    const response = await axiosInstance.get<DepartmentResponse>(
+      apiUrls.departments.workspace(departmentId)
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching workspace data:", error);
     throw error;
   }
 };

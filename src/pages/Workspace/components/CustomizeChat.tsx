@@ -4,10 +4,9 @@ import {
   updateIntegrationWebChat,
 } from "@services/integration";
 import { RootState } from "@store";
-import { useEffect, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import ChatEditor from "./ChatEditor";
-import { getDefaultDepartment } from "@services/department";
 import EditTexts from "./EditTexts";
 import EditCors from "./EditCors";
 
@@ -51,12 +50,16 @@ export interface Integracion {
   config: ConfigWebChat;
 }
 
-const CustomizeChat = ({ onClose }: CustomizeChatProps) => {
-  const [integration, setIntegration] = useState<Integracion | null>(null);
-  const [viwer, setViwer] = useState("cors");
+const CustomizeChat: FC<CustomizeChatProps> = ({ onClose }) => {
   const { selectOrganizationId } = useSelector(
     (state: RootState) => state.auth
   );
+  const selectedDepartmentId = useSelector(
+    (state: RootState) => state.department.selectedDepartmentId
+  );
+  const [integration, setIntegration] = useState<Integracion | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [viwer, setViwer] = useState("cors");
 
   const handleSaveChat = async () => {
     if (!integration) return;
@@ -79,28 +82,35 @@ const CustomizeChat = ({ onClose }: CustomizeChatProps) => {
     await updateIntegrationWebChat(integration!.id, data);
   };
 
-  const searchIntegrationWebChat = async (selectOrganizationId: number) => {
-    const responseDepartament =
-      await getDefaultDepartment(selectOrganizationId);
+  const searchIntegrationWebChat = async () => {
+    if (!selectOrganizationId || !selectedDepartmentId) return;
 
-    const response = await getIntegrationWebChat(
-      responseDepartament.department.id,
-      selectOrganizationId
-    );
-    if (response) {
-      setIntegration(response);
+    try {
+      const response = await getIntegrationWebChat(
+        selectedDepartmentId,
+        selectOrganizationId
+      );
+      if (response) {
+        setIntegration(response);
+      }
+    } catch (error) {
+      console.error("Error getting web chat integration:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
-    if (selectOrganizationId) {
-      searchIntegrationWebChat(selectOrganizationId);
-    }
-  }, []);
+    searchIntegrationWebChat();
+  }, [selectOrganizationId, selectedDepartmentId]);
 
   return (
     <div className="w-[700px] bg-white p-[20px] shadow-lg rounded-md">
-      {integration ? (
+      {loading ? (
+        <div className="w-full min-h-[400px] flex justify-center items-center">
+          <Loading />
+        </div>
+      ) : integration ? (
         <div className="flex flex-col gap-[20px] min-h-[400px]">
           <div className="flex w-full">
             <button

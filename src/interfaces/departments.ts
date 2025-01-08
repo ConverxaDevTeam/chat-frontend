@@ -5,3 +5,12 @@ export interface IDepartment {
   updated_at: string;
   organization_id: number;
 }
+
+export interface IDepartmentCreate {
+  name: string;
+  organization_id: number;
+}
+
+export interface IDepartmentUpdate {
+  name: string;
+}
