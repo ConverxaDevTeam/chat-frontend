@@ -35,7 +35,7 @@ import ContextMenu from "./ContextMenu";
 import { useNodeSelection } from "./Diagrams/hooks/useNodeSelection";
 import { useContextMenu } from "./Diagrams/hooks/useContextMenu";
 import { useUnifiedNodeCreation } from "./Diagrams/hooks/useUnifiedNodeCreation";
-import { useEdges, useZoomToFit } from "./workspace/hooks/Diagrams";
+import { useEdges } from "./workspace/hooks/Diagrams";
 import { AuthEdge } from "./Diagrams/edges/AuthEdge";
 import { FunctionEditModal } from "./Diagrams/funcionComponents/FunctionEditModal";
 import { useFunctionSuccess } from "./Diagrams/hooks/useFunctionActions";
@@ -458,6 +458,12 @@ const ZoomTransition = () => {
     fetchDepartmentData();
   }, [departmentId, agentId]);
 
+  const reactFlowInstance = useReactFlow();
+  const { fitView } = reactFlowInstance;
+  useEffect(() => {
+    fitView();
+  }, [nodesState]);
+
   const onNodesChange: OnNodesChange = useCallback(
     changes => {
       setNodesState(nds => applyNodeChanges(changes, nds));
@@ -505,8 +511,6 @@ const ZoomTransition = () => {
   );
 
   const { onConnect } = useEdges(setEdges);
-  const { setCenter } = useReactFlow();
-  useZoomToFit(nodesState, setCenter);
 
   return (
     <div className="relative h-full">
