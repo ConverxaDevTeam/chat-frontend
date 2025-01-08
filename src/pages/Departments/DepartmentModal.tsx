@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { IDepartment } from "../../interfaces/departments";
@@ -28,11 +28,21 @@ const DepartmentModal: FC<DepartmentModalProps> = ({
     handleSubmit,
     formState: { errors },
     reset,
-  } = useForm<FormInputs>({
-    defaultValues: {
-      name: department?.name || "",
-    },
-  });
+    setValue,
+  } = useForm<FormInputs>();
+
+  useEffect(() => {
+    if (isOpen && department) {
+      setValue("name", department.name);
+    } else {
+      reset({ name: "" });
+    }
+  }, [isOpen, department, setValue, reset]);
+
+  const handleClose = () => {
+    reset({ name: "" });
+    onClose();
+  };
 
   const onSubmit = async (data: FormInputs) => {
     try {
@@ -44,8 +54,7 @@ const DepartmentModal: FC<DepartmentModalProps> = ({
       toast.success(
         `Departamento ${department ? "actualizado" : "creado"} exitosamente`
       );
-      reset();
-      onClose();
+      handleClose();
     } catch (error) {
       toast.error(
         `Error al ${department ? "actualizar" : "crear"} departamento`
@@ -78,7 +87,7 @@ const DepartmentModal: FC<DepartmentModalProps> = ({
           <div className="flex justify-end gap-2">
             <button
               type="button"
-              onClick={onClose}
+              onClick={handleClose}
               className="px-4 py-2 text-gray-600 hover:text-gray-800"
             >
               Cancelar

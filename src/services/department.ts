@@ -67,13 +67,22 @@ export const createDepartment = async (organization: number, name: string) => {
 
 export const updateDepartment = async (id: number, name: string) => {
   try {
-    const response = await axiosInstance.put<IDepartment>(
+    const response = await axiosInstance.patch<IDepartment>(
       apiUrls.departments.byId(id),
       { name }
     );
     return response.data;
   } catch (error) {
     console.error("Error updating department:", error);
+    throw error;
+  }
+};
+
+export const deleteDepartment = async (id: number) => {
+  try {
+    await axiosInstance.delete(apiUrls.departments.byId(id));
+  } catch (error) {
+    console.error("Error deleting department:", error);
     throw error;
   }
 };

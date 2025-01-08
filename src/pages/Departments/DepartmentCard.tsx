@@ -3,9 +3,9 @@ import { IDepartment } from "../../interfaces/departments";
 import { FiEdit2, FiTrash2 } from "react-icons/fi";
 import { toast } from "react-toastify";
 import { useSweetAlert } from "../../hooks/useSweetAlert";
-import { apiUrls } from "../../config/config";
 import TableCell from "../../components/Table/TableCell";
 import { convertISOToReadable } from "../../utils/format";
+import { deleteDepartment } from "@services/department";
 
 interface DepartmentCardProps {
   department: IDepartment;
@@ -30,12 +30,7 @@ const DepartmentCard: FC<DepartmentCardProps> = ({
 
     if (confirmed) {
       try {
-        await fetch(
-          `${apiUrls}/organizations/${department.organization_id}/departments/${department.id}`,
-          {
-            method: "DELETE",
-          }
-        );
+        await deleteDepartment(department.id);
         onDelete(department.id);
         toast.success("Departamento eliminado exitosamente");
       } catch (error) {
@@ -46,9 +41,9 @@ const DepartmentCard: FC<DepartmentCardProps> = ({
 
   return (
     <tr className="h-[60px] text-[14px] border-b-[1px] hover:bg-gray-50">
-      <TableCell width="w-[calc(100%/24*4)]">{department.id}</TableCell>
-      <TableCell width="w-[calc(100%/24*6)]">{department.name}</TableCell>
-      <TableCell width="w-[calc(100%/24*8)]">
+      <TableCell width="w-[calc(100%/24*6)]">{department.id}</TableCell>
+      <TableCell width="w-[calc(100%/24*10)]">{department.name}</TableCell>
+      <TableCell width="w-[calc(100%/24*6)]">
         {convertISOToReadable(department.created_at)}
       </TableCell>
       <TableCell width="w-[calc(100%/24*2)]">
