@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import DefaultNode from "./DefaultNode";
 import { HiPlusCircle } from "react-icons/hi";
-import AddWebchat from "@pages/Workspace/components/AddWebChat";
 import { CustomTypeNodeProps, NodeData } from "@interfaces/workflow";
 import Modal from "@components/Modal";
 import NewIntegration from "./NewIntegration";
@@ -11,7 +10,6 @@ import { ConfigWebChat } from "@pages/Workspace/components/CustomizeChat";
 import { getDefaultDepartment } from "@services/department";
 import { getIntegrations } from "@services/integration";
 import ButtonIntegrationActive from "./ButtonIntegrationActive";
-import { MdOutlineWebAsset } from "react-icons/md";
 import { ContextMenuOption } from "./DiagramContextMenu";
 import { IntegrationType } from "@interfaces/integrations";
 
@@ -35,20 +33,6 @@ export interface IIntegration {
   config: ConfigWebChat | ConfigWhatsApp | ConfigMessenger;
 }
 
-const SubMenu: React.FC<{ openModal: () => void }> = ({ openModal }) => {
-  return (
-    <button
-      title="Webchat"
-      type="button"
-      className="flex gap-[6px] items-center justify-center h-[40px] rounded-md bg-blue-300 hover:bg-blue-100 w-full"
-      onClick={openModal}
-    >
-      <MdOutlineWebAsset className="w-5 h-5" />
-      <p>Webchat</p>
-    </button>
-  );
-};
-
 const IntegracionesNode = ({
   data,
   selected,
@@ -59,7 +43,6 @@ const IntegracionesNode = ({
   );
   const [integrations, setIntegrations] = useState<IIntegration[]>([]);
   const [isMenuVisible, setIsMenuVisible] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [departmentId, setDepartmentId] = useState<number | null>(null);
 
   const toggleMenu = () => {
@@ -86,10 +69,6 @@ const IntegracionesNode = ({
     {
       child: <img src="/mvp/circle-plus.svg" alt="Nueva Integración" />,
       onClick: () => setIsMenuVisible(true),
-    },
-    {
-      child: <img src="/mvp/globe.svg" alt="Webchat" />,
-      onClick: () => setIsModalOpen(true),
     },
     // Add more options here if needed
   ];
@@ -136,7 +115,6 @@ const IntegracionesNode = ({
             <HiPlusCircle className="w-6 h-6" size={24} color="blue" />
             Agregar Integración
           </button>
-          <SubMenu openModal={() => setIsModalOpen(true)} />
           {integrations
             .filter(
               integration => integration.type !== IntegrationType.CHAT_WEB
@@ -149,7 +127,6 @@ const IntegracionesNode = ({
             ))}
         </div>
       </DefaultNode>
-      <AddWebchat isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </>
   );
 };

@@ -1,9 +1,9 @@
-import { memo } from "react";
+import { Fragment, memo, useState } from "react";
 import DefaultNode from "./DefaultNode";
 import { CustomTypeNodeProps, NodeStyle } from "@interfaces/workflow";
 import { NodeData } from "@interfaces/workflow";
 import { IntegrationType } from "@interfaces/integrations";
-import { MdEdit, MdDelete, MdSettings } from "react-icons/md";
+import AddWebchat from "@pages/Workspace/components/AddWebChat";
 
 interface IntegrationItemProps extends CustomTypeNodeProps<NodeData> {
   data: NodeData & {
@@ -30,73 +30,52 @@ const getIntegrationName = (type: IntegrationType) => {
 };
 
 export const contextMenuOptions = ({
-  onEdit,
-  onSettings,
-  onDelete,
+  setIsModalOpen,
+  itemType,
 }: {
-  onEdit: () => void;
-  onSettings: () => void;
-  onDelete: () => void;
-}) => [
-  {
-    child: <MdEdit className="w-5 h-5" />,
-    onClick: onEdit,
-    tooltip: "Editar integración",
-  },
-  {
-    child: <MdSettings className="w-5 h-5" />,
-    onClick: onSettings,
-    tooltip: "Configurar integración",
-  },
-  {
-    child: <MdDelete className="w-5 h-5" />,
-    onClick: onDelete,
-    tooltip: "Eliminar integración",
-  },
-];
+  setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  itemType: IntegrationType;
+}) => {
+  const choices = [];
+  if (itemType === IntegrationType.CHAT_WEB) {
+    choices.push({
+      child: <img src="/mvp/globe.svg" alt="Webchat" />,
+      onClick: () => setIsModalOpen(true),
+    });
+  }
+  return choices;
+};
 
 const IntegrationItemNode = memo((props: IntegrationItemProps) => {
   const { data } = props;
   const type = data.type || IntegrationType.CHAT_WEB;
 
-  const handleEdit = () => {
-    // TODO: Implementar edición
-    console.log("Edit integration", type);
-  };
-
-  const handleSettings = () => {
-    // TODO: Implementar configuración
-    console.log("Settings integration", type);
-  };
-
-  const handleDelete = () => {
-    // TODO: Implementar eliminación
-    console.log("Delete integration", type);
-  };
-
+  const [isModalOpen, setIsModalOpen] = useState(false);
   return (
-    <DefaultNode
-      {...props}
-      data={{
-        ...data,
-        name: getIntegrationName(type),
-        description: "Integración",
-        style: NodeStyle.SMALL,
-      }}
-      icon={
-        <img
-          src={getIntegrationIcon(type)}
-          alt={type}
-          className="w-6 h-6 shrink-0 text-sofia-superDark"
-        />
-      }
-      allowedConnections={["source"]}
-      contextMenuOptions={contextMenuOptions({
-        onEdit: handleEdit,
-        onSettings: handleSettings,
-        onDelete: handleDelete,
-      })}
-    />
+    <Fragment>
+      <DefaultNode
+        {...props}
+        data={{
+          ...data,
+          name: getIntegrationName(type),
+          description: "Integración",
+          style: NodeStyle.SMALL,
+        }}
+        icon={
+          <img
+            src={getIntegrationIcon(type)}
+            alt={type}
+            className="w-6 h-6 shrink-0 text-sofia-superDark"
+          />
+        }
+        allowedConnections={["source"]}
+        contextMenuOptions={contextMenuOptions({
+          setIsModalOpen,
+          itemType: type,
+        })}
+      />
+      <AddWebchat isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+    </Fragment>
   );
 });
 
