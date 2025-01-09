@@ -1,39 +1,38 @@
-import { useEffect, FC, useState } from "react";
-import { toast } from "react-toastify";
-import { FiPlus } from "react-icons/fi";
-import DepartmentCard from "./DepartmentCard";
-import { IDepartment } from "../../interfaces/departments";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { RootState } from "../../store";
-import Table from "../../components/Table/Table";
-import TableHeader from "../../components/Table/TableHeader";
+import { RootState } from "@store";
+import DepartmentCard from "./DepartmentCard";
+import Table from "@components/Table/Table";
+import TableHeader from "@components/Table/TableHeader";
 import DepartmentModal from "./DepartmentModal";
 import { getDepartments } from "@services/department";
+import PageContainer from "@components/PageContainer";
+import { IDepartment } from "@interfaces/departments";
+import { toast } from "react-toastify";
 
 const columns = [
   { key: "id", label: "ID", width: "w-[calc(100%/24*6)]" },
-  { key: "name", label: "Nombre", width: "w-[calc(100%/24*10)]" },
-  { key: "created_at", label: "Fecha Creación", width: "w-[calc(100%/24*6)]" },
-  { key: "actions", label: "Acciones", width: "w-[calc(100%/24*2)]" },
+  { key: "name", label: "Nombre", width: "w-[calc(100%/24*6)]" },
+  { key: "description", label: "Descripción", width: "w-[calc(100%/24*6)]" },
+  { key: "actions", label: "Acciones", width: "w-[calc(100%/24*6)]" },
 ];
 
-const Departments: FC = () => {
-  const [departments, setDepartments] = useState<IDepartment[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedDepartment, setSelectedDepartment] = useState<
-    IDepartment | undefined
-  >();
+const Departments = () => {
   const { selectOrganizationId } = useSelector(
     (state: RootState) => state.auth
   );
+  const [departments, setDepartments] = useState<IDepartment[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedDepartment, setSelectedDepartment] = useState<IDepartment>();
 
-  const fetchDepartments = async () => {
+  const getAllDepartments = async () => {
     if (!selectOrganizationId) return;
-    setLoading(true);
     try {
-      const data = await getDepartments(selectOrganizationId);
-      setDepartments(data);
+      const response = await getDepartments(selectOrganizationId);
+      if (response) {
+        setDepartments(response);
+      }
     } catch (error) {
       toast.error("Error al cargar departamentos");
     } finally {
@@ -42,7 +41,7 @@ const Departments: FC = () => {
   };
 
   useEffect(() => {
-    fetchDepartments();
+    getAllDepartments();
   }, [selectOrganizationId]);
 
   const handleOpenModal = (department?: IDepartment) => {
@@ -51,70 +50,51 @@ const Departments: FC = () => {
   };
 
   const handleCloseModal = () => {
-    setSelectedDepartment(undefined);
     setIsModalOpen(false);
+    setSelectedDepartment(undefined);
   };
 
-  const handleSuccess = (department: IDepartment) => {
-    if (selectedDepartment) {
-      setDepartments(prev =>
-        prev.map(dep => (dep.id === department.id ? department : dep))
-      );
-    } else {
-      setDepartments(prev => [...prev, department]);
-    }
+  const handleSuccess = () => {
+    handleCloseModal();
+    getAllDepartments();
   };
 
-  const handleDelete = (id: number) => {
+  const handleDelete = async (id: number) => {
     setDepartments(prev => prev.filter(dep => dep.id !== id));
   };
 
-  if (!selectOrganizationId) {
-    return <div>Selecciona una organización</div>;
-  }
-
   return (
-    <div className="p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Departamentos</h1>
-        <button
-          onClick={() => handleOpenModal()}
-          className="flex items-center gap-1 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-        >
-          <FiPlus /> Nuevo Departamento
-        </button>
-      </div>
-
-      <div className="bg-white rounded-lg shadow overflow-hidden">
-        <Table>
-          <TableHeader columns={columns} />
-          <tbody>
-            {departments.map(department => (
-              <DepartmentCard
-                key={department.id}
-                department={department}
-                onUpdate={() => handleOpenModal(department)}
-                onDelete={handleDelete}
-              />
-            ))}
-          </tbody>
-        </Table>
-      </div>
-
-      {loading && (
-        <div className="flex justify-center items-center mt-4">
-          <p>Cargando...</p>
-        </div>
-      )}
-
-      <DepartmentModal
-        isOpen={isModalOpen}
-        onClose={handleCloseModal}
-        onSuccess={handleSuccess}
-        department={selectedDepartment}
-        organizationId={selectOrganizationId}
-      />
-    </div>
+    <PageContainer
+      title="Departamentos"
+      buttonText="Nuevo Departamento"
+      onButtonClick={() => handleOpenModal()}
+      loading={loading}
+      appends={
+        selectOrganizationId ? (
+          <DepartmentModal
+            isOpen={isModalOpen}
+            onClose={handleCloseModal}
+            onSuccess={handleSuccess}
+            department={selectedDepartment}
+            organizationId={selectOrganizationId}
+          />
+        ) : undefined
+      }
+    >
+      <Table>
+        <TableHeader columns={columns} />
+        <tbody>
+          {departments.map(department => (
+            <DepartmentCard
+              key={department.id}
+              department={department}
+              onUpdate={() => handleOpenModal(department)}
+              onDelete={handleDelete}
+            />
+          ))}
+        </tbody>
+      </Table>
+    </PageContainer>
   );
 };
 
