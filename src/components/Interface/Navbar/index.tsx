@@ -1,12 +1,13 @@
 import SelectOrganization from "./SelectOrganization";
+import SelectDepartment from "./SelectDepartment";
 import { RootState } from "@store";
 import { useSelector } from "react-redux";
 
-type NavbarProps = {
+interface NavbarProps {
   windowWidth: number;
   sidebarMinimized: boolean;
   mobileResolution: boolean;
-};
+}
 
 const Navbar = ({ mobileResolution }: NavbarProps) => {
   const { user } = useSelector((state: RootState) => state.auth);
@@ -25,6 +26,7 @@ const Navbar = ({ mobileResolution }: NavbarProps) => {
           className={`flex gap-[10px] items-center ${mobileResolution ? "w-full" : ""}`}
         >
           <SelectOrganization mobileResolution={mobileResolution} />
+          <SelectDepartment mobileResolution={mobileResolution} />
         </div>
         <div
           className={`flex gap-[10px] items-center ${mobileResolution ? "ml-auto" : ""}`}

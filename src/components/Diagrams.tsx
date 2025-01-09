@@ -3,18 +3,19 @@ import {
   useNodesState,
   useEdgesState,
   Position,
+  OnNodesChange,
   useReactFlow,
   Node,
-  OnNodesChange,
   OnConnectEnd,
   OnEdgesChange,
   Connection,
   Edge,
+  applyNodeChanges,
+  applyEdgeChanges,
 } from "@xyflow/react";
 import { EdgeBase } from "@xyflow/system";
 import { useCallback, useEffect, useState } from "react";
 import "@xyflow/react/dist/style.css";
-import { useAppSelector } from "@store/hooks";
 import {
   NodeData,
   AgentData,
@@ -34,13 +35,16 @@ import ContextMenu from "./ContextMenu";
 import { useNodeSelection } from "./Diagrams/hooks/useNodeSelection";
 import { useContextMenu } from "./Diagrams/hooks/useContextMenu";
 import { useUnifiedNodeCreation } from "./Diagrams/hooks/useUnifiedNodeCreation";
-import { useEdges, useZoomToFit } from "./workspace/hooks/Diagrams";
+import { useEdges } from "./workspace/hooks/Diagrams";
 import { AuthEdge } from "./Diagrams/edges/AuthEdge";
 import { FunctionEditModal } from "./Diagrams/funcionComponents/FunctionEditModal";
 import { useFunctionSuccess } from "./Diagrams/hooks/useFunctionActions";
 import CustomEdge from "./Diagrams/edges/CustomEdge";
 import { CustomControls } from "./Diagrams/CustomControls";
 import { IntegrationType } from "@interfaces/integrations";
+import { useSelector } from "react-redux";
+import { RootState } from "@store";
+import { getWorkspaceData } from "@services/department";
 
 // Tipos y interfaces
 interface ContextMenuState {
@@ -245,8 +249,18 @@ const edgeTypes = {
   default: CustomEdge,
 };
 
+interface AgentState {
+  agentFunctions: {
+    id: number;
+    name: string;
+    autenticador?: { id: number };
+  }[];
+  integrations: Array<{ id: number; type: IntegrationType }>;
+}
+
 const createInitialNodes = (
-  agentId?: number
+  agentId?: number,
+  agentState?: AgentState
 ): { nodes: Node[]; initialEdges: Edge[] } => {
   // Centramos los nodos iniciales
   const agentNode = nodeFactory.createAgentNode(agentId || 0, {
@@ -259,7 +273,7 @@ const createInitialNodes = (
   });
   const nodes: Node[] = [integrationsNode, agentNode];
 
-  const agentFunctions = useAppSelector(state => state.chat.agentFunctions);
+  const agentFunctions = agentState?.agentFunctions || [];
   const initialEdges: Edge[] = [
     edgeFactory.createEdge(
       "e1-2",
@@ -305,7 +319,7 @@ const createInitialNodes = (
     );
   }
 
-  const integrationsList = useAppSelector(state => state.chat.integrations);
+  const integrationsList = agentState?.integrations || [];
   const defaultIntegrations =
     integrationsList.length === 0
       ? [{ id: -1, type: IntegrationType.CHAT_WEB }]
@@ -409,28 +423,64 @@ const DiagramFlow = ({
 );
 
 const ZoomTransition = () => {
-  const currentAgentId = useAppSelector(state => state.chat.currentAgent?.id);
-  const [nodesState, setNodes, onNodesChange] = useNodesState<Node>(
-    createInitialNodes(currentAgentId).nodes
+  const [agentId, setAgentId] = useState<number | null>(null);
+  const departmentId = useSelector(
+    (state: RootState) => state.department.selectedDepartmentId
   );
-  const [edges, setEdges, onEdgesChange] = useEdgesState<EdgeBase>(
-    createInitialNodes(currentAgentId).initialEdges
+
+  const [nodesState, setNodesState] = useNodesState<Node>([]);
+  const [edges, setEdges] = useEdgesState<Edge>([]);
+
+  useEffect(() => {
+    if (!departmentId) return;
+
+    const fetchDepartmentData = async () => {
+      try {
+        const response = await getWorkspaceData(departmentId);
+        const agentState = {
+          agentFunctions: response.department.agente.funciones,
+          integrations: response.department.integrations,
+        };
+        if (response.department?.agente?.id) {
+          setAgentId(response.department.agente.id);
+          const { nodes: initialNodes, initialEdges } = createInitialNodes(
+            agentId ?? undefined,
+            agentState
+          );
+          setNodesState(initialNodes);
+          setEdges(initialEdges);
+        }
+      } catch (error) {
+        console.error("Error fetching department data:", error);
+      }
+    };
+
+    fetchDepartmentData();
+  }, [departmentId, agentId]);
+
+  const reactFlowInstance = useReactFlow();
+  const { fitView } = reactFlowInstance;
+  useEffect(() => {
+    fitView();
+  }, [nodesState]);
+
+  const onNodesChange: OnNodesChange = useCallback(
+    changes => {
+      setNodesState(nds => applyNodeChanges(changes, nds));
+    },
+    [setNodesState]
+  );
+
+  const onEdgesChange: OnEdgesChange = useCallback(
+    changes => {
+      setEdges(eds => applyEdgeChanges(changes, eds));
+    },
+    [setEdges]
   );
 
   const [showFunctionModal, setShowFunctionModal] = useState(false);
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const [selectedAgentId, setSelectedAgentId] = useState<number | null>(null);
-
-  useEffect(() => {
-    if (!currentAgentId) return;
-    setNodes(nodes =>
-      nodes.map(node =>
-        node.type === "agente"
-          ? { ...node, data: { ...node.data, agentId: currentAgentId } }
-          : node
-      )
-    );
-  }, [currentAgentId, setNodes]);
 
   const { handleNodeDragStart, handleNodeDragStop } = useNodeSelection();
   const { contextMenu, setContextMenu, handleConnectEnd } = useContextMenu();
@@ -461,8 +511,6 @@ const ZoomTransition = () => {
   );
 
   const { onConnect } = useEdges(setEdges);
-  const { setCenter } = useReactFlow();
-  useZoomToFit(nodesState, setCenter);
 
   return (
     <div className="relative h-full">
@@ -497,11 +545,5 @@ const ZoomTransition = () => {
 };
 
 export default function Diagram() {
-  const currentAgentId = useAppSelector(state => state.chat.currentAgent?.id);
-
-  if (!currentAgentId) {
-    return <div>Cargando...</div>;
-  }
-
   return <ZoomTransition />;
 }

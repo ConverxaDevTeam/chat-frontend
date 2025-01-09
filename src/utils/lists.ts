@@ -40,6 +40,13 @@ export const sidebarLinks = [
     ],
   },
   {
+    to: "/departments",
+    text: "Departamentos",
+    active: ["/departments"],
+    img: "hotel.svg",
+    role: [OrganizationRoleType.OWNER, OrganizationRoleType.ADMIN],
+  },
+  {
     to: "/users",
     text: "Usuarios",
     active: ["/users"],

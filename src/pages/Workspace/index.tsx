@@ -1,9 +1,7 @@
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useState } from "react";
 import { ReactFlowProvider } from "@xyflow/react";
 import Diagram from "@components/Diagrams";
 import Chat from "@components/workspace/components/chat/Chat";
-import { useAppDispatch, useAppSelector } from "@store/hooks";
-import { initializeWorkspace } from "@store/actions/chat";
 
 const ChatWrapper = () => {
   const [isChatVisible, setIsChatVisible] = useState(false);
@@ -35,16 +33,6 @@ const ChatWrapper = () => {
 };
 
 const Workspace = () => {
-  const dispatch = useAppDispatch();
-  const organizationId = useAppSelector(
-    state => state.auth.selectOrganizationId
-  );
-
-  useEffect(() => {
-    if (organizationId) {
-      dispatch(initializeWorkspace(organizationId));
-    }
-  }, [dispatch, organizationId]);
   return (
     <div className="grid grid-cols-[1fr,auto] h-full w-full">
       {/* Diagram Section */}
