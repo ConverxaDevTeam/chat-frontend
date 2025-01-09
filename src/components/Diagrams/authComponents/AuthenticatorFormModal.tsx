@@ -1,27 +1,35 @@
-import { Input } from "@components/forms/input";
-import Modal from "@components/Modal";
-import { InputGroup } from "@components/forms/inputGroup";
-import {
-  useForm,
-  UseFormRegister,
-  UseFormSetValue,
-  FieldError,
-} from "react-hook-form";
 import {
   Autenticador,
   AutenticadorType,
   injectPlaces,
   HttpAutenticador,
   BearerConfig,
+  ApiKeyAutenticador,
+  ApiKeyInjectPlaces,
 } from "@interfaces/autenticators.interface";
 import { HttpMethod } from "@interfaces/functions.interface";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
+import { EndpointAuthenticatorForm } from "./EndpointAuthenticatorForm";
+import { ApiKeyAuthenticatorForm } from "./ApiKeyAuthenticatorForm";
+import { useWatch } from "react-hook-form";
+import { Input } from "@components/forms/input";
+import Modal from "@components/Modal";
+import { InputGroup } from "@components/forms/inputGroup";
+import {
+  useForm,
+  UseFormRegister,
+  FieldError,
+  FieldErrors,
+} from "react-hook-form";
 
 // Types
-type AuthenticatorType = Autenticador<HttpAutenticador<BearerConfig>>;
+type EndpointAuthenticatorType = Autenticador<HttpAutenticador<BearerConfig>>;
+type ApiKeyAuthenticatorType = ApiKeyAutenticador;
+type FormData = EndpointAuthenticatorType | ApiKeyAuthenticatorType;
 
 type NestedKeys =
-  | keyof AuthenticatorType
+  | keyof EndpointAuthenticatorType
+  | keyof ApiKeyAuthenticatorType
   | "config.url"
   | "config.method"
   | "config.injectConfig.tokenPath"
@@ -30,14 +38,9 @@ type NestedKeys =
 interface AuthenticatorFormModalProps {
   isShown: boolean;
   onClose: () => void;
-  onSubmit: (data: AuthenticatorType) => Promise<void>;
-  initialData?: AuthenticatorType;
+  onSubmit: (data: FormData) => Promise<void>;
+  initialData?: FormData;
   organizationId: number;
-}
-
-interface DynamicParam {
-  key: string;
-  value: string;
 }
 
 type FormFieldType = {
@@ -50,7 +53,7 @@ type FormFieldType = {
 };
 
 interface FormFieldProps extends FormFieldType {
-  register: UseFormRegister<AuthenticatorType>;
+  register: UseFormRegister<FormData>;
   error?: FieldError;
 }
 
@@ -63,24 +66,17 @@ const useAuthenticatorForm = ({
   AuthenticatorFormModalProps,
   "initialData" | "organizationId" | "onSubmit"
 >) => {
-  const form = useForm<AuthenticatorType>({
-    defaultValues: DEFAULT_VALUES(organizationId),
+  const form = useForm<FormData>({
+    defaultValues: initialData || DEFAULT_VALUES(organizationId),
   });
 
   const {
     register,
     reset,
-    setValue,
+    control,
     handleSubmit,
     formState: { errors },
   } = form;
-
-  useEffect(() => {
-    if (initialData) {
-      reset(initialData);
-    }
-  }, [initialData, reset]);
-
   const getNestedError = (path: NestedKeys): FieldError | undefined => {
     const [first, ...rest] = path.split(".");
     const firstError = errors[first as keyof typeof errors];
@@ -98,73 +94,11 @@ const useAuthenticatorForm = ({
 
   return {
     register,
+    getNestedError,
     errors,
     reset,
-    setValue,
-    getNestedError,
+    control,
     handleSubmit: handleSubmit(onSubmit),
-  };
-};
-
-const useDynamicParams = (
-  setValue: UseFormSetValue<AuthenticatorType>,
-  initialData?: AuthenticatorType
-) => {
-  const [params, setParams] = useState<DynamicParam[]>([
-    { key: "username", value: "" },
-    { key: "password", value: "" },
-  ]);
-
-  useEffect(() => {
-    if (initialData?.config?.params) {
-      const entries = Object.entries(initialData.config.params);
-      setParams(
-        entries.length > 0
-          ? entries.map(([key, value]) => ({ key, value }))
-          : [
-              { key: "username", value: "" },
-              { key: "password", value: "" },
-            ]
-      );
-    }
-  }, [initialData]);
-
-  const updateParam = (
-    index: number,
-    field: "key" | "value",
-    value: string
-  ) => {
-    const newParams = [...params];
-    newParams[index][field] = value;
-    setParams(newParams);
-    updateFormParams(newParams);
-  };
-
-  const updateFormParams = (params: DynamicParam[]) => {
-    const paramsObject = params.reduce(
-      (acc, param) => {
-        if (param.key) {
-          acc[param.key] = param.value;
-        }
-        return acc;
-      },
-      {} as Record<string, string>
-    );
-
-    setValue("config.params", paramsObject);
-  };
-
-  const resetParams = () => {
-    setParams([
-      { key: "username", value: "" },
-      { key: "password", value: "" },
-    ]);
-  };
-
-  return {
-    params,
-    updateParam,
-    resetParams,
   };
 };
 
@@ -214,85 +148,7 @@ const FormField = ({
   </InputGroup>
 );
 
-const DynamicParamsSection = ({
-  params,
-  onUpdateParam,
-}: {
-  params: DynamicParam[];
-  onUpdateParam: (index: number, field: "key" | "value", value: string) => void;
-}) => (
-  <div className="space-y-4 mt-4">
-    <div className="flex justify-between items-center">
-      <h3 className="text-lg font-medium">Parámetros</h3>
-    </div>
-    {params.map((param, index) => (
-      <div key={index} className="flex gap-2 items-start">
-        <InputGroup label="Parámetro">
-          <Input
-            placeholder="Nombre del parámetro"
-            value={param.key}
-            onChange={e => onUpdateParam(index, "key", e.target.value)}
-          />
-        </InputGroup>
-        <InputGroup label="Valor">
-          <Input
-            placeholder="Valor"
-            value={param.value}
-            onChange={e => onUpdateParam(index, "value", e.target.value)}
-          />
-        </InputGroup>
-      </div>
-    ))}
-  </div>
-);
-
-const FormActions = ({
-  onClose,
-  isEditing,
-}: {
-  onClose: () => void;
-  isEditing: boolean;
-}) => (
-  <div className="flex justify-end space-x-2 pt-4">
-    <button
-      type="button"
-      className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
-      onClick={onClose}
-    >
-      Cancelar
-    </button>
-    <button
-      type="submit"
-      className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
-    >
-      {isEditing ? "Actualizar" : "Crear"}
-    </button>
-  </div>
-);
-
-// Constants
-const DEFAULT_VALUES = (organizationId: number): AuthenticatorType => ({
-  name: "",
-  organizationId,
-  value: "",
-  life_time: 0,
-  type: AutenticadorType.ENDPOINT,
-  config: {
-    url: "",
-    method: HttpMethod.POST,
-    params: {
-      username: "",
-      password: "",
-    },
-    injectPlace: injectPlaces.BEARER_HEADER,
-    injectConfig: {
-      tokenPath: "",
-      refreshPath: "",
-    },
-  },
-});
-
-const FORM_FIELDS: FormFieldType[] = [
+const COMMON_FIELDS: FormFieldType[] = [
   {
     label: "Nombre",
     placeholder: "Nombre del autenticador",
@@ -300,42 +156,57 @@ const FORM_FIELDS: FormFieldType[] = [
     type: "text",
   },
   {
-    label: "Tiempo de vida (segundos)",
-    placeholder: "Tiempo de vida",
-    name: "life_time",
-    type: "number",
-  },
-  {
-    label: "URL",
-    placeholder: "URL del endpoint",
-    name: "config.url",
-    type: "text",
-  },
-  {
-    label: "Método",
-    placeholder: "Método HTTP",
-    name: "config.method",
+    label: "Tipo",
+    placeholder: "Tipo de autenticador",
+    name: "type",
     type: "select",
-    options: Object.values(HttpMethod).map(method => ({
-      value: method,
-      label: method,
-    })),
-  },
-  {
-    label: "Token Path",
-    placeholder: "Ruta del token en la respuesta",
-    name: "config.injectConfig.tokenPath",
-    type: "text",
-  },
-  {
-    label: "Refresh Path",
-    placeholder: "Ruta del refresh token en la respuesta",
-    name: "config.injectConfig.refreshPath",
-    type: "text",
+    options: [
+      { value: AutenticadorType.ENDPOINT, label: "Endpoint" },
+      { value: AutenticadorType.API_KEY, label: "API Key" },
+    ],
   },
 ];
 
-// Main Component
+const DEFAULT_VALUES = (
+  organizationId: number,
+  type = AutenticadorType.ENDPOINT
+): FormData => {
+  const baseValues = {
+    name: "",
+    organizationId,
+    value: "",
+    life_time: 0,
+    type,
+  };
+
+  if (type === AutenticadorType.ENDPOINT) {
+    return {
+      ...baseValues,
+      config: {
+        url: "",
+        method: HttpMethod.POST,
+        params: {
+          username: "",
+          password: "",
+        },
+        injectPlace: injectPlaces.BEARER_HEADER,
+        injectConfig: {
+          tokenPath: "",
+          refreshPath: "",
+        },
+      },
+    } as EndpointAuthenticatorType;
+  }
+
+  return {
+    ...baseValues,
+    config: {
+      injectPlace: ApiKeyInjectPlaces.HEADER,
+      key: "",
+    },
+  } as ApiKeyAuthenticatorType;
+};
+
 const AuthenticatorFormModal = ({
   isShown,
   onClose,
@@ -343,21 +214,41 @@ const AuthenticatorFormModal = ({
   initialData,
   organizationId,
 }: AuthenticatorFormModalProps) => {
-  const { register, reset, setValue, handleSubmit, getNestedError } =
+  const { register, reset, control, handleSubmit, errors, getNestedError } =
     useAuthenticatorForm({
       initialData,
       organizationId,
       onSubmit,
     });
 
-  const { params, updateParam, resetParams } = useDynamicParams(
-    setValue,
-    initialData
+  const [params, setParams] = useState<Array<{ key: string; value: string }>>(
+    []
   );
+
+  const onUpdateParam = useCallback(
+    (index: number, field: "key" | "value", value: string) => {
+      setParams(prev =>
+        prev.map((param, i) =>
+          i === index ? { ...param, [field]: value } : param
+        )
+      );
+    },
+    []
+  );
+
+  const authenticatorType = useWatch({
+    control,
+    name: "type",
+  });
+
+  useEffect(() => {
+    if (!initialData) {
+      reset(DEFAULT_VALUES(organizationId, authenticatorType));
+    }
+  }, [authenticatorType, organizationId, initialData, reset]);
 
   const handleClose = () => {
     reset(DEFAULT_VALUES(organizationId));
-    resetParams();
     onClose();
   };
 
@@ -372,7 +263,7 @@ const AuthenticatorFormModal = ({
       }
     >
       <form onSubmit={handleSubmit} className="space-y-4">
-        {FORM_FIELDS.map(field => (
+        {COMMON_FIELDS.map(field => (
           <FormField
             key={field.name}
             {...field}
@@ -380,12 +271,36 @@ const AuthenticatorFormModal = ({
             error={getNestedError(field.name)}
           />
         ))}
-        {getNestedError("life_time") && (
-          <p className="mt-1 text-sm text-red-500">0 significa que no expira</p>
-        )}
-        <DynamicParamsSection params={params} onUpdateParam={updateParam} />
 
-        <FormActions onClose={handleClose} isEditing={!!initialData} />
+        {authenticatorType === AutenticadorType.ENDPOINT ? (
+          <EndpointAuthenticatorForm
+            register={register as UseFormRegister<EndpointAuthenticatorType>}
+            errors={errors as FieldErrors<EndpointAuthenticatorType>}
+            onUpdateParam={onUpdateParam}
+            params={params}
+          />
+        ) : (
+          <ApiKeyAuthenticatorForm
+            register={register as UseFormRegister<ApiKeyAuthenticatorType>}
+            errors={errors as FieldErrors<ApiKeyAuthenticatorType>}
+          />
+        )}
+
+        <div className="flex justify-end gap-2">
+          <button
+            type="button"
+            onClick={handleClose}
+            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+          >
+            Cancelar
+          </button>
+          <button
+            type="submit"
+            className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700"
+          >
+            {initialData ? "Actualizar" : "Crear"}
+          </button>
+        </div>
       </form>
     </Modal>
   );

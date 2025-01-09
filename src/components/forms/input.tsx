@@ -12,29 +12,35 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   disabled?: boolean;
 }
 
-export const Input: React.FC<InputProps> = ({
-  placeholder,
-  register,
-  error,
-  className = "",
-  type = "text",
-  value,
-  onChange,
-  disabled,
-  ...props
-}) => {
-  return (
-    <input
-      type={type}
-      className={`w-full rounded-md bg-gray-100 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-3 py-2 sm:text-sm ${
-        error ? "border-red-500" : ""
-      } ${disabled ? "bg-gray-200" : ""} ${className}`}
-      placeholder={placeholder}
-      value={value}
-      onChange={onChange}
-      disabled={disabled}
-      {...(register && { ...register })}
-      {...props}
-    />
-  );
-};
+export const Input = React.forwardRef<HTMLInputElement, InputProps>(
+  (
+    {
+      placeholder,
+      register,
+      error,
+      className = "",
+      type = "text",
+      value,
+      onChange,
+      disabled,
+      ...props
+    },
+    ref
+  ) => {
+    return (
+      <input
+        type={type}
+        className={`w-full rounded-md bg-gray-100 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-3 py-2 sm:text-sm ${
+          error ? "border-red-500" : ""
+        } ${disabled ? "bg-gray-200" : ""} ${className}`}
+        placeholder={placeholder}
+        value={value}
+        onChange={onChange}
+        disabled={disabled}
+        ref={ref}
+        {...(register && { ...register })}
+        {...props}
+      />
+    );
+  }
+);
