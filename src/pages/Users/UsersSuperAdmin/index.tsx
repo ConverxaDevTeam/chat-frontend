@@ -5,7 +5,7 @@ import TableHeader from "@components/Table/TableHeader";
 import TableCell from "@components/Table/TableCell";
 import { IUserApi } from "../UsersOrganization";
 import PageContainer from "@components/PageContainer";
-import Modal from "@components/Modal";
+import CreateUserModal from "./CreateUserModal";
 
 interface Column {
   key: keyof IUserApi | "actions";
@@ -78,13 +78,11 @@ const UsersSuperAdmin = () => {
       onButtonClick={() => setIsModalOpen(true)}
       loading={loading}
       appends={
-        <Modal
-          isShown={isModalOpen}
+        <CreateUserModal
+          isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
-          header={<h2 className="text-xl font-bold">Nuevo Usuario</h2>}
-        >
-          <p>Formulario de usuario aquí</p>
-        </Modal>
+          onSuccess={getAllUsers}
+        />
       }
     >
       <Table>
