@@ -60,7 +60,7 @@ export const addUserInOrganizationById = async (
 
 export const getGlobalUsers = async () => {
   try {
-    const response = await axiosInstance.get(apiUrls.getUser());
+    const response = await axiosInstance.get(apiUrls.getGlobalUsers());
     if (response.data.ok) {
       return response.data.users;
     } else {

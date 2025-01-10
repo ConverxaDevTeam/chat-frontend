@@ -10,6 +10,7 @@ export const apiUrls = {
   deleteSession: (id: number) => `/api/auth/session/${id}`,
   //user
   getUser: () => `/api/user`,
+  getGlobalUsers: () => `/api/user/global`,
   getUserMyOrganization: (organizationId: number) =>
     `/api/user/all/${organizationId}`,
   addUserInOrganizationById: (organizationId: number) =>

@@ -16,16 +16,20 @@ const columns: Column[] = [
   { key: "email", label: "Email" },
   { key: "first_name", label: "Nombre" },
   { key: "last_name", label: "Apellido" },
+  { key: "userOrganizations", label: "Rol" },
   { key: "email_verified", label: "Verificado" },
   { key: "last_login", label: "Último Login" },
   { key: "actions", label: "Acciones" },
 ];
 
 const UserRow = ({ user }: { user: IUserApi }) => (
-  <tr className="hover:bg-gray-50">
+  <tr className="h-[60px] text-[14px] border-b-[1px] hover:bg-gray-50">
     <TableCell>{user.email}</TableCell>
     <TableCell>{user.first_name || "-"}</TableCell>
     <TableCell>{user.last_name || "-"}</TableCell>
+    <TableCell>
+      {user.userOrganizations.map(org => org.role).join(", ")}
+    </TableCell>
     <TableCell>
       <span
         className={`px-2 py-1 rounded-full text-xs ${
