@@ -39,6 +39,9 @@ export interface HttpAutenticador<
 }
 
 export interface ApiKeyAutenticador {
+  value: string;
+  name: string;
+  id?: number;
   type: AutenticadorType.API_KEY;
   config: {
     injectPlace: ApiKeyInjectPlaces;

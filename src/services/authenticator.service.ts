@@ -3,10 +3,15 @@ import {
   Autenticador,
   HttpAutenticador,
   BearerConfig,
+  ApiKeyAutenticador,
 } from "@interfaces/autenticators.interface";
 import { axiosInstance } from "@store/actions/auth";
 
 type AuthenticatorType = Autenticador<HttpAutenticador<BearerConfig>>;
+
+type EndpointAuthenticatorType = Autenticador<HttpAutenticador<BearerConfig>>;
+type ApiKeyAuthenticatorType = ApiKeyAutenticador;
+type FormData = EndpointAuthenticatorType | ApiKeyAuthenticatorType;
 
 class AuthenticatorService {
   async fetchAll(organizationId: number) {
@@ -16,7 +21,7 @@ class AuthenticatorService {
     return response.data;
   }
 
-  async create(data: Omit<AuthenticatorType, "id">) {
+  async create(data: Omit<FormData, "id">) {
     const response = await axiosInstance.post<AuthenticatorType>(
       apiUrls.authenticators.base(),
       {
@@ -28,7 +33,7 @@ class AuthenticatorService {
     return response.data;
   }
 
-  async update(id: number, data: AuthenticatorType) {
+  async update(id: number, data: FormData) {
     const response = await axiosInstance.patch<AuthenticatorType>(
       apiUrls.authenticators.byId(id),
       data
