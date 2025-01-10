@@ -2,7 +2,12 @@ import { HttpMethod } from "./functions.interface";
 
 export enum AutenticadorType {
   ENDPOINT = "endpoint",
-  CONSTANT = "constant",
+  API_KEY = "api_key",
+}
+
+export enum ApiKeyInjectPlaces {
+  HEADER = "header",
+  QUERY_PARAM = "query_PARAMS",
 }
 
 export enum injectPlaces {
@@ -30,6 +35,17 @@ export interface HttpAutenticador<
     params: Record<string, string>;
     injectPlace: T["injectPlace"];
     injectConfig: T["injectConfig"];
+  };
+}
+
+export interface ApiKeyAutenticador {
+  value: string;
+  name: string;
+  id?: number;
+  type: AutenticadorType.API_KEY;
+  config: {
+    injectPlace: ApiKeyInjectPlaces;
+    key: string;
   };
 }
 
