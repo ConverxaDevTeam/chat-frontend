@@ -6,6 +6,7 @@ import { useSweetAlert } from "@/hooks/useSweetAlert";
 import { authenticatorService } from "@/services/authenticator.service";
 import { functionsService } from "@/services/functions.service"; // Import the functionsService
 import {
+  ApiKeyAutenticador,
   Autenticador,
   BearerConfig,
   HttpAutenticador,
@@ -71,25 +72,35 @@ const useFetchAuthenticators = (
   }, [organizationId]);
 };
 
+type EndpointAuthenticatorType = Autenticador<HttpAutenticador<BearerConfig>>;
+type ApiKeyAuthenticatorType = ApiKeyAutenticador;
+type FormData = EndpointAuthenticatorType | ApiKeyAuthenticatorType;
+
 const useAuthenticatorSubmit = (
   setAuthenticators: React.Dispatch<React.SetStateAction<AuthenticatorType[]>>,
   onClose: () => void
 ) => {
   return useCallback(
-    async (data: AuthenticatorType) => {
+    async (data: FormData) => {
       try {
-        const result = data.id
-          ? await authenticatorService.update(data.id, data)
-          : await authenticatorService.create(data);
+        const authenticatorData = data;
+        const result = authenticatorData.id
+          ? await authenticatorService.update(
+              authenticatorData.id,
+              authenticatorData
+            )
+          : await authenticatorService.create(authenticatorData);
 
         setAuthenticators(prev =>
-          data.id
-            ? prev.map(auth => (auth.id === data.id ? result : auth))
+          authenticatorData.id
+            ? prev.map(auth =>
+                auth.id === authenticatorData.id ? result : auth
+              )
             : [...prev, result]
         );
 
         toast.success(
-          `Autenticador ${data.id ? "actualizado" : "creado"} exitosamente`
+          `Autenticador ${authenticatorData.id ? "actualizado" : "creado"} exitosamente`
         );
         onClose();
       } catch {
