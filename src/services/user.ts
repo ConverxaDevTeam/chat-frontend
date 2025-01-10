@@ -103,3 +103,19 @@ export const createGlobalUser = async (
     return false;
   }
 };
+
+export const deleteGlobalUser = async (userId: number) => {
+  try {
+    const response = await axiosInstance.delete(
+      apiUrls.getGlobalUsers() + "/" + userId
+    );
+    if (response.data.ok) {
+      return true;
+    } else {
+      return false;
+    }
+  } catch (error) {
+    handleAxiosError(error);
+    return false;
+  }
+};

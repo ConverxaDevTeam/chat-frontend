@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
-import { getGlobalUsers } from "@services/user";
+import { deleteGlobalUser, getGlobalUsers } from "@services/user";
 import Table from "@components/Table/Table";
 import TableHeader from "@components/Table/TableHeader";
 import TableCell from "@components/Table/TableCell";
 import { IUserApi } from "../UsersOrganization";
 import PageContainer from "@components/PageContainer";
 import CreateUserModal from "./CreateUserModal";
+import { useSweetAlert } from "@hooks/useSweetAlert";
 
 interface Column {
   key: keyof IUserApi | "actions";
@@ -22,7 +23,13 @@ const columns: Column[] = [
   { key: "actions", label: "Acciones" },
 ];
 
-const UserRow = ({ user }: { user: IUserApi }) => (
+const UserRow = ({
+  user,
+  onDelete,
+}: {
+  user: IUserApi;
+  onDelete: (userId: number) => void;
+}) => (
   <tr className="h-[60px] text-[14px] border-b-[1px] hover:bg-gray-50">
     <TableCell>{user.email}</TableCell>
     <TableCell>{user.first_name || "-"}</TableCell>
@@ -49,7 +56,12 @@ const UserRow = ({ user }: { user: IUserApi }) => (
     <TableCell>
       <div className="flex gap-2">
         <button className="text-blue-600 hover:text-blue-800">Editar</button>
-        <button className="text-red-600 hover:text-red-800">Eliminar</button>
+        <button
+          className="text-red-600 hover:text-red-800"
+          onClick={() => onDelete(user.id)}
+        >
+          Eliminar
+        </button>
       </div>
     </TableCell>
   </tr>
@@ -60,6 +72,8 @@ const UsersSuperAdmin = () => {
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  const { handleOperation, showConfirmation } = useSweetAlert();
+
   const getAllUsers = async () => {
     try {
       const response = await getGlobalUsers();
@@ -69,6 +83,26 @@ const UsersSuperAdmin = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleDelete = async (userId: number) => {
+    const result = await showConfirmation({
+      title: "Eliminar usuario",
+      text: "Esta seguro de eliminar este usuario?",
+    });
+    if (!result) return;
+    handleOperation(
+      async () => {
+        await deleteGlobalUser(userId);
+        getAllUsers();
+      },
+      {
+        title: "Eliminando usuario",
+        successTitle: "Usuario eliminado",
+        successText: "El usuario se ha eliminado correctamente",
+        errorTitle: "Error al eliminar usuario",
+      }
+    );
   };
 
   useEffect(() => {
@@ -93,7 +127,7 @@ const UsersSuperAdmin = () => {
         <TableHeader columns={columns} />
         <tbody>
           {users.map(user => (
-            <UserRow key={user.id} user={user} />
+            <UserRow key={user.id} user={user} onDelete={handleDelete} />
           ))}
         </tbody>
       </Table>
