@@ -3,6 +3,7 @@ import {
   SubmitHandler,
   UseFormRegister,
   FieldErrors,
+  Control,
 } from "react-hook-form";
 import { InputGroup } from "@components/forms/inputGroup";
 import { Input } from "@components/forms/input";
@@ -90,7 +91,7 @@ type FieldType = "input" | "textarea" | "select";
 // Componentes de formulario
 interface FormFieldProps {
   register: UseFormRegister<FunctionFormValues>;
-  errors: FieldErrors<FunctionFormValues>;
+  control: Control<FunctionFormValues>;
   name: keyof FunctionFormValues;
   placeholder: string;
   validation?: Record<string, unknown>;
@@ -102,7 +103,7 @@ interface FormFieldProps {
 
 const RenderField = ({
   register,
-  errors,
+  control,
   name,
   placeholder,
   validation = {},
@@ -116,24 +117,16 @@ const RenderField = ({
         <TextArea
           placeholder={placeholder}
           register={register(name, validation)}
-          error={errors[name]?.message}
           rows={rows}
         />
       );
     case "select":
-      return (
-        <Select
-          options={options}
-          register={register(name, validation)}
-          error={errors[name]?.message}
-        />
-      );
+      return <Select options={options} control={control} name={name} />;
     default:
       return (
         <Input
           placeholder={placeholder}
           register={register(name, validation)}
-          error={errors[name]?.message}
         />
       );
   }
@@ -141,6 +134,7 @@ const RenderField = ({
 
 const FormField = ({
   register,
+  control,
   errors,
   name,
   placeholder,
@@ -148,12 +142,12 @@ const FormField = ({
   type = "input",
   options = [],
   rows = 2,
-}: FormFieldProps) => {
+}: FormFieldProps & { errors: FieldErrors<FunctionFormValues> }) => {
   return (
     <InputGroup label={name} errors={errors[name]}>
       <RenderField
         register={register}
-        errors={errors}
+        control={control}
         name={name}
         placeholder={placeholder}
         validation={validation}
@@ -191,6 +185,7 @@ export const FunctionForm = (props: FunctionFormProps) => {
     form: {
       register,
       formState: { errors },
+      control,
     },
     isLoading,
     isCreating,
@@ -240,6 +235,7 @@ export const FunctionForm = (props: FunctionFormProps) => {
           <FormField
             key={field.name}
             register={register}
+            control={control}
             errors={errors}
             {...field}
           />

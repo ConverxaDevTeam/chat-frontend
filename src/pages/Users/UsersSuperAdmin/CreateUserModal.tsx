@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
-import { useForm, UseFormRegister, FieldErrors } from "react-hook-form";
+import { useForm, FieldErrors, Control } from "react-hook-form";
 import Modal from "@components/Modal";
 import { createGlobalUser } from "@services/user";
 import { getOrganizations } from "@services/organizations";
 import { toast } from "react-toastify";
 import { OrganizationRoleType } from "@utils/interfaces";
+import { Select } from "@components/forms/select";
+import { InputGroup } from "@components/forms/inputGroup";
 
 interface CreateUserModalProps {
   isOpen: boolean;
@@ -26,23 +28,35 @@ const CreateUserModal = ({
   const {
     register,
     handleSubmit,
-    watch,
     reset,
     formState: { errors, isSubmitting },
+    control,
+    watch,
   } = useForm<FormData>({
     defaultValues: {
       role: OrganizationRoleType.ING_PREVENTA,
     },
   });
 
-  const role = watch("role");
-  const isTecnicoRole = role === OrganizationRoleType.USR_TECNICO;
+  const role = watch("role"); // Observar el valor del "role"
+  const formValues = watch();
+
+  useEffect(() => {
+    console.log("Form values:", formValues);
+  }, [formValues]);
+
+  useEffect(() => {
+    console.log("Valor de rol observado:", role);
+  }, [role]);
 
   const onSubmit = async (data: FormData) => {
+    console.log("Formulario enviado con datos:", data);
     const success = await createGlobalUser(
       data.email,
-      data.role,
-      isTecnicoRole ? data.organizationId : undefined
+      role,
+      role === OrganizationRoleType.USR_TECNICO
+        ? data.organizationId
+        : undefined
     );
     if (success) {
       toast.success("Usuario creado exitosamente");
@@ -59,10 +73,7 @@ const CreateUserModal = ({
       header={<h2 className="text-xl font-bold">Nuevo Usuario</h2>}
     >
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Email
-          </label>
+        <InputGroup label="Email" errors={errors.email}>
           <input
             type="email"
             {...register("email", {
@@ -77,27 +88,25 @@ const CreateUserModal = ({
           {errors.email && (
             <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
           )}
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Rol</label>
-          <select
-            {...register("role")}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-          >
-            <option value={OrganizationRoleType.ING_PREVENTA}>Preventa</option>
-            <option value={OrganizationRoleType.USR_TECNICO}>Técnico</option>
-          </select>
-        </div>
-
-        {isTecnicoRole && (
+        </InputGroup>
+        <InputGroup label="Rol" errors={errors.role}>
+          <Select
+            name="role"
+            control={control}
+            options={[
+              { value: OrganizationRoleType.ING_PREVENTA, label: "Preventa" },
+              { value: OrganizationRoleType.USR_TECNICO, label: "Técnico" },
+            ]}
+            placeholder="Selecciona un rol"
+          />
+        </InputGroup>
+        {role === OrganizationRoleType.USR_TECNICO && (
           <OrganizationSelect
-            register={register}
             errors={errors}
             isRequired={true}
+            control={control}
           />
         )}
-
         <div className="flex justify-end gap-2">
           <button
             type="button"
@@ -120,9 +129,9 @@ const CreateUserModal = ({
 };
 
 interface OrganizationSelectProps {
-  register: UseFormRegister<FormData>;
   errors: FieldErrors<FormData>;
   isRequired: boolean;
+  control: Control<FormData>;
 }
 
 interface IOrganization {
@@ -131,9 +140,9 @@ interface IOrganization {
 }
 
 const OrganizationSelect = ({
-  register,
   errors,
   isRequired,
+  control,
 }: OrganizationSelectProps) => {
   const [organizations, setOrganizations] = useState<IOrganization[]>([]);
 
@@ -148,29 +157,20 @@ const OrganizationSelect = ({
   }, []);
 
   return (
-    <div>
-      <label className="block text-sm font-medium text-gray-700">
-        Organización
-      </label>
-      <select
-        {...register("organizationId", {
+    <InputGroup label="Organización" errors={errors.organizationId}>
+      <Select
+        name="organizationId"
+        control={control}
+        rules={{
           required: isRequired ? "La organización es requerida" : false,
-        })}
-        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-      >
-        <option value="">Selecciona una organización</option>
-        {organizations.map(org => (
-          <option key={org.id} value={org.id}>
-            {org.name}
-          </option>
-        ))}
-      </select>
-      {errors.organizationId && (
-        <p className="mt-1 text-sm text-red-600">
-          {errors.organizationId.message}
-        </p>
-      )}
-    </div>
+        }}
+        placeholder="Selecciona una organización"
+        options={organizations.map(org => ({
+          value: org.id.toString(),
+          label: org.name,
+        }))}
+      />
+    </InputGroup>
   );
 };
 
