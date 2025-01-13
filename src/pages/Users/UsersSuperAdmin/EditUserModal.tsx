@@ -158,7 +158,7 @@ const EditUserModal = ({
             onClose={() => setIsAddingRole(false)}
             onSuccess={() => {
               setIsAddingRole(false);
-              refreshUserRoles(); // Actualizamos los roles después de agregar uno nuevo
+              refreshUserRoles();
             }}
             email={email}
           />
