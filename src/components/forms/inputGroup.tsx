@@ -1,10 +1,10 @@
-import { FieldError } from "react-hook-form";
+import { FieldError, Merge } from "react-hook-form";
 
 interface InputGroupProps {
   label: string;
   labelColor?: string;
   children: React.ReactNode;
-  errors?: FieldError;
+  errors?: FieldError | Merge<FieldError, (FieldError | undefined)[]>;
 }
 
 export const InputGroup = ({
@@ -13,6 +13,13 @@ export const InputGroup = ({
   errors,
   labelColor = "text-gray-600",
 }: InputGroupProps) => {
+  // Aseguramos que los errores sean un array de FieldError
+  const errorMessages = Array.isArray(errors)
+    ? errors.filter((error): error is FieldError => error !== undefined) // Filtramos los undefined
+    : errors
+      ? [errors]
+      : [];
+
   return (
     <div>
       <label
@@ -21,7 +28,13 @@ export const InputGroup = ({
         {label}
       </label>
       {children}
-      {errors && <p className="text-red-500 text-sm mt-1">{errors.message}</p>}
+      {errorMessages.length > 0 && (
+        <div className="text-red-500 text-sm mt-1">
+          {errorMessages.map((error, index) => (
+            <p key={index}>{error.message}</p>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

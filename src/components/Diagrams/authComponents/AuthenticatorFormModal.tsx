@@ -11,7 +11,7 @@ import { HttpMethod } from "@interfaces/functions.interface";
 import { useEffect, useState, useCallback } from "react";
 import { EndpointAuthenticatorForm } from "./EndpointAuthenticatorForm";
 import { ApiKeyAuthenticatorForm } from "./ApiKeyAuthenticatorForm";
-import { useWatch } from "react-hook-form";
+import { Control, useWatch } from "react-hook-form";
 import { Input } from "@components/forms/input";
 import Modal from "@components/Modal";
 import { InputGroup } from "@components/forms/inputGroup";
@@ -275,6 +275,7 @@ const AuthenticatorFormModal = ({
         {authenticatorType === AutenticadorType.ENDPOINT ? (
           <EndpointAuthenticatorForm
             register={register as UseFormRegister<EndpointAuthenticatorType>}
+            control={control as Control<EndpointAuthenticatorType>}
             errors={errors as FieldErrors<EndpointAuthenticatorType>}
             onUpdateParam={onUpdateParam}
             params={params}
@@ -282,6 +283,7 @@ const AuthenticatorFormModal = ({
         ) : (
           <ApiKeyAuthenticatorForm
             register={register as UseFormRegister<ApiKeyAuthenticatorType>}
+            control={control as Control<ApiKeyAuthenticatorType>}
             errors={errors as FieldErrors<ApiKeyAuthenticatorType>}
           />
         )}

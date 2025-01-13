@@ -1,42 +1,56 @@
-import React from "react";
-import { UseFormRegisterReturn } from "react-hook-form";
+import { Controller, Control, FieldValues, Path } from "react-hook-form";
 
 interface Option {
   value: string;
   label: string;
 }
 
-interface SelectProps {
+interface SelectProps<T extends FieldValues> {
+  name: Path<T>; // Asegura que el nombre sea válido dentro del tipo de formulario
+  control: Control<T, unknown>; // Usa el tipo del formulario genérico
   options: Option[];
-  register: UseFormRegisterReturn;
-  error?: string;
+  rules?: Record<string, unknown>;
   placeholder?: string;
-  className?: string;
 }
 
-export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
-  ({ options, register, error, placeholder, className = "" }, ref) => {
-    return (
-      <select
-        {...register}
-        ref={ref}
-        className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ${
-          error
-            ? "ring-red-300 focus:ring-red-500"
-            : "ring-gray-300 focus:ring-blue-500"
-        } focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6 ${className}`}
-      >
-        {placeholder && (
-          <option value="" disabled>
-            {placeholder}
-          </option>
-        )}
-        {options.map(option => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
-      </select>
-    );
+export const Select = <T extends FieldValues>({
+  name,
+  control,
+  options,
+  rules,
+  placeholder,
+}: SelectProps<T>) => {
+  if (!control) {
+    return null;
   }
-);
+  return (
+    <div>
+      <label className="block text-sm font-medium text-gray-700">
+        {placeholder}
+      </label>
+      <Controller
+        name={name}
+        control={control}
+        rules={rules}
+        render={({ field }) => (
+          <select
+            {...field}
+            value={field.value || ""} // Aseguramos un valor predeterminado si `value` es `undefined`
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+          >
+            <option value="" disabled>
+              {placeholder || "Select an option"}
+            </option>
+            {options.map(option => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        )}
+      />
+    </div>
+  );
+};
+
+export default Select;
