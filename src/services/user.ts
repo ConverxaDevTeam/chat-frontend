@@ -142,7 +142,7 @@ export const updateGlobalUser = async (
   userId: number,
   email: string,
   roles: OrganizationRoleType[], // Cambié `role` a `roles` para aceptar múltiples
-  organizationIds: string[] // Aceptamos múltiples organizaciones, incluyendo "global"
+  organizationIds: (number | null)[] // Aceptamos múltiples organizaciones, incluyendo "global"
 ) => {
   const global_roles = [
     OrganizationRoleType.ADMIN,

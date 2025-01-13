@@ -39,16 +39,7 @@ const CreateUserModal = ({
     },
   });
 
-  const role = watch("role"); // Observar el valor del "role"
-  const formValues = watch();
-
-  useEffect(() => {
-    console.log("Form values:", formValues);
-  }, [formValues]);
-
-  useEffect(() => {
-    console.log("Valor de rol observado:", role);
-  }, [role]);
+  const role = watch("role");
 
   const onSubmit = async (data: FormData) => {
     console.log("Formulario enviado con datos:", data);

@@ -7,21 +7,6 @@ import { toast } from "react-toastify";
 import SelectMultiple from "@components/forms/selectMultiple";
 import { InputGroup } from "@components/forms/inputGroup";
 
-interface UserOrganization {
-  organizationId: string; // o el tipo que sea adecuado para identificar la organización
-  role: OrganizationRoleType;
-}
-
-export interface UserResponse {
-  id: number;
-  email: string;
-  email_verified: boolean;
-  last_login: string | null;
-  first_name: string | null;
-  last_name: string | null;
-  userOrganizations: UserOrganization[];
-}
-
 interface EditUserModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -32,7 +17,7 @@ interface EditUserModalProps {
 interface FormData {
   email: string;
   roles: OrganizationRoleType[]; // Aceptamos múltiples roles
-  organizations: string[]; // Aceptamos múltiples organizaciones
+  organizations: (number | null)[]; // Aceptamos múltiples organizaciones
 }
 
 const EditUserModal = ({
@@ -46,7 +31,7 @@ const EditUserModal = ({
     control,
     handleSubmit,
     reset,
-    setValue, // Necesitamos setValue para establecer los valores por defecto
+    setValue,
     formState: { errors },
   } = useForm<FormData>();
 
@@ -57,17 +42,25 @@ const EditUserModal = ({
     const fetchUser = async () => {
       const user = await getGlobalUser(userId);
       if (user) {
-        reset({
+        // Verificar que los datos están disponibles antes de resetear
+        const initialData = {
           email: user.email,
-          roles: user.userOrganizations.map(org => org.role), // Asignamos todos los roles
-          organizations: user.userOrganizations.map(org => org.organizationId), // Asignamos las organizaciones
-        });
+          roles: user.userOrganizations.map(
+            org => org.role as OrganizationRoleType
+          ), // Asignamos todos los roles
+          organizations: user.userOrganizations.map(
+            org => org.organization?.id ?? null
+          ), // Asignamos las organizaciones
+        };
+        reset(initialData);
       }
     };
+
+    // Solo llamar a fetchUser si el modal está abierto
     if (isOpen) {
       fetchUser();
     }
-  }, [isOpen, userId, reset]);
+  }, [isOpen, userId, reset]); // Este useEffect solo se ejecutará cuando `isOpen` o `userId` cambien
 
   const onSubmit = async (data: FormData) => {
     const success = await updateGlobalUser(
@@ -130,7 +123,7 @@ const EditUserModal = ({
             name="organizations"
             control={control}
             options={[
-              { value: "global", label: "Global" }, // Opción global
+              { value: null, label: "Global" }, // Opción global
               // Agregar dinámicamente las organizaciones del usuario si las tiene
               { value: "org1", label: "Organización 1" },
               { value: "org2", label: "Organización 2" },
