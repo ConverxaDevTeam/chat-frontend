@@ -8,11 +8,13 @@ import {
   BearerConfig,
 } from "@interfaces/autenticators.interface";
 import { HttpMethod } from "@interfaces/functions.interface";
+import { Control } from "react-hook-form";
 
 type EndpointAuthenticatorType = Autenticador<HttpAutenticador<BearerConfig>>;
 
 interface EndpointFormProps {
   register: UseFormRegister<EndpointAuthenticatorType>;
+  control: Control<EndpointAuthenticatorType>;
   errors: FieldErrors<EndpointAuthenticatorType>;
   onUpdateParam?: (
     index: number,
@@ -24,6 +26,7 @@ interface EndpointFormProps {
 
 export const EndpointAuthenticatorForm = ({
   register,
+  control,
   errors,
   onUpdateParam,
   params,
@@ -38,35 +41,35 @@ export const EndpointAuthenticatorForm = ({
           error={errors.life_time?.message}
         />
       </InputGroup>
-      <InputGroup label="URL">
-        <Input
-          placeholder="URL del endpoint"
-          {...register("config.url")}
-          error={errors.config?.url?.message}
-        />
+      <InputGroup label="URL" errors={errors.config?.url}>
+        <Input placeholder="URL del endpoint" {...register("config.url")} />
       </InputGroup>
-      <InputGroup label="Método">
+      <InputGroup label="Método" errors={errors.config?.method}>
         <Select
-          register={register("config.method")}
-          error={errors.config?.method?.message}
+          name="config.method" // Agregamos el nombre del campo "method"
+          control={control}
           options={Object.values(HttpMethod).map(method => ({
             value: method,
             label: method,
           }))}
         />
       </InputGroup>
-      <InputGroup label="Token Path">
+      <InputGroup
+        label="Token Path"
+        errors={errors.config?.injectConfig?.tokenPath}
+      >
         <Input
           placeholder="Ruta del token en la respuesta"
           {...register("config.injectConfig.tokenPath")}
-          error={errors.config?.injectConfig?.tokenPath?.message}
         />
       </InputGroup>
-      <InputGroup label="Refresh Path">
+      <InputGroup
+        label="Refresh Path"
+        errors={errors.config?.injectConfig?.refreshPath}
+      >
         <Input
           placeholder="Ruta del refresh token en la respuesta"
           {...register("config.injectConfig.refreshPath")}
-          error={errors.config?.injectConfig?.refreshPath?.message}
         />
       </InputGroup>
       {params && onUpdateParam && (

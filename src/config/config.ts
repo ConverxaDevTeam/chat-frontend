@@ -10,13 +10,17 @@ export const apiUrls = {
   deleteSession: (id: number) => `/api/auth/session/${id}`,
   //user
   getUser: () => `/api/user`,
+  getGlobalUsers: () => `/api/user/global`,
   getUserMyOrganization: (organizationId: number) =>
     `/api/user/all/${organizationId}`,
   addUserInOrganizationById: (organizationId: number) =>
     `/api/user/add/${organizationId}`,
+  deleteRole: (id: number) => `/api/user/role/${id}`,
   //organizations
   getOrganizations: () => `/api/organization`,
   createOrganization: () => `/api/organization`,
+  deleteOrganization: (id: number) => `/api/organization/${id}`,
+  editOrganization: (id: number) => `/api/organization/${id}`,
   myOrganizations: () => `/api/organization/my-organizations`,
   //socket
   socket: () => `${baseUrl}/api/socket`,
@@ -31,8 +35,8 @@ export const apiUrls = {
   //conversations
   getConversationsByOrganizationId: (organizationId: number) =>
     `/api/conversation/organization/${organizationId}`,
-  getIntegrations: (departmentId: number, organizationId: number) =>
-    `/api/integration/all/${organizationId}/${departmentId}`,
+  getIntegrations: (departmentId: number) =>
+    `/api/integration/all/${departmentId}`,
   getConversationByOrganizationIdAndById: (
     organizationId: number,
     conversationId: number
@@ -45,6 +49,10 @@ export const apiUrls = {
     byId: (id: number) => `/api/departments/${id}`,
     default: (organizationId: number) =>
       `/api/departments/default/${organizationId}`,
+    workspace: (departmentId: number) =>
+      `/api/departments/${departmentId}/workspace`,
+    all: (organizationId: number) =>
+      `/api/departments/organization/${organizationId}`,
   },
 
   // agents

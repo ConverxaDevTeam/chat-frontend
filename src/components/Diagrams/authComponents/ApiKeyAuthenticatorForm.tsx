@@ -6,29 +6,28 @@ import {
   ApiKeyAutenticador,
   ApiKeyInjectPlaces,
 } from "@interfaces/autenticators.interface";
+import { Control } from "react-hook-form";
 
 interface ApiKeyFormProps {
   register: UseFormRegister<ApiKeyAutenticador>;
+  control: Control<ApiKeyAutenticador>;
   errors: FieldErrors<ApiKeyAutenticador>;
 }
 
 export const ApiKeyAuthenticatorForm = ({
+  control,
   register,
   errors,
 }: ApiKeyFormProps) => {
   return (
     <div className="space-y-4">
-      <InputGroup label="API Key">
-        <Input
-          placeholder="Ingrese la API Key"
-          {...register("config.key")}
-          error={errors.config?.key?.message}
-        />
+      <InputGroup label="API Key" errors={errors.config?.key}>
+        <Input placeholder="Ingrese la API Key" {...register("config.key")} />
       </InputGroup>
-      <InputGroup label="Ubicación">
+      <InputGroup label="Ubicación" errors={errors.config?.injectPlace}>
         <Select
-          register={register("config.injectPlace")}
-          error={errors.config?.injectPlace?.message}
+          name="config.injectPlace"
+          control={control}
           options={Object.values(ApiKeyInjectPlaces).map(place => ({
             value: place,
             label:

@@ -1,12 +1,18 @@
 import { IOrganizarion } from ".";
 import { getInitials } from "@utils/format";
-import { IconEdit } from "@utils/svgs";
+import { FiEdit2, FiTrash2 } from "react-icons/fi";
 
 interface OrganizationCardProps {
   organization: IOrganizarion;
+  onEdit: () => void;
+  onDelete: () => void;
 }
 
-const OrganizationCard = ({ organization }: OrganizationCardProps) => {
+const OrganizationCard = ({
+  organization,
+  onEdit,
+  onDelete,
+}: OrganizationCardProps) => {
   return (
     <div className="bg-app-c2 p-[30px] rounded-[8px] flex justify-between h-[140px] gap-[16px] border-[1px] border-app-c3">
       <div className="flex items-center gap-[16px] flex-1">
@@ -33,7 +39,20 @@ const OrganizationCard = ({ organization }: OrganizationCardProps) => {
         </div>
       </div>
       <div className="flex flex-col justify-between gap-[16px]">
-        <IconEdit className="w-[24px] h-[24px] text-sofiaCall-dark cursor-pointer" />
+        <div className="flex gap-2">
+          <button
+            onClick={onEdit}
+            className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+          >
+            <FiEdit2 className="w-5 h-5" />
+          </button>
+          <button
+            onClick={onDelete}
+            className="p-2 hover:bg-gray-100 rounded-full transition-colors text-red-500"
+          >
+            <FiTrash2 className="w-5 h-5" />
+          </button>
+        </div>
       </div>
     </div>
   );

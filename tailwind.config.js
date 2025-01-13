@@ -31,7 +31,7 @@ export default {
         },
       },
       fontFamily: {
-        roboto: ["Roboto", "serif"],
+        quicksand: ["Quicksand", "sans-serif"],
       },
       cursor: {
         grab: "grab",

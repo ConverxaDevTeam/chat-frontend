@@ -19,7 +19,7 @@ const ItemSidebar = ({
   link,
   sidebarMinimized,
   mobileResolution,
-  role = [],
+  role: roles = [],
 }: ItemSidebarProps) => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -27,14 +27,15 @@ const ItemSidebar = ({
   const { selectOrganizationId, myOrganizations } = useSelector(
     (state: RootState) => state.auth
   );
-
-  const actualRole = myOrganizations.find(
-    org => org.id === selectOrganizationId
-  )?.role;
+  const actualRoles = myOrganizations
+    .filter(org => org.organization.id === selectOrganizationId)
+    .map(org => org.role);
 
   const active = currentPath === link.to || link.active.includes(currentPath);
-
-  if (role.length > 0 && !role.includes(actualRole!)) {
+  if (
+    !actualRoles ||
+    (roles.length > 0 && !roles.some(role => actualRoles!.includes(role)))
+  ) {
     return null;
   }
 
