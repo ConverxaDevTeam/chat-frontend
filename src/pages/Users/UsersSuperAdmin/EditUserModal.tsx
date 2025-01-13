@@ -33,25 +33,25 @@ const EditUserModal = ({
   const [isAddingRole, setIsAddingRole] = useState(false);
   const [email, setEmail] = useState("");
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      const user = await getGlobalUser(userId);
-      if (user) {
-        setEmail(user.email || "");
-        const roles = user.userOrganizations.map(org => ({
-          id: org.id,
-          role: org.role as OrganizationRoleType,
-          organization: {
-            id: org.organization?.id,
-            name: org.organization?.name,
-          },
-        }));
-        setUserRoles(roles);
-      }
-    };
+  const refreshUserRoles = async () => {
+    const user = await getGlobalUser(userId);
+    if (user) {
+      setEmail(user.email || "");
+      const roles = user.userOrganizations.map(org => ({
+        id: org.id,
+        role: org.role as OrganizationRoleType,
+        organization: {
+          id: org.organization?.id,
+          name: org.organization?.name,
+        },
+      }));
+      setUserRoles(roles);
+    }
+  };
 
+  useEffect(() => {
     if (isOpen) {
-      fetchUser();
+      refreshUserRoles();
     }
   }, [isOpen, userId]);
 
@@ -156,7 +156,10 @@ const EditUserModal = ({
           <CreateUserModal
             isOpen={isAddingRole}
             onClose={() => setIsAddingRole(false)}
-            onSuccess={() => setIsAddingRole(false)}
+            onSuccess={() => {
+              setIsAddingRole(false);
+              refreshUserRoles(); // Actualizamos los roles después de agregar uno nuevo
+            }}
             email={email}
           />
         )}
