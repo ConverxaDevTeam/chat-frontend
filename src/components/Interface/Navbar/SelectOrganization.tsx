@@ -28,12 +28,12 @@ const SelectOrganization = ({ mobileResolution }: SelectOrganizationProps) => {
     };
   }, []);
 
-  const handleSelectOrganization = (organizationId: number) => {
+  const handleSelectOrganization = (organizationId: unknown) => {
     if (organizationId === selectOrganizationId) {
       return;
     }
     navigate("/dashboard");
-    dispatch(setOrganizationId(organizationId));
+    dispatch(setOrganizationId(Number(organizationId)));
   };
 
   const options = myOrganizations.map(org => ({

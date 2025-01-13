@@ -66,8 +66,8 @@ const SelectDepartment: FC<SelectDepartmentProps> = ({ mobileResolution }) => {
     dispatch(clearSelectedDepartment());
   }, [selectOrganizationId, dispatch]);
 
-  const handleChange = async (id: number) => {
-    dispatch(setSelectedDepartmentId(id));
+  const handleChange = async (id: unknown) => {
+    dispatch(setSelectedDepartmentId(Number(id)));
   };
 
   const options = departments.map(dept => ({
