@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 import { OrganizationRoleType } from "@utils/interfaces";
 import { Select } from "@components/forms/select";
 import { InputGroup } from "@components/forms/inputGroup";
+import { ISelectOrganization } from "@interfaces/organization.interface";
 
 interface CreateUserModalProps {
   isOpen: boolean;
@@ -134,17 +135,12 @@ interface OrganizationSelectProps {
   control: Control<FormData>;
 }
 
-interface IOrganization {
-  id: number;
-  name: string;
-}
-
 const OrganizationSelect = ({
   errors,
   isRequired,
   control,
 }: OrganizationSelectProps) => {
-  const [organizations, setOrganizations] = useState<IOrganization[]>([]);
+  const [organizations, setOrganizations] = useState<ISelectOrganization[]>([]);
 
   useEffect(() => {
     const fetchOrganizations = async () => {

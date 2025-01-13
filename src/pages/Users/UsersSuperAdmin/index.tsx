@@ -6,6 +6,7 @@ import TableCell from "@components/Table/TableCell";
 import { IUserApi } from "../UsersOrganization";
 import PageContainer from "@components/PageContainer";
 import CreateUserModal from "./CreateUserModal";
+import EditUserModal from "./EditUserModal"; // Modal de edición importado
 import { useSweetAlert } from "@hooks/useSweetAlert";
 
 interface Column {
@@ -26,9 +27,11 @@ const columns: Column[] = [
 const UserRow = ({
   user,
   onDelete,
+  onEdit,
 }: {
   user: IUserApi;
   onDelete: (userId: number) => void;
+  onEdit: (userId: number) => void;
 }) => (
   <tr className="h-[60px] text-[14px] border-b-[1px] hover:bg-gray-50">
     <TableCell>{user.email}</TableCell>
@@ -55,7 +58,12 @@ const UserRow = ({
     </TableCell>
     <TableCell>
       <div className="flex gap-2">
-        <button className="text-blue-600 hover:text-blue-800">Editar</button>
+        <button
+          className="text-blue-600 hover:text-blue-800"
+          onClick={() => onEdit(user.id)} // Llama a la función de edición
+        >
+          Editar
+        </button>
         <button
           className="text-red-600 hover:text-red-800"
           onClick={() => onDelete(user.id)}
@@ -70,7 +78,9 @@ const UserRow = ({
 const UsersSuperAdmin = () => {
   const [users, setUsers] = useState<IUserApi[]>([]);
   const [loading, setLoading] = useState(true);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false); // Estado para el modal de edición
+  const [userToEdit, setUserToEdit] = useState<IUserApi | null>(null); // Estado para el usuario que se va a editar
 
   const { handleOperation, showConfirmation } = useSweetAlert();
 
@@ -105,6 +115,14 @@ const UsersSuperAdmin = () => {
     );
   };
 
+  const handleEdit = (userId: number) => {
+    const user = users.find(u => u.id === userId);
+    if (user) {
+      setUserToEdit(user);
+      setIsEditModalOpen(true); // Abre el modal de edición
+    }
+  };
+
   useEffect(() => {
     getAllUsers();
   }, []);
@@ -113,21 +131,36 @@ const UsersSuperAdmin = () => {
     <PageContainer
       title="Usuarios"
       buttonText="Nuevo Usuario"
-      onButtonClick={() => setIsModalOpen(true)}
+      onButtonClick={() => setIsCreateModalOpen(true)}
       loading={loading}
       appends={
-        <CreateUserModal
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          onSuccess={getAllUsers}
-        />
+        <>
+          <CreateUserModal
+            isOpen={isCreateModalOpen}
+            onClose={() => setIsCreateModalOpen(false)}
+            onSuccess={getAllUsers}
+          />
+          {userToEdit && (
+            <EditUserModal
+              isOpen={isEditModalOpen}
+              onClose={() => setIsEditModalOpen(false)}
+              onSuccess={getAllUsers}
+              user={userToEdit} // Pasa el usuario a editar
+            />
+          )}
+        </>
       }
     >
       <Table>
         <TableHeader columns={columns} />
         <tbody>
           {users.map(user => (
-            <UserRow key={user.id} user={user} onDelete={handleDelete} />
+            <UserRow
+              key={user.id}
+              user={user}
+              onDelete={handleDelete}
+              onEdit={handleEdit} // Pasa la función de edición
+            />
           ))}
         </tbody>
       </Table>

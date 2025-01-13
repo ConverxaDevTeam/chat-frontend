@@ -119,3 +119,53 @@ export const deleteGlobalUser = async (userId: number) => {
     return false;
   }
 };
+
+export const getGlobalUser = async (userId: number) => {
+  try {
+    const response = await axiosInstance.get(
+      `${apiUrls.getGlobalUsers()}/${userId}`
+    );
+    if (response.data.ok) {
+      return response.data.user;
+    } else {
+      alertError(response.data.message);
+      return null;
+    }
+  } catch (error) {
+    handleAxiosError(error);
+    return null;
+  }
+};
+
+export const updateGlobalUser = async (
+  userId: number,
+  email: string,
+  role: OrganizationRoleType
+) => {
+  const global_roles = [
+    OrganizationRoleType.ADMIN,
+    OrganizationRoleType.ING_PREVENTA,
+    OrganizationRoleType.USR_TECNICO,
+  ];
+  if (!global_roles.includes(role)) {
+    alertError("Rol no permitido");
+    return false;
+  }
+  try {
+    const response = await axiosInstance.put(
+      `${apiUrls.getGlobalUsers()}/${userId}`,
+      {
+        email,
+        role,
+      }
+    );
+    if (response.data.ok) {
+      return true;
+    } else {
+      return false;
+    }
+  } catch (error) {
+    handleAxiosError(error);
+    return false;
+  }
+};

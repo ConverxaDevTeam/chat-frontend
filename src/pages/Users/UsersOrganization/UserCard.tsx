@@ -31,7 +31,10 @@ const UserCard = ({ userData }: UserCardProps) => {
                 ID: {userData.id}
               </p>
               <p className="text-[12px] font-poppinsMedium text-app-dark bg-app-electricGreen px-[8px] py-[3px] rounded-full cursor-pointer">
-                rol: {userData.role}
+                rol:{" "}
+                {userData.userOrganizations?.map(
+                  organization => organization.role
+                )}
               </p>
             </div>
           </div>
