@@ -3,6 +3,7 @@ interface Organization {
 }
 
 interface UserOrganization {
+  id: number;
   role: string;
   organization: Organization;
 }

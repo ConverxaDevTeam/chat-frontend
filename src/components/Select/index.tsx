@@ -1,14 +1,14 @@
 import { FC, useState } from "react";
 
 interface Option {
-  id: number;
+  id: unknown;
   name: string;
 }
 
 interface SelectProps {
-  value?: number;
+  value?: unknown;
   options: Option[];
-  onChange: (id: number) => void;
+  onChange: (id: unknown) => void;
   placeholder?: string;
   mobileResolution?: boolean;
   customOptions?: React.ReactNode;
@@ -49,7 +49,7 @@ const Select: FC<SelectProps> = ({
           {customOptions}
           {options.map(option => (
             <div
-              key={option.id}
+              key={String(option.id)}
               onClick={() => {
                 onChange(option.id);
                 setOpen(false);

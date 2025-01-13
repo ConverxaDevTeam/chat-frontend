@@ -138,33 +138,12 @@ export const getGlobalUser = async (userId: number) => {
   }
 };
 
-export const updateGlobalUser = async (
-  userId: number,
-  email: string,
-  roles: OrganizationRoleType[], // Cambié `role` a `roles` para aceptar múltiples
-  organizationIds: (number | null)[] // Aceptamos múltiples organizaciones, incluyendo "global"
-) => {
-  const global_roles = [
-    OrganizationRoleType.ADMIN,
-    OrganizationRoleType.ING_PREVENTA,
-    OrganizationRoleType.USR_TECNICO,
-  ];
-
-  // Validar que todos los roles sean permitidos
-  for (const role of roles) {
-    if (!global_roles.includes(role)) {
-      alertError("Uno de los roles no está permitido");
-      return false;
-    }
-  }
-
+export const updateGlobalUser = async (userId: number, email: string) => {
   try {
     const response = await axiosInstance.put(
       `${apiUrls.getGlobalUsers()}/${userId}`,
       {
         email,
-        roles, // Enviamos los roles
-        organizationIds, // Enviamos las organizaciones
       }
     );
 
