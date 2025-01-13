@@ -15,6 +15,7 @@ export const apiUrls = {
     `/api/user/all/${organizationId}`,
   addUserInOrganizationById: (organizationId: number) =>
     `/api/user/add/${organizationId}`,
+  deleteRole: (id: number) => `/api/user/role/${id}`,
   //organizations
   getOrganizations: () => `/api/organization`,
   createOrganization: () => `/api/organization`,

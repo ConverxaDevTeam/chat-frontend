@@ -157,3 +157,17 @@ export const updateGlobalUser = async (userId: number, email: string) => {
     return false;
   }
 };
+
+export const deleteRole = async (roleId: number) => {
+  try {
+    const response = await axiosInstance.delete(apiUrls.deleteRole(roleId));
+    if (response.data.ok) {
+      return true;
+    } else {
+      return false;
+    }
+  } catch (error) {
+    handleAxiosError(error);
+    return false;
+  }
+};

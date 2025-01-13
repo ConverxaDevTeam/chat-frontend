@@ -1,6 +1,6 @@
 import { Fragment, useEffect, useState } from "react";
 import Modal from "@components/Modal";
-import { updateGlobalUser, getGlobalUser } from "@services/user";
+import { updateGlobalUser, getGlobalUser, deleteRole } from "@services/user";
 import { OrganizationRoleType } from "@utils/interfaces";
 import { toast } from "react-toastify";
 import { InputGroup } from "@components/forms/inputGroup";
@@ -55,10 +55,10 @@ const EditUserModal = ({
     }
   }, [isOpen, userId]);
 
-  const handleDeleteRole = (roleId?: number) => {
+  const handleDeleteRole = async (roleId?: number) => {
     if (!roleId) return;
-    setUserRoles(prev => prev.filter(role => role.id !== roleId));
-    toast.info("Rol eliminado temporalmente"); // Cambiar lógica según sea necesario
+    await deleteRole(roleId);
+    refreshUserRoles();
   };
 
   const handleSave = async () => {
