@@ -7,12 +7,14 @@ import { toast } from "react-toastify";
 import { OrganizationRoleType } from "@utils/interfaces";
 import { Select } from "@components/forms/select";
 import { InputGroup } from "@components/forms/inputGroup";
+import { Input } from "@components/forms/input";
 import { ISelectOrganization } from "@interfaces/organization.interface";
 
 interface CreateUserModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
+  email?: string;
 }
 
 interface FormData {
@@ -25,6 +27,7 @@ const CreateUserModal = ({
   isOpen,
   onClose,
   onSuccess,
+  email,
 }: CreateUserModalProps) => {
   const {
     register,
@@ -36,6 +39,7 @@ const CreateUserModal = ({
   } = useForm<FormData>({
     defaultValues: {
       role: OrganizationRoleType.ING_PREVENTA,
+      email: email || "",
     },
   });
 
@@ -66,7 +70,7 @@ const CreateUserModal = ({
     >
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <InputGroup label="Email" errors={errors.email}>
-          <input
+          <Input
             type="email"
             {...register("email", {
               required: "El email es requerido",
@@ -75,11 +79,9 @@ const CreateUserModal = ({
                 message: "Email inválido",
               },
             })}
+            disabled={isSubmitting || !!email}
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
           />
-          {errors.email && (
-            <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
-          )}
         </InputGroup>
         <InputGroup label="Rol" errors={errors.role}>
           <Select
@@ -112,7 +114,11 @@ const CreateUserModal = ({
             disabled={isSubmitting}
             className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 disabled:opacity-50"
           >
-            {isSubmitting ? "Creando..." : "Crear Usuario"}
+            {isSubmitting
+              ? "Creando..."
+              : email
+                ? "Actualizar Usuario"
+                : "Crear Usuario"}
           </button>
         </div>
       </form>

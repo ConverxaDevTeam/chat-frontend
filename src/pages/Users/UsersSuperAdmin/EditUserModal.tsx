@@ -17,7 +17,10 @@ interface EditUserModalProps {
 interface RoleData {
   id?: number; // ID opcional en caso de que exista
   role: OrganizationRoleType;
-  organization: number | null;
+  organization: {
+    id: number;
+    name: string;
+  } | null;
 }
 
 const EditUserModal = ({
@@ -38,7 +41,10 @@ const EditUserModal = ({
         const roles = user.userOrganizations.map(org => ({
           id: org.id,
           role: org.role as OrganizationRoleType,
-          organization: org.organization?.id || null,
+          organization: {
+            id: org.organization?.id,
+            name: org.organization?.name,
+          },
         }));
         setUserRoles(roles);
       }
@@ -102,7 +108,7 @@ const EditUserModal = ({
                     {role.role}
                   </td>
                   <td className="border border-gray-200 px-4 py-2">
-                    {role.organization || "Global"}
+                    {role.organization?.name || "Global"}
                   </td>
                   <td className="border border-gray-200 px-4 py-2 text-center">
                     <button
@@ -151,6 +157,7 @@ const EditUserModal = ({
             isOpen={isAddingRole}
             onClose={() => setIsAddingRole(false)}
             onSuccess={() => setIsAddingRole(false)}
+            email={email}
           />
         )}
       </Fragment>

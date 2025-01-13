@@ -1,5 +1,6 @@
 interface Organization {
   id: number;
+  name: string;
 }
 
 interface UserOrganization {
