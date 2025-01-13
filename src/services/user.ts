@@ -1,4 +1,5 @@
 import { apiUrls } from "@config/config";
+import { UserResponse } from "@interfaces/user";
 import { axiosInstance } from "@store/actions/auth";
 import { alertError } from "@utils/alerts";
 import { OrganizationRoleType } from "@utils/interfaces";
@@ -126,7 +127,7 @@ export const getGlobalUser = async (userId: number) => {
       `${apiUrls.getGlobalUsers()}/${userId}`
     );
     if (response.data.ok) {
-      return response.data.user;
+      return response.data.user as UserResponse;
     } else {
       alertError(response.data.message);
       return null;
@@ -140,25 +141,33 @@ export const getGlobalUser = async (userId: number) => {
 export const updateGlobalUser = async (
   userId: number,
   email: string,
-  role: OrganizationRoleType
+  roles: OrganizationRoleType[], // Cambié `role` a `roles` para aceptar múltiples
+  organizationIds: string[] // Aceptamos múltiples organizaciones, incluyendo "global"
 ) => {
   const global_roles = [
     OrganizationRoleType.ADMIN,
     OrganizationRoleType.ING_PREVENTA,
     OrganizationRoleType.USR_TECNICO,
   ];
-  if (!global_roles.includes(role)) {
-    alertError("Rol no permitido");
-    return false;
+
+  // Validar que todos los roles sean permitidos
+  for (const role of roles) {
+    if (!global_roles.includes(role)) {
+      alertError("Uno de los roles no está permitido");
+      return false;
+    }
   }
+
   try {
     const response = await axiosInstance.put(
       `${apiUrls.getGlobalUsers()}/${userId}`,
       {
         email,
-        role,
+        roles, // Enviamos los roles
+        organizationIds, // Enviamos las organizaciones
       }
     );
+
     if (response.data.ok) {
       return true;
     } else {

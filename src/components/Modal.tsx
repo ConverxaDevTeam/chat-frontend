@@ -22,6 +22,7 @@ interface ModalProps {
   onClose: () => void;
   header?: JSX.Element;
   footer?: JSX.Element;
+  modalRef?: React.RefObject<HTMLDivElement>;
 }
 
 const Modal: React.FC<ModalProps> = ({
@@ -30,12 +31,12 @@ const Modal: React.FC<ModalProps> = ({
   onClose,
   header,
   footer,
+  modalRef,
 }) => {
   const modal = document.getElementById("modal");
   if (!modal) return null;
 
   const handleBackgroundClick = (e: React.MouseEvent) => {
-    // Evita cerrar el modal si se hace clic dentro del contenido del modal
     if (e.target === e.currentTarget) {
       onClose();
     }
@@ -44,6 +45,7 @@ const Modal: React.FC<ModalProps> = ({
   return isShown
     ? ReactDOM.createPortal(
         <div
+          ref={modalRef} // Ref agregado aquí
           className="fixed z-[100] w-full h-full flex justify-center items-center top-0 left-0 bg-[#212121] bg-opacity-75"
           onClick={handleBackgroundClick}
         >
@@ -52,7 +54,6 @@ const Modal: React.FC<ModalProps> = ({
               <ModalHeader handleClose={onClose}>{header}</ModalHeader>
             )}
             {children}
-            {/* Footer section */}
             {footer && <footer className="mt-4">{footer}</footer>}
           </div>
         </div>,

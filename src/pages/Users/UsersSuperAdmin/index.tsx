@@ -145,7 +145,7 @@ const UsersSuperAdmin = () => {
               isOpen={isEditModalOpen}
               onClose={() => setIsEditModalOpen(false)}
               onSuccess={getAllUsers}
-              user={userToEdit} // Pasa el usuario a editar
+              userId={userToEdit.id}
             />
           )}
         </>

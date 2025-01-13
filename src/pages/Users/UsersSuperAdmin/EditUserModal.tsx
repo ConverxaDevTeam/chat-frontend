@@ -1,28 +1,41 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import Modal from "@components/Modal";
 import { updateGlobalUser, getGlobalUser } from "@services/user";
 import { OrganizationRoleType } from "@utils/interfaces";
 import { toast } from "react-toastify";
-import { Select } from "@components/forms/select";
+import SelectMultiple from "@components/forms/selectMultiple";
 import { InputGroup } from "@components/forms/inputGroup";
-import { Control } from "react-hook-form";
+
+interface UserOrganization {
+  organizationId: string; // o el tipo que sea adecuado para identificar la organización
+  role: OrganizationRoleType;
+}
+
+export interface UserResponse {
+  id: number;
+  email: string;
+  email_verified: boolean;
+  last_login: string | null;
+  first_name: string | null;
+  last_name: string | null;
+  userOrganizations: UserOrganization[];
+}
 
 interface EditUserModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
   userId: number;
-  control: Control<FormData>;
 }
 
 interface FormData {
   email: string;
-  role: OrganizationRoleType;
+  roles: OrganizationRoleType[]; // Aceptamos múltiples roles
+  organizations: string[]; // Aceptamos múltiples organizaciones
 }
 
 const EditUserModal = ({
-  control,
   isOpen,
   onClose,
   onSuccess,
@@ -30,16 +43,25 @@ const EditUserModal = ({
 }: EditUserModalProps) => {
   const {
     register,
+    control,
     handleSubmit,
     reset,
+    setValue, // Necesitamos setValue para establecer los valores por defecto
     formState: { errors },
   } = useForm<FormData>();
+
+  // Ref para acceder al contenedor del modal
+  const modalRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const fetchUser = async () => {
       const user = await getGlobalUser(userId);
       if (user) {
-        reset({ email: user.email, role: user.role });
+        reset({
+          email: user.email,
+          roles: user.userOrganizations.map(org => org.role), // Asignamos todos los roles
+          organizations: user.userOrganizations.map(org => org.organizationId), // Asignamos las organizaciones
+        });
       }
     };
     if (isOpen) {
@@ -48,7 +70,12 @@ const EditUserModal = ({
   }, [isOpen, userId, reset]);
 
   const onSubmit = async (data: FormData) => {
-    const success = await updateGlobalUser(userId, data.email, data.role);
+    const success = await updateGlobalUser(
+      userId,
+      data.email,
+      data.roles,
+      data.organizations
+    );
     if (success) {
       toast.success("Usuario actualizado exitosamente");
       onSuccess();
@@ -61,6 +88,7 @@ const EditUserModal = ({
       isShown={isOpen}
       onClose={onClose}
       header={<h2 className="text-xl font-bold">Editar Usuario</h2>}
+      modalRef={modalRef} // Pasamos el ref para utilizarlo en los SelectMultiple
     >
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <InputGroup label="Email" errors={errors.email}>
@@ -80,16 +108,42 @@ const EditUserModal = ({
           )}
         </InputGroup>
 
-        <InputGroup label="Rol" errors={errors.role}>
-          <Select
-            name="role"
+        <InputGroup label="Roles" errors={errors.roles}>
+          <SelectMultiple
+            name="roles"
             control={control}
             options={[
               { value: OrganizationRoleType.ING_PREVENTA, label: "Preventa" },
               { value: OrganizationRoleType.USR_TECNICO, label: "Técnico" },
+              // Agrega más roles según sea necesario
             ]}
-            placeholder="Selecciona un rol"
+            placeholder="Selecciona uno o más roles"
+            modalRef={modalRef} // Aseguramos que SelectMultiple tiene el modalRef
           />
+          {errors.roles && (
+            <p className="mt-1 text-sm text-red-600">El rol es requerido</p>
+          )}
+        </InputGroup>
+
+        <InputGroup label="Organizaciones" errors={errors.organizations}>
+          <SelectMultiple
+            name="organizations"
+            control={control}
+            options={[
+              { value: "global", label: "Global" }, // Opción global
+              // Agregar dinámicamente las organizaciones del usuario si las tiene
+              { value: "org1", label: "Organización 1" },
+              { value: "org2", label: "Organización 2" },
+              // Agrega más organizaciones según sea necesario
+            ]}
+            placeholder="Selecciona una o más organizaciones"
+            modalRef={modalRef} // Aseguramos que SelectMultiple tiene el modalRef
+          />
+          {errors.organizations && (
+            <p className="mt-1 text-sm text-red-600">
+              La organización es requerida
+            </p>
+          )}
         </InputGroup>
 
         <div className="flex justify-end gap-2">
