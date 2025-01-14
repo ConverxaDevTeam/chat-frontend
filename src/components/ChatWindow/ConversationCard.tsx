@@ -1,3 +1,4 @@
+import { IntegrationType } from "@interfaces/integrations";
 import { FC } from "react";
 
 interface IntegrationData {
@@ -12,7 +13,7 @@ interface Conversation {
   lastMessage: string;
   time: string;
   unread?: number;
-  integration: "Whatsapp" | "Facebook" | "Web" | string;
+  integration: IntegrationType;
   avatar: string;
   integrationData: IntegrationData;
 }
@@ -45,11 +46,11 @@ const getHitlText = (status?: string) => {
   }
 };
 
-const getIntegrationIcon = (integration: string) => {
-  switch (integration.toLowerCase()) {
-    case "whatsapp":
+const getIntegrationIcon = (integration: IntegrationType) => {
+  switch (integration) {
+    case IntegrationType.WHATSAPP:
       return "/mvp/whatsapp.svg";
-    case "facebook":
+    case IntegrationType.MESSENGER:
       return "/mvp/messenger.svg";
     default:
       return "/mvp/globe.svg";

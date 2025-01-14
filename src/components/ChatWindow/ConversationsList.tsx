@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { IoChevronBack, IoChevronForward } from "react-icons/io5";
 import { ConversationCard } from "./ConversationCard";
 import { useParams } from "react-router-dom";
+import { IntegrationType, scrollableTabs } from "@interfaces/integrations";
 
 interface ConversationsListProps {
   conversations?: any[];
@@ -21,17 +22,12 @@ export const ConversationsList = ({
   onSelectConversation,
   selectedId,
 }: ConversationsListProps) => {
-  const { userId } = useParams();
-  const [activeTab, setActiveTab] = useState("Todas");
-  const { register } = useForm();
   const fixedTab = "Todas";
-  const scrollableTabs = [
-    "Web",
-    "Facebook",
-    "Whatsapp",
-    "Instagram",
-    "Twitter",
-  ];
+  const { userId } = useParams();
+  const [activeTab, setActiveTab] = useState<IntegrationType | "Todas">(
+    fixedTab
+  );
+  const { register } = useForm();
   const [startIndex, setStartIndex] = useState(0);
 
   const visibleScrollableTabs = scrollableTabs.slice(
@@ -42,8 +38,14 @@ export const ConversationsList = ({
   const canScrollRight = startIndex + 3 < scrollableTabs.length;
 
   const filteredConversations = conversations.filter(
-    conv => activeTab === "Todas" || conv.integration === activeTab
+    conv => activeTab === fixedTab || conv.integration === activeTab
   );
+
+  const integrationTabsNames = {
+    [IntegrationType.WHATSAPP]: "WhatsApp",
+    [IntegrationType.MESSENGER]: "Messenger",
+    [IntegrationType.CHAT_WEB]: "Web",
+  };
 
   const scrollLeft = () => {
     if (canScrollLeft) {
@@ -108,7 +110,7 @@ export const ConversationsList = ({
                       activeTab === tab ? tabSelectedStyles : tabNormalStyles
                     }`}
                   >
-                    {tab}
+                    {integrationTabsNames[tab]}
                   </button>
                 ))}
               </div>

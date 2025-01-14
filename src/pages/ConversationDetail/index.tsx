@@ -13,6 +13,7 @@ import MessageCard from "../../components/ChatWindow/MessageCard";
 import { uploadConversation } from "@store/actions/conversations";
 import { FormInputs } from "@interfaces/conversation";
 import { IConversation } from "@utils/interfaces";
+import { IntegrationType } from "@interfaces/integrations";
 
 const dummyConversations = [
   {
@@ -21,7 +22,7 @@ const dummyConversations = [
     lastMessage: "¡Genial, muchas gracias!",
     time: "18:23",
     unread: 2,
-    integration: "Web",
+    integration: IntegrationType.CHAT_WEB,
     avatar: "DM",
     integrationData: {
       type: "HITL",
@@ -34,7 +35,7 @@ const dummyConversations = [
     name: "Jesús Martínez",
     lastMessage: "Necesito ayuda con mi pedido",
     time: "16:45",
-    integration: "Facebook",
+    integration: IntegrationType.MESSENGER,
     avatar: "/avatars/jesus.jpg",
     integrationData: {
       type: "HITL",
@@ -48,7 +49,7 @@ const dummyConversations = [
     lastMessage: "Necesito información sobre...",
     time: "Ayer",
     unread: 1,
-    integration: "Whatsapp",
+    integration: IntegrationType.WHATSAPP,
     avatar: "CL",
     integrationData: {
       type: "HITL",
@@ -61,7 +62,7 @@ const dummyConversations = [
     name: "Ana Martínez",
     lastMessage: "¿Tienen envíos a domicilio?",
     time: "Ayer",
-    integration: "Web",
+    integration: IntegrationType.CHAT_WEB,
     avatar: "AM",
     integrationData: {
       type: "IA",
@@ -73,7 +74,7 @@ const dummyConversations = [
     name: "Roberto Sánchez",
     lastMessage: "Me gustaría agendar una cita",
     time: "Lun",
-    integration: "Web",
+    integration: IntegrationType.CHAT_WEB,
     avatar: "RS",
     integrationData: {
       type: "HITL",
