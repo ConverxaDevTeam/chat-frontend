@@ -14,6 +14,68 @@ import { uploadConversation } from "@store/actions/conversations";
 import { FormInputs } from "@interfaces/conversation";
 import { IConversation } from "@utils/interfaces";
 
+const dummyConversations = [
+  {
+    id: 1,
+    name: "Juan Pérez",
+    lastMessage: "¿Cuándo estará listo mi pedido?",
+    time: "10:30",
+    unread: 2,
+    integration: "Web",
+  },
+  {
+    id: 2,
+    name: "María García",
+    lastMessage: "Gracias por la atención",
+    time: "09:45",
+    integration: "Facebook",
+  },
+  {
+    id: 3,
+    name: "Carlos López",
+    lastMessage: "Necesito información sobre...",
+    time: "Ayer",
+    unread: 1,
+    integration: "Whatsapp",
+  },
+  {
+    id: 4,
+    name: "Ana Martínez",
+    lastMessage: "¿Tienen envíos a domicilio?",
+    time: "Ayer",
+    integration: "Instagram",
+  },
+  {
+    id: 5,
+    name: "Roberto Sánchez",
+    lastMessage: "Me gustaría agendar una cita",
+    time: "Lun",
+    integration: "Web",
+  },
+  {
+    id: 6,
+    name: "Laura Torres",
+    lastMessage: "¿Cuál es el precio del producto?",
+    time: "Dom",
+    unread: 3,
+    integration: "Facebook",
+  },
+  {
+    id: 7,
+    name: "Pedro Ramírez",
+    lastMessage: "Excelente servicio",
+    time: "Sab",
+    integration: "Twitter",
+  },
+  {
+    id: 8,
+    name: "Sofia Hernández",
+    lastMessage: "¿Tienen disponibilidad?",
+    time: "Vie",
+    integration: "Whatsapp",
+  },
+];
+
 const ConversationDetail = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
@@ -77,8 +139,8 @@ const ConversationDetail = () => {
     }
   };
 
-  const handleSelectConversation = (conversationId: number) => {
-    navigate(`/conversations/${conversationId}`);
+  const handleSelectConversation = (userId: number) => {
+    navigate(`/conversation/detail/${id}/user/${userId}`);
   };
 
   return (
@@ -86,7 +148,7 @@ const ConversationDetail = () => {
       {/* Left Column - Conversations List */}
       <div className="hidden md:block">
         <ConversationsList
-          conversations={conversations}
+          conversations={dummyConversations}
           onSelectConversation={handleSelectConversation}
           selectedId={Number(id)}
         />

@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { IoChevronBack, IoChevronForward } from "react-icons/io5";
+import { ConversationCard } from "./ConversationCard";
+import { useParams } from "react-router-dom";
 
 interface ConversationsListProps {
   conversations?: any[];
@@ -19,6 +21,7 @@ export const ConversationsList = ({
   onSelectConversation,
   selectedId,
 }: ConversationsListProps) => {
+  const { userId } = useParams();
   const [activeTab, setActiveTab] = useState("Todas");
   const { register } = useForm();
   const fixedTab = "Todas";
@@ -38,6 +41,10 @@ export const ConversationsList = ({
   const canScrollLeft = startIndex > 0;
   const canScrollRight = startIndex + 3 < scrollableTabs.length;
 
+  const filteredConversations = conversations.filter(
+    conv => activeTab === "Todas" || conv.integration === activeTab
+  );
+
   const scrollLeft = () => {
     if (canScrollLeft) {
       setStartIndex(prev => prev - 1);
@@ -51,8 +58,8 @@ export const ConversationsList = ({
   };
 
   return (
-    <div className="w-[345px] h-full bg-sofia-blancoPuro border border-app-lightGray rounded-l-lg">
-      <div className="w-full mx-auto flex flex-col gap-6 p-[10px]">
+    <div className="w-[345px] h-full bg-sofia-blancoPuro border border-app-lightGray rounded-l-lg flex flex-col">
+      <div className="flex flex-col gap-6 p-[10px] flex-none">
         {/* Search Bar */}
         <div className="relative flex h-[37px] items-center">
           <input
@@ -71,7 +78,7 @@ export const ConversationsList = ({
         </div>
 
         {/* Tabs Carousel */}
-        <div className="w-[327px] flex flex-col items-start gap-6">
+        <div className="w-[327px] flex flex-col items-start">
           <div className="relative flex items-center w-full">
             {/* Fixed "Todas" tab */}
             <button
@@ -115,42 +122,22 @@ export const ConversationsList = ({
             </div>
           </div>
         </div>
+      </div>
 
-        {/* Conversations List */}
-        <div className="flex flex-col gap-4 overflow-y-auto">
-          {conversations.map(conversation => (
-            <button
+      {/* Conversations List */}
+      <div className="flex-1 overflow-y-auto">
+        <div className="flex flex-col">
+          {filteredConversations.map(conversation => (
+            <ConversationCard
               key={conversation.id}
+              conversation={conversation}
+              isSelected={
+                userId
+                  ? Number(userId) === conversation.id
+                  : selectedId === conversation.id
+              }
               onClick={() => onSelectConversation?.(conversation.id)}
-              className={`flex items-center gap-4 p-4 rounded-lg ${
-                selectedId === conversation.id
-                  ? "bg-sofia-celeste"
-                  : "hover:bg-sofia-background"
-              }`}
-            >
-              {/* Avatar */}
-              <div className="w-10 h-10 rounded-full bg-app-c3">
-                {/* Add avatar image or initials here */}
-              </div>
-
-              {/* Content */}
-              <div className="flex-1 text-left">
-                <h3 className="font-medium">{conversation.name}</h3>
-                <p className="text-sm text-app-text truncate">
-                  {conversation.lastMessage}
-                </p>
-              </div>
-
-              {/* Time and Status */}
-              <div className="text-right">
-                <p className="text-xs text-app-text">{conversation.time}</p>
-                {conversation.unread && (
-                  <span className="inline-block px-2 py-1 text-xs bg-sofia-electricGreen text-app-white rounded-full">
-                    {conversation.unread}
-                  </span>
-                )}
-              </div>
-            </button>
+            />
           ))}
         </div>
       </div>

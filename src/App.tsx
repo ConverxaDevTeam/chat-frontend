@@ -63,6 +63,10 @@ const App = (): JSX.Element => {
             path="conversation/detail/:id"
             element={<ConversationDetail />}
           />
+          <Route
+            path="conversation/detail/:id/user/:userId"
+            element={<ConversationDetail />}
+          />
         </Route>
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
