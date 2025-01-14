@@ -23,7 +23,6 @@ const dummyConversations = [
     unread: 2,
     integration: "Web",
     avatar: "DM",
-    status: "writing",
     integrationData: {
       type: "IA",
       messages: 16,
@@ -36,10 +35,9 @@ const dummyConversations = [
     time: "16:45",
     integration: "Facebook",
     avatar: "/avatars/jesus.jpg",
-    status: "writing",
     integrationData: {
       type: "HITL",
-      status: "assigned", // assigned, pending, unassigned
+      status: "assigned",
       messages: 28,
     },
   },
@@ -76,7 +74,6 @@ const dummyConversations = [
     time: "Lun",
     integration: "Web",
     avatar: "RS",
-    status: "resolved",
     integrationData: {
       type: "HITL",
       status: "unassigned",

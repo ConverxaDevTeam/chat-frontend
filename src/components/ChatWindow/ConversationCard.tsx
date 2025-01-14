@@ -14,7 +14,6 @@ interface Conversation {
   unread?: number;
   integration: string;
   avatar: string;
-  status?: "writing" | "resolved";
   integrationData: IntegrationData;
 }
 
@@ -66,7 +65,7 @@ export const ConversationCard: FC<ConversationCardProps> = ({
           </div>
         ) : (
           <div className="w-12 h-12 flex items-center justify-center relative">
-            <div className="absolute inset-0 rounded-full bg-[#DDFBC7] border border-sofia-superDark" />
+            <div className="absolute inset-0 rounded-full bg-sofia-electricLight border border-sofia-superDark" />
             <span className="relative z-10 font-quicksand text-base font-semibold text-sofia-superDark">
               {conversation.avatar}
             </span>
@@ -75,44 +74,45 @@ export const ConversationCard: FC<ConversationCardProps> = ({
       </div>
 
       {/* Content */}
-      <div className="flex-1 text-left">
-        <div className="flex items-center gap-2">
-          <h3 className="font-medium text-sm">{conversation.name}</h3>
-          {conversation.status === "writing" && (
-            <span className="text-xs text-app-newGray">escribiendo...</span>
-          )}
+      <div className="flex flex-col h-9 items-start gap-0.5 flex-1">
+        {/* Frame Superior */}
+        <div className="flex justify-between items-center w-full">
+          <h3 className="font-quicksand text-sm font-bold text-sofia-superDark">
+            {conversation.name}
+          </h3>
+          <span className="font-quicksand text-sm font-semibold text-app-newGray">
+            {conversation.time}
+          </span>
         </div>
-        <p className="text-xs text-app-text truncate">
-          {conversation.lastMessage}
-        </p>
+
+        {/* Frame Inferior */}
+        <div className="flex justify-center items-center gap-1 flex-1 w-full">
+          <p className="flex flex-col justify-center flex-1 self-stretch font-quicksand text-xs font-semibold text-sofia-superDark">
+            {conversation.lastMessage}
+          </p>
+          <div className="flex items-center gap-1">
+            <div className="w-4 h-4 flex justify-center items-center p-0.5 rounded-[2px] bg-sofia-electricGreen">
+              <span
+                className={`text-[10px] font-medium ${
+                  type === "HITL" ? getHitlColor(status) : "text-blue-500"
+                }`}
+              >
+                {type}
+              </span>
+            </div>
+            {conversation.unread && (
+              <div className="w-4 h-4 flex justify-center items-center p-0.5 rounded-full bg-sofia-electricOlive">
+                <span className="text-[10px] font-medium text-sofia-superDark">
+                  {conversation.unread}
+                </span>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
 
       {/* Right Side */}
-      <div className="flex flex-col items-end gap-1">
-        {/* Time and Integration Info */}
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-app-text">{conversation.time}</span>
-          <div className="flex items-center gap-1 bg-sofia-background rounded px-1.5 py-0.5">
-            <span
-              className={`text-[10px] font-medium ${
-                type === "HITL" ? getHitlColor(status) : "text-blue-500"
-              }`}
-            >
-              {type}
-            </span>
-            <span className="text-[10px] font-medium text-app-newGray">
-              {messages}
-            </span>
-          </div>
-        </div>
-
-        {/* Unread Count */}
-        {conversation.unread && (
-          <span className="inline-block px-2 py-0.5 text-[10px] bg-sofia-electricGreen text-app-white rounded-full">
-            {conversation.unread}
-          </span>
-        )}
-      </div>
+      <div className="flex flex-col items-end gap-1"></div>
     </button>
   );
 };
