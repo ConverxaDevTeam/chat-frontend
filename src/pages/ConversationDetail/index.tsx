@@ -17,18 +17,31 @@ import { IConversation } from "@utils/interfaces";
 const dummyConversations = [
   {
     id: 1,
-    name: "Juan Pérez",
-    lastMessage: "¿Cuándo estará listo mi pedido?",
-    time: "10:30",
+    name: "Diego Suárez",
+    lastMessage: "¡Genial, muchas gracias!",
+    time: "18:23",
     unread: 2,
     integration: "Web",
+    avatar: "DM",
+    status: "writing",
+    integrationData: {
+      type: "IA",
+      messages: 16,
+    },
   },
   {
     id: 2,
-    name: "María García",
-    lastMessage: "Gracias por la atención",
-    time: "09:45",
+    name: "Jesús Martínez",
+    lastMessage: "Jesús está escribiendo...",
+    time: "16:45",
     integration: "Facebook",
+    avatar: "/avatars/jesus.jpg",
+    status: "writing",
+    integrationData: {
+      type: "HITL",
+      status: "assigned", // assigned, pending, unassigned
+      messages: 28,
+    },
   },
   {
     id: 3,
@@ -37,6 +50,12 @@ const dummyConversations = [
     time: "Ayer",
     unread: 1,
     integration: "Whatsapp",
+    avatar: "CL",
+    integrationData: {
+      type: "HITL",
+      status: "pending",
+      messages: 12,
+    },
   },
   {
     id: 4,
@@ -44,6 +63,11 @@ const dummyConversations = [
     lastMessage: "¿Tienen envíos a domicilio?",
     time: "Ayer",
     integration: "Instagram",
+    avatar: "AM",
+    integrationData: {
+      type: "IA",
+      messages: 8,
+    },
   },
   {
     id: 5,
@@ -51,28 +75,13 @@ const dummyConversations = [
     lastMessage: "Me gustaría agendar una cita",
     time: "Lun",
     integration: "Web",
-  },
-  {
-    id: 6,
-    name: "Laura Torres",
-    lastMessage: "¿Cuál es el precio del producto?",
-    time: "Dom",
-    unread: 3,
-    integration: "Facebook",
-  },
-  {
-    id: 7,
-    name: "Pedro Ramírez",
-    lastMessage: "Excelente servicio",
-    time: "Sab",
-    integration: "Twitter",
-  },
-  {
-    id: 8,
-    name: "Sofia Hernández",
-    lastMessage: "¿Tienen disponibilidad?",
-    time: "Vie",
-    integration: "Whatsapp",
+    avatar: "RS",
+    status: "resolved",
+    integrationData: {
+      type: "HITL",
+      status: "unassigned",
+      messages: 24,
+    },
   },
 ];
 
