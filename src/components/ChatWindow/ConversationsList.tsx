@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { IoChevronBack, IoChevronForward } from "react-icons/io5";
 
 interface ConversationsListProps {
   conversations?: any[];
@@ -7,13 +8,37 @@ interface ConversationsListProps {
   selectedId?: number;
 }
 
+const tabBaseStyles =
+  "flex flex-col justify-center font-quicksand text-xs font-semibold self-stretch whitespace-nowrap px-1";
+const tabSelectedStyles =
+  "bg-sofia-darkBlue text-sofia-superDark rounded flex items-center gap-2.5";
+const tabNormalStyles = "text-app-newGray";
+
 export const ConversationsList = ({
   conversations = [],
   onSelectConversation,
   selectedId,
 }: ConversationsListProps) => {
-  const [activeTab, setActiveTab] = useState("Todos");
+  const [activeTab, setActiveTab] = useState("Todas");
   const { register } = useForm();
+  const tabs = ["Todas", "Web", "Facebook", "Whatsapp", "Instagram", "Twitter"];
+  const [startIndex, setStartIndex] = useState(0);
+
+  const visibleTabs = tabs.slice(startIndex, startIndex + 4);
+  const canScrollLeft = startIndex > 0;
+  const canScrollRight = startIndex + 4 < tabs.length;
+
+  const scrollLeft = () => {
+    if (canScrollLeft) {
+      setStartIndex(prev => prev - 1);
+    }
+  };
+
+  const scrollRight = () => {
+    if (canScrollRight) {
+      setStartIndex(prev => prev + 1);
+    }
+  };
 
   return (
     <div className="w-[345px] h-full bg-sofia-blancoPuro border border-app-lightGray rounded-l-lg">
@@ -35,21 +60,39 @@ export const ConversationsList = ({
           </button>
         </div>
 
-        {/* Tabs */}
-        <div className="flex gap-4 border-b border-app-c3">
-          {["Todos", "Web", "Facebook", "Whatsapp"].map(tab => (
+        {/* Tabs Carousel */}
+        <div className="w-[327px] flex flex-col items-start gap-6">
+          <div className="relative flex items-center w-full">
             <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={`pb-2 ${
-                activeTab === tab
-                  ? "border-b-2 border-sofia-electricGreen text-sofia-electricGreen"
-                  : "text-app-gray"
-              }`}
+              onClick={scrollLeft}
+              className={`absolute left-0 z-10 p-1 ${!canScrollLeft && "opacity-50 cursor-not-allowed"}`}
+              disabled={!canScrollLeft}
             >
-              {tab}
+              <IoChevronBack className="w-4 h-4 text-app-newGray" />
             </button>
-          ))}
+
+            <div className="flex gap-4 mx-8 overflow-hidden">
+              {visibleTabs.map(tab => (
+                <button
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                  className={`${tabBaseStyles} ${
+                    activeTab === tab ? tabSelectedStyles : tabNormalStyles
+                  }`}
+                >
+                  {tab}
+                </button>
+              ))}
+            </div>
+
+            <button
+              onClick={scrollRight}
+              className={`absolute right-0 z-10 p-1 ${!canScrollRight && "opacity-50 cursor-not-allowed"}`}
+              disabled={!canScrollRight}
+            >
+              <IoChevronForward className="w-4 h-4 text-app-newGray" />
+            </button>
+          </div>
         </div>
 
         {/* Conversations List */}
