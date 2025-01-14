@@ -2,7 +2,7 @@ import { getConversationsByOrganizationId } from "@services/conversations";
 import { useEffect, useState } from "react";
 import ConversationCard from "./ConversationCard";
 import { RiArrowUpDownFill } from "react-icons/ri";
-import { Conversation } from "@interfaces/conversation";
+import { ConversationListItem } from "@interfaces/conversation";
 import { useAppSelector } from "@store/hooks";
 
 const Conversations = () => {
@@ -10,7 +10,9 @@ const Conversations = () => {
     state => state.auth.selectOrganizationId
   );
   if (!organizationId) throw new Error("Organization ID not found");
-  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [conversations, setConversations] = useState<ConversationListItem[]>(
+    []
+  );
 
   const fetchConversations = async () => {
     const response = await getConversationsByOrganizationId(organizationId);
@@ -21,7 +23,9 @@ const Conversations = () => {
     fetchConversations();
   }, []);
 
-  const handleUpdateConversation = (updatedConversation: Conversation) => {
+  const handleUpdateConversation = (
+    updatedConversation: ConversationListItem
+  ) => {
     setConversations(prevConversations =>
       prevConversations.map(conv =>
         conv.id === updatedConversation.id ? updatedConversation : conv

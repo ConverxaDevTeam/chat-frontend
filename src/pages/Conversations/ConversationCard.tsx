@@ -8,14 +8,14 @@ import { AxiosError } from "axios";
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
 import {
-  Conversation,
   MessageType,
   ConversationType,
+  ConversationListItem,
 } from "@interfaces/conversation";
 
 interface HitlButtonProps {
-  conversation: Conversation;
-  onUpdateConversation: (conversation: Conversation) => void;
+  conversation: ConversationListItem;
+  onUpdateConversation: (conversation: ConversationListItem) => void;
 }
 
 const HitlButton = ({
@@ -32,7 +32,7 @@ const HitlButton = ({
       if (updatedConversation) {
         onUpdateConversation(updatedConversation);
         toast.success(
-          conversation.user?.id === user?.id
+          conversation.user_id === user?.id
             ? "Conversación desasignada exitosamente"
             : "Conversación asignada exitosamente"
         );
@@ -63,7 +63,7 @@ const HitlButton = ({
         }
       } else {
         toast.error(
-          conversation.user?.id === user?.id
+          conversation.user_id === user?.id
             ? "Error al desasignar la conversación"
             : "Error al asignar la conversación"
         );
@@ -75,44 +75,47 @@ const HitlButton = ({
     <button
       onClick={handleHitlAction}
       className={`flex items-center gap-1 px-1 py-2 rounded-full transition-colors ${
-        conversation.user?.id === user?.id
+        conversation.user_id === user?.id
           ? "text-red-600 hover:bg-red-50"
           : "text-purple-600 hover:bg-purple-50"
       }`}
       title={
-        conversation.user?.id === user?.id
+        conversation.user_id === user?.id
           ? "Unassign from HITL"
           : "Assign to HITL"
       }
     >
-      {conversation.user?.id === user?.id ? (
+      {conversation.user_id === user?.id ? (
         <BsPersonDash className="w-5 h-5" />
       ) : (
         <BsHeadset className="w-5 h-5" />
       )}
       <span className="hidden md:inline">
-        {conversation.user?.id === user?.id ? "Unassign" : "HITL"}
+        {conversation.user_id === user?.id ? "Unassign" : "HITL"}
       </span>
     </button>
   );
 };
 
 interface ConversationCardProps {
-  conversation: Conversation;
-  onUpdateConversation: (conversation: Conversation) => void;
+  conversation: ConversationListItem;
+  onUpdateConversation: (conversation: ConversationListItem) => void;
 }
 
 const ConversationCard = ({
   conversation,
   onUpdateConversation,
 }: ConversationCardProps) => {
-  const lastMessage = conversation.messages[
-    conversation.messages.length - 1
-  ] || {
+  let lastMessage = {
     type: MessageType.USER,
     text: "Sin mensajes",
   };
-
+  if (conversation.message_text) {
+    lastMessage = {
+      type: conversation.message_type,
+      text: conversation.message_text,
+    };
+  }
   return (
     <tr className="h-[60px] text-[14px] border-b-[1px] hover:bg-gray-50">
       <td className="w-[calc(100%/24*2)]">

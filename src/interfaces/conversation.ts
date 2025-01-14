@@ -7,6 +7,7 @@ export enum ConversationType {
 export enum MessageType {
   USER = "user",
   AGENT = "agent",
+  HITL = "hitl",
 }
 
 export interface Message {
@@ -32,4 +33,22 @@ export interface Conversation {
 
 export interface FormInputs {
   message: string;
+}
+
+export interface ConversationListItem {
+  id: number;
+  created_at: string;
+  user_id: number | null;
+  message_id: number;
+  message_text: string;
+  message_type: MessageType;
+  message_created_at: string;
+  need_human: boolean;
+  type: ConversationType;
+}
+
+export interface ConversationListResponse {
+  ok: boolean;
+  message?: string;
+  conversations: ConversationListItem[];
 }
