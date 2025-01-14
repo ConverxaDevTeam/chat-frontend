@@ -1,5 +1,6 @@
 import { useForm } from "react-hook-form";
 import { MessageForm } from "@components/ChatWindow/MessageForm";
+import { ConversationsList } from "@components/ChatWindow/ConversationsList";
 import {
   getConversationByOrganizationIdAndById,
   sendMessage,
@@ -7,7 +8,7 @@ import {
 import { AppDispatch, RootState } from "@store";
 import { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import MessageCard from "../../components/ChatWindow/MessageCard";
 import { uploadConversation } from "@store/actions/conversations";
 import { FormInputs } from "@interfaces/conversation";
@@ -15,6 +16,7 @@ import { IConversation } from "@utils/interfaces";
 
 const ConversationDetail = () => {
   const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -75,11 +77,19 @@ const ConversationDetail = () => {
     }
   };
 
+  const handleSelectConversation = (conversationId: number) => {
+    navigate(`/conversations/${conversationId}`);
+  };
+
   return (
-    <div className="grid grid-cols-[minmax(0,1fr)] lg:grid-cols-[327px,minmax(0,1fr)] xl:grid-cols-[327px,minmax(0,1fr),248px] h-full w-full">
+    <div className="grid grid-cols-[minmax(0,1fr)] lg:grid-cols-[345px,minmax(0,1fr)] xl:grid-cols-[345px,minmax(0,1fr),248px] h-full w-full">
       {/* Left Column - Conversations List */}
-      <div className="hidden lg:block border-r border-app-c3">
-        {/* Placeholder for conversations list */}
+      <div className="hidden lg:block">
+        <ConversationsList
+          conversations={conversations}
+          onSelectConversation={handleSelectConversation}
+          selectedId={Number(id)}
+        />
       </div>
 
       {/* Middle Column - Chat */}

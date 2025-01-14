@@ -6,6 +6,9 @@ export default {
   content: ["src/**/*.{html,js,jsx,ts,tsx}", "index.html"],
   theme: {
     extend: {
+      fontFamily: {
+        quicksand: ["Quicksand", "sans-serif"],
+      },
       colors: {
         app: {
           background: "#FAFBFC",
@@ -15,6 +18,7 @@ export default {
           gray: "#A1A1A1",
           text: "#9095A1",
           lightGray: "#EDEDED",
+          newGray: "#A6A8AB",
           error: "#DD0000",
           c1: "#fafafa",
           c2: "#ffffff",
@@ -26,12 +30,9 @@ export default {
           electricGreen: "#15ECDA",
           background: "#F6F6F6",
           secundario: "#d0fbf8",
-          blancoPuro: "#EFEFEF",
+          blancoPuro: "#ffffff",
           celeste: "#F2F9FF",
         },
-      },
-      fontFamily: {
-        quicksand: ["Quicksand", "sans-serif"],
       },
       cursor: {
         grab: "grab",
