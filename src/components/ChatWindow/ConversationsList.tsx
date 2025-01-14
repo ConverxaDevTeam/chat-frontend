@@ -21,12 +21,22 @@ export const ConversationsList = ({
 }: ConversationsListProps) => {
   const [activeTab, setActiveTab] = useState("Todas");
   const { register } = useForm();
-  const tabs = ["Todas", "Web", "Facebook", "Whatsapp", "Instagram", "Twitter"];
+  const fixedTab = "Todas";
+  const scrollableTabs = [
+    "Web",
+    "Facebook",
+    "Whatsapp",
+    "Instagram",
+    "Twitter",
+  ];
   const [startIndex, setStartIndex] = useState(0);
 
-  const visibleTabs = tabs.slice(startIndex, startIndex + 4);
+  const visibleScrollableTabs = scrollableTabs.slice(
+    startIndex,
+    startIndex + 3
+  );
   const canScrollLeft = startIndex > 0;
-  const canScrollRight = startIndex + 4 < tabs.length;
+  const canScrollRight = startIndex + 3 < scrollableTabs.length;
 
   const scrollLeft = () => {
     if (canScrollLeft) {
@@ -63,35 +73,46 @@ export const ConversationsList = ({
         {/* Tabs Carousel */}
         <div className="w-[327px] flex flex-col items-start gap-6">
           <div className="relative flex items-center w-full">
+            {/* Fixed "Todas" tab */}
             <button
-              onClick={scrollLeft}
-              className={`absolute left-0 z-10 p-1 ${!canScrollLeft && "opacity-50 cursor-not-allowed"}`}
-              disabled={!canScrollLeft}
+              onClick={() => setActiveTab(fixedTab)}
+              className={`${tabBaseStyles} ${
+                activeTab === fixedTab ? tabSelectedStyles : tabNormalStyles
+              }`}
             >
-              <IoChevronBack className="w-4 h-4 text-app-newGray" />
+              {fixedTab}
             </button>
 
-            <div className="flex gap-4 mx-8 overflow-hidden">
-              {visibleTabs.map(tab => (
-                <button
-                  key={tab}
-                  onClick={() => setActiveTab(tab)}
-                  className={`${tabBaseStyles} ${
-                    activeTab === tab ? tabSelectedStyles : tabNormalStyles
-                  }`}
-                >
-                  {tab}
+            <div className="flex-1 flex items-center max-w-[285px]">
+              {/* Left chevron */}
+              {canScrollLeft && (
+                <button onClick={scrollLeft} className="p-1 shrink-0">
+                  <IoChevronBack className="w-4 h-4 text-app-newGray" />
                 </button>
-              ))}
-            </div>
+              )}
 
-            <button
-              onClick={scrollRight}
-              className={`absolute right-0 z-10 p-1 ${!canScrollRight && "opacity-50 cursor-not-allowed"}`}
-              disabled={!canScrollRight}
-            >
-              <IoChevronForward className="w-4 h-4 text-app-newGray" />
-            </button>
+              {/* Scrollable tabs */}
+              <div className="flex gap-4 mx-2 overflow-hidden flex-1">
+                {visibleScrollableTabs.map(tab => (
+                  <button
+                    key={tab}
+                    onClick={() => setActiveTab(tab)}
+                    className={`${tabBaseStyles} ${
+                      activeTab === tab ? tabSelectedStyles : tabNormalStyles
+                    }`}
+                  >
+                    {tab}
+                  </button>
+                ))}
+              </div>
+
+              {/* Right chevron */}
+              {canScrollRight && (
+                <button onClick={scrollRight} className="p-1 shrink-0">
+                  <IoChevronForward className="w-4 h-4 text-app-newGray" />
+                </button>
+              )}
+            </div>
           </div>
         </div>
 

@@ -82,9 +82,9 @@ const ConversationDetail = () => {
   };
 
   return (
-    <div className="grid grid-cols-[minmax(0,1fr)] lg:grid-cols-[345px,minmax(0,1fr)] xl:grid-cols-[345px,minmax(0,1fr),248px] h-full w-full">
+    <div className="grid grid-cols-[minmax(0,1fr)] md:grid-cols-[345px,minmax(0,1fr)] xl:grid-cols-[345px,minmax(0,1fr),248px] h-full w-full">
       {/* Left Column - Conversations List */}
-      <div className="hidden lg:block">
+      <div className="hidden md:block">
         <ConversationsList
           conversations={conversations}
           onSelectConversation={handleSelectConversation}
@@ -93,7 +93,7 @@ const ConversationDetail = () => {
       </div>
 
       {/* Middle Column - Chat */}
-      <div className="grid grid-rows-[auto,1fr]">
+      <div className="grid grid-rows-[auto,1fr] md:col-start-2">
         {/* Chat Header */}
         <div className="h-16 border-t border-r border-b border-[#EDEDED] bg-[#BAF88F] rounded-tr-lg">
           {/* Chat header content */}
