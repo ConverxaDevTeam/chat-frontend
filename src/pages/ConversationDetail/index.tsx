@@ -24,20 +24,21 @@ const dummyConversations = [
     integration: "Web",
     avatar: "DM",
     integrationData: {
-      type: "IA",
+      type: "HITL",
+      status: "auto",
       messages: 16,
     },
   },
   {
     id: 2,
     name: "Jesús Martínez",
-    lastMessage: "Jesús está escribiendo...",
+    lastMessage: "Necesito ayuda con mi pedido",
     time: "16:45",
     integration: "Facebook",
     avatar: "/avatars/jesus.jpg",
     integrationData: {
       type: "HITL",
-      status: "assigned",
+      status: "taken",
       messages: 28,
     },
   },
@@ -60,7 +61,7 @@ const dummyConversations = [
     name: "Ana Martínez",
     lastMessage: "¿Tienen envíos a domicilio?",
     time: "Ayer",
-    integration: "Instagram",
+    integration: "Web",
     avatar: "AM",
     integrationData: {
       type: "IA",
@@ -76,7 +77,7 @@ const dummyConversations = [
     avatar: "RS",
     integrationData: {
       type: "HITL",
-      status: "unassigned",
+      status: "pending",
       messages: 24,
     },
   },

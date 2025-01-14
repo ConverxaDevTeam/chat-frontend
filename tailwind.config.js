@@ -50,7 +50,6 @@ export default {
           blancoPuro: "#FFFFFF",
           celeste: "#F6FBFF",
           hitlPending: "#FFBB93",
-          hitlAssigned: "#BAF88F",
           error: "#FF616D",
         },
       },

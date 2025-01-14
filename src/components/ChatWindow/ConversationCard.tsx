@@ -2,7 +2,7 @@ import { FC } from "react";
 
 interface IntegrationData {
   type: "IA" | "HITL";
-  status?: "assigned" | "pending" | "unassigned";
+  status?: "pending" | "taken" | "auto";
   messages: number;
 }
 
@@ -12,7 +12,7 @@ interface Conversation {
   lastMessage: string;
   time: string;
   unread?: number;
-  integration: string;
+  integration: "Whatsapp" | "Facebook" | "Web" | string;
   avatar: string;
   integrationData: IntegrationData;
 }
@@ -23,29 +23,36 @@ interface ConversationCardProps {
   onClick: () => void;
 }
 
-const getHitlColor = (status?: string) => {
+const getHitlBackground = (status?: string) => {
   switch (status) {
-    case "assigned":
-      return "text-green-500";
+    case "taken":
+      return "bg-sofia-hitlPending";
     case "pending":
-      return "text-yellow-500";
-    case "unassigned":
-      return "text-red-500";
     default:
-      return "text-gray-500";
+      return "bg-sofia-error"; // Rojo: no se ha recibido respuesta
   }
 };
 
-const getHitlBackground = (status?: string) => {
+const getHitlText = (status?: string) => {
   switch (status) {
-    case "assigned":
-      return "bg-sofia-hitlAssigned";
+    case "taken":
+      return "HITL";
+    case "auto":
+      return "IA";
     case "pending":
-      return "bg-sofia-hitlPending";
-    case "unassigned":
-      return "bg-sofia-error";
     default:
-      return "bg-sofia-background";
+      return "HITL";
+  }
+};
+
+const getIntegrationIcon = (integration: string) => {
+  switch (integration.toLowerCase()) {
+    case "whatsapp":
+      return "/mvp/whatsapp.svg";
+    case "facebook":
+      return "/mvp/messenger.svg";
+    default:
+      return "/mvp/globe.svg";
   }
 };
 
@@ -55,7 +62,7 @@ export const ConversationCard: FC<ConversationCardProps> = ({
   onClick,
 }) => {
   const isAvatarUrl = conversation.avatar.startsWith("/");
-  const { type, status, messages } = conversation.integrationData;
+  const { type, status } = conversation.integrationData;
 
   return (
     <button
@@ -106,12 +113,17 @@ export const ConversationCard: FC<ConversationCardProps> = ({
             </p>
           </div>
           <div className="flex items-center gap-1 flex-shrink-0">
+            <img
+              src={getIntegrationIcon(conversation.integration)}
+              alt={conversation.integration}
+              className="w-4 h-4"
+            />
             {type === "HITL" ? (
               <div
                 className={`h-4 px-1 flex justify-center items-center ${getHitlBackground(status)}`}
               >
                 <span className="font-quicksand text-tiny text-sofia-superDark">
-                  {type}
+                  {getHitlText(status)}
                 </span>
               </div>
             ) : (
