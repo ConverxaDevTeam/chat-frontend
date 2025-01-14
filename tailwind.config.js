@@ -9,20 +9,34 @@ export default {
       fontFamily: {
         quicksand: ["Quicksand", "sans-serif"],
       },
+      fontSize: {
+        xs: ["12px", { lineHeight: "normal", fontWeight: "600" }],
+        sm: ["14px", { lineHeight: "normal", fontWeight: "600" }],
+        base: ["16px", { lineHeight: "normal", fontWeight: "600" }],
+        tiny: [
+          "10px",
+          {
+            lineHeight: "normal",
+            fontWeight: "600",
+            fontFeatureSettings: "'liga' off, 'clig' off",
+          },
+        ],
+      },
       colors: {
         app: {
+          primary: "#15ECDA",
+          text: "#001126",
+          newGray: "#A6A8AB",
+          c3: "#F6F6F6",
+          white: "#FFFFFF",
           background: "#FAFBFC",
           electricGreen: "#15ECDA",
           dark: "#212121",
-          white: "#ffffff",
           gray: "#A1A1A1",
-          text: "#9095A1",
           lightGray: "#EDEDED",
-          newGray: "#A6A8AB",
           error: "#DD0000",
           c1: "#fafafa",
           c2: "#ffffff",
-          c3: "#ebebeb",
           c4: "#020202",
         },
         sofia: {
@@ -33,8 +47,11 @@ export default {
           electricGreen: "#15ECDA",
           background: "#F6F6F6",
           secundario: "#d0fbf8",
-          blancoPuro: "#ffffff",
-          celeste: "#F2F9FF",
+          blancoPuro: "#FFFFFF",
+          celeste: "#F6FBFF",
+          hitlPending: "#FFBB93",
+          hitlAssigned: "#BAF88F",
+          error: "#FF616D",
         },
       },
       cursor: {

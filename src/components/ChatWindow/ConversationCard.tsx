@@ -36,6 +36,19 @@ const getHitlColor = (status?: string) => {
   }
 };
 
+const getHitlBackground = (status?: string) => {
+  switch (status) {
+    case "assigned":
+      return "bg-sofia-hitlAssigned";
+    case "pending":
+      return "bg-sofia-hitlPending";
+    case "unassigned":
+      return "bg-sofia-error";
+    default:
+      return "bg-sofia-background";
+  }
+};
+
 export const ConversationCard: FC<ConversationCardProps> = ({
   conversation,
   isSelected,
@@ -87,22 +100,30 @@ export const ConversationCard: FC<ConversationCardProps> = ({
 
         {/* Frame Inferior */}
         <div className="flex justify-center items-center gap-1 flex-1 w-full">
-          <p className="flex flex-col justify-center flex-1 self-stretch font-quicksand text-xs font-semibold text-sofia-superDark">
-            {conversation.lastMessage}
-          </p>
-          <div className="flex items-center gap-1">
-            <div className="w-4 h-4 flex justify-center items-center p-0.5 rounded-[2px] bg-sofia-electricGreen">
-              <span
-                className={`text-[10px] font-medium ${
-                  type === "HITL" ? getHitlColor(status) : "text-blue-500"
-                }`}
+          <div className="flex flex-col justify-center flex-1 self-stretch">
+            <p className="font-quicksand text-xs text-sofia-superDark text-left truncate">
+              {conversation.lastMessage}
+            </p>
+          </div>
+          <div className="flex items-center gap-1 flex-shrink-0">
+            {type === "HITL" ? (
+              <div
+                className={`h-4 px-1 flex justify-center items-center ${getHitlBackground(status)}`}
               >
-                {type}
-              </span>
-            </div>
+                <span className="font-quicksand text-tiny text-sofia-superDark">
+                  {type}
+                </span>
+              </div>
+            ) : (
+              <div className="w-4 h-4 flex justify-center items-center p-0.5 rounded-[2px] bg-sofia-electricGreen">
+                <span className="font-quicksand text-tiny text-sofia-superDark">
+                  {type}
+                </span>
+              </div>
+            )}
             {conversation.unread && (
               <div className="w-4 h-4 flex justify-center items-center p-0.5 rounded-full bg-sofia-electricOlive">
-                <span className="text-[10px] font-medium text-sofia-superDark">
+                <span className="font-quicksand text-tiny text-sofia-superDark">
                   {conversation.unread}
                 </span>
               </div>
