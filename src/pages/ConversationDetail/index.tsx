@@ -76,20 +76,41 @@ const ConversationDetail = () => {
   };
 
   return (
-    <div className="flex flex-col flex-1 gap-[10px] bg-app-c2 border-[2px] border-app-c3 rounded-2xl p-[10px]">
-      <div className="flex flex-col flex-1 bg-app-c1 rounded-2xl p-[10px] gap-[10px] overflow-auto border-[1px] border-app-c3">
-        {conversation?.messages?.map(message => (
-          <MessageCard key={`chat-msg-${message.id}`} message={message} />
-        ))}
-        <div ref={messagesEndRef} />
+    <div className="grid grid-cols-[minmax(0,1fr)] lg:grid-cols-[327px,minmax(0,1fr)] xl:grid-cols-[327px,minmax(0,1fr),248px] h-full w-full">
+      {/* Left Column - Conversations List */}
+      <div className="hidden lg:block border-r border-app-c3">
+        {/* Placeholder for conversations list */}
       </div>
 
-      <MessageForm
-        form={{ register, handleSubmit, isSubmitting }}
-        onSubmit={onSubmit}
-        conversation={conversation}
-        user={{ id: user?.id ?? -1 }}
-      />
+      {/* Middle Column - Chat */}
+      <div className="grid grid-rows-[auto,1fr]">
+        {/* Chat Header */}
+        <div className="h-16 border-t border-r border-b border-[#EDEDED] bg-[#BAF88F] rounded-tr-lg">
+          {/* Chat header content */}
+        </div>
+
+        {/* Chat Content */}
+        <div className="grid grid-rows-[1fr,auto] gap-[10px] bg-app-c2 p-[10px]">
+          <div className="bg-app-c1 rounded-2xl p-[10px] gap-[10px] overflow-auto border-[1px] border-app-c3">
+            {conversation?.messages?.map(message => (
+              <MessageCard key={`chat-msg-${message.id}`} message={message} />
+            ))}
+            <div ref={messagesEndRef} />
+          </div>
+
+          <MessageForm
+            form={{ register, handleSubmit, isSubmitting }}
+            onSubmit={onSubmit}
+            conversation={conversation}
+            user={{ id: user?.id ?? -1 }}
+          />
+        </div>
+      </div>
+
+      {/* Right Column - User Info */}
+      <div className="hidden xl:block border-l border-app-c3">
+        {/* Placeholder for user info */}
+      </div>
     </div>
   );
 };
