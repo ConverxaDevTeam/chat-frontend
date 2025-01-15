@@ -1,12 +1,13 @@
 import { apiUrls } from "@config/config";
+import { ConversationResponseMessage } from "@interfaces/conversation";
 import { formatDateString } from "@utils/format";
-import { IMessage, MessageFormatType, MessageType } from "@utils/interfaces";
+import { MessageFormatType, MessageType } from "@utils/interfaces";
 
 interface MessageCardProps {
-  message: IMessage;
+  message: ConversationResponseMessage;
 }
 
-const renderContent = (message: IMessage) => {
+const renderContent = (message: ConversationResponseMessage) => {
   return (
     <>
       {message.images?.map((imageUrl, index) => (
@@ -24,7 +25,7 @@ const renderContent = (message: IMessage) => {
           />
         </div>
       ))}
-      {message.format === MessageFormatType.AUDIO && message.audio && (
+      {message.audio && (
         <audio
           controls
           src={apiUrls.mediaAudio(message.audio)}
@@ -40,9 +41,7 @@ const renderContent = (message: IMessage) => {
               : "bg-white"
         }`}
       >
-        {message.format === MessageFormatType.AUDIO && (
-          <strong>Transcripcion: </strong>
-        )}
+        {MessageFormatType.AUDIO && <strong>Transcripcion: </strong>}
         {message.text}
       </p>
     </>

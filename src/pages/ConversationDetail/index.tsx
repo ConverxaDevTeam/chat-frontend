@@ -5,14 +5,15 @@ import {
   getConversationByOrganizationIdAndById,
   sendMessage,
 } from "@services/conversations";
-import { AppDispatch, RootState } from "@store";
+import { RootState } from "@store";
 import { useEffect, useRef, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { useParams, useNavigate } from "react-router-dom";
 import MessageCard from "../../components/ChatWindow/MessageCard";
-import { uploadConversation } from "@store/actions/conversations";
-import { FormInputs } from "@interfaces/conversation";
-import { IConversation } from "@utils/interfaces";
+import {
+  ConversationDetailResponse,
+  FormInputs,
+} from "@interfaces/conversation";
 import { getConversationsByOrganizationId } from "@store/actions/conversations";
 import { useAppSelector } from "@store/hooks";
 import { ConversationListItem } from "@interfaces/conversation";
@@ -20,16 +21,14 @@ import ContextMenu from "../../components/ContextMenu";
 import { Avatar } from "@components/ChatWindow/Avatar";
 
 const ConversationDetail = () => {
-  const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [conversation, setConversation] =
+    useState<ConversationDetailResponse | null>(null);
 
   const { selectOrganizationId, user } = useSelector(
     (state: RootState) => state.auth
-  );
-  const { conversations } = useSelector(
-    (state: RootState) => state.conversations
   );
 
   const organizationId = useAppSelector(
@@ -49,10 +48,6 @@ const ConversationDetail = () => {
     fetchConversations();
   }, [organizationId]);
 
-  const conversation = conversations.find(
-    (conversation: IConversation) => conversation.id === Number(id)
-  );
-
   const getConversationDetailById = async () => {
     try {
       if (!id || !selectOrganizationId) return;
@@ -60,7 +55,7 @@ const ConversationDetail = () => {
         selectOrganizationId,
         Number(id)
       );
-      dispatch(uploadConversation(response));
+      setConversation(response);
     } catch (error) {
       console.error(error);
     }
@@ -109,6 +104,10 @@ const ConversationDetail = () => {
     y: number;
   }>({ show: false, x: 0, y: 0 });
 
+  if (!conversation) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <div className="flex-1 grid grid-cols-[minmax(0,1fr)] md:grid-cols-[345px,minmax(0,1fr)] xl:grid-cols-[345px,minmax(0,1fr),248px] min-h-0">
       {showContextMenu.show && (
@@ -144,10 +143,10 @@ const ConversationDetail = () => {
           <div className="h-[89px] flex-shrink-0 border-t border-r border-b border-[#EDEDED] bg-[#BAF88F] rounded-tr-lg">
             <div className="flex items-center justify-between p-4">
               <div className="flex items-center gap-3">
-                <Avatar avatar={null} secret={"sfsddfs"} />
+                <Avatar avatar={null} secret={conversation.chat_user.secret} />
                 <div>
                   <h3 className="text-base font-medium">
-                    {conversation?.user?.id}
+                    {conversation.chat_user.secret}
                   </h3>
                   <span className="text-sm text-gray-600">En línea</span>
                 </div>
@@ -171,13 +170,14 @@ const ConversationDetail = () => {
               ))}
               <div ref={messagesEndRef} />
             </div>
-
-            <MessageForm
-              form={{ register, handleSubmit, isSubmitting }}
-              onSubmit={onSubmit}
-              conversation={conversation}
-              user={{ id: user?.id ?? -1 }}
-            />
+            {conversation && (
+              <MessageForm
+                form={{ register, handleSubmit, isSubmitting }}
+                onSubmit={onSubmit}
+                conversation={conversation}
+                user={{ id: user?.id ?? -1 }}
+              />
+            )}
           </div>
         </div>
       </div>

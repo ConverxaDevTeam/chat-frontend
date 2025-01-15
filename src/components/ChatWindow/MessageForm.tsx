@@ -4,11 +4,14 @@ import { useHitl } from "@/hooks/useHitl";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/store";
 import { uploadConversation } from "@store/actions/conversations";
-import { FormInputs } from "@interfaces/conversation";
+import {
+  ConversationResponseMessage,
+  FormInputs,
+} from "@interfaces/conversation";
 import { useState } from "react";
 import { SendMessageButton } from "../SendMessageButton";
 import { HitlButton } from "../HitlButton";
-import { IConversation, IMessage, MessageFormatType } from "@utils/interfaces";
+import { IConversation, MessageFormatType } from "@utils/interfaces";
 import { ImagePreview } from "./ImagePreview";
 
 interface ImagePreview {
@@ -30,7 +33,7 @@ interface MessageFormProps {
     user?: {
       id: number;
     };
-    messages?: IMessage[];
+    messages?: ConversationResponseMessage[];
   };
   user?: { id: number };
   buttonText?: string;

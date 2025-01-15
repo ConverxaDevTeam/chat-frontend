@@ -66,3 +66,20 @@ export const getConversationStatus = (
   if (!need_human) return ConversationStatus.IA;
   return ConversationStatus.PENDING;
 };
+
+export interface ConversationResponseMessage {
+  id: number;
+  created_at: string;
+  text: string;
+  audio: string | null;
+  images: string[] | null;
+  type: MessageType;
+}
+
+export interface ConversationDetailResponse {
+  id: number;
+  messages: ConversationResponseMessage[];
+  chat_user: {
+    secret: string;
+  };
+}
