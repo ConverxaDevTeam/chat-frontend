@@ -1,41 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { IoChevronBack, IoChevronForward } from "react-icons/io5";
 import { ConversationCard } from "./ConversationCard";
 import { useParams } from "react-router-dom";
 import { IntegrationType, scrollableTabs } from "@interfaces/integrations";
 import { ConversationListItem } from "@interfaces/conversation";
-
-interface SearchBarProps {
-  onSearch: (query: string) => void;
-}
-
-const SearchBar = ({ onSearch }: SearchBarProps) => {
-  const { register, watch } = useForm();
-  const searchQuery = watch("search");
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      onSearch(searchQuery || "");
-    }, 300);
-
-    return () => clearTimeout(timer);
-  }, [searchQuery, onSearch]);
-
-  return (
-    <div className="relative flex h-[37px] items-center">
-      <input
-        type="text"
-        {...register("search")}
-        className="w-full h-full px-4 rounded-lg border border-app-newGray bg-sofia-blancoPuro flex items-center font-quicksand text-xs font-medium placeholder:text-app-newGray"
-        placeholder="Búsqueda"
-      />
-      <button className="absolute right-4 top-1/2 -translate-y-1/2">
-        <img src="/mvp/magnifying-glass.svg" alt="Search" className="w-4 h-4" />
-      </button>
-    </div>
-  );
-};
 
 interface TabProps {
   label: string;
@@ -162,9 +131,10 @@ export const ConversationsList = ({
   const [startIndex, setStartIndex] = useState(0);
 
   const filteredConversations = conversations.filter(conv => {
-    const matchesTab = activeTab === "Todas" || conv.integration === activeTab;
+    const matchesTab = activeTab === "Todas" || conv.type === activeTab;
     const searchTerm = searchQuery.toLowerCase();
-    const matchesSearch = !searchQuery || 
+    const matchesSearch =
+      !searchQuery ||
       conv.secret?.toLowerCase().includes(searchTerm) ||
       conv.id?.toString().includes(searchTerm);
     return matchesTab && matchesSearch;
@@ -177,12 +147,12 @@ export const ConversationsList = ({
           <input
             type="text"
             {...useForm().register("search", {
-              onChange: (e) => {
+              onChange: e => {
                 const timer = setTimeout(() => {
                   setSearchQuery(e.target.value);
                 }, 300);
                 return () => clearTimeout(timer);
-              }
+              },
             })}
             className="w-full h-full px-4 rounded-lg border border-app-newGray bg-sofia-blancoPuro flex items-center font-quicksand text-xs font-medium placeholder:text-app-newGray"
             placeholder="Búsqueda por ID o nombre"
