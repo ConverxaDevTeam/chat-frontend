@@ -162,17 +162,32 @@ export const ConversationsList = ({
   const [startIndex, setStartIndex] = useState(0);
 
   const filteredConversations = conversations.filter(conv => {
-    const matchesTab = activeTab === "Todas" || conv.type === activeTab;
-    const matchesSearch =
-      searchQuery === "" ||
-      conv.secret.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesTab = activeTab === "Todas" || conv.integration === activeTab;
+    const searchTerm = searchQuery.toLowerCase();
+    const matchesSearch = !searchQuery || 
+      conv.secret?.toLowerCase().includes(searchTerm) ||
+      conv.id?.toString().includes(searchTerm);
     return matchesTab && matchesSearch;
   });
 
   return (
     <div className="w-[345px] h-full bg-sofia-blancoPuro border border-app-lightGray rounded-l-lg flex flex-col">
       <div className="flex flex-col gap-6 p-[10px] flex-none">
-        <SearchBar onSearch={setSearchQuery} />
+        <div className="relative flex h-[37px] items-center">
+          <input
+            type="text"
+            {...useForm().register("search", {
+              onChange: (e) => {
+                const timer = setTimeout(() => {
+                  setSearchQuery(e.target.value);
+                }, 300);
+                return () => clearTimeout(timer);
+              }
+            })}
+            className="w-full h-full px-4 rounded-lg border border-app-newGray bg-sofia-blancoPuro flex items-center font-quicksand text-xs font-medium placeholder:text-app-newGray"
+            placeholder="Búsqueda por ID o nombre"
+          />
+        </div>
         <TabsCarousel
           activeTab={activeTab}
           setActiveTab={setActiveTab}
