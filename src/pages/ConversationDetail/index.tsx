@@ -126,6 +126,25 @@ const ConversationDetail = () => {
     }
   };
 
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filteredMessages, setFilteredMessages] = useState<
+    ConversationDetailResponse["messages"]
+  >([]);
+
+  useEffect(() => {
+    if (!conversation) return;
+
+    if (!searchTerm.trim()) {
+      setFilteredMessages(conversation.messages);
+      return;
+    }
+
+    const filtered = conversation.messages.filter(message =>
+      message.text.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredMessages(filtered);
+  }, [searchTerm, conversation]);
+
   if (!conversation) {
     return <div>Loading...</div>;
   }
@@ -237,6 +256,8 @@ const ConversationDetail = () => {
                 <input
                   type="text"
                   placeholder="Búsqueda"
+                  value={searchTerm}
+                  onChange={e => setSearchTerm(e.target.value)}
                   className="flex w-[149px] h-[37px] pl-4 pr-9 py-2.5 justify-between items-center flex-shrink-0 rounded-lg border border-app-gray bg-sofia-blancoPuro font-quicksand text-xs font-normal placeholder:text-[#A6A8AB]"
                 />
                 <img
@@ -251,8 +272,8 @@ const ConversationDetail = () => {
           {/* Chat Content */}
           <div className="grid grid-rows-[1fr,auto] gap-[10px] bg-app-c2 p-[10px] min-h-0">
             <div className="bg-app-c1 rounded-2xl p-[10px] gap-[10px] overflow-auto border-[1px] border-app-c3">
-              {conversation?.messages?.map(message => (
-                <MessageCard key={`chat-msg-${message.id}`} message={message} />
+              {filteredMessages.map((message, index) => (
+                <MessageCard key={index} message={message} />
               ))}
               <div ref={messagesEndRef} />
             </div>
