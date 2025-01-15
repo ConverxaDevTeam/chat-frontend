@@ -169,11 +169,18 @@ const ConversationDetail = () => {
                 <img src="/mvp/three-dots.svg" alt="Menu" className="w-6 h-6" />
               </button>
               <div className="flex-1" />
-              <input
-                type="text"
-                placeholder="Buscar..."
-                className="flex w-[149px] h-[37px] px-4 py-2.5 justify-between items-center flex-shrink-0 rounded-lg border border-[#E9E9E9] bg-sofia-blancoPuro"
-              />
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="Búsqueda"
+                  className="flex w-[149px] h-[37px] pl-4 pr-9 py-2.5 justify-between items-center flex-shrink-0 rounded-lg border border-[#E9E9E9] bg-sofia-blancoPuro font-quicksand text-xs font-normal placeholder:text-[#A6A8AB]"
+                />
+                <img
+                  src="/mvp/magnifying-glass.svg"
+                  alt="Buscar"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4"
+                />
+              </div>
             </div>
           </div>
 
