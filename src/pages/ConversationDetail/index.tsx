@@ -140,25 +140,40 @@ const ConversationDetail = () => {
       <div className="min-h-0 overflow-hidden bg-sofia-blancoPuro">
         <div className="grid grid-rows-[auto,1fr] h-full">
           {/* Chat Header */}
-          <div className="h-[89px] flex-shrink-0 border-t border-r border-b border-[#EDEDED] bg-[#BAF88F] rounded-tr-lg">
-            <div className="flex items-center justify-between p-4">
-              <div className="flex items-center gap-3">
-                <Avatar avatar={null} secret={conversation.chat_user.secret} />
-                <div>
-                  <h3 className="text-base font-medium">
-                    {conversation.chat_user.secret}
-                  </h3>
-                  <span className="text-sm text-gray-600">En línea</span>
-                </div>
+          <div className="h-[89px] flex-shrink-0 border-t border-r border-b border-app-lightGray bg-sofia-electricOlive rounded-tr-lg">
+            <div className="flex items-center p-4 gap-3">
+              <Avatar
+                avatar={null}
+                secret={conversation.chat_user.secret}
+                className="flex-none"
+              />
+              <div className="max-w-[calc(50%-3rem)] flex flex-col items-start">
+                <h3 className="self-stretch text-sofia-superDark font-quicksand text-xl font-semibold truncate">
+                  {conversation.chat_user.secret}
+                </h3>
+                <span className="text-sofia-superDark font-quicksand text-xs font-medium">
+                  En línea
+                </span>
               </div>
               <button
-                onClick={e =>
-                  setShowContextMenu({ show: true, x: e.clientX, y: e.clientY })
-                }
-                className="p-2"
+                className="w-6 h-6 flex items-center justify-center"
+                onClick={e => {
+                  e.preventDefault();
+                  setShowContextMenu({
+                    show: true,
+                    x: e.clientX,
+                    y: e.clientY,
+                  });
+                }}
               >
-                <span className="text-xl">...</span>
+                <img src="/mvp/three-dots.svg" alt="Menu" className="w-6 h-6" />
               </button>
+              <div className="flex-1" />
+              <input
+                type="text"
+                placeholder="Buscar..."
+                className="flex w-[149px] h-[37px] px-4 py-2.5 justify-between items-center flex-shrink-0 rounded-lg border border-[#E9E9E9] bg-sofia-blancoPuro"
+              />
             </div>
           </div>
 

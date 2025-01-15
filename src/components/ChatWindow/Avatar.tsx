@@ -1,12 +1,14 @@
 export const Avatar = ({
   avatar,
   secret,
+  className,
 }: {
   avatar: string | null;
   secret: string;
+  className?: string;
 }) => {
   return (
-    <div className="w-12 h-12 flex-shrink-0 relative">
+    <div className={`w-12 h-12 flex-shrink-0 relative ${className}`}>
       {avatar ? (
         <div className="w-12 h-12 rounded-full overflow-hidden border border-sofia-superDark">
           <img
