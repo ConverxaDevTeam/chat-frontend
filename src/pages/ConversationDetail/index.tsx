@@ -102,9 +102,9 @@ const ConversationDetail = () => {
   };
 
   return (
-    <div className="grid grid-cols-[minmax(0,1fr)] md:grid-cols-[345px,minmax(0,1fr)] xl:grid-cols-[345px,minmax(0,1fr),248px] h-full w-full">
+    <div className="flex-1 grid grid-cols-[minmax(0,1fr)] md:grid-cols-[345px,minmax(0,1fr)] xl:grid-cols-[345px,minmax(0,1fr),248px] min-h-0">
       {/* Left Column - Conversations List */}
-      <div className="hidden md:block">
+      <div className="hidden md:block min-h-0">
         <ConversationsList
           conversations={conversationsList}
           onSelectConversation={handleSelectConversation}
@@ -113,32 +113,34 @@ const ConversationDetail = () => {
       </div>
 
       {/* Middle Column - Chat */}
-      <div className="grid grid-rows-[auto,1fr] md:col-start-2">
-        {/* Chat Header */}
-        <div className="h-16 border-t border-r border-b border-[#EDEDED] bg-[#BAF88F] rounded-tr-lg">
-          {/* Chat header content */}
-        </div>
-
-        {/* Chat Content */}
-        <div className="grid grid-rows-[1fr,auto] gap-[10px] bg-app-c2 p-[10px]">
-          <div className="bg-app-c1 rounded-2xl p-[10px] gap-[10px] overflow-auto border-[1px] border-app-c3">
-            {conversation?.messages?.map(message => (
-              <MessageCard key={`chat-msg-${message.id}`} message={message} />
-            ))}
-            <div ref={messagesEndRef} />
+      <div className="min-h-0 overflow-hidden bg-sofia-blancoPuro">
+        <div className="grid grid-rows-[auto,1fr] h-full">
+          {/* Chat Header */}
+          <div className="h-16 border-t border-r border-b border-[#EDEDED] bg-[#BAF88F] rounded-tr-lg">
+            {/* Chat header content */}
           </div>
 
-          <MessageForm
-            form={{ register, handleSubmit, isSubmitting }}
-            onSubmit={onSubmit}
-            conversation={conversation}
-            user={{ id: user?.id ?? -1 }}
-          />
+          {/* Chat Content */}
+          <div className="grid grid-rows-[1fr,auto] gap-[10px] bg-app-c2 p-[10px] min-h-0">
+            <div className="bg-app-c1 rounded-2xl p-[10px] gap-[10px] overflow-auto border-[1px] border-app-c3">
+              {conversation?.messages?.map(message => (
+                <MessageCard key={`chat-msg-${message.id}`} message={message} />
+              ))}
+              <div ref={messagesEndRef} />
+            </div>
+
+            <MessageForm
+              form={{ register, handleSubmit, isSubmitting }}
+              onSubmit={onSubmit}
+              conversation={conversation}
+              user={{ id: user?.id ?? -1 }}
+            />
+          </div>
         </div>
       </div>
 
       {/* Right Column - User Info */}
-      <div className="hidden xl:block border-l border-app-c3">
+      <div className="hidden xl:block border-l border-app-c3 min-h-0">
         {/* Placeholder for user info */}
       </div>
     </div>

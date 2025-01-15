@@ -39,9 +39,7 @@ const Interface = () => {
   }
 
   return (
-    <div
-      className={`flex w-full min-h-full bg-sofia-background overflow-y-auto`}
-    >
+    <div className={`flex w-full h-full bg-sofia-background overflow-y-auto`}>
       <Sidebar
         windowHeight={windowHeight}
         sidebarMinimized={sidebarMinimized}
