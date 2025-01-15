@@ -3,6 +3,7 @@ import { ConversationDetailResponse } from "@interfaces/conversation";
 import { axiosInstance } from "@store/actions/auth";
 import { alertError } from "@utils/alerts";
 import axios from "axios";
+import { exportToCSV, exportToExcel, exportToPDF } from "./export.service";
 
 export const getConversationsByOrganizationId = async (
   organizationId: number
@@ -131,6 +132,31 @@ export const sendMessage = async (
       }
     }
     alertError(message);
+    return false;
+  }
+};
+
+export const exportConversation = (
+  _organizationId: number,
+  _conversationId: number,
+  format: "csv" | "pdf" | "excel",
+  conversation: ConversationDetailResponse
+): boolean => {
+  try {
+    switch (format) {
+      case "csv":
+        exportToCSV(conversation);
+        break;
+      case "excel":
+        exportToExcel(conversation);
+        break;
+      case "pdf":
+        exportToPDF(conversation);
+        break;
+    }
+    return true;
+  } catch (error) {
+    alertError("Error al exportar la conversación");
     return false;
   }
 };

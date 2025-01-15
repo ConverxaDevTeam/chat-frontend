@@ -51,6 +51,7 @@ export default {
           celeste: "#F6FBFF",
           hitlPending: "#FFBB93",
           error: "#FF616D",
+          navyBlue: "#343E4F",
         },
       },
       cursor: {

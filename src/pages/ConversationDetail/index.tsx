@@ -4,6 +4,7 @@ import { ConversationsList } from "@components/ChatWindow/ConversationsList";
 import {
   getConversationByOrganizationIdAndById,
   sendMessage,
+  exportConversation,
 } from "@services/conversations";
 import { RootState } from "@store";
 import { useEffect, useRef, useState } from "react";
@@ -116,13 +117,52 @@ const ConversationDetail = () => {
           y={showContextMenu.y}
           onClose={() => setShowContextMenu({ show: false, x: 0, y: 0 })}
         >
-          <button className="w-full text-left px-4 py-2 hover:bg-gray-100 rounded">
-            Exportar Chat
+          <button
+            className="w-full text-left"
+            onClick={() => {
+              if (selectOrganizationId && conversation) {
+                exportConversation(
+                  selectOrganizationId,
+                  conversation.id,
+                  "csv",
+                  conversation
+                );
+              }
+            }}
+          >
+            Exportar Chat CSV
           </button>
-          <button className="w-full text-left px-4 py-2 hover:bg-gray-100 rounded">
-            Marcar como leído
+          <button
+            className="w-full text-left"
+            onClick={() => {
+              if (selectOrganizationId && conversation) {
+                exportConversation(
+                  selectOrganizationId,
+                  conversation.id,
+                  "pdf",
+                  conversation
+                );
+              }
+            }}
+          >
+            Exportar Chat PDF
           </button>
-          <button className="w-full text-left px-4 py-2 hover:bg-gray-100 rounded text-red-500">
+          <button
+            className="w-full text-left"
+            onClick={() => {
+              if (selectOrganizationId && conversation) {
+                exportConversation(
+                  selectOrganizationId,
+                  conversation.id,
+                  "excel",
+                  conversation
+                );
+              }
+            }}
+          >
+            Exportar Chat EXCEL
+          </button>
+          <button className="w-full text-left  text-red-500">
             Eliminar Chat
           </button>
         </ContextMenu>
@@ -173,7 +213,7 @@ const ConversationDetail = () => {
                 <input
                   type="text"
                   placeholder="Búsqueda"
-                  className="flex w-[149px] h-[37px] pl-4 pr-9 py-2.5 justify-between items-center flex-shrink-0 rounded-lg border border-[#E9E9E9] bg-sofia-blancoPuro font-quicksand text-xs font-normal placeholder:text-[#A6A8AB]"
+                  className="flex w-[149px] h-[37px] pl-4 pr-9 py-2.5 justify-between items-center flex-shrink-0 rounded-lg border border-app-gray bg-sofia-blancoPuro font-quicksand text-xs font-normal placeholder:text-[#A6A8AB]"
                 />
                 <img
                   src="/mvp/magnifying-glass.svg"
