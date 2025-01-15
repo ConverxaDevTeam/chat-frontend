@@ -16,6 +16,7 @@ import { IConversation } from "@utils/interfaces";
 import { getConversationsByOrganizationId } from "@store/actions/conversations";
 import { useAppSelector } from "@store/hooks";
 import { ConversationListItem } from "@interfaces/conversation";
+import ContextMenu from "../../components/ContextMenu";
 
 const ConversationDetail = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -98,11 +99,34 @@ const ConversationDetail = () => {
   };
 
   const handleSelectConversation = (userId: number) => {
-    navigate(`/conversation/detail/${id}/user/${userId}`);
+    navigate(`/conversation/detail/${userId}`);
   };
+
+  const [showContextMenu, setShowContextMenu] = useState<{
+    show: boolean;
+    x: number;
+    y: number;
+  }>({ show: false, x: 0, y: 0 });
 
   return (
     <div className="flex-1 grid grid-cols-[minmax(0,1fr)] md:grid-cols-[345px,minmax(0,1fr)] xl:grid-cols-[345px,minmax(0,1fr),248px] min-h-0">
+      {showContextMenu.show && (
+        <ContextMenu
+          x={showContextMenu.x}
+          y={showContextMenu.y}
+          onClose={() => setShowContextMenu({ show: false, x: 0, y: 0 })}
+        >
+          <button className="w-full text-left px-4 py-2 hover:bg-gray-100 rounded">
+            Exportar Chat
+          </button>
+          <button className="w-full text-left px-4 py-2 hover:bg-gray-100 rounded">
+            Marcar como leído
+          </button>
+          <button className="w-full text-left px-4 py-2 hover:bg-gray-100 rounded text-red-500">
+            Eliminar Chat
+          </button>
+        </ContextMenu>
+      )}
       {/* Left Column - Conversations List */}
       <div className="hidden md:block min-h-0">
         <ConversationsList
@@ -116,8 +140,30 @@ const ConversationDetail = () => {
       <div className="min-h-0 overflow-hidden bg-sofia-blancoPuro">
         <div className="grid grid-rows-[auto,1fr] h-full">
           {/* Chat Header */}
-          <div className="h-16 border-t border-r border-b border-[#EDEDED] bg-[#BAF88F] rounded-tr-lg">
-            {/* Chat header content */}
+          <div className="h-[89px] flex-shrink-0 border-t border-r border-b border-[#EDEDED] bg-[#BAF88F] rounded-tr-lg">
+            <div className="flex items-center justify-between p-4">
+              <div className="flex items-center gap-3">
+                <img
+                  src="/default-avatar.png"
+                  alt="Agent"
+                  className="w-10 h-10 rounded-full"
+                />
+                <div>
+                  <h3 className="text-base font-medium">
+                    {conversation?.user?.id}
+                  </h3>
+                  <span className="text-sm text-gray-600">En línea</span>
+                </div>
+              </div>
+              <button
+                onClick={e =>
+                  setShowContextMenu({ show: true, x: e.clientX, y: e.clientY })
+                }
+                className="p-2"
+              >
+                <span className="text-xl">...</span>
+              </button>
+            </div>
           </div>
 
           {/* Chat Content */}
