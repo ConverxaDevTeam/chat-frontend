@@ -75,7 +75,7 @@ const ConversationDetail = () => {
 
   useEffect(() => {
     getConversationDetailById();
-  }, []);
+  }, [id]);
 
   const {
     register,
