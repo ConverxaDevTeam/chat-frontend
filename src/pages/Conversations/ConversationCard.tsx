@@ -9,6 +9,94 @@ import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
 import { MessageType, ConversationListItem } from "@interfaces/conversation";
 import { IntegrationType } from "@interfaces/integrations";
+import { ReactNode } from "react";
+
+interface StatusBadgeProps {
+  isActive: boolean;
+  activeText?: string;
+  inactiveText?: string;
+  activeClass?: string;
+  inactiveClass?: string;
+}
+
+const StatusBadge = ({
+  isActive,
+  activeText = "Yes",
+  inactiveText = "No",
+  activeClass = "bg-yellow-50 text-yellow-600",
+  inactiveClass = "bg-gray-50 text-gray-600",
+}: StatusBadgeProps) => (
+  <span
+    className={`px-2 py-1 rounded-full text-sm font-medium ${isActive ? activeClass : inactiveClass}`}
+  >
+    {isActive ? activeText : inactiveText}
+  </span>
+);
+
+interface ActionButtonProps {
+  onClick?: () => void;
+  icon: ReactNode;
+  label: string;
+  colorClass: string;
+  title: string;
+  showLabel?: boolean;
+  to?: string;
+}
+
+const ActionButton = ({
+  onClick,
+  icon,
+  label,
+  colorClass,
+  title,
+  showLabel = false,
+  to,
+}: ActionButtonProps) => {
+  const ButtonContent = () => (
+    <>
+      {icon}
+      {showLabel && <span className="hidden md:inline">{label}</span>}
+    </>
+  );
+
+  if (to) {
+    return (
+      <Link
+        to={to}
+        className={`flex items-center gap-1 px-1 py-2 rounded-full transition-colors ${colorClass}`}
+        title={title}
+      >
+        <ButtonContent />
+      </Link>
+    );
+  }
+
+  return (
+    <button
+      onClick={onClick}
+      className={`flex items-center gap-1 px-1 py-2 rounded-full transition-colors ${colorClass}`}
+      title={title}
+    >
+      <ButtonContent />
+    </button>
+  );
+};
+
+interface MessagePreviewProps {
+  type: MessageType;
+  text: string;
+}
+
+const MessagePreview = ({ type, text }: MessagePreviewProps) => (
+  <div className="flex items-center gap-2 p-4">
+    <span
+      className={`font-medium ${type === MessageType.AGENT ? "text-blue-600" : "text-gray-600"}`}
+    >
+      {type === MessageType.AGENT ? "Agente" : "Usuario"}:
+    </span>
+    <p className="font-poppinsRegular text-[#212121] truncate">{text}</p>
+  </div>
+);
 
 interface HitlButtonProps {
   conversation: ConversationListItem;
@@ -69,28 +157,28 @@ const HitlButton = ({
   };
 
   return (
-    <button
+    <ActionButton
       onClick={handleHitlAction}
-      className={`flex items-center gap-1 px-1 py-2 rounded-full transition-colors ${
+      icon={
+        conversation.user_id === user?.id ? (
+          <BsPersonDash className="w-5 h-5" />
+        ) : (
+          <BsHeadset className="w-5 h-5" />
+        )
+      }
+      label={conversation.user_id === user?.id ? "Unassign" : "HITL"}
+      colorClass={
         conversation.user_id === user?.id
           ? "text-red-600 hover:bg-red-50"
           : "text-purple-600 hover:bg-purple-50"
-      }`}
+      }
       title={
         conversation.user_id === user?.id
           ? "Unassign from HITL"
           : "Assign to HITL"
       }
-    >
-      {conversation.user_id === user?.id ? (
-        <BsPersonDash className="w-5 h-5" />
-      ) : (
-        <BsHeadset className="w-5 h-5" />
-      )}
-      <span className="hidden md:inline">
-        {conversation.user_id === user?.id ? "Unassign" : "HITL"}
-      </span>
-    </button>
+      showLabel={true}
+    />
   );
 };
 
@@ -103,16 +191,10 @@ const ConversationCard = ({
   conversation,
   onUpdateConversation,
 }: ConversationCardProps) => {
-  let lastMessage = {
-    type: MessageType.USER,
-    text: "Sin mensajes",
-  };
-  if (conversation.message_text) {
-    lastMessage = {
-      type: conversation.message_type,
-      text: conversation.message_text,
-    };
-  }
+  const lastMessage = conversation.message_text
+    ? { type: conversation.message_type, text: conversation.message_text }
+    : { type: MessageType.USER, text: "Sin mensajes" };
+
   return (
     <tr className="h-[60px] text-[14px] border-b-[1px] hover:bg-gray-50">
       <td className="w-[calc(100%/24*2)]">
@@ -129,20 +211,7 @@ const ConversationCard = ({
         </p>
       </td>
       <td className="max-w-2 w-2">
-        <div className="flex items-center gap-2 p-4">
-          <span
-            className={`font-medium ${
-              lastMessage.type === MessageType.AGENT
-                ? "text-blue-600"
-                : "text-gray-600"
-            }`}
-          >
-            {lastMessage.type === MessageType.AGENT ? "Agente" : "Usuario"}:
-          </span>
-          <p className="font-poppinsRegular text-[#212121] truncate">
-            {lastMessage.text}
-          </p>
-        </div>
+        <MessagePreview type={lastMessage.type} text={lastMessage.text} />
       </td>
       <td className="w-[calc(100%/24*2)]">
         <p className="font-poppinsRegular text-[#212121]">
@@ -153,15 +222,7 @@ const ConversationCard = ({
       </td>
       <td className="w-[calc(100%/24*2)]">
         <div className="flex justify-center">
-          <span
-            className={`px-2 py-1 rounded-full text-sm font-medium ${
-              conversation.need_human
-                ? "bg-yellow-50 text-yellow-600"
-                : "bg-gray-50 text-gray-600"
-            }`}
-          >
-            {conversation.need_human ? "Yes" : "No"}
-          </span>
+          <StatusBadge isActive={conversation.need_human} />
         </div>
       </td>
       <td className="w-[calc(100%/24*4)]">
@@ -170,14 +231,13 @@ const ConversationCard = ({
             conversation={conversation}
             onUpdateConversation={onUpdateConversation}
           />
-          <Link
-            to={`/conversation/detail/${conversation.id}`}
-            className="flex items-center gap-1 px-1 py-2 text-gray-600 hover:bg-gray-50 rounded-full transition-colors"
+          <ActionButton
+            icon={<BsEye className="w-5 h-5" />}
+            label="View"
+            colorClass="text-gray-600 hover:bg-gray-50"
             title="View Conversation"
-          >
-            <BsEye className="w-5 h-5" />
-            <span className="hidden md:inline">View</span>
-          </Link>
+            to={`/conversation/detail/${conversation.id}`}
+          />
         </div>
       </td>
     </tr>
