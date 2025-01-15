@@ -8,10 +8,10 @@ import { ChatFooter } from "./components/ChatFooter";
 
 interface ChatProps {
   onClose?: () => void;
+  agentId?: number;
 }
 
-const Chat = memo(({ onClose }: ChatProps) => {
-  const agentId = useAppSelector(state => state.chat.currentAgent?.id);
+const Chat = memo(({ onClose, agentId }: ChatProps) => {
   const userId = useAppSelector(state => state.auth.user?.id);
   const roomName = `test-chat-${userId}`;
 
@@ -24,7 +24,7 @@ const Chat = memo(({ onClose }: ChatProps) => {
     LLMAgentId: agentIdState,
     threatId,
     resetChat,
-  } = useChat(roomName);
+  } = useChat(roomName, agentId);
 
   useWebSocketConnection({
     roomName,

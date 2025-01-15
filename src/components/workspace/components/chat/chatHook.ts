@@ -6,7 +6,6 @@ import {
   AgentIdentifierType,
   AgenteType,
 } from "@interfaces/agents";
-import { useAppSelector } from "@store/hooks";
 
 export interface Message {
   sender: "user" | "agent";
@@ -15,11 +14,10 @@ export interface Message {
   threat_id?: string;
 }
 
-export const useChat = (roomName: string) => {
+export const useChat = (roomName: string, agentId?: number) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [threatId, setThreatId] = useState<string | undefined>();
   const [LLMAgentId, setLLMAgentId] = useState<string | undefined>();
-  const agentId = useAppSelector(state => state.chat.currentAgent?.id);
 
   const resetChat = useCallback(() => {
     setMessages([]);
