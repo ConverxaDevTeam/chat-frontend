@@ -5,6 +5,7 @@ import {
   getConversationByOrganizationIdAndById,
   sendMessage,
   exportConversation,
+  deleteConversation,
 } from "@services/conversations";
 import { RootState } from "@store";
 import { useEffect, useRef, useState } from "react";
@@ -20,6 +21,7 @@ import { useAppSelector } from "@store/hooks";
 import { ConversationListItem } from "@interfaces/conversation";
 import ContextMenu from "../../components/ContextMenu";
 import { Avatar } from "@components/ChatWindow/Avatar";
+import { alertError } from "@utils/alerts";
 
 const ConversationDetail = () => {
   const navigate = useNavigate();
@@ -47,7 +49,7 @@ const ConversationDetail = () => {
       }
     };
     fetchConversations();
-  }, [organizationId]);
+  }, [organizationId, id]);
 
   const getConversationDetailById = async () => {
     try {
@@ -104,6 +106,25 @@ const ConversationDetail = () => {
     x: number;
     y: number;
   }>({ show: false, x: 0, y: 0 });
+
+  const handleDeleteConversation = async () => {
+    if (!conversation) return;
+
+    try {
+      await deleteConversation(conversation.id);
+      setShowContextMenu({ show: false, x: 0, y: 0 });
+
+      let nextConversationId = conversationsList[0]?.id;
+      if (!nextConversationId) return navigate("/conversations");
+      if (nextConversationId !== conversation.id)
+        return navigate(`/conversation/detail/${nextConversationId}`);
+      nextConversationId = conversationsList[1]?.id;
+      if (!nextConversationId) return navigate("/conversations");
+      navigate(`/conversation/detail/${nextConversationId}`);
+    } catch (error) {
+      alertError("Error al eliminar la conversación");
+    }
+  };
 
   if (!conversation) {
     return <div>Loading...</div>;
@@ -162,7 +183,10 @@ const ConversationDetail = () => {
           >
             Exportar Chat EXCEL
           </button>
-          <button className="w-full text-left  text-red-500">
+          <button
+            className="w-full text-left text-red-500"
+            onClick={handleDeleteConversation}
+          >
             Eliminar Chat
           </button>
         </ContextMenu>

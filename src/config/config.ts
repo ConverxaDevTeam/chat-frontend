@@ -41,6 +41,13 @@ export const apiUrls = {
     organizationId: number,
     conversationId: number
   ) => `/api/conversation/${organizationId}/${conversationId}`,
+  assignConversationToHitl: (conversationId: number) =>
+    `/api/conversation/${conversationId}/assign-hitl`,
+  reassignConversationToHitl: (conversationId: number) =>
+    `/api/conversation/${conversationId}/reassign-hitl`,
+  sendMessage: () => `/api/integration-router/send-message`,
+  deleteConversation: (conversationId: number) =>
+    `/api/conversation/${conversationId}`,
   //files
   mediaAudio: (audio: string) => `${urlFiles}/audio/${audio}`,
   // departments

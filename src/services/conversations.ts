@@ -72,7 +72,7 @@ export const getConversationByOrganizationIdAndById = async (
 export const assignConversationToHitl = async (conversationId: number) => {
   try {
     const response = await axiosInstance.post(
-      `/api/conversation/${conversationId}/assign-hitl`
+      apiUrls.assignConversationToHitl(conversationId)
     );
     if (response.data.ok) {
       return response.data.conversation;
@@ -89,7 +89,7 @@ export const assignConversationToHitl = async (conversationId: number) => {
 export const reassignConversationToHitl = async (conversationId: number) => {
   try {
     const response = await axiosInstance.post(
-      `/api/conversation/${conversationId}/reassign-hitl`
+      apiUrls.reassignConversationToHitl(conversationId)
     );
     return response.data;
   } catch (error) {
@@ -105,13 +105,10 @@ export const sendMessage = async (
   message: string
 ): Promise<boolean> => {
   try {
-    const response = await axiosInstance.post(
-      `/api/integration-router/send-message`,
-      {
-        message,
-        conversationId,
-      }
-    );
+    const response = await axiosInstance.post(apiUrls.sendMessage(), {
+      message,
+      conversationId,
+    });
 
     if (response.data.ok) {
       return true;
@@ -158,5 +155,16 @@ export const exportConversation = (
   } catch (error) {
     alertError("Error al exportar la conversación");
     return false;
+  }
+};
+
+export const deleteConversation = async (conversationId: number) => {
+  try {
+    await axiosInstance.delete(apiUrls.deleteConversation(conversationId));
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      throw error;
+    }
+    throw new Error("Error inesperado");
   }
 };
