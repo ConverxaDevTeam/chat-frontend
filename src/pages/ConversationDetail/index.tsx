@@ -6,83 +6,16 @@ import {
   sendMessage,
 } from "@services/conversations";
 import { AppDispatch, RootState } from "@store";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams, useNavigate } from "react-router-dom";
 import MessageCard from "../../components/ChatWindow/MessageCard";
 import { uploadConversation } from "@store/actions/conversations";
 import { FormInputs } from "@interfaces/conversation";
 import { IConversation } from "@utils/interfaces";
-import { IntegrationType } from "@interfaces/integrations";
-
-const dummyConversations = [
-  {
-    id: 1,
-    name: "Diego Suárez",
-    lastMessage: "¡Genial, muchas gracias!",
-    time: "18:23",
-    unread: 2,
-    integration: IntegrationType.CHAT_WEB,
-    avatar: "DM",
-    integrationData: {
-      type: "HITL",
-      status: "auto",
-      messages: 16,
-    },
-  },
-  {
-    id: 2,
-    name: "Jesús Martínez",
-    lastMessage: "Necesito ayuda con mi pedido",
-    time: "16:45",
-    integration: IntegrationType.MESSENGER,
-    avatar: "/avatars/jesus.jpg",
-    integrationData: {
-      type: "HITL",
-      status: "taken",
-      messages: 28,
-    },
-  },
-  {
-    id: 3,
-    name: "Carlos López",
-    lastMessage: "Necesito información sobre...",
-    time: "Ayer",
-    unread: 1,
-    integration: IntegrationType.WHATSAPP,
-    avatar: "CL",
-    integrationData: {
-      type: "HITL",
-      status: "pending",
-      messages: 12,
-    },
-  },
-  {
-    id: 4,
-    name: "Ana Martínez",
-    lastMessage: "¿Tienen envíos a domicilio?",
-    time: "Ayer",
-    integration: IntegrationType.CHAT_WEB,
-    avatar: "AM",
-    integrationData: {
-      type: "IA",
-      messages: 8,
-    },
-  },
-  {
-    id: 5,
-    name: "Roberto Sánchez",
-    lastMessage: "Me gustaría agendar una cita",
-    time: "Lun",
-    integration: IntegrationType.CHAT_WEB,
-    avatar: "RS",
-    integrationData: {
-      type: "HITL",
-      status: "pending",
-      messages: 24,
-    },
-  },
-];
+import { getConversationsByOrganizationId } from "@store/actions/conversations";
+import { useAppSelector } from "@store/hooks";
+import { ConversationListItem } from "@interfaces/conversation";
 
 const ConversationDetail = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -96,6 +29,23 @@ const ConversationDetail = () => {
   const { conversations } = useSelector(
     (state: RootState) => state.conversations
   );
+
+  const organizationId = useAppSelector(
+    state => state.auth.selectOrganizationId
+  );
+  const [conversationsList, setConversationsList] = useState<
+    ConversationListItem[]
+  >([]);
+
+  useEffect(() => {
+    const fetchConversations = async () => {
+      if (organizationId) {
+        const data = await getConversationsByOrganizationId(organizationId);
+        setConversationsList(data);
+      }
+    };
+    fetchConversations();
+  }, [organizationId]);
 
   const conversation = conversations.find(
     (conversation: IConversation) => conversation.id === Number(id)
@@ -156,7 +106,7 @@ const ConversationDetail = () => {
       {/* Left Column - Conversations List */}
       <div className="hidden md:block">
         <ConversationsList
-          conversations={dummyConversations}
+          conversations={conversationsList}
           onSelectConversation={handleSelectConversation}
           selectedId={Number(id)}
         />

@@ -1,13 +1,15 @@
-export enum ConversationType {
-  CHAT_WEB = "chat_web",
-  WHATSAPP = "whatsapp",
-  MESSENGER = "messenger",
-}
+import { IntegrationType } from "./integrations";
 
 export enum MessageType {
   USER = "user",
   AGENT = "agent",
   HITL = "hitl",
+}
+
+export enum ConversationStatus {
+  IA = "ia",
+  PENDING = "pending",
+  TAKEN = "taken",
 }
 
 export interface Message {
@@ -22,7 +24,7 @@ export interface Conversation {
   id: number;
   created_at: string;
   updated_at: string;
-  type: ConversationType;
+  type: IntegrationType;
   user: {
     id: number;
   } | null;
@@ -39,12 +41,15 @@ export interface ConversationListItem {
   id: number;
   created_at: string;
   user_id: number | null;
+  secret: string;
+  avatar: null; // TODO: add avatar
+  unread_messages: number;
   message_id: number;
   message_text: string;
   message_type: MessageType;
   message_created_at: string;
   need_human: boolean;
-  type: ConversationType;
+  type: IntegrationType;
 }
 
 export interface ConversationListResponse {
@@ -52,3 +57,12 @@ export interface ConversationListResponse {
   message?: string;
   conversations: ConversationListItem[];
 }
+
+export const getConversationStatus = (
+  need_human: boolean,
+  user_id: number | null
+): ConversationStatus => {
+  if (user_id) return ConversationStatus.TAKEN;
+  if (!need_human) return ConversationStatus.IA;
+  return ConversationStatus.PENDING;
+};

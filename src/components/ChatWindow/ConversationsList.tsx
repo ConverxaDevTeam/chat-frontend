@@ -4,9 +4,10 @@ import { IoChevronBack, IoChevronForward } from "react-icons/io5";
 import { ConversationCard } from "./ConversationCard";
 import { useParams } from "react-router-dom";
 import { IntegrationType, scrollableTabs } from "@interfaces/integrations";
+import { ConversationListItem } from "@interfaces/conversation";
 
 interface ConversationsListProps {
-  conversations?: any[];
+  conversations?: ConversationListItem[];
   onSelectConversation?: (id: number) => void;
   selectedId?: number;
 }
@@ -38,7 +39,7 @@ export const ConversationsList = ({
   const canScrollRight = startIndex + 3 < scrollableTabs.length;
 
   const filteredConversations = conversations.filter(
-    conv => activeTab === fixedTab || conv.integration === activeTab
+    conv => activeTab === fixedTab || conv.type === activeTab
   );
 
   const integrationTabsNames = {

@@ -7,11 +7,8 @@ import { RootState } from "@store";
 import { AxiosError } from "axios";
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
-import {
-  MessageType,
-  ConversationType,
-  ConversationListItem,
-} from "@interfaces/conversation";
+import { MessageType, ConversationListItem } from "@interfaces/conversation";
+import { IntegrationType } from "@interfaces/integrations";
 
 interface HitlButtonProps {
   conversation: ConversationListItem;
@@ -149,9 +146,9 @@ const ConversationCard = ({
       </td>
       <td className="w-[calc(100%/24*2)]">
         <p className="font-poppinsRegular text-[#212121]">
-          {conversation.type === ConversationType.CHAT_WEB && "Web Chat"}
-          {conversation.type === ConversationType.MESSENGER && "Messenger"}
-          {conversation.type === ConversationType.WHATSAPP && "WhatsApp"}
+          {conversation.type === IntegrationType.CHAT_WEB && "Web Chat"}
+          {conversation.type === IntegrationType.MESSENGER && "Messenger"}
+          {conversation.type === IntegrationType.WHATSAPP && "WhatsApp"}
         </p>
       </td>
       <td className="w-[calc(100%/24*2)]">

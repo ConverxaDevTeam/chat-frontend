@@ -1,46 +1,35 @@
+import {
+  ConversationListItem,
+  ConversationStatus,
+  getConversationStatus,
+} from "@interfaces/conversation";
 import { IntegrationType } from "@interfaces/integrations";
 import { FC } from "react";
 
-interface IntegrationData {
-  type: "IA" | "HITL";
-  status?: "pending" | "taken" | "auto";
-  messages: number;
-}
-
-interface Conversation {
-  id: number;
-  name: string;
-  lastMessage: string;
-  time: string;
-  unread?: number;
-  integration: IntegrationType;
-  avatar: string;
-  integrationData: IntegrationData;
-}
-
 interface ConversationCardProps {
-  conversation: Conversation;
+  conversation: ConversationListItem;
   isSelected: boolean;
   onClick: () => void;
 }
 
-const getHitlBackground = (status?: string) => {
+const getHitlBackground = (status: ConversationStatus) => {
   switch (status) {
-    case "taken":
-      return "bg-sofia-hitlPending";
-    case "pending":
+    case ConversationStatus.TAKEN:
+      return "bg-sofia-hitlPending"; // Naranja: tomado por humano
+    case ConversationStatus.IA:
+      return "bg-sofia-electricGreen"; // Verde: respuesta automática con IA
+    case ConversationStatus.PENDING:
     default:
       return "bg-sofia-error"; // Rojo: no se ha recibido respuesta
   }
 };
 
-const getHitlText = (status?: string) => {
+const getHitlText = (status: ConversationStatus) => {
   switch (status) {
-    case "taken":
-      return "HITL";
-    case "auto":
+    case ConversationStatus.IA:
       return "IA";
-    case "pending":
+    case ConversationStatus.TAKEN:
+    case ConversationStatus.PENDING:
     default:
       return "HITL";
   }
@@ -62,8 +51,11 @@ export const ConversationCard: FC<ConversationCardProps> = ({
   isSelected,
   onClick,
 }) => {
-  const isAvatarUrl = conversation.avatar.startsWith("/");
-  const { type, status } = conversation.integrationData;
+  const isAvatarUrl = false; // TODO : check if avatar is a url
+  const status = getConversationStatus(
+    conversation.need_human,
+    conversation.user_id
+  );
 
   return (
     <button
@@ -79,8 +71,8 @@ export const ConversationCard: FC<ConversationCardProps> = ({
         {isAvatarUrl ? (
           <div className="w-12 h-12 rounded-full overflow-hidden border border-sofia-superDark">
             <img
-              src={conversation.avatar}
-              alt={conversation.name}
+              src={conversation.avatar ?? undefined}
+              alt={conversation.secret}
               className="w-full h-full object-cover"
             />
           </div>
@@ -88,56 +80,48 @@ export const ConversationCard: FC<ConversationCardProps> = ({
           <div className="w-12 h-12 flex items-center justify-center relative">
             <div className="absolute inset-0 rounded-full bg-sofia-electricLight border border-sofia-superDark" />
             <span className="relative z-10 font-quicksand text-base font-semibold text-sofia-superDark">
-              {conversation.avatar}
+              {conversation.secret.substring(0, 2)}
             </span>
           </div>
         )}
       </div>
 
       {/* Content */}
-      <div className="flex flex-col h-9 items-start gap-0.5 flex-1">
+      <div className="flex flex-col h-9 min-w-0 max-w-[calc(100%-4rem)] items-start gap-0.5 flex-1">
         {/* Frame Superior */}
         <div className="flex justify-between items-center w-full">
-          <h3 className="font-quicksand text-sm font-bold text-sofia-superDark">
-            {conversation.name}
+          <h3 className="font-quicksand text-sm font-bold text-sofia-superDark truncate flex-1 min-w-0">
+            {conversation.secret}
           </h3>
-          <span className="font-quicksand text-sm font-semibold text-app-newGray">
-            {conversation.time}
+          <span className="font-quicksand text-sm font-semibold text-app-newGray ml-2 flex-shrink-0">
+            {conversation.message_created_at}
           </span>
         </div>
 
         {/* Frame Inferior */}
-        <div className="flex justify-center items-center gap-1 flex-1 w-full">
-          <div className="flex flex-col justify-center flex-1 self-stretch">
+        <div className="flex justify-between items-center w-full">
+          <div className="flex-1 min-w-0">
             <p className="font-quicksand text-xs text-sofia-superDark text-left truncate">
-              {conversation.lastMessage}
+              {conversation.message_text}
             </p>
           </div>
-          <div className="flex items-center gap-1 flex-shrink-0">
+          <div className="flex items-center gap-1 flex-shrink-0 ml-2">
             <img
-              src={getIntegrationIcon(conversation.integration)}
-              alt={conversation.integration}
+              src={getIntegrationIcon(conversation.type)}
+              alt={conversation.type}
               className="w-4 h-4"
             />
-            {type === "HITL" ? (
-              <div
-                className={`h-4 px-1 flex justify-center items-center ${getHitlBackground(status)}`}
-              >
-                <span className="font-quicksand text-tiny text-sofia-superDark">
-                  {getHitlText(status)}
-                </span>
-              </div>
-            ) : (
-              <div className="w-4 h-4 flex justify-center items-center p-0.5 rounded-[2px] bg-sofia-electricGreen">
-                <span className="font-quicksand text-tiny text-sofia-superDark">
-                  {type}
-                </span>
-              </div>
-            )}
-            {conversation.unread && (
+            <div
+              className={`h-4 px-1 flex justify-center items-center ${getHitlBackground(status)}`}
+            >
+              <span className="font-quicksand text-tiny text-sofia-superDark">
+                {getHitlText(status)}
+              </span>
+            </div>
+            {conversation.unread_messages > 0 && (
               <div className="w-4 h-4 flex justify-center items-center p-0.5 rounded-full bg-sofia-electricOlive">
                 <span className="font-quicksand text-tiny text-sofia-superDark">
-                  {conversation.unread}
+                  {conversation.unread_messages}
                 </span>
               </div>
             )}
