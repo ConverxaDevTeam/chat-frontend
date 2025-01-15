@@ -1,10 +1,141 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { IoChevronBack, IoChevronForward } from "react-icons/io5";
 import { ConversationCard } from "./ConversationCard";
 import { useParams } from "react-router-dom";
 import { IntegrationType, scrollableTabs } from "@interfaces/integrations";
 import { ConversationListItem } from "@interfaces/conversation";
+
+interface SearchBarProps {
+  onSearch: (query: string) => void;
+}
+
+const SearchBar = ({ onSearch }: SearchBarProps) => {
+  const { register, watch } = useForm();
+  const searchQuery = watch("search");
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      onSearch(searchQuery || "");
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery, onSearch]);
+
+  return (
+    <div className="relative flex h-[37px] items-center">
+      <input
+        type="text"
+        {...register("search")}
+        className="w-full h-full px-4 rounded-lg border border-app-newGray bg-sofia-blancoPuro flex items-center font-quicksand text-xs font-medium placeholder:text-app-newGray"
+        placeholder="Búsqueda"
+      />
+      <button className="absolute right-4 top-1/2 -translate-y-1/2">
+        <img src="/mvp/magnifying-glass.svg" alt="Search" className="w-4 h-4" />
+      </button>
+    </div>
+  );
+};
+
+interface TabProps {
+  label: string;
+  isActive: boolean;
+  onClick: () => void;
+}
+
+const Tab = ({ label, isActive, onClick }: TabProps) => (
+  <button
+    onClick={onClick}
+    className={`${tabBaseStyles} ${isActive ? tabSelectedStyles : tabNormalStyles}`}
+  >
+    {label}
+  </button>
+);
+
+interface ScrollButtonProps {
+  direction: "left" | "right";
+  onClick: () => void;
+  disabled: boolean;
+}
+
+const ScrollButton = ({ direction, onClick, disabled }: ScrollButtonProps) => {
+  if (disabled) return null;
+
+  return (
+    <button onClick={onClick} className="p-1 shrink-0">
+      {direction === "left" ? (
+        <IoChevronBack className="w-4 h-4 text-app-newGray" />
+      ) : (
+        <IoChevronForward className="w-4 h-4 text-app-newGray" />
+      )}
+    </button>
+  );
+};
+
+interface TabsCarouselProps {
+  activeTab: IntegrationType | "Todas";
+  setActiveTab: (tab: IntegrationType | "Todas") => void;
+  startIndex: number;
+  setStartIndex: React.Dispatch<React.SetStateAction<number>>;
+}
+
+const TabsCarousel = ({
+  activeTab,
+  setActiveTab,
+  startIndex,
+  setStartIndex,
+}: TabsCarouselProps) => {
+  const fixedTab = "Todas";
+  const visibleScrollableTabs = scrollableTabs.slice(
+    startIndex,
+    startIndex + 3
+  );
+  const canScrollLeft = startIndex > 0;
+  const canScrollRight = startIndex + 3 < scrollableTabs.length;
+
+  const integrationTabsNames = {
+    [IntegrationType.WHATSAPP]: "WhatsApp",
+    [IntegrationType.MESSENGER]: "Messenger",
+    [IntegrationType.CHAT_WEB]: "Web",
+  };
+
+  return (
+    <div className="w-[327px] flex flex-col items-start">
+      <div className="relative flex items-center w-full">
+        <Tab
+          label={fixedTab}
+          isActive={activeTab === fixedTab}
+          onClick={() => setActiveTab(fixedTab)}
+        />
+
+        <div className="flex-1 flex items-center max-w-[285px]">
+          <ScrollButton
+            direction="left"
+            onClick={() => setStartIndex(prev => prev - 1)}
+            disabled={!canScrollLeft}
+          />
+
+          <div className="flex gap-4 mx-2 overflow-hidden flex-1">
+            {visibleScrollableTabs.map(tab => (
+              <Tab
+                key={tab}
+                label={integrationTabsNames[tab]}
+                isActive={activeTab === tab}
+                onClick={() => setActiveTab(tab)}
+              />
+            ))}
+          </div>
+
+          <ScrollButton
+            direction="right"
+            onClick={() => setStartIndex(prev => prev + 1)}
+            disabled={!canScrollRight}
+          />
+        </div>
+      </div>
+    </div>
+  );
+};
 
 interface ConversationsListProps {
   conversations?: ConversationListItem[];
@@ -23,111 +154,33 @@ export const ConversationsList = ({
   onSelectConversation,
   selectedId,
 }: ConversationsListProps) => {
-  const fixedTab = "Todas";
   const { userId } = useParams();
   const [activeTab, setActiveTab] = useState<IntegrationType | "Todas">(
-    fixedTab
+    "Todas"
   );
-  const { register } = useForm();
+  const [searchQuery, setSearchQuery] = useState("");
   const [startIndex, setStartIndex] = useState(0);
 
-  const visibleScrollableTabs = scrollableTabs.slice(
-    startIndex,
-    startIndex + 3
-  );
-  const canScrollLeft = startIndex > 0;
-  const canScrollRight = startIndex + 3 < scrollableTabs.length;
-
-  const filteredConversations = conversations.filter(
-    conv => activeTab === fixedTab || conv.type === activeTab
-  );
-
-  const integrationTabsNames = {
-    [IntegrationType.WHATSAPP]: "WhatsApp",
-    [IntegrationType.MESSENGER]: "Messenger",
-    [IntegrationType.CHAT_WEB]: "Web",
-  };
-
-  const scrollLeft = () => {
-    if (canScrollLeft) {
-      setStartIndex(prev => prev - 1);
-    }
-  };
-
-  const scrollRight = () => {
-    if (canScrollRight) {
-      setStartIndex(prev => prev + 1);
-    }
-  };
+  const filteredConversations = conversations.filter(conv => {
+    const matchesTab = activeTab === "Todas" || conv.type === activeTab;
+    const matchesSearch =
+      searchQuery === "" ||
+      conv.secret.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesTab && matchesSearch;
+  });
 
   return (
     <div className="w-[345px] h-full bg-sofia-blancoPuro border border-app-lightGray rounded-l-lg flex flex-col">
       <div className="flex flex-col gap-6 p-[10px] flex-none">
-        {/* Search Bar */}
-        <div className="relative flex h-[37px] items-center">
-          <input
-            type="text"
-            {...register("search")}
-            className="w-full h-full px-4 rounded-lg border border-app-newGray bg-sofia-blancoPuro flex items-center font-quicksand text-xs font-medium placeholder:text-app-newGray"
-            placeholder="Búsqueda"
-          />
-          <button className="absolute right-4 top-1/2 -translate-y-1/2">
-            <img
-              src="/mvp/magnifying-glass.svg"
-              alt="Search"
-              className="w-4 h-4"
-            />
-          </button>
-        </div>
-
-        {/* Tabs Carousel */}
-        <div className="w-[327px] flex flex-col items-start">
-          <div className="relative flex items-center w-full">
-            {/* Fixed "Todas" tab */}
-            <button
-              onClick={() => setActiveTab(fixedTab)}
-              className={`${tabBaseStyles} ${
-                activeTab === fixedTab ? tabSelectedStyles : tabNormalStyles
-              }`}
-            >
-              {fixedTab}
-            </button>
-
-            <div className="flex-1 flex items-center max-w-[285px]">
-              {/* Left chevron */}
-              {canScrollLeft && (
-                <button onClick={scrollLeft} className="p-1 shrink-0">
-                  <IoChevronBack className="w-4 h-4 text-app-newGray" />
-                </button>
-              )}
-
-              {/* Scrollable tabs */}
-              <div className="flex gap-4 mx-2 overflow-hidden flex-1">
-                {visibleScrollableTabs.map(tab => (
-                  <button
-                    key={tab}
-                    onClick={() => setActiveTab(tab)}
-                    className={`${tabBaseStyles} ${
-                      activeTab === tab ? tabSelectedStyles : tabNormalStyles
-                    }`}
-                  >
-                    {integrationTabsNames[tab]}
-                  </button>
-                ))}
-              </div>
-
-              {/* Right chevron */}
-              {canScrollRight && (
-                <button onClick={scrollRight} className="p-1 shrink-0">
-                  <IoChevronForward className="w-4 h-4 text-app-newGray" />
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
+        <SearchBar onSearch={setSearchQuery} />
+        <TabsCarousel
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          startIndex={startIndex}
+          setStartIndex={setStartIndex}
+        />
       </div>
 
-      {/* Conversations List */}
       <div className="flex-1 overflow-y-auto">
         <div className="flex flex-col">
           {filteredConversations.map(conversation => (
