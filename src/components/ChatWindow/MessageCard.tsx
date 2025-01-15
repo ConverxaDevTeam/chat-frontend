@@ -50,7 +50,6 @@ const renderContent = (message: IMessage) => {
 };
 
 const MessageCard = ({ message }: MessageCardProps) => {
-  console.log(message);
   if (message.type === MessageType.AGENT || message.type === MessageType.HITL) {
     return (
       <div className="flex gap-[10px]">

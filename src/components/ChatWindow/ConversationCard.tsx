@@ -1,3 +1,4 @@
+import { Avatar } from "@components/ChatWindow/Avatar";
 import {
   ConversationListItem,
   ConversationStatus,
@@ -52,7 +53,6 @@ export const ConversationCard: FC<ConversationCardProps> = ({
   isSelected,
   onClick,
 }) => {
-  const isAvatarUrl = false; // TODO : check if avatar is a url
   const status = getConversationStatus(
     conversation.need_human,
     conversation.user_id
@@ -68,24 +68,7 @@ export const ConversationCard: FC<ConversationCardProps> = ({
       }`}
     >
       {/* Avatar */}
-      <div className="w-12 h-12 flex-shrink-0 relative">
-        {isAvatarUrl ? (
-          <div className="w-12 h-12 rounded-full overflow-hidden border border-sofia-superDark">
-            <img
-              src={conversation.avatar ?? undefined}
-              alt={conversation.secret}
-              className="w-full h-full object-cover"
-            />
-          </div>
-        ) : (
-          <div className="w-12 h-12 flex items-center justify-center relative">
-            <div className="absolute inset-0 rounded-full bg-sofia-electricLight border border-sofia-superDark" />
-            <span className="relative z-10 font-quicksand text-base font-semibold text-sofia-superDark">
-              {conversation.secret.substring(0, 2)}
-            </span>
-          </div>
-        )}
-      </div>
+      <Avatar avatar={conversation.avatar} secret={conversation.secret} />
 
       {/* Content */}
       <div className="flex flex-col h-9 min-w-0 max-w-[calc(100%-4rem)] items-start gap-0.5 flex-1">

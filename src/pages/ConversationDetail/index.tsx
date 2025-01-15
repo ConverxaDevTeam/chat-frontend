@@ -17,6 +17,7 @@ import { getConversationsByOrganizationId } from "@store/actions/conversations";
 import { useAppSelector } from "@store/hooks";
 import { ConversationListItem } from "@interfaces/conversation";
 import ContextMenu from "../../components/ContextMenu";
+import { Avatar } from "@components/ChatWindow/Avatar";
 
 const ConversationDetail = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -143,11 +144,7 @@ const ConversationDetail = () => {
           <div className="h-[89px] flex-shrink-0 border-t border-r border-b border-[#EDEDED] bg-[#BAF88F] rounded-tr-lg">
             <div className="flex items-center justify-between p-4">
               <div className="flex items-center gap-3">
-                <img
-                  src="/default-avatar.png"
-                  alt="Agent"
-                  className="w-10 h-10 rounded-full"
-                />
+                <Avatar avatar={null} secret={"sfsddfs"} />
                 <div>
                   <h3 className="text-base font-medium">
                     {conversation?.user?.id}
