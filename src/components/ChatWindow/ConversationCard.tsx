@@ -4,6 +4,7 @@ import {
   getConversationStatus,
 } from "@interfaces/conversation";
 import { IntegrationType } from "@interfaces/integrations";
+import { formatDateOrTime } from "@utils/format";
 import { FC } from "react";
 
 interface ConversationCardProps {
@@ -90,11 +91,13 @@ export const ConversationCard: FC<ConversationCardProps> = ({
       <div className="flex flex-col h-9 min-w-0 max-w-[calc(100%-4rem)] items-start gap-0.5 flex-1">
         {/* Frame Superior */}
         <div className="flex justify-between items-center w-full">
-          <h3 className="font-quicksand text-sm font-bold text-sofia-superDark truncate flex-1 min-w-0">
+          <h3 className="font-quicksand text-sm font-bold text-sofia-superDark truncate flex-1 min-w-0 text-left">
             {conversation.secret}
           </h3>
           <span className="font-quicksand text-sm font-semibold text-app-newGray ml-2 flex-shrink-0">
-            {conversation.message_created_at}
+            {conversation.message_created_at
+              ? formatDateOrTime(conversation.message_created_at)
+              : ""}
           </span>
         </div>
 
