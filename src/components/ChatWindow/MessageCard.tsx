@@ -53,7 +53,7 @@ const MessageCard = ({ message }: MessageCardProps) => {
     return (
       <div className="inline-flex items-start gap-2">
         <div className="w-[40px] h-[40px] px-[7px] py-[10px] flex flex-col items-start rounded-full bg-sofia-electricGreen relative">
-          <img src="/img/sofia.svg" alt="sofia" className="w-6 h-6" />
+          <img src="/icon.svg" alt="sofia" className="w-6 h-6" />
           <div className="w-3 h-3 bg-green-500 absolute border-2 border-white rounded-full -bottom-0.5 -right-0.5" />
         </div>
         <div className="flex flex-col items-start gap-1">
