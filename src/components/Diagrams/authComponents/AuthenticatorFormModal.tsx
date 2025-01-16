@@ -231,20 +231,28 @@ const AuthenticatorFormModal = ({
     organizationId,
     onSubmit,
   });
-
   const [params, setParams] = useState<Array<{ key: string; value: string }>>(
     []
   );
-
+  const authenticatorType = useWatch({
+    control,
+    name: "type",
+  });
   useEffect(() => {
+    // Reset form
+    reset(initialData || DEFAULT_VALUES(organizationId, authenticatorType));
+
+    // Initialize params if endpoint type
     if (initialData?.type === AutenticadorType.ENDPOINT) {
       const endpointData = initialData as EndpointAuthenticatorType;
       const initialParams = Object.entries(
         endpointData.config.params || {}
       ).map(([key, value]) => ({ key, value }));
       setParams(initialParams);
+    } else {
+      setParams([]); // Clear params if not endpoint type
     }
-  }, [initialData]);
+  }, [authenticatorType, organizationId, initialData, reset]);
 
   const onUpdateParam = useCallback(
     (index: number, field: "key" | "value", value: string) => {
@@ -266,17 +274,6 @@ const AuthenticatorFormModal = ({
     },
     [control, setValue]
   );
-
-  const authenticatorType = useWatch({
-    control,
-    name: "type",
-  });
-
-  useEffect(() => {
-    if (!initialData) {
-      reset(DEFAULT_VALUES(organizationId, authenticatorType));
-    }
-  }, [authenticatorType, organizationId, initialData, reset]);
 
   const handleClose = () => {
     reset(DEFAULT_VALUES(organizationId));
