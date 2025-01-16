@@ -1,6 +1,7 @@
 import { apiUrls } from "@config/config";
 import { formatDateString } from "@utils/format";
 import { IMessage, MessageFormatType, MessageType } from "@utils/interfaces";
+import ReactMarkdown from "react-markdown";
 
 interface MessageCardProps {
   message: IMessage;
@@ -16,7 +17,6 @@ const renderContent = (message: IMessage) => {
             alt={`Image ${index + 1}`}
             className="max-w-[200px] rounded-lg"
             onLoad={() => {
-              // Limpiamos la URL del blob cuando la imagen se carga
               if (imageUrl.startsWith("blob:")) {
                 URL.revokeObjectURL(imageUrl);
               }
@@ -31,7 +31,7 @@ const renderContent = (message: IMessage) => {
           className="w-[220px] h-[35px]"
         />
       )}
-      <p
+      <div
         className={`p-[16px] text-sofiaCall-dark leading-[18px] font-poppinsRegular text-[14px] rounded-lg ${
           message.type === MessageType.HITL
             ? "bg-[#ffd6ff]"
@@ -43,8 +43,26 @@ const renderContent = (message: IMessage) => {
         {message.format === MessageFormatType.AUDIO && (
           <strong>Transcripcion: </strong>
         )}
-        {message.text}
-      </p>
+        <ReactMarkdown
+          components={{
+            p: ({ ...props }) => <p className="mb-2 last:mb-0" {...props} />,
+            a: ({ ...props }) => (
+              <a className="text-blue-500 hover:underline" {...props} />
+            ),
+            ul: ({ ...props }) => (
+              <ul className="list-disc ml-4 mb-2" {...props} />
+            ),
+            ol: ({ ...props }) => (
+              <ol className="list-decimal ml-4 mb-2" {...props} />
+            ),
+            code: ({ ...props }) => (
+              <code className="bg-gray-100 px-1 rounded" {...props} />
+            ),
+          }}
+        >
+          {message.text}
+        </ReactMarkdown>
+      </div>
     </>
   );
 };

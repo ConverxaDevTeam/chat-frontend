@@ -5,15 +5,8 @@ import { toast } from "react-toastify";
 import { useSweetAlert } from "@/hooks/useSweetAlert";
 import { authenticatorService } from "@/services/authenticator.service";
 import { functionsService } from "@/services/functions.service"; // Import the functionsService
-import {
-  ApiKeyAutenticador,
-  Autenticador,
-  BearerConfig,
-  HttpAutenticador,
-} from "@interfaces/autenticators.interface";
 import AuthenticatorFormModal from "./AuthenticatorFormModal";
-
-type AuthenticatorType = Autenticador<HttpAutenticador<BearerConfig>>;
+import { AuthenticatorType } from "@interfaces/autenticators.interface";
 
 interface AuthenticatorModalProps {
   show: boolean;
@@ -72,16 +65,12 @@ const useFetchAuthenticators = (
   }, [organizationId]);
 };
 
-type EndpointAuthenticatorType = Autenticador<HttpAutenticador<BearerConfig>>;
-type ApiKeyAuthenticatorType = ApiKeyAutenticador;
-type FormData = EndpointAuthenticatorType | ApiKeyAuthenticatorType;
-
 const useAuthenticatorSubmit = (
   setAuthenticators: React.Dispatch<React.SetStateAction<AuthenticatorType[]>>,
   onClose: () => void
 ) => {
-  return useCallback(
-    async (data: FormData) => {
+  return {
+    onSubmit: async (data: AuthenticatorType) => {
       try {
         const authenticatorData = data;
         const result = authenticatorData.id
@@ -108,8 +97,7 @@ const useAuthenticatorSubmit = (
         throw new Error();
       }
     },
-    [onClose]
-  );
+  };
 };
 
 const useAuthenticatorDelete = (
@@ -143,7 +131,10 @@ const useAuthenticatorActions = (
     organizationId,
     setAuthenticators
   );
-  const handleSubmit = useAuthenticatorSubmit(setAuthenticators, onClose);
+  const { onSubmit: handleSubmit } = useAuthenticatorSubmit(
+    setAuthenticators,
+    onClose
+  );
   const handleDelete = useAuthenticatorDelete(setAuthenticators);
 
   const handleSelect = useCallback(
@@ -247,7 +238,7 @@ const AuthenticatorRow = ({
       {auth.name}
     </td>
     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 max-w-[10rem] truncate">
-      {auth.config.url}
+      {(auth.config as { url: string }).url ?? auth.value}
     </td>
     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-3">
       {auth.id && (
