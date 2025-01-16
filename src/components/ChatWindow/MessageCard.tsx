@@ -34,9 +34,7 @@ const renderContent = (message: ConversationResponseMessage) => {
       )}
       {message.text && (
         <p className={`text-[14px] font-quicksand font-medium text-app-text`}>
-          {MessageFormatType.AUDIO && (
-            <span className="font-bold">Transcripcion: </span>
-          )}
+          {message.audio && <span className="font-bold">Transcripcion: </span>}
           {message.text}
         </p>
       )}

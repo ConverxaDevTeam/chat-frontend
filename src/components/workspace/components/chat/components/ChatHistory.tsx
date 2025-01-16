@@ -1,19 +1,21 @@
 import MessageCard from "@components/ChatWindow/MessageCard";
 import { Message } from "../chatHook";
-import { IMessage, MessageFormatType, MessageType } from "@utils/interfaces";
+import { MessageType } from "@utils/interfaces";
+import { ConversationResponseMessage } from "@interfaces/conversation";
 
 interface ChatHistoryProps {
   messages: Message[];
 }
 
-const transformMessageToIMessage = (message: Message): IMessage => ({
-  id: Math.random(), // Generamos un id aleatorio ya que Message no lo tiene
+const transformMessageToConversationMessage = (
+  message: Message
+): ConversationResponseMessage => ({
+  id: Math.random(),
+  created_at: new Date().toISOString(),
   text: message.text,
-  created_at: new Date().toISOString(), // Usamos la fecha actual ya que Message no tiene created_at
   type: message.sender === "user" ? MessageType.USER : MessageType.AGENT,
-  format: MessageFormatType.TEXT,
   audio: null,
-  images: message.images ?? [],
+  images: message.images || null,
 });
 
 export const ChatHistory = ({ messages }: ChatHistoryProps) => {
@@ -22,7 +24,8 @@ export const ChatHistory = ({ messages }: ChatHistoryProps) => {
       {messages.map((message, index) => (
         <MessageCard
           key={index}
-          message={transformMessageToIMessage(message)}
+          message={transformMessageToConversationMessage(message)}
+          userName={message.sender}
         />
       ))}
     </div>
