@@ -272,7 +272,11 @@ const ConversationDetail = () => {
         <div className="flex-1 bg-sofia-celeste overflow-y-auto">
           <div className="flex flex-col gap-4 p-4">
             {filteredMessages.map((message, index) => (
-              <MessageCard key={index} message={message} />
+              <MessageCard
+                key={index}
+                message={message}
+                userName={conversation.chat_user.secret}
+              />
             ))}
             <div ref={messagesEndRef} />
           </div>

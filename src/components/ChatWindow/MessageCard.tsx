@@ -1,29 +1,29 @@
 import { apiUrls } from "@config/config";
+import { Avatar } from "@components/ChatWindow/Avatar";
 import { ConversationResponseMessage } from "@interfaces/conversation";
-import { formatDateOrTime, formatDateString } from "@utils/format";
+import { formatDateOrTime } from "@utils/format";
 import { MessageFormatType, MessageType } from "@utils/interfaces";
 
 interface MessageCardProps {
+  userName: string;
   message: ConversationResponseMessage;
 }
 
 const renderContent = (message: ConversationResponseMessage) => {
   return (
-    <>
+    <div className="flex flex-col gap-2">
       {message.images?.map((imageUrl, index) => (
-        <div key={index} className="mb-2">
-          <img
-            src={imageUrl}
-            alt={`Image ${index + 1}`}
-            className="max-w-[200px] rounded-lg"
-            onLoad={() => {
-              // Limpiamos la URL del blob cuando la imagen se carga
-              if (imageUrl.startsWith("blob:")) {
-                URL.revokeObjectURL(imageUrl);
-              }
-            }}
-          />
-        </div>
+        <img
+          key={index}
+          src={imageUrl}
+          alt={`Image ${index + 1}`}
+          className="rounded-lg w-[200px] h-[200px] object-cover"
+          onLoad={() => {
+            if (imageUrl.startsWith("blob:")) {
+              URL.revokeObjectURL(imageUrl);
+            }
+          }}
+        />
       ))}
       {message.audio && (
         <audio
@@ -32,26 +32,22 @@ const renderContent = (message: ConversationResponseMessage) => {
           className="w-[220px] h-[35px]"
         />
       )}
-      <p
-        className={`p-[16px] text-sofiaCall-dark leading-[18px] font-poppinsRegular text-[14px] rounded-lg ${
-          message.type === MessageType.HITL
-            ? "bg-[#ffd6ff]"
-            : message.type === MessageType.AGENT
-              ? "bg-[#b1f6f0]"
-              : "bg-white"
-        }`}
-      >
-        {MessageFormatType.AUDIO && <strong>Transcripcion: </strong>}
-        {message.text}
-      </p>
-    </>
+      {message.text && (
+        <p className={`text-[14px] font-quicksand font-medium text-app-text`}>
+          {MessageFormatType.AUDIO && (
+            <span className="font-bold">Transcripcion: </span>
+          )}
+          {message.text}
+        </p>
+      )}
+    </div>
   );
 };
 
-const MessageCard = ({ message }: MessageCardProps) => {
+const MessageCard = ({ message, userName }: MessageCardProps) => {
   if (message.type === MessageType.AGENT || message.type === MessageType.HITL) {
     return (
-      <div className="inline-flex items-start gap-2 max-w-[546px] group relative">
+      <div className="inline-flex items-start gap-2 max-w-[546px]">
         <div className="flex flex-col items-start gap-2">
           <div className="flex items-start gap-2">
             <div className="flex flex-col gap-1">
@@ -69,41 +65,37 @@ const MessageCard = ({ message }: MessageCardProps) => {
                   {formatDateOrTime(message.created_at)}
                 </span>
               </div>
-              <div className="flex justify-center items-center self-stretch bg-white rounded-2xl rounded-tl-none">
-                <div className="flex-1 text-[14px] font-quicksand font-medium text-app-text">
-                  {renderContent(message)}
-                </div>
+              <div className="flex justify-center items-center self-stretch p-2 rounded-lg bg-sofia-secundario shadow-[2px_2px_4px_0px_rgba(0,0,0,0.10)]">
+                {renderContent(message)}
               </div>
             </div>
           </div>
-        </div>
-        <div className="absolute right-0 top-0 opacity-0 group-hover:opacity-100 transition-opacity">
-          <button className="p-2 hover:bg-gray-100 rounded-full">
-            <div className="relative">
-              <div className="absolute top-0 right-0 bg-white rounded shadow-lg py-1">
-                <div className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
-                  Marcar como no leído
-                </div>
-                <div className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-red-500">
-                  Eliminar Chat
-                </div>
-              </div>
-            </div>
-          </button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="flex justify-end">
-      <div className="flex flex-col items-end gap-1">
-        <div className="bg-blue-500 text-white rounded-2xl rounded-tr-none px-4 py-2">
-          {renderContent(message)}
+    <div className="flex justify-end max-w-[546px] ml-auto">
+      <div className="flex flex-col items-end gap-2">
+        <div className="flex items-start gap-2">
+          <div className="flex flex-col items-end gap-1">
+            <div className="flex justify-center items-center gap-2">
+              <span className="text-[14px] font-quicksand font-bold text-sofia-superDark">
+                {userName}
+              </span>
+              <span className="text-[14px] font-quicksand font-bold text-app-newGray">
+                {formatDateOrTime(message.created_at)}
+              </span>
+            </div>
+            <div className="flex justify-center items-center self-stretch p-2 rounded-lg bg-sofia-blancoPuro shadow-[2px_2px_4px_0px_rgba(0,0,0,0.10)]">
+              {renderContent(message)}
+            </div>
+          </div>
+          <div className="flex flex-col gap-1">
+            <Avatar avatar={null} secret={userName} />
+          </div>
         </div>
-        <span className="text-xs text-gray-500 px-2">
-          {formatDateString(message.created_at)}
-        </span>
       </div>
     </div>
   );
