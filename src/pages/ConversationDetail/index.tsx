@@ -220,73 +220,75 @@ const ConversationDetail = () => {
       </div>
 
       {/* Middle Column - Chat */}
-      <div className="min-h-0 overflow-hidden bg-sofia-blancoPuro">
-        <div className="grid grid-rows-[auto,1fr] h-full">
-          {/* Chat Header */}
-          <div className="h-[89px] flex-shrink-0 border-t border-r border-b border-app-lightGray bg-sofia-electricOlive rounded-tr-lg">
-            <div className="flex items-center p-4 gap-3">
-              <Avatar
-                avatar={null}
-                secret={conversation.chat_user.secret}
-                className="flex-none"
-              />
-              <div className="max-w-[calc(50%-3rem)] flex flex-col items-start">
-                <h3 className="self-stretch text-sofia-superDark font-quicksand text-xl font-semibold truncate">
-                  {conversation.chat_user.secret}
-                </h3>
-                <span className="text-sofia-superDark font-quicksand text-xs font-medium">
-                  En línea
-                </span>
-              </div>
-              <button
-                className="w-6 h-6 flex items-center justify-center"
-                onClick={e => {
-                  e.preventDefault();
-                  setShowContextMenu({
-                    show: true,
-                    x: e.clientX,
-                    y: e.clientY,
-                  });
-                }}
-              >
-                <img src="/mvp/three-dots.svg" alt="Menu" className="w-6 h-6" />
-              </button>
-              <div className="flex-1" />
-              <div className="relative">
-                <input
-                  type="text"
-                  placeholder="Búsqueda"
-                  value={searchTerm}
-                  onChange={e => setSearchTerm(e.target.value)}
-                  className="flex w-[149px] h-[37px] pl-4 pr-9 py-2.5 justify-between items-center flex-shrink-0 rounded-lg border border-app-gray bg-sofia-blancoPuro font-quicksand text-xs font-normal placeholder:text-[#A6A8AB]"
-                />
-                <img
-                  src="/mvp/magnifying-glass.svg"
-                  alt="Buscar"
-                  className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4"
-                />
-              </div>
+      <div className="min-h-0 overflow-hidden bg-sofia-blancoPuro flex flex-col">
+        {/* Chat Header */}
+        <div className="h-[89px] flex-shrink-0 border-t border-r border-b border-app-lightGray bg-sofia-electricOlive rounded-tr-lg">
+          <div className="flex items-center p-4 gap-3">
+            <Avatar
+              avatar={null}
+              secret={conversation.chat_user.secret}
+              className="flex-none"
+            />
+            <div className="max-w-[calc(50%-3rem)] flex flex-col items-start">
+              <h3 className="self-stretch text-sofia-superDark font-quicksand text-xl font-semibold truncate">
+                {conversation.chat_user.secret}
+              </h3>
+              <span className="text-sofia-superDark font-quicksand text-xs font-medium">
+                En línea
+              </span>
             </div>
-          </div>
-
-          {/* Chat Content */}
-          <div className="grid grid-rows-[1fr,auto] gap-[10px] bg-app-c2 p-[10px] min-h-0">
-            <div className="bg-app-c1 rounded-2xl p-[10px] gap-[10px] overflow-auto border-[1px] border-app-c3">
-              {filteredMessages.map((message, index) => (
-                <MessageCard key={index} message={message} />
-              ))}
-              <div ref={messagesEndRef} />
-            </div>
-            {conversation && (
-              <MessageForm
-                form={{ register, handleSubmit, isSubmitting }}
-                onSubmit={onSubmit}
-                conversation={conversation}
-                user={{ id: user?.id ?? -1 }}
+            <button
+              className="w-6 h-6 flex items-center justify-center"
+              onClick={e => {
+                e.preventDefault();
+                setShowContextMenu({
+                  show: true,
+                  x: e.clientX,
+                  y: e.clientY,
+                });
+              }}
+            >
+              <img src="/mvp/three-dots.svg" alt="Menu" className="w-6 h-6" />
+            </button>
+            <div className="flex-1" />
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Búsqueda"
+                value={searchTerm}
+                onChange={e => setSearchTerm(e.target.value)}
+                className="flex w-[149px] h-[37px] pl-4 pr-9 py-2.5 justify-between items-center flex-shrink-0 rounded-lg border border-app-gray bg-sofia-blancoPuro font-quicksand text-xs font-normal placeholder:text-[#A6A8AB]"
               />
-            )}
+              <img
+                src="/mvp/magnifying-glass.svg"
+                alt="Buscar"
+                className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4"
+              />
+            </div>
           </div>
         </div>
+
+        {/* Chat Content */}
+        <div className="flex-1 bg-sofia-celeste overflow-y-auto">
+          <div className="flex flex-col gap-4 p-4">
+            {filteredMessages.map((message, index) => (
+              <MessageCard key={index} message={message} />
+            ))}
+            <div ref={messagesEndRef} />
+          </div>
+        </div>
+
+        {/* Message Input */}
+        {conversation && (
+          <div className="h-[73px] px-5 py-3.5 flex items-center bg-[#EDEDED]">
+            <MessageForm
+              form={{ register, handleSubmit, isSubmitting }}
+              onSubmit={onSubmit}
+              conversation={conversation}
+              user={{ id: user?.id ?? -1 }}
+            />
+          </div>
+        )}
       </div>
 
       {/* Right Column - User Info */}

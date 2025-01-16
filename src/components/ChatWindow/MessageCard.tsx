@@ -51,30 +51,33 @@ const renderContent = (message: ConversationResponseMessage) => {
 const MessageCard = ({ message }: MessageCardProps) => {
   if (message.type === MessageType.AGENT || message.type === MessageType.HITL) {
     return (
-      <div className="flex gap-[10px]">
-        <div className="bg-white w-[40px] h-[40px] relative rounded-full flex justify-center items-center">
-          <img src="/img/sofia.svg" alt="sofia" />
-          <div className="bg-green-500 w-[18px] h-[18px] absolute border-[4px] border-sofiaCall-white rounded-full -bottom-[5px] -right-[5px]"></div>
+      <div className="inline-flex items-start gap-2">
+        <div className="w-[40px] h-[40px] px-[7px] py-[10px] flex flex-col items-start rounded-full bg-sofia-electricGreen relative">
+          <img src="/img/sofia.svg" alt="sofia" className="w-6 h-6" />
+          <div className="w-3 h-3 bg-green-500 absolute border-2 border-white rounded-full -bottom-0.5 -right-0.5" />
         </div>
-        <div className="flex flex-1 flex-col gap-[4px] items-start">
-          {renderContent(message)}
-          <p className="px-[16px] leading-[18px] font-poppinsRegular text-[12px] text-gray-500">
+        <div className="flex flex-col items-start gap-1">
+          <div className="bg-white rounded-2xl rounded-tl-none px-4 py-2 text-gray-800">
+            {renderContent(message)}
+          </div>
+          <span className="text-xs text-gray-500 px-2">
             {formatDateString(message.created_at)}
-          </p>
+          </span>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="flex gap-[10px]">
-      <div className="flex flex-1 flex-col gap-[4px] items-end">
-        {renderContent(message)}
-        <p className="px-[16px] leading-[18px] font-poppinsRegular text-[12px] text-gray-500">
+    <div className="flex justify-end">
+      <div className="flex flex-col items-end gap-1">
+        <div className="bg-blue-500 text-white rounded-2xl rounded-tr-none px-4 py-2">
+          {renderContent(message)}
+        </div>
+        <span className="text-xs text-gray-500 px-2">
           {formatDateString(message.created_at)}
-        </p>
+        </span>
       </div>
-      <div className="bg-[#82c0cf] w-[40px] h-[40px] relative rounded-full flex justify-center items-center"></div>
     </div>
   );
 };
