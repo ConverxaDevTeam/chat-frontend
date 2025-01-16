@@ -62,15 +62,17 @@ const MessageCard = ({ message }: MessageCardProps) => {
             </div>
             <div className="flex flex-col items-start gap-1">
               <div className="flex justify-center items-center gap-2">
-                <span className="text-[14px] font-quicksand font-bold text-app-text">
+                <span className="text-[14px] font-quicksand font-bold text-sofia-superDark">
                   SOF.IA
                 </span>
                 <span className="text-[14px] font-quicksand font-bold text-app-newGray">
                   {formatDateOrTime(message.created_at)}
                 </span>
               </div>
-              <div className="bg-white rounded-2xl rounded-tl-none px-4 py-2 text-gray-800">
-                {renderContent(message)}
+              <div className="flex justify-center items-center self-stretch bg-white rounded-2xl rounded-tl-none">
+                <div className="flex-1 text-[14px] font-quicksand font-medium text-app-text">
+                  {renderContent(message)}
+                </div>
               </div>
             </div>
           </div>
