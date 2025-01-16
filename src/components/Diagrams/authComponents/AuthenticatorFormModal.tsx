@@ -77,6 +77,7 @@ const useAuthenticatorForm = ({
     control,
     handleSubmit,
     formState: { errors },
+    setValue,
   } = form;
   const getNestedError = (path: NestedKeys): FieldError | undefined => {
     const [first, ...rest] = path.split(".");
@@ -100,6 +101,7 @@ const useAuthenticatorForm = ({
     reset,
     control,
     handleSubmit: handleSubmit(onSubmit),
+    setValue,
   };
 };
 
@@ -216,26 +218,53 @@ const AuthenticatorFormModal = ({
   initialData,
   organizationId,
 }: AuthenticatorFormModalProps) => {
-  const { register, reset, control, handleSubmit, errors, getNestedError } =
-    useAuthenticatorForm({
-      initialData,
-      organizationId,
-      onSubmit,
-    });
+  const {
+    register,
+    reset,
+    control,
+    handleSubmit,
+    errors,
+    getNestedError,
+    setValue,
+  } = useAuthenticatorForm({
+    initialData,
+    organizationId,
+    onSubmit,
+  });
 
   const [params, setParams] = useState<Array<{ key: string; value: string }>>(
     []
   );
 
+  useEffect(() => {
+    if (initialData?.type === AutenticadorType.ENDPOINT) {
+      const endpointData = initialData as EndpointAuthenticatorType;
+      const initialParams = Object.entries(
+        endpointData.config.params || {}
+      ).map(([key, value]) => ({ key, value }));
+      setParams(initialParams);
+    }
+  }, [initialData]);
+
   const onUpdateParam = useCallback(
     (index: number, field: "key" | "value", value: string) => {
-      setParams(prev =>
-        prev.map((param, i) =>
+      setParams(prev => {
+        const newParams = prev.map((param, i) =>
           i === index ? { ...param, [field]: value } : param
-        )
-      );
+        );
+
+        if (control._formValues.type === AutenticadorType.ENDPOINT) {
+          const paramsObject = newParams.reduce(
+            (acc, { key, value }) => ({ ...acc, [key]: value }),
+            {}
+          );
+          setValue("config.params", paramsObject);
+        }
+
+        return newParams;
+      });
     },
-    []
+    [control, setValue]
   );
 
   const authenticatorType = useWatch({

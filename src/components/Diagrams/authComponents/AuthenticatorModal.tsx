@@ -13,7 +13,9 @@ import {
 } from "@interfaces/autenticators.interface";
 import AuthenticatorFormModal from "./AuthenticatorFormModal";
 
-type AuthenticatorType = Autenticador<HttpAutenticador<BearerConfig>>;
+type EndpointAuthenticatorType = Autenticador<HttpAutenticador<BearerConfig>>;
+type ApiKeyAuthenticatorType = ApiKeyAutenticador;
+type AuthenticatorType = EndpointAuthenticatorType | ApiKeyAuthenticatorType;
 
 interface AuthenticatorModalProps {
   show: boolean;
@@ -72,8 +74,6 @@ const useFetchAuthenticators = (
   }, [organizationId]);
 };
 
-type EndpointAuthenticatorType = Autenticador<HttpAutenticador<BearerConfig>>;
-type ApiKeyAuthenticatorType = ApiKeyAutenticador;
 type FormData = EndpointAuthenticatorType | ApiKeyAuthenticatorType;
 
 const useAuthenticatorSubmit = (
@@ -247,7 +247,7 @@ const AuthenticatorRow = ({
       {auth.name}
     </td>
     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 max-w-[10rem] truncate">
-      {auth.config.url}
+      {(auth.config as { url: string }).url ?? auth.value}
     </td>
     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-3">
       {auth.id && (

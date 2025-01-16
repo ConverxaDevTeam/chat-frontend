@@ -7,11 +7,10 @@ import {
 } from "@interfaces/autenticators.interface";
 import { axiosInstance } from "@store/actions/auth";
 
-type AuthenticatorType = Autenticador<HttpAutenticador<BearerConfig>>;
-
 type EndpointAuthenticatorType = Autenticador<HttpAutenticador<BearerConfig>>;
 type ApiKeyAuthenticatorType = ApiKeyAutenticador;
-type FormData = EndpointAuthenticatorType | ApiKeyAuthenticatorType;
+type AuthenticatorType = EndpointAuthenticatorType | ApiKeyAuthenticatorType;
+type FormData = AuthenticatorType;
 
 class AuthenticatorService {
   async fetchAll(organizationId: number) {
