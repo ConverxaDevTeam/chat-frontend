@@ -1,6 +1,6 @@
 import { apiUrls } from "@config/config";
 import { ConversationResponseMessage } from "@interfaces/conversation";
-import { formatDateString } from "@utils/format";
+import { formatDateOrTime, formatDateString } from "@utils/format";
 import { MessageFormatType, MessageType } from "@utils/interfaces";
 
 interface MessageCardProps {
@@ -51,18 +51,43 @@ const renderContent = (message: ConversationResponseMessage) => {
 const MessageCard = ({ message }: MessageCardProps) => {
   if (message.type === MessageType.AGENT || message.type === MessageType.HITL) {
     return (
-      <div className="inline-flex items-start gap-2">
-        <div className="w-[40px] h-[40px] px-[7px] py-[10px] flex flex-col items-start rounded-full bg-sofia-electricGreen relative">
-          <img src="/icon.svg" alt="sofia" className="w-6 h-6" />
-          <div className="w-3 h-3 bg-green-500 absolute border-2 border-white rounded-full -bottom-0.5 -right-0.5" />
-        </div>
-        <div className="flex flex-col items-start gap-1">
-          <div className="bg-white rounded-2xl rounded-tl-none px-4 py-2 text-gray-800">
-            {renderContent(message)}
+      <div className="inline-flex items-start gap-2 max-w-[546px] group relative">
+        <div className="flex flex-col items-start gap-2">
+          <div className="flex items-start gap-2">
+            <div className="flex flex-col gap-1">
+              <div className="w-[40px] h-[40px] px-[7px] py-[10px] flex flex-col items-start rounded-full bg-sofia-electricGreen relative">
+                <img src="/icon.svg" alt="sofia" className="w-6 h-6" />
+                <div className="w-3 h-3 bg-green-500 absolute border-2 border-white rounded-full -bottom-0.5 -right-0.5" />
+              </div>
+            </div>
+            <div className="flex flex-col items-start gap-1">
+              <div className="flex justify-center items-center gap-2">
+                <span className="text-[14px] font-quicksand font-bold text-app-text">
+                  SOF.IA
+                </span>
+                <span className="text-[14px] font-quicksand font-bold text-app-newGray">
+                  {formatDateOrTime(message.created_at)}
+                </span>
+              </div>
+              <div className="bg-white rounded-2xl rounded-tl-none px-4 py-2 text-gray-800">
+                {renderContent(message)}
+              </div>
+            </div>
           </div>
-          <span className="text-xs text-gray-500 px-2">
-            {formatDateString(message.created_at)}
-          </span>
+        </div>
+        <div className="absolute right-0 top-0 opacity-0 group-hover:opacity-100 transition-opacity">
+          <button className="p-2 hover:bg-gray-100 rounded-full">
+            <div className="relative">
+              <div className="absolute top-0 right-0 bg-white rounded shadow-lg py-1">
+                <div className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
+                  Marcar como no leído
+                </div>
+                <div className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-red-500">
+                  Eliminar Chat
+                </div>
+              </div>
+            </div>
+          </button>
         </div>
       </div>
     );
