@@ -1,15 +1,8 @@
 import { apiUrls } from "@config/config";
-import {
-  Autenticador,
-  HttpAutenticador,
-  BearerConfig,
-  ApiKeyAutenticador,
-} from "@interfaces/autenticators.interface";
+import { AuthenticatorType } from "@interfaces/autenticators.interface";
+
 import { axiosInstance } from "@store/actions/auth";
 
-type EndpointAuthenticatorType = Autenticador<HttpAutenticador<BearerConfig>>;
-type ApiKeyAuthenticatorType = ApiKeyAutenticador;
-type AuthenticatorType = EndpointAuthenticatorType | ApiKeyAuthenticatorType;
 type FormData = AuthenticatorType;
 
 class AuthenticatorService {
@@ -27,6 +20,7 @@ class AuthenticatorService {
         ...data,
         life_time: 0,
         value: "",
+        field_name: data.field_name || "Authorization",
       }
     );
     return response.data;
@@ -35,7 +29,10 @@ class AuthenticatorService {
   async update(id: number, data: FormData) {
     const response = await axiosInstance.patch<AuthenticatorType>(
       apiUrls.authenticators.byId(id),
-      data
+      {
+        ...data,
+        field_name: data.field_name || "Authorization",
+      }
     );
     return response.data;
   }

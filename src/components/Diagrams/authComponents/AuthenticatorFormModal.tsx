@@ -1,11 +1,10 @@
 import {
-  Autenticador,
   AutenticadorType,
   injectPlaces,
-  HttpAutenticador,
-  BearerConfig,
-  ApiKeyAutenticador,
   ApiKeyInjectPlaces,
+  ApiKeyAuthenticatorType,
+  EndpointAuthenticatorType,
+  AuthenticatorType,
 } from "@interfaces/autenticators.interface";
 import { HttpMethod } from "@interfaces/functions.interface";
 import { useEffect, useState, useCallback } from "react";
@@ -22,11 +21,6 @@ import {
   FieldErrors,
 } from "react-hook-form";
 
-// Types
-type EndpointAuthenticatorType = Autenticador<HttpAutenticador<BearerConfig>>;
-type ApiKeyAuthenticatorType = ApiKeyAutenticador;
-type FormData = EndpointAuthenticatorType | ApiKeyAuthenticatorType;
-
 type NestedKeys =
   | keyof EndpointAuthenticatorType
   | keyof ApiKeyAuthenticatorType
@@ -34,13 +28,16 @@ type NestedKeys =
   | "config.method"
   | "config.injectConfig.tokenPath"
   | "config.injectConfig.refreshPath"
-  | "config.injectConfig.field_name";
+  | "config.params"
+  | "config.injectPlace"
+  | "config.key"
+  | "field_name";
 
 interface AuthenticatorFormModalProps {
   isShown: boolean;
   onClose: () => void;
-  onSubmit: (data: FormData) => Promise<void>;
-  initialData?: FormData;
+  onSubmit: (data: AuthenticatorType) => Promise<void>;
+  initialData?: AuthenticatorType;
   organizationId: number;
 }
 
@@ -54,7 +51,7 @@ type FormFieldType = {
 };
 
 interface FormFieldProps extends FormFieldType {
-  register: UseFormRegister<FormData>;
+  register: UseFormRegister<AuthenticatorType>;
   error?: FieldError;
 }
 
@@ -67,7 +64,7 @@ const useAuthenticatorForm = ({
   AuthenticatorFormModalProps,
   "initialData" | "organizationId" | "onSubmit"
 >) => {
-  const form = useForm<FormData>({
+  const form = useForm<AuthenticatorType>({
     defaultValues: initialData || DEFAULT_VALUES(organizationId),
   });
 
@@ -179,7 +176,7 @@ const COMMON_FIELDS: FormFieldType[] = [
 const DEFAULT_VALUES = (
   organizationId: number,
   type = AutenticadorType.ENDPOINT
-): FormData => {
+): AuthenticatorType => {
   const baseValues = {
     name: "",
     organizationId,
@@ -247,22 +244,6 @@ const AuthenticatorFormModal = ({
     name: "type",
   });
   useEffect(() => {
-    // Reset form
-    reset(initialData || DEFAULT_VALUES(organizationId, authenticatorType));
-
-    // Initialize params if endpoint type
-    if (initialData?.type === AutenticadorType.ENDPOINT) {
-      const endpointData = initialData as EndpointAuthenticatorType;
-      const initialParams = Object.entries(
-        endpointData.config.params || {}
-      ).map(([key, value]) => ({ key, value }));
-      setParams(initialParams);
-    } else {
-      setParams([]); // Clear params if not endpoint type
-    }
-  }, [authenticatorType, organizationId, initialData, reset]);
-
-  useEffect(() => {
     // Reset form with new type but keep name and other common fields
     if (initialData) {
       const currentValues = control._formValues;
@@ -270,10 +251,32 @@ const AuthenticatorFormModal = ({
         ...DEFAULT_VALUES(organizationId, authenticatorType),
         name: currentValues.name,
         id: currentValues.id,
+        field_name: currentValues.field_name || "Authorization",
       };
       reset(newValues);
     }
   }, [authenticatorType]);
+
+  useEffect(() => {
+    // Reset form
+    const values =
+      initialData || DEFAULT_VALUES(organizationId, authenticatorType);
+    if (!values.field_name) {
+      values.field_name = "Authorization";
+    }
+    reset(values);
+
+    // Initialize params if endpoint type
+    if (values.type === AutenticadorType.ENDPOINT) {
+      const endpointData = values as EndpointAuthenticatorType;
+      const initialParams = Object.entries(
+        endpointData.config.params || {}
+      ).map(([key, value]) => ({ key, value }));
+      setParams(initialParams);
+    } else {
+      setParams([]);
+    }
+  }, [authenticatorType, organizationId, initialData, reset]);
 
   const onUpdateParam = useCallback(
     (index: number, field: "key" | "value", value: string) => {

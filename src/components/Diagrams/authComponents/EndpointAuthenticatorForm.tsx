@@ -72,16 +72,6 @@ export const EndpointAuthenticatorForm = ({
           {...register("config.injectConfig.refreshPath")}
         />
       </InputGroup>
-      <InputGroup
-        label="Field Name"
-        errors={errors.config?.injectConfig?.field_name}
-      >
-        <Input
-          placeholder="Nombre del campo de autorización"
-          defaultValue="Authorization"
-          {...register("config.injectConfig.field_name")}
-        />
-      </InputGroup>
       {params && onUpdateParam && (
         <div className="space-y-4 mt-4">
           <div className="flex justify-between items-center">
