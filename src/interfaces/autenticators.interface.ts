@@ -19,6 +19,7 @@ export interface BearerConfig {
   injectConfig: {
     tokenPath: string;
     refreshPath: string;
+    field_name: string;
   };
 }
 

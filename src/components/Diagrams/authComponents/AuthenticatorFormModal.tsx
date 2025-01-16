@@ -33,7 +33,8 @@ type NestedKeys =
   | "config.url"
   | "config.method"
   | "config.injectConfig.tokenPath"
-  | "config.injectConfig.refreshPath";
+  | "config.injectConfig.refreshPath"
+  | "config.injectConfig.field_name";
 
 interface AuthenticatorFormModalProps {
   isShown: boolean;
@@ -193,6 +194,7 @@ const DEFAULT_VALUES = (
         injectConfig: {
           tokenPath: "",
           refreshPath: "",
+          field_name: "Authorization",
         },
       },
     } as EndpointAuthenticatorType;
