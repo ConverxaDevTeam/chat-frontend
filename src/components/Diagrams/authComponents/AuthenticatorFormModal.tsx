@@ -159,6 +159,12 @@ const COMMON_FIELDS: FormFieldType[] = [
     type: "text",
   },
   {
+    label: "Nombre del Campo",
+    placeholder: "Nombre del campo de autorización",
+    name: "field_name",
+    type: "text",
+  },
+  {
     label: "Tipo",
     placeholder: "Tipo de autenticador",
     name: "type",
@@ -179,6 +185,7 @@ const DEFAULT_VALUES = (
     organizationId,
     value: "",
     life_time: 0,
+    field_name: "Authorization",
     type,
   };
 
@@ -207,6 +214,7 @@ const DEFAULT_VALUES = (
     config: {
       injectPlace: ApiKeyInjectPlaces.HEADER,
       key: "",
+      field_name: "Authorization",
     },
   } as ApiKeyAuthenticatorType;
 };
@@ -253,6 +261,19 @@ const AuthenticatorFormModal = ({
       setParams([]); // Clear params if not endpoint type
     }
   }, [authenticatorType, organizationId, initialData, reset]);
+
+  useEffect(() => {
+    // Reset form with new type but keep name and other common fields
+    if (initialData) {
+      const currentValues = control._formValues;
+      const newValues = {
+        ...DEFAULT_VALUES(organizationId, authenticatorType),
+        name: currentValues.name,
+        id: currentValues.id,
+      };
+      reset(newValues);
+    }
+  }, [authenticatorType]);
 
   const onUpdateParam = useCallback(
     (index: number, field: "key" | "value", value: string) => {

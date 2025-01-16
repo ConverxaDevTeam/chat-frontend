@@ -19,7 +19,6 @@ export interface BearerConfig {
   injectConfig: {
     tokenPath: string;
     refreshPath: string;
-    field_name: string;
   };
 }
 
@@ -59,6 +58,7 @@ export interface Autenticador<
   life_time: number;
   value: string;
   name: string;
+  field_name?: string;
   id?: number;
   organizationId: number;
   type: T["type"];
