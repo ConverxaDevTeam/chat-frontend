@@ -5,7 +5,6 @@ import {
   BsWindows,
   BsGeoAlt,
   BsEnvelope,
-  BsFacebook,
 } from "react-icons/bs";
 import { Avatar } from "./Avatar";
 
