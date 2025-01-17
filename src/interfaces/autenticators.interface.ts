@@ -39,9 +39,6 @@ export interface HttpAutenticador<
 }
 
 export interface ApiKeyAutenticador {
-  value: string;
-  name: string;
-  id?: number;
   type: AutenticadorType.API_KEY;
   config: {
     injectPlace: ApiKeyInjectPlaces;
@@ -58,8 +55,17 @@ export interface Autenticador<
   life_time: number;
   value: string;
   name: string;
+  field_name: string;
   id?: number;
   organizationId: number;
   type: T["type"];
   config: T["config"];
 }
+
+export type EndpointAuthenticatorType = Autenticador<
+  HttpAutenticador<BearerConfig>
+>;
+export type ApiKeyAuthenticatorType = Autenticador<ApiKeyAutenticador>;
+export type AuthenticatorType =
+  | EndpointAuthenticatorType
+  | ApiKeyAuthenticatorType;

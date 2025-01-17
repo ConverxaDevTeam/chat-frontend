@@ -422,7 +422,11 @@ const DiagramFlow = ({
   </div>
 );
 
-const ZoomTransition = () => {
+const ZoomTransition = ({
+  onAgentIdChange,
+}: {
+  onAgentIdChange: (id: number) => void;
+}) => {
   const [agentId, setAgentId] = useState<number | null>(null);
   const departmentId = useSelector(
     (state: RootState) => state.department.selectedDepartmentId
@@ -443,6 +447,7 @@ const ZoomTransition = () => {
         };
         if (response.department?.agente?.id) {
           setAgentId(response.department.agente.id);
+          onAgentIdChange(response.department.agente.id);
           const { nodes: initialNodes, initialEdges } = createInitialNodes(
             agentId ?? undefined,
             agentState
@@ -544,6 +549,10 @@ const ZoomTransition = () => {
   );
 };
 
-export default function Diagram() {
-  return <ZoomTransition />;
+interface DiagramProps {
+  onAgentIdChange: (id: number) => void;
+}
+
+export default function Diagram({ onAgentIdChange }: DiagramProps) {
+  return <ZoomTransition onAgentIdChange={onAgentIdChange} />;
 }

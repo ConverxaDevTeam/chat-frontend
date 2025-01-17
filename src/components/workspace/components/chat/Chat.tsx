@@ -8,10 +8,10 @@ import { ChatFooter } from "./components/ChatFooter";
 
 interface ChatProps {
   onClose?: () => void;
+  agentId?: number;
 }
 
-const Chat = memo(({ onClose }: ChatProps) => {
-  const agentId = useAppSelector(state => state.chat.currentAgent?.id);
+const Chat = memo(({ onClose, agentId }: ChatProps) => {
   const userId = useAppSelector(state => state.auth.user?.id);
   const roomName = `test-chat-${userId}`;
 
@@ -24,7 +24,7 @@ const Chat = memo(({ onClose }: ChatProps) => {
     LLMAgentId: agentIdState,
     threatId,
     resetChat,
-  } = useChat(roomName);
+  } = useChat(roomName, agentId);
 
   useWebSocketConnection({
     roomName,
@@ -44,14 +44,20 @@ const Chat = memo(({ onClose }: ChatProps) => {
   }, [onClose]);
 
   return (
-    <div className="grid grid-rows-[auto,1fr,auto] w-full h-full bg-gray-100 border-r border-gray-300 shadow-lg">
-      <ChatHeader onClose={handleChatClose} />
-      <ChatHistory messages={messages} />
-      <ChatFooter
-        onSendMessage={handleSendMessage}
-        conversation={{ id: -1, user: { id: -1 } }}
-        user={{ id: userId || 0 }}
-      />
+    <div className="grid grid-rows-[auto,1fr,auto] max-w-full w-full h-full bg-gray-100 border-r border-gray-300 shadow-lg">
+      <div className="min-w-0">
+        <ChatHeader onClose={handleChatClose} />
+      </div>
+      <div className="min-w-0">
+        <ChatHistory messages={messages} />
+      </div>
+      <div className="min-w-0">
+        <ChatFooter
+          onSendMessage={handleSendMessage}
+          conversation={{ id: -1, user: { id: -1 } }}
+          user={{ id: userId || 0 }}
+        />
+      </div>
     </div>
   );
 });

@@ -39,9 +39,7 @@ const Interface = () => {
   }
 
   return (
-    <div
-      className={`flex w-full min-h-full bg-sofia-background overflow-y-auto`}
-    >
+    <div className={`flex w-full h-full bg-sofia-background`}>
       <Sidebar
         windowHeight={windowHeight}
         sidebarMinimized={sidebarMinimized}
@@ -49,14 +47,18 @@ const Interface = () => {
         mobileResolution={mobileResolution}
       />
       <div
-        className={`flex flex-1 flex-col ${mobileResolution ? "px-[10px] gap-[10px] pb-[10px]" : "px-[20px] gap-[20px] pb-[20px]"}`}
+        className={`flex flex-1 flex-col min-h-full ${
+          mobileResolution ? "px-[10px] pb-[10px]" : "px-[20px] pb-[20px]"
+        }`}
       >
         <Navbar
           windowWidth={windowWidth}
           sidebarMinimized={sidebarMinimized}
           mobileResolution={mobileResolution}
         />
-        <Outlet />
+        <div className="flex-1 min-h-0 mt-4 overflow-auto">
+          <Outlet />
+        </div>
       </div>
     </div>
   );

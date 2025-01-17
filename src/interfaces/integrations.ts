@@ -3,3 +3,5 @@ export enum IntegrationType {
   WHATSAPP = "whatsapp",
   MESSENGER = "messenger",
 }
+
+export const scrollableTabs = Object.values(IntegrationType);

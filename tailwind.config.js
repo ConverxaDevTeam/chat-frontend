@@ -6,32 +6,53 @@ export default {
   content: ["src/**/*.{html,js,jsx,ts,tsx}", "index.html"],
   theme: {
     extend: {
+      fontFamily: {
+        quicksand: ["Quicksand", "sans-serif"],
+      },
+      fontSize: {
+        xs: ["12px", { lineHeight: "normal", fontWeight: "600" }],
+        sm: ["14px", { lineHeight: "normal", fontWeight: "600" }],
+        base: ["16px", { lineHeight: "normal", fontWeight: "600" }],
+        tiny: [
+          "10px",
+          {
+            lineHeight: "normal",
+            fontWeight: "600",
+            fontFeatureSettings: "'liga' off, 'clig' off",
+          },
+        ],
+      },
       colors: {
         app: {
+          primary: "#15ECDA",
+          text: "#001126",
+          newGray: "#A6A8AB",
+          c3: "#F6F6F6",
+          white: "#FFFFFF",
           background: "#FAFBFC",
           electricGreen: "#15ECDA",
           dark: "#212121",
-          white: "#ffffff",
           gray: "#A1A1A1",
-          text: "#9095A1",
           lightGray: "#EDEDED",
           error: "#DD0000",
           c1: "#fafafa",
           c2: "#ffffff",
-          c3: "#ebebeb",
           c4: "#020202",
         },
         sofia: {
           superDark: "#001126",
+          darkBlue: "#DBEAF2",
+          electricOlive: "#BAF88F",
+          electricLight: "#DDFBC7",
           electricGreen: "#15ECDA",
           background: "#F6F6F6",
           secundario: "#d0fbf8",
-          blancoPuro: "#EFEFEF",
-          celeste: "#F2F9FF",
+          blancoPuro: "#FFFFFF",
+          celeste: "#F6FBFF",
+          hitlPending: "#FFBB93",
+          error: "#FF616D",
+          navyBlue: "#343E4F",
         },
-      },
-      fontFamily: {
-        quicksand: ["Quicksand", "sans-serif"],
       },
       cursor: {
         grab: "grab",

@@ -3,7 +3,11 @@ import { ReactFlowProvider } from "@xyflow/react";
 import Diagram from "@components/Diagrams";
 import Chat from "@components/workspace/components/chat/Chat";
 
-const ChatWrapper = () => {
+interface ChatWrapperProps {
+  agentId: number | null;
+}
+
+const ChatWrapper = ({ agentId }: ChatWrapperProps) => {
   const [isChatVisible, setIsChatVisible] = useState(false);
 
   const toggleChat = () => {
@@ -18,7 +22,7 @@ const ChatWrapper = () => {
             isChatVisible ? "w-80" : "w-0"
           } overflow-hidden`}
         >
-          <Chat onClose={toggleChat} />
+          {agentId && <Chat onClose={toggleChat} agentId={agentId} />}
         </div>
       ) : (
         <button
@@ -33,6 +37,8 @@ const ChatWrapper = () => {
 };
 
 const Workspace = () => {
+  const [agentId, setAgentId] = useState<number | null>(null);
+
   return (
     <div className="grid grid-cols-[1fr,auto] h-full w-full">
       {/* Diagram Section */}
@@ -40,10 +46,10 @@ const Workspace = () => {
         {" "}
         {/* Margen agregado */}
         <ReactFlowProvider>
-          <Diagram />
+          <Diagram onAgentIdChange={setAgentId} />
         </ReactFlowProvider>
       </div>
-      <ChatWrapper />
+      <ChatWrapper agentId={agentId} />
     </div>
   );
 };

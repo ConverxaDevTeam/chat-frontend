@@ -1,33 +1,57 @@
 import { useForm } from "react-hook-form";
 import { MessageForm } from "@components/ChatWindow/MessageForm";
+import { ConversationsList } from "@components/ChatWindow/ConversationsList";
 import {
   getConversationByOrganizationIdAndById,
   sendMessage,
+  deleteConversation,
 } from "@services/conversations";
-import { AppDispatch, RootState } from "@store";
-import { useEffect, useRef } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
+import { RootState } from "@store";
+import { useEffect, useRef, useState } from "react";
+import { useSelector } from "react-redux";
+import { useParams, useNavigate } from "react-router-dom";
 import MessageCard from "../../components/ChatWindow/MessageCard";
-import { uploadConversation } from "@store/actions/conversations";
-import { FormInputs } from "@interfaces/conversation";
-import { IConversation } from "@utils/interfaces";
+import {
+  ConversationDetailResponse,
+  FormInputs,
+} from "@interfaces/conversation";
+import { getConversationsByOrganizationId } from "@store/actions/conversations";
+import { useAppSelector } from "@store/hooks";
+import { ConversationListItem } from "@interfaces/conversation";
+import { ConversationContextMenu } from "@components/ChatWindow/ConversationContextMenu";
+import { alertError } from "@utils/alerts";
+import { ChatHeader } from "@components/ChatWindow/ChatHeader";
+import { UserInfoPanel } from "@components/ChatWindow/UserInfoPanel";
 
-const ConversationDetail = () => {
-  const dispatch = useDispatch<AppDispatch>();
-  const { id } = useParams<{ id: string }>();
+// Hooks
+const useConversationList = (
+  organizationId: number | null,
+  id: string | undefined
+) => {
+  const [conversationsList, setConversationsList] = useState<
+    ConversationListItem[]
+  >([]);
+
+  useEffect(() => {
+    const fetchConversations = async () => {
+      if (organizationId) {
+        const data = await getConversationsByOrganizationId(organizationId);
+        setConversationsList(data);
+      }
+    };
+    fetchConversations();
+  }, [organizationId, id]);
+
+  return { conversationsList };
+};
+
+const useConversationDetail = (
+  id: string | undefined,
+  selectOrganizationId: number | null
+) => {
+  const [conversation, setConversation] =
+    useState<ConversationDetailResponse | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-
-  const { selectOrganizationId, user } = useSelector(
-    (state: RootState) => state.auth
-  );
-  const { conversations } = useSelector(
-    (state: RootState) => state.conversations
-  );
-
-  const conversation = conversations.find(
-    (conversation: IConversation) => conversation.id === Number(id)
-  );
 
   const getConversationDetailById = async () => {
     try {
@@ -36,7 +60,7 @@ const ConversationDetail = () => {
         selectOrganizationId,
         Number(id)
       );
-      dispatch(uploadConversation(response));
+      setConversation(response);
     } catch (error) {
       console.error(error);
     }
@@ -52,8 +76,20 @@ const ConversationDetail = () => {
 
   useEffect(() => {
     getConversationDetailById();
-  }, []);
+  }, [id]);
 
+  return {
+    conversation,
+    setConversation,
+    messagesEndRef,
+    getConversationDetailById,
+  };
+};
+
+const useMessageForm = (
+  id: string | undefined,
+  getConversationDetailById: () => Promise<void>
+) => {
   const {
     register,
     handleSubmit,
@@ -61,11 +97,21 @@ const ConversationDetail = () => {
     formState: { isSubmitting },
   } = useForm<FormInputs>();
 
-  const onSubmit = async (data: FormInputs) => {
-    if (!data.message.trim()) return;
+  const onSubmit = async (data: FormInputs & { images?: File[] }) => {
+    if (!data.message.trim() && !data.images?.length) return;
 
     try {
-      const success = await sendMessage(Number(id), data.message);
+      const formData = new FormData();
+      formData.append("message", data.message);
+      formData.append("conversationId", String(id));
+
+      if (data.images?.length) {
+        data.images.forEach(file => {
+          formData.append("images", file);
+        });
+      }
+
+      const success = await sendMessage(formData);
       if (success) {
         reset();
         await getConversationDetailById();
@@ -75,21 +121,166 @@ const ConversationDetail = () => {
     }
   };
 
+  return { register, handleSubmit, isSubmitting, onSubmit };
+};
+
+const useContextMenu = (
+  conversation: ConversationDetailResponse | null,
+  conversationsList: ConversationListItem[]
+) => {
+  const navigate = useNavigate();
+  const [showContextMenu, setShowContextMenu] = useState<{
+    show: boolean;
+    x: number;
+    y: number;
+  }>({ show: false, x: 0, y: 0 });
+
+  const handleDeleteConversation = async () => {
+    if (!conversation) return;
+
+    try {
+      await deleteConversation(conversation.id);
+      setShowContextMenu({ show: false, x: 0, y: 0 });
+
+      let nextConversationId = conversationsList[0]?.id;
+      if (!nextConversationId) return navigate("/conversations");
+      if (nextConversationId !== conversation.id)
+        return navigate(`/conversation/detail/${nextConversationId}`);
+      nextConversationId = conversationsList[1]?.id;
+      if (!nextConversationId) return navigate("/conversations");
+      navigate(`/conversation/detail/${nextConversationId}`);
+    } catch (error) {
+      alertError("Error al eliminar la conversación");
+    }
+  };
+
+  return { showContextMenu, setShowContextMenu, handleDeleteConversation };
+};
+
+const useMessageSearch = (conversation: ConversationDetailResponse | null) => {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filteredMessages, setFilteredMessages] = useState<
+    ConversationDetailResponse["messages"]
+  >([]);
+
+  useEffect(() => {
+    if (!conversation) return;
+
+    if (!searchTerm.trim()) {
+      setFilteredMessages(conversation.messages);
+      return;
+    }
+
+    const filtered = conversation.messages.filter(message =>
+      message.text.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredMessages(filtered);
+  }, [searchTerm, conversation]);
+
+  return { searchTerm, setSearchTerm, filteredMessages };
+};
+
+const ConversationDetail = () => {
+  const navigate = useNavigate();
+  const { id } = useParams<{ id: string }>();
+
+  const { selectOrganizationId, user } = useSelector(
+    (state: RootState) => state.auth
+  );
+
+  const organizationId = useAppSelector(
+    state => state.auth.selectOrganizationId
+  );
+
+  const { conversationsList } = useConversationList(organizationId, id);
+  const { conversation, messagesEndRef, getConversationDetailById } =
+    useConversationDetail(id, selectOrganizationId);
+  const { register, handleSubmit, isSubmitting, onSubmit } = useMessageForm(
+    id,
+    getConversationDetailById
+  );
+  const { showContextMenu, setShowContextMenu, handleDeleteConversation } =
+    useContextMenu(conversation, conversationsList);
+  const { searchTerm, setSearchTerm, filteredMessages } =
+    useMessageSearch(conversation);
+
+  const handleSelectConversation = (userId: number) => {
+    navigate(`/conversation/detail/${userId}`);
+  };
+
+  if (!conversation) {
+    return <div>Loading...</div>;
+  }
+
   return (
-    <div className="flex flex-col flex-1 gap-[10px] bg-app-c2 border-[2px] border-app-c3 rounded-2xl p-[10px]">
-      <div className="flex flex-col flex-1 bg-app-c1 rounded-2xl p-[10px] gap-[10px] overflow-auto border-[1px] border-app-c3">
-        {conversation?.messages?.map(message => (
-          <MessageCard key={`chat-msg-${message.id}`} message={message} />
-        ))}
-        <div ref={messagesEndRef} />
+    <div className="w-full h-full grid grid-cols-[minmax(0,1fr)] md:grid-cols-[345px,minmax(0,1fr)] xl:grid-cols-[345px,minmax(0,1fr),248px]">
+      {showContextMenu.show && conversation && (
+        <ConversationContextMenu
+          x={showContextMenu.x}
+          y={showContextMenu.y}
+          onClose={() => setShowContextMenu({ show: false, x: 0, y: 0 })}
+          conversation={conversation}
+          organizationId={selectOrganizationId || 0}
+          onDelete={handleDeleteConversation}
+        />
+      )}
+      {/* Left Column - Conversations List */}
+      <div className="hidden md:block h-full w-full overflow-hidden">
+        <ConversationsList
+          conversations={conversationsList}
+          onSelectConversation={handleSelectConversation}
+          selectedId={Number(id)}
+        />
       </div>
 
-      <MessageForm
-        form={{ register, handleSubmit, isSubmitting }}
-        onSubmit={onSubmit}
-        conversation={conversation}
-        user={{ id: user?.id ?? -1 }}
-      />
+      {/* Middle Column - Chat */}
+      <div className="h-full w-full overflow-hidden bg-sofia-blancoPuro flex flex-col">
+        {/* Chat Header */}
+        <ChatHeader
+          avatar={null}
+          secret={conversation.chat_user.secret}
+          searchTerm={searchTerm}
+          onSearchChange={setSearchTerm}
+          onMenuClick={e => {
+            e.preventDefault();
+            setShowContextMenu({
+              show: true,
+              x: e.clientX,
+              y: e.clientY,
+            });
+          }}
+        />
+
+        {/* Chat Content */}
+        <div className="flex-1 bg-sofia-celeste overflow-y-auto">
+          <div className="flex flex-col gap-4 p-4">
+            {filteredMessages.map((message, index) => (
+              <MessageCard
+                key={index}
+                message={message}
+                userName={conversation.chat_user.secret}
+              />
+            ))}
+            <div ref={messagesEndRef} />
+          </div>
+        </div>
+
+        {/* Message Input */}
+        {conversation && (
+          <MessageForm
+            form={{ register, handleSubmit, isSubmitting }}
+            onSubmit={onSubmit}
+            conversation={conversation}
+            user={{ id: user?.id ?? -1 }}
+            onUpdateConversation={getConversationDetailById}
+          />
+        )}
+      </div>
+
+      {/* Right Column - User Info */}
+      <div className="hidden xl:block ml-4">
+        <UserInfoPanel conversation={conversation} />
+      </div>
     </div>
   );
 };

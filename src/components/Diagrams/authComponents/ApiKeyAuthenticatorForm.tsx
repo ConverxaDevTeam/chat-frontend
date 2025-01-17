@@ -3,15 +3,15 @@ import { InputGroup } from "@components/forms/inputGroup";
 import { Select } from "@components/forms/select";
 import { UseFormRegister, FieldErrors } from "react-hook-form";
 import {
-  ApiKeyAutenticador,
+  ApiKeyAuthenticatorType,
   ApiKeyInjectPlaces,
 } from "@interfaces/autenticators.interface";
 import { Control } from "react-hook-form";
 
 interface ApiKeyFormProps {
-  register: UseFormRegister<ApiKeyAutenticador>;
-  control: Control<ApiKeyAutenticador>;
-  errors: FieldErrors<ApiKeyAutenticador>;
+  register: UseFormRegister<ApiKeyAuthenticatorType>;
+  control: Control<ApiKeyAuthenticatorType>;
+  errors: FieldErrors<ApiKeyAuthenticatorType>;
 }
 
 export const ApiKeyAuthenticatorForm = ({
