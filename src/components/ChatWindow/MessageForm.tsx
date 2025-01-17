@@ -4,9 +4,6 @@ import { BsEmojiSmile } from "react-icons/bs";
 import { IoMdAttach } from "react-icons/io";
 import EmojiPicker from "emoji-picker-react";
 import { useHitl } from "@/hooks/useHitl";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "@/store";
-import { uploadConversation } from "@store/actions/conversations";
 import {
   ConversationResponseMessage,
   FormInputs,
@@ -14,9 +11,7 @@ import {
 import { useState } from "react";
 import { SendMessageButton } from "../SendMessageButton";
 import { HitlButton } from "../HitlButton";
-import { IConversation, MessageFormatType } from "@utils/interfaces";
 import { ImagePreview } from "./ImagePreview";
-import { FaUserPlus } from "react-icons/fa";
 
 interface ImagePreview {
   file: File;
@@ -32,6 +27,7 @@ interface MessageFormProps {
     isSubmitting: boolean;
   };
   onSubmit: (data: FormInputs & { images?: File[] }) => void;
+  onUpdateConversation?: () => void;
   conversation?: {
     id: number;
     user?: {
@@ -46,6 +42,7 @@ interface MessageFormProps {
 export const MessageForm = ({
   form: { register, handleSubmit, isSubmitting },
   onSubmit,
+  onUpdateConversation,
   conversation,
   user,
   showHitl = true,
@@ -98,25 +95,12 @@ export const MessageForm = ({
     setShowEmojiPicker(false);
   };
 
-  const dispatch = useDispatch<AppDispatch>();
   const { handleHitlAction, isLoading } = useHitl({
     conversationId: conversation?.id || 0,
-    onUpdateConversation: updatedConversation => {
-      if (!updatedConversation.user) throw new Error("User is null");
-      dispatch(
-        uploadConversation({
-          ...updatedConversation,
-          user: updatedConversation.user,
-          messages: updatedConversation.messages.map(message => ({
-            id: Math.random(),
-            text: message.text,
-            type: message.type,
-            format: MessageFormatType.TEXT,
-            audio: null,
-            created_at: new Date().toISOString(),
-          })),
-        } as IConversation)
-      );
+    userId: user?.id || 0,
+    currentUserId: user?.id || 0,
+    onUpdateConversation: () => {
+      onUpdateConversation?.();
     },
   });
 
@@ -168,7 +152,6 @@ export const MessageForm = ({
             </div>
           )}
         </div>
-
         {!showHitl || conversation?.user?.id === user?.id ? (
           <SendMessageButton
             type="submit"

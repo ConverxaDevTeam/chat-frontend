@@ -34,7 +34,7 @@ const renderContent = (message: ConversationResponseMessage) => {
         />
       )}
       {message.text && (
-        <p className={`text-[14px] font-quicksand font-medium text-app-text`}>
+        <div className={`text-[14px] font-quicksand font-medium text-app-text`}>
           {message.audio && <span className="font-bold">Transcripcion: </span>}
           <ReactMarkdown
             components={{
@@ -55,7 +55,7 @@ const renderContent = (message: ConversationResponseMessage) => {
           >
             {message.text}
           </ReactMarkdown>
-        </p>
+        </div>
       )}
     </div>
   );

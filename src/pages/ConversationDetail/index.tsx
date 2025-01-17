@@ -289,6 +289,7 @@ const ConversationDetail = () => {
             onSubmit={onSubmit}
             conversation={conversation}
             user={{ id: user?.id ?? -1 }}
+            onUpdateConversation={getConversationDetailById}
           />
         )}
       </div>
