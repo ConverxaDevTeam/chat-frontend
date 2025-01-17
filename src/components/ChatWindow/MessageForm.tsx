@@ -108,17 +108,17 @@ export const MessageForm = ({
     <div className="h-[73px] px-5 py-3.5 flex items-center bg-app-lightGray">
       <form
         onSubmit={handleSubmit(handleFormSubmit)}
-        className="grid grid-cols-[auto,auto,1fr,auto] gap-2 items-center w-full"
+        className="flex items-center gap-4 w-full"
       >
         <button
           type="button"
           onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-          className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+          className="p-2 hover:bg-gray-100 rounded-full transition-colors shrink-0"
         >
           <BsEmojiSmile className="w-5 h-5 text-gray-500" />
         </button>
 
-        <div className="col-span-1 relative w-full">
+        <div className="flex-1 relative">
           <input
             {...register("message", { required: selectedImages.length === 0 })}
             type="text"
@@ -128,15 +128,14 @@ export const MessageForm = ({
           />
           <label
             htmlFor="image-upload"
-            className="absolute left-2 top-1/2 -translate-y-1/2 p-2 hover:bg-gray-100 rounded-full transition-colors cursor-pointer"
+            className="absolute right-2 top-1/2 -translate-y-1/2 p-2 hover:bg-gray-100 rounded-full transition-colors cursor-pointer"
           >
             <input
               type="file"
-              id="image-upload"
-              className="hidden"
-              accept="image/*"
               multiple
+              accept="image/*"
               onChange={handleImageSelect}
+              className="hidden"
             />
             <IoMdAttach className="w-5 h-5 text-gray-500" />
           </label>
