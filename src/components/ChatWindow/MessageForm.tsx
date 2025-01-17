@@ -104,10 +104,10 @@ export const MessageForm = ({
   });
 
   return (
-    <div className="h-[73px] px-5 py-3.5 flex items-center bg-app-lightGray">
+    <div className="h-[73px] px-5 py-3.5 flex items-center bg-app-lightGray min-w-0">
       <form
         onSubmit={handleSubmit(handleFormSubmit)}
-        className="flex items-center gap-[16px] w-full"
+        className="flex items-center gap-[16px] w-full min-w-0"
       >
         <button
           type="button"
@@ -117,8 +117,8 @@ export const MessageForm = ({
           <img src="/mvp/smile.svg" alt="sofia" className="w-[16px] h-[16px]" />
         </button>
 
-        <div className="flex-1 relative">
-          <div className="flex justify-end items-center gap-[10px] h-[44px] px-4 py-2.5 border border-[#343E4F] rounded-lg bg-white">
+        <div className="flex-1 relative min-w-0">
+          <div className="flex items-center gap-[10px] h-[44px] px-4 py-2.5 border border-[#343E4F] rounded-lg bg-white min-w-0">
             <input
               {...register("message", {
                 required: selectedImages.length === 0,
@@ -126,7 +126,7 @@ export const MessageForm = ({
               type="text"
               disabled={showHitl && conversation?.user?.id !== user?.id}
               placeholder="Escribe un mensaje..."
-              className="flex-1 text-[14px] text-black bg-white focus:outline-none"
+              className="w-full text-[14px] text-black bg-white focus:outline-none"
             />
             <label
               htmlFor="image-upload"

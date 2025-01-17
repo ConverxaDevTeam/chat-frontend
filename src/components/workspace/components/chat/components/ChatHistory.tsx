@@ -20,7 +20,7 @@ const transformMessageToConversationMessage = (
 
 export const ChatHistory = ({ messages }: ChatHistoryProps) => {
   return (
-    <div className="flex flex-col gap-4 p-4 overflow-y-auto">
+    <div className="flex flex-col gap-4 p-4 overflow-y-auto w-full">
       {messages.map((message, index) => (
         <MessageCard
           key={index}
