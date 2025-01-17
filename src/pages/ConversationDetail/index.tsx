@@ -4,7 +4,6 @@ import { ConversationsList } from "@components/ChatWindow/ConversationsList";
 import {
   getConversationByOrganizationIdAndById,
   sendMessage,
-  exportConversation,
   deleteConversation,
 } from "@services/conversations";
 import { RootState } from "@store";
@@ -19,24 +18,15 @@ import {
 import { getConversationsByOrganizationId } from "@store/actions/conversations";
 import { useAppSelector } from "@store/hooks";
 import { ConversationListItem } from "@interfaces/conversation";
-import ContextMenu from "../../components/ContextMenu";
-import { Avatar } from "@components/ChatWindow/Avatar";
+import { ConversationContextMenu } from "@components/ChatWindow/ConversationContextMenu";
 import { alertError } from "@utils/alerts";
+import { ChatHeader } from "@components/ChatWindow/ChatHeader";
 
-const ConversationDetail = () => {
-  const navigate = useNavigate();
-  const { id } = useParams<{ id: string }>();
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-  const [conversation, setConversation] =
-    useState<ConversationDetailResponse | null>(null);
-
-  const { selectOrganizationId, user } = useSelector(
-    (state: RootState) => state.auth
-  );
-
-  const organizationId = useAppSelector(
-    state => state.auth.selectOrganizationId
-  );
+// Hooks
+const useConversationList = (
+  organizationId: number | null,
+  id: string | undefined
+) => {
   const [conversationsList, setConversationsList] = useState<
     ConversationListItem[]
   >([]);
@@ -50,6 +40,17 @@ const ConversationDetail = () => {
     };
     fetchConversations();
   }, [organizationId, id]);
+
+  return { conversationsList };
+};
+
+const useConversationDetail = (
+  id: string | undefined,
+  selectOrganizationId: number | null
+) => {
+  const [conversation, setConversation] =
+    useState<ConversationDetailResponse | null>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const getConversationDetailById = async () => {
     try {
@@ -76,6 +77,18 @@ const ConversationDetail = () => {
     getConversationDetailById();
   }, [id]);
 
+  return {
+    conversation,
+    setConversation,
+    messagesEndRef,
+    getConversationDetailById,
+  };
+};
+
+const useMessageForm = (
+  id: string | undefined,
+  getConversationDetailById: () => Promise<void>
+) => {
   const {
     register,
     handleSubmit,
@@ -97,10 +110,14 @@ const ConversationDetail = () => {
     }
   };
 
-  const handleSelectConversation = (userId: number) => {
-    navigate(`/conversation/detail/${userId}`);
-  };
+  return { register, handleSubmit, isSubmitting, onSubmit };
+};
 
+const useContextMenu = (
+  conversation: ConversationDetailResponse | null,
+  conversationsList: ConversationListItem[]
+) => {
+  const navigate = useNavigate();
   const [showContextMenu, setShowContextMenu] = useState<{
     show: boolean;
     x: number;
@@ -126,6 +143,10 @@ const ConversationDetail = () => {
     }
   };
 
+  return { showContextMenu, setShowContextMenu, handleDeleteConversation };
+};
+
+const useMessageSearch = (conversation: ConversationDetailResponse | null) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredMessages, setFilteredMessages] = useState<
     ConversationDetailResponse["messages"]
@@ -145,70 +166,52 @@ const ConversationDetail = () => {
     setFilteredMessages(filtered);
   }, [searchTerm, conversation]);
 
+  return { searchTerm, setSearchTerm, filteredMessages };
+};
+
+const ConversationDetail = () => {
+  const navigate = useNavigate();
+  const { id } = useParams<{ id: string }>();
+
+  const { selectOrganizationId, user } = useSelector(
+    (state: RootState) => state.auth
+  );
+
+  const organizationId = useAppSelector(
+    state => state.auth.selectOrganizationId
+  );
+
+  const { conversationsList } = useConversationList(organizationId, id);
+  const { conversation, messagesEndRef, getConversationDetailById } =
+    useConversationDetail(id, selectOrganizationId);
+  const { register, handleSubmit, isSubmitting, onSubmit } = useMessageForm(
+    id,
+    getConversationDetailById
+  );
+  const { showContextMenu, setShowContextMenu, handleDeleteConversation } =
+    useContextMenu(conversation, conversationsList);
+  const { searchTerm, setSearchTerm, filteredMessages } =
+    useMessageSearch(conversation);
+
+  const handleSelectConversation = (userId: number) => {
+    navigate(`/conversation/detail/${userId}`);
+  };
+
   if (!conversation) {
     return <div>Loading...</div>;
   }
 
   return (
     <div className="flex-1 grid grid-cols-[minmax(0,1fr)] md:grid-cols-[345px,minmax(0,1fr)] xl:grid-cols-[345px,minmax(0,1fr),248px] min-h-0">
-      {showContextMenu.show && (
-        <ContextMenu
+      {showContextMenu.show && conversation && (
+        <ConversationContextMenu
           x={showContextMenu.x}
           y={showContextMenu.y}
           onClose={() => setShowContextMenu({ show: false, x: 0, y: 0 })}
-        >
-          <button
-            className="w-full text-left"
-            onClick={() => {
-              if (selectOrganizationId && conversation) {
-                exportConversation(
-                  selectOrganizationId,
-                  conversation.id,
-                  "csv",
-                  conversation
-                );
-              }
-            }}
-          >
-            Exportar Chat CSV
-          </button>
-          <button
-            className="w-full text-left"
-            onClick={() => {
-              if (selectOrganizationId && conversation) {
-                exportConversation(
-                  selectOrganizationId,
-                  conversation.id,
-                  "pdf",
-                  conversation
-                );
-              }
-            }}
-          >
-            Exportar Chat PDF
-          </button>
-          <button
-            className="w-full text-left"
-            onClick={() => {
-              if (selectOrganizationId && conversation) {
-                exportConversation(
-                  selectOrganizationId,
-                  conversation.id,
-                  "excel",
-                  conversation
-                );
-              }
-            }}
-          >
-            Exportar Chat EXCEL
-          </button>
-          <button
-            className="w-full text-left text-red-500"
-            onClick={handleDeleteConversation}
-          >
-            Eliminar Chat
-          </button>
-        </ContextMenu>
+          conversation={conversation}
+          organizationId={selectOrganizationId || 0}
+          onDelete={handleDeleteConversation}
+        />
       )}
       {/* Left Column - Conversations List */}
       <div className="hidden md:block min-h-0">
@@ -222,51 +225,20 @@ const ConversationDetail = () => {
       {/* Middle Column - Chat */}
       <div className="min-h-0 overflow-hidden bg-sofia-blancoPuro flex flex-col">
         {/* Chat Header */}
-        <div className="h-[89px] flex-shrink-0 border-t border-r border-b border-app-lightGray bg-sofia-electricOlive rounded-tr-lg">
-          <div className="flex items-center p-4 gap-3">
-            <Avatar
-              avatar={null}
-              secret={conversation.chat_user.secret}
-              className="flex-none"
-            />
-            <div className="max-w-[calc(50%-3rem)] flex flex-col items-start">
-              <h3 className="self-stretch text-sofia-superDark font-quicksand text-xl font-semibold truncate">
-                {conversation.chat_user.secret}
-              </h3>
-              <span className="text-sofia-superDark font-quicksand text-xs font-medium">
-                En línea
-              </span>
-            </div>
-            <button
-              className="w-6 h-6 flex items-center justify-center"
-              onClick={e => {
-                e.preventDefault();
-                setShowContextMenu({
-                  show: true,
-                  x: e.clientX,
-                  y: e.clientY,
-                });
-              }}
-            >
-              <img src="/mvp/three-dots.svg" alt="Menu" className="w-6 h-6" />
-            </button>
-            <div className="flex-1" />
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Búsqueda"
-                value={searchTerm}
-                onChange={e => setSearchTerm(e.target.value)}
-                className="flex w-[149px] h-[37px] pl-4 pr-9 py-2.5 justify-between items-center flex-shrink-0 rounded-lg border border-app-gray bg-sofia-blancoPuro font-quicksand text-xs font-normal placeholder:text-[#A6A8AB]"
-              />
-              <img
-                src="/mvp/magnifying-glass.svg"
-                alt="Buscar"
-                className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4"
-              />
-            </div>
-          </div>
-        </div>
+        <ChatHeader
+          avatar={null}
+          secret={conversation.chat_user.secret}
+          searchTerm={searchTerm}
+          onSearchChange={setSearchTerm}
+          onMenuClick={e => {
+            e.preventDefault();
+            setShowContextMenu({
+              show: true,
+              x: e.clientX,
+              y: e.clientY,
+            });
+          }}
+        />
 
         {/* Chat Content */}
         <div className="flex-1 bg-sofia-celeste overflow-y-auto">
