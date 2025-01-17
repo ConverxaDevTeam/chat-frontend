@@ -96,11 +96,21 @@ const useMessageForm = (
     formState: { isSubmitting },
   } = useForm<FormInputs>();
 
-  const onSubmit = async (data: FormInputs) => {
-    if (!data.message.trim()) return;
+  const onSubmit = async (data: FormInputs & { images?: File[] }) => {
+    if (!data.message.trim() && !data.images?.length) return;
 
     try {
-      const success = await sendMessage(Number(id), data.message);
+      const formData = new FormData();
+      formData.append("message", data.message);
+      formData.append("conversationId", String(id));
+
+      if (data.images?.length) {
+        data.images.forEach(file => {
+          formData.append("images", file);
+        });
+      }
+
+      const success = await sendMessage(formData);
       if (success) {
         reset();
         await getConversationDetailById();

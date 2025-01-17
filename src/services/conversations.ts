@@ -100,14 +100,12 @@ export const reassignConversationToHitl = async (conversationId: number) => {
   }
 };
 
-export const sendMessage = async (
-  conversationId: number,
-  message: string
-): Promise<boolean> => {
+export const sendMessage = async (formData: FormData): Promise<boolean> => {
   try {
-    const response = await axiosInstance.post(apiUrls.sendMessage(), {
-      message,
-      conversationId,
+    const response = await axiosInstance.post(apiUrls.sendMessage(), formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
     });
 
     if (response.data.ok) {

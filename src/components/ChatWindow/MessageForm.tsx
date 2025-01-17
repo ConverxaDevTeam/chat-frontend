@@ -1,5 +1,4 @@
 import { UseFormHandleSubmit, UseFormRegister } from "react-hook-form";
-import { IoSend } from "react-icons/io5";
 import EmojiPicker from "emoji-picker-react";
 import { useHitl } from "@/hooks/useHitl";
 import {
