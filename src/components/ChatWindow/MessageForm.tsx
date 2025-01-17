@@ -1,6 +1,5 @@
 import { UseFormHandleSubmit, UseFormRegister } from "react-hook-form";
 import { IoSend } from "react-icons/io5";
-import { BsEmojiSmile } from "react-icons/bs";
 import { IoMdAttach } from "react-icons/io";
 import EmojiPicker from "emoji-picker-react";
 import { useHitl } from "@/hooks/useHitl";
@@ -108,47 +107,51 @@ export const MessageForm = ({
     <div className="h-[73px] px-5 py-3.5 flex items-center bg-app-lightGray">
       <form
         onSubmit={handleSubmit(handleFormSubmit)}
-        className="flex items-center gap-4 w-full"
+        className="flex items-center gap-[16px] w-full"
       >
         <button
           type="button"
           onClick={() => setShowEmojiPicker(!showEmojiPicker)}
           className="p-2 hover:bg-gray-100 rounded-full transition-colors shrink-0"
         >
-          <BsEmojiSmile className="w-5 h-5 text-gray-500" />
+          <img src="/mvp/smile.svg" alt="sofia" className="w-[16px] h-[16px]" />
         </button>
 
         <div className="flex-1 relative">
-          <input
-            {...register("message", { required: selectedImages.length === 0 })}
-            type="text"
-            disabled={conversation?.user?.id !== user?.id}
-            placeholder="Escribe un mensaje..."
-            className="w-full rounded-full py-2 px-4 text-[14px] text-black bg-white"
-          />
-          <label
-            htmlFor="image-upload"
-            className="absolute right-2 top-1/2 -translate-y-1/2 p-2 hover:bg-gray-100 rounded-full transition-colors cursor-pointer"
-          >
+          <div className="flex justify-end items-center gap-[10px] h-[44px] px-4 py-2.5 border border-[#343E4F] rounded-lg bg-white">
             <input
-              type="file"
-              multiple
-              accept="image/*"
-              onChange={handleImageSelect}
-              className="hidden"
+              {...register("message", {
+                required: selectedImages.length === 0,
+              })}
+              type="text"
+              disabled={conversation?.user?.id !== user?.id}
+              placeholder="Escribe un mensaje..."
+              className="flex-1 text-[14px] text-black bg-white focus:outline-none"
             />
-            <IoMdAttach className="w-5 h-5 text-gray-500" />
-          </label>
-          {showEmojiPicker && (
-            <div className="absolute bottom-full left-0 mb-2">
-              <EmojiPicker onEmojiClick={onEmojiClick} />
-            </div>
-          )}
-          {selectedImages.length > 0 && (
-            <div className="absolute bottom-full left-0 mb-2 bg-white p-2 rounded-lg shadow-lg">
-              <ImagePreview images={selectedImages} onRemove={removeImage} />
-            </div>
-          )}
+            <label
+              htmlFor="image-upload"
+              className="p-2 hover:bg-gray-100 rounded-full transition-colors cursor-pointer"
+            >
+              <input
+                type="file"
+                multiple
+                accept="image/*"
+                onChange={handleImageSelect}
+                className="hidden"
+              />
+              <IoMdAttach className="w-5 h-5 text-gray-500" />
+            </label>
+            {showEmojiPicker && (
+              <div className="absolute bottom-full left-0 mb-2">
+                <EmojiPicker onEmojiClick={onEmojiClick} />
+              </div>
+            )}
+            {selectedImages.length > 0 && (
+              <div className="absolute bottom-full left-0 mb-2 bg-white p-2 rounded-lg shadow-lg">
+                <ImagePreview images={selectedImages} onRemove={removeImage} />
+              </div>
+            )}
+          </div>
         </div>
         {!showHitl || conversation?.user?.id === user?.id ? (
           <SendMessageButton
