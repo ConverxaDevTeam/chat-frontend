@@ -139,7 +139,11 @@ export const MessageForm = ({
                 onChange={handleImageSelect}
                 className="hidden"
               />
-              <IoMdAttach className="w-5 h-5 text-gray-500" />
+              <img
+                src="/mvp/paperclip.svg"
+                alt="sofia"
+                className="w-[24px] h-[24px]"
+              />
             </label>
             {showEmojiPicker && (
               <div className="absolute bottom-full left-0 mb-2">
