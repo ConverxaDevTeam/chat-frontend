@@ -191,7 +191,7 @@ const DefaultNode: React.FC<CustomNodeProps> = ({
                   }}
                   internalProps={{
                     radius: "full",
-                    backgroundColor: "node-gradient",
+                    className: "bg-node-gradient",
                   }}
                 >
                   {nodeContent}

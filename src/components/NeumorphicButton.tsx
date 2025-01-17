@@ -8,6 +8,7 @@ interface ExternalNeumorphicButtonProps {
 interface InternalNeumorphicButtonProps {
   radius?: string;
   backgroundColor?: string;
+  className?: string;
 }
 
 interface NeumorphicButtonProps {
@@ -32,6 +33,7 @@ export const NeumorphicButton = ({
   internalProps = {
     radius: "[24px]",
     backgroundColor: "[#F1F5F9]",
+    className: "",
   },
 }: NeumorphicButtonProps) => {
   const innerButton = (
@@ -45,6 +47,7 @@ export const NeumorphicButton = ({
         bg-${internalProps?.backgroundColor}
         flex items-center justify-center
         shadow-[-8px_-8px_16px_0px_#FFFFFF,8px_8px_16px_0px_#C9D9E8]
+        ${internalProps?.className}
       `}
     >
       {children}
