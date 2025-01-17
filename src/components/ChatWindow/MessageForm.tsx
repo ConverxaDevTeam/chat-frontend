@@ -118,22 +118,7 @@ export const MessageForm = ({
           <BsEmojiSmile className="w-5 h-5 text-gray-500" />
         </button>
 
-        <label
-          htmlFor="image-upload"
-          className="p-2 hover:bg-gray-100 rounded-full transition-colors cursor-pointer"
-        >
-          <input
-            type="file"
-            id="image-upload"
-            className="hidden"
-            accept="image/*"
-            multiple
-            onChange={handleImageSelect}
-          />
-          <IoMdAttach className="w-5 h-5 text-gray-500" />
-        </label>
-
-        <div className="relative">
+        <div className="col-span-1 relative w-full">
           <input
             {...register("message", { required: selectedImages.length === 0 })}
             type="text"
@@ -141,6 +126,20 @@ export const MessageForm = ({
             placeholder="Escribe un mensaje..."
             className="w-full rounded-full py-2 px-4 text-[14px] text-black bg-white"
           />
+          <label
+            htmlFor="image-upload"
+            className="absolute left-2 top-1/2 -translate-y-1/2 p-2 hover:bg-gray-100 rounded-full transition-colors cursor-pointer"
+          >
+            <input
+              type="file"
+              id="image-upload"
+              className="hidden"
+              accept="image/*"
+              multiple
+              onChange={handleImageSelect}
+            />
+            <IoMdAttach className="w-5 h-5 text-gray-500" />
+          </label>
           {showEmojiPicker && (
             <div className="absolute bottom-full left-0 mb-2">
               <EmojiPicker onEmojiClick={onEmojiClick} />
@@ -156,7 +155,7 @@ export const MessageForm = ({
           <SendMessageButton
             type="submit"
             disabled={isSubmitting}
-            className="p-2 bg-[#15ECDA] hover:bg-[#0F9D8C] rounded-full transition-colors disabled:opacity-50"
+            className="w-[38px] h-[38px] flex items-center justify-center bg-sofia-electricOlive hover:bg-sofia-electricOlive-700 rounded-full transition-colors disabled:opacity-50"
           >
             <IoSend className="w-5 h-5 text-black hover:text-white" />
           </SendMessageButton>
