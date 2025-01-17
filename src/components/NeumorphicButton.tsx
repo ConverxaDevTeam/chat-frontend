@@ -3,6 +3,7 @@ import { ReactNode } from "react";
 interface ExternalNeumorphicButtonProps {
   radius?: string;
   backgroundColor?: string;
+  className?: string;
 }
 
 interface InternalNeumorphicButtonProps {
@@ -29,6 +30,7 @@ export const NeumorphicButton = ({
   height = "128px",
   externalProps = {
     radius: "[32px]",
+    className: "",
   },
   internalProps = {
     radius: "[24px]",
@@ -65,6 +67,7 @@ export const NeumorphicButton = ({
         rounded-${externalProps?.radius}
         flex items-center justify-center
         shadow-[-2px_-2px_2px_0px_#B8CCE0,-1px_-1px_0px_0px_#FFFFFF,-2px_-2px_2px_0px_#B8CCE0_inset,-1px_-1px_0px_0px_#FFFFFF_inset]
+        ${externalProps?.className}
       `}
       style={{ width, height }}
     >
