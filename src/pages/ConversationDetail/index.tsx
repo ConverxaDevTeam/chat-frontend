@@ -21,6 +21,7 @@ import { ConversationListItem } from "@interfaces/conversation";
 import { ConversationContextMenu } from "@components/ChatWindow/ConversationContextMenu";
 import { alertError } from "@utils/alerts";
 import { ChatHeader } from "@components/ChatWindow/ChatHeader";
+import { UserInfoPanel } from "@components/ChatWindow/UserInfoPanel";
 
 // Hooks
 const useConversationList = (
@@ -212,7 +213,7 @@ const ConversationDetail = () => {
   }
 
   return (
-    <div className="flex-1 grid grid-cols-[minmax(0,1fr)] md:grid-cols-[345px,minmax(0,1fr)] xl:grid-cols-[345px,minmax(0,1fr),248px] min-h-0">
+    <div className="w-full h-full grid grid-cols-[minmax(0,1fr)] md:grid-cols-[345px,minmax(0,1fr)] xl:grid-cols-[345px,minmax(0,1fr),248px]">
       {showContextMenu.show && conversation && (
         <ConversationContextMenu
           x={showContextMenu.x}
@@ -224,7 +225,7 @@ const ConversationDetail = () => {
         />
       )}
       {/* Left Column - Conversations List */}
-      <div className="hidden md:block min-h-0">
+      <div className="hidden md:block h-full w-full overflow-hidden">
         <ConversationsList
           conversations={conversationsList}
           onSelectConversation={handleSelectConversation}
@@ -233,7 +234,7 @@ const ConversationDetail = () => {
       </div>
 
       {/* Middle Column - Chat */}
-      <div className="min-h-0 overflow-hidden bg-sofia-blancoPuro flex flex-col">
+      <div className="h-full w-full overflow-hidden bg-sofia-blancoPuro flex flex-col">
         {/* Chat Header */}
         <ChatHeader
           avatar={null}
@@ -277,8 +278,8 @@ const ConversationDetail = () => {
       </div>
 
       {/* Right Column - User Info */}
-      <div className="hidden xl:block border-l border-app-c3 min-h-0">
-        {/* Placeholder for user info */}
+      <div className="hidden xl:block ml-4">
+        <UserInfoPanel conversation={conversation} />
       </div>
     </div>
   );
