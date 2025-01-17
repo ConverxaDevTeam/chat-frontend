@@ -284,14 +284,12 @@ const ConversationDetail = () => {
 
         {/* Message Input */}
         {conversation && (
-          <div className="h-[73px] px-5 py-3.5 flex items-center bg-[#EDEDED]">
-            <MessageForm
-              form={{ register, handleSubmit, isSubmitting }}
-              onSubmit={onSubmit}
-              conversation={conversation}
-              user={{ id: user?.id ?? -1 }}
-            />
-          </div>
+          <MessageForm
+            form={{ register, handleSubmit, isSubmitting }}
+            onSubmit={onSubmit}
+            conversation={conversation}
+            user={{ id: user?.id ?? -1 }}
+          />
         )}
       </div>
 

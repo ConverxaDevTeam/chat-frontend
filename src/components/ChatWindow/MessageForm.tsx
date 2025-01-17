@@ -1,5 +1,8 @@
 import { UseFormHandleSubmit, UseFormRegister } from "react-hook-form";
-import { IoImage } from "react-icons/io5";
+import { IoSend } from "react-icons/io5";
+import { BsEmojiSmile } from "react-icons/bs";
+import { IoMdAttach } from "react-icons/io";
+import EmojiPicker from "emoji-picker-react";
 import { useHitl } from "@/hooks/useHitl";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/store";
@@ -13,6 +16,7 @@ import { SendMessageButton } from "../SendMessageButton";
 import { HitlButton } from "../HitlButton";
 import { IConversation, MessageFormatType } from "@utils/interfaces";
 import { ImagePreview } from "./ImagePreview";
+import { FaUserPlus } from "react-icons/fa";
 
 interface ImagePreview {
   file: File;
@@ -45,10 +49,9 @@ export const MessageForm = ({
   conversation,
   user,
   showHitl = true,
-  buttonText = "Enviar",
-  showImageButton = false,
 }: MessageFormProps) => {
   const [selectedImages, setSelectedImages] = useState<ImagePreview[]>([]);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
 
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
@@ -78,6 +81,23 @@ export const MessageForm = ({
     clearImages();
   };
 
+  const onEmojiClick = (emojiData: { emoji: string }) => {
+    const input = document.querySelector(
+      'input[name="message"]'
+    ) as HTMLInputElement;
+    if (input) {
+      const start = input.selectionStart || 0;
+      const end = input.selectionEnd || 0;
+      const value = input.value;
+      input.value =
+        value.substring(0, start) + emojiData.emoji + value.substring(end);
+      input.selectionStart = input.selectionEnd =
+        start + emojiData.emoji.length;
+      input.focus();
+    }
+    setShowEmojiPicker(false);
+  };
+
   const dispatch = useDispatch<AppDispatch>();
   const { handleHitlAction, isLoading } = useHitl({
     conversationId: conversation?.id || 0,
@@ -101,53 +121,73 @@ export const MessageForm = ({
   });
 
   return (
-    <div className="w-full p-4 border-t border-gray-300">
+    <div className="h-[73px] px-5 py-3.5 flex items-center bg-app-lightGray">
       <form
         onSubmit={handleSubmit(handleFormSubmit)}
-        className={
-          showImageButton
-            ? "grid grid-cols-[auto,1fr,auto] gap-[10px] items-center w-full"
-            : "grid grid-cols-[1fr,auto] gap-[10px] items-center w-full"
-        }
+        className="grid grid-cols-[auto,auto,1fr,auto] gap-2 items-center w-full"
       >
-        {showImageButton && (
-          <label
-            htmlFor="image-upload"
-            className="cursor-pointer p-2 hover:bg-gray-100 rounded-full transition-colors"
-          >
-            <input
-              type="file"
-              id="image-upload"
-              className="hidden"
-              accept="image/*"
-              multiple
-              onChange={handleImageSelect}
-            />
-            <IoImage className="w-5 h-5 text-gray-500 hover:text-app-c4" />
-          </label>
-        )}
+        <button
+          type="button"
+          onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+          className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+        >
+          <BsEmojiSmile className="w-5 h-5 text-gray-500" />
+        </button>
+
+        <label
+          htmlFor="image-upload"
+          className="p-2 hover:bg-gray-100 rounded-full transition-colors cursor-pointer"
+        >
+          <input
+            type="file"
+            id="image-upload"
+            className="hidden"
+            accept="image/*"
+            multiple
+            onChange={handleImageSelect}
+          />
+          <IoMdAttach className="w-5 h-5 text-gray-500" />
+        </label>
 
         <div className="relative">
           <input
             {...register("message", { required: selectedImages.length === 0 })}
             type="text"
             placeholder="Escribe un mensaje..."
-            className="w-full bg-app-c1 border-[1px] border-app-c3 rounded-lg p-[10px] text-[14px] text-black pr-[40px]"
+            className="w-full rounded-full py-2 px-4 text-[14px] text-black bg-white"
           />
+          {showEmojiPicker && (
+            <div className="absolute bottom-full left-0 mb-2">
+              <EmojiPicker onEmojiClick={onEmojiClick} />
+            </div>
+          )}
           {selectedImages.length > 0 && (
-            <ImagePreview images={selectedImages} onRemove={removeImage} />
+            <div className="absolute bottom-full left-0 mb-2 bg-white p-2 rounded-lg shadow-lg">
+              <ImagePreview images={selectedImages} onRemove={removeImage} />
+            </div>
           )}
         </div>
 
         {!showHitl || conversation?.user?.id === user?.id ? (
-          <SendMessageButton isSubmitting={isSubmitting} text={buttonText} />
+          <SendMessageButton
+            type="submit"
+            disabled={isSubmitting}
+            className="p-2 bg-[#15ECDA] hover:bg-[#0F9D8C] rounded-full transition-colors disabled:opacity-50"
+          >
+            <IoSend className="w-5 h-5 text-black hover:text-white" />
+          </SendMessageButton>
         ) : (
           <HitlButton
             onClick={handleHitlAction}
+            disabled={isLoading}
+            className="p-2 bg-[#15ECDA] hover:bg-[#0F9D8C] rounded-full transition-colors disabled:opacity-50"
+            type="button"
             isLoading={isLoading}
             isAssigned={!!conversation?.user}
             currentUserHasConversation={conversation?.user?.id === user?.id}
-          />
+          >
+            <FaUserPlus className="w-5 h-5 text-black hover:text-white" />
+          </HitlButton>
         )}
       </form>
     </div>
