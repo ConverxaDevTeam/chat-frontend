@@ -153,6 +153,7 @@ export const MessageForm = ({
           <input
             {...register("message", { required: selectedImages.length === 0 })}
             type="text"
+            disabled={conversation?.user?.id !== user?.id}
             placeholder="Escribe un mensaje..."
             className="w-full rounded-full py-2 px-4 text-[14px] text-black bg-white"
           />
@@ -180,13 +181,13 @@ export const MessageForm = ({
           <HitlButton
             onClick={handleHitlAction}
             disabled={isLoading}
-            className="p-2 bg-[#15ECDA] hover:bg-[#0F9D8C] rounded-full transition-colors disabled:opacity-50"
+            className="p-2 bg-sofia-electricOlive hover:bg-sofia-electricOlive-700 rounded-full transition-colors disabled:opacity-50"
             type="button"
             isLoading={isLoading}
             isAssigned={!!conversation?.user}
             currentUserHasConversation={conversation?.user?.id === user?.id}
           >
-            <FaUserPlus className="w-5 h-5 text-black hover:text-white" />
+            <img src="/mvp/headset.svg" alt="sofia" className="w-6 h-6" />
           </HitlButton>
         )}
       </form>
