@@ -466,7 +466,7 @@ const ZoomTransition = ({
   const reactFlowInstance = useReactFlow();
   const { fitView } = reactFlowInstance;
   useEffect(() => {
-    fitView();
+    fitView({ padding: 0.5, includeHiddenNodes: true });
   }, [nodesState]);
 
   const onNodesChange: OnNodesChange = useCallback(
