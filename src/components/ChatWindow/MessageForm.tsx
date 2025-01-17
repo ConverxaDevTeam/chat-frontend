@@ -124,7 +124,7 @@ export const MessageForm = ({
                 required: selectedImages.length === 0,
               })}
               type="text"
-              disabled={conversation?.user?.id !== user?.id}
+              disabled={showHitl && conversation?.user?.id !== user?.id}
               placeholder="Escribe un mensaje..."
               className="flex-1 text-[14px] text-black bg-white focus:outline-none"
             />
