@@ -102,7 +102,7 @@ export const MessageForm = ({
   });
 
   return (
-    <div className="h-[73px] px-5 py-3.5 flex items-center bg-app-lightGray min-w-0">
+    <div className="h-[73px] px-5 py-3.5 flex items-center bg-app-lightGray min-w-0 rounded-br-[8px]">
       <form
         onSubmit={handleSubmit(handleFormSubmit)}
         className="flex items-center gap-[16px] w-full min-w-0"
