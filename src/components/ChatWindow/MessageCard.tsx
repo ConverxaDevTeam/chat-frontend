@@ -2,7 +2,7 @@ import { apiUrls } from "@config/config";
 import { Avatar } from "@components/ChatWindow/Avatar";
 import { ConversationResponseMessage } from "@interfaces/conversation";
 import { formatDateOrTime } from "@utils/format";
-import { MessageFormatType, MessageType } from "@utils/interfaces";
+import { MessageType } from "@utils/interfaces";
 import ReactMarkdown from "react-markdown";
 
 interface MessageCardProps {
@@ -37,24 +37,24 @@ const renderContent = (message: ConversationResponseMessage) => {
         <p className={`text-[14px] font-quicksand font-medium text-app-text`}>
           {message.audio && <span className="font-bold">Transcripcion: </span>}
           <ReactMarkdown
-          components={{
-            p: ({ ...props }) => <p className="mb-2 last:mb-0" {...props} />,
-            a: ({ ...props }) => (
-              <a className="text-blue-500 hover:underline" {...props} />
-            ),
-            ul: ({ ...props }) => (
-              <ul className="list-disc ml-4 mb-2" {...props} />
-            ),
-            ol: ({ ...props }) => (
-              <ol className="list-decimal ml-4 mb-2" {...props} />
-            ),
-            code: ({ ...props }) => (
-              <code className="bg-gray-100 px-1 rounded" {...props} />
-            ),
-          }}
-        >
-          {message.text}
-        </ReactMarkdown>
+            components={{
+              p: ({ ...props }) => <p className="mb-2 last:mb-0" {...props} />,
+              a: ({ ...props }) => (
+                <a className="text-blue-500 hover:underline" {...props} />
+              ),
+              ul: ({ ...props }) => (
+                <ul className="list-disc ml-4 mb-2" {...props} />
+              ),
+              ol: ({ ...props }) => (
+                <ol className="list-decimal ml-4 mb-2" {...props} />
+              ),
+              code: ({ ...props }) => (
+                <code className="bg-gray-100 px-1 rounded" {...props} />
+              ),
+            }}
+          >
+            {message.text}
+          </ReactMarkdown>
         </p>
       )}
     </div>
@@ -110,7 +110,11 @@ const MessageCard = ({ message, userName }: MessageCardProps) => {
             </div>
           </div>
           <div className="flex flex-col gap-1">
-            <Avatar avatar={null} secret={userName} />
+            <Avatar
+              avatar={null}
+              secret={userName}
+              className="w-[40px] h-[40px]"
+            />
           </div>
         </div>
       </div>

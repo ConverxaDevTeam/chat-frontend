@@ -10,7 +10,7 @@ export const Avatar = ({
   return (
     <div className={`w-12 h-12 flex-shrink-0 relative ${className}`}>
       {avatar ? (
-        <div className="w-12 h-12 rounded-full overflow-hidden border border-sofia-superDark">
+        <div className="w-full h-full rounded-full overflow-hidden border border-sofia-superDark">
           <img
             src={avatar ?? undefined}
             alt={secret}
@@ -18,7 +18,7 @@ export const Avatar = ({
           />
         </div>
       ) : (
-        <div className="w-12 h-12 flex items-center justify-center relative">
+        <div className="w-full h-full flex items-center justify-center relative">
           <div className="absolute inset-0 rounded-full bg-sofia-electricLight border border-sofia-superDark" />
           <span className="relative z-10 font-quicksand text-base font-semibold text-sofia-superDark">
             {secret.substring(0, 2)}
