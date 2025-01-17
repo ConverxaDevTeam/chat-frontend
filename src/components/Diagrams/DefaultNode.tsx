@@ -192,11 +192,14 @@ const DefaultNode: React.FC<CustomNodeProps> = ({
                 <NeumorphicButton
                   externalProps={{
                     radius: "full",
+                    className: "pb-5",
                   }}
                   internalProps={{
                     radius: "full",
                     className: "bg-node-gradient",
                   }}
+                  height="140px"
+                  width="140px"
                 >
                   {nodeContent}
                 </NeumorphicButton>
