@@ -74,6 +74,9 @@ const SelectDepartment: FC<SelectDepartmentProps> = ({ mobileResolution }) => {
     id: dept.id,
     name: dept.name,
   }));
+  if (options.length === 0) {
+    return null;
+  }
 
   return (
     <Select

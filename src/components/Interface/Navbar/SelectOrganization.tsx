@@ -44,7 +44,9 @@ const SelectOrganization = ({ mobileResolution }: SelectOrganizationProps) => {
     name: org.organization.name,
   }));
 
-  const customOptions = user?.is_super_admin ? (
+  const isGlobalUser =
+    user?.is_super_admin || myOrganizations.some(org => !org.organization);
+  const customOptions = isGlobalUser ? (
     <div
       onClick={() => handleSelectOrganization(0)}
       className={`p-[6px] cursor-pointer hover:bg-app-c1 ${
