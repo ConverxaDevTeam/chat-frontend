@@ -1,6 +1,7 @@
 import { FaUserPlus } from "react-icons/fa";
 
-interface HitlButtonProps {
+interface HitlButtonProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   onClick: () => void;
   isLoading: boolean;
   isAssigned: boolean;
@@ -12,6 +13,9 @@ export const HitlButton = ({
   isLoading,
   isAssigned,
   currentUserHasConversation,
+  children,
+  className,
+  ...props
 }: HitlButtonProps) => {
   if (currentUserHasConversation) return null;
 
@@ -19,11 +23,16 @@ export const HitlButton = ({
     <button
       onClick={onClick}
       disabled={isLoading}
-      className="bg-[#15ECDA] hover:bg-[#0F9D8C] text-black font-bold hover:text-white rounded w-[120px] h-[40px] flex items-center justify-center gap-2"
+      className={className}
       type="button"
+      {...props}
     >
-      <FaUserPlus className="w-4 h-4" />
-      {isAssigned ? "Reasignar" : "Asignar"}
+      {children || (
+        <>
+          <FaUserPlus className="w-4 h-4" />
+          {isAssigned ? "Reasignar" : "Asignar"}
+        </>
+      )}
     </button>
   );
 };

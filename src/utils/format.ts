@@ -160,3 +160,24 @@ export const getErrorResponse = (error: unknown) => {
     data: error instanceof Error ? error.message : "Error desconocido",
   };
 };
+
+export const formatDateOrTime = (dateISO: string): string => {
+  const date = new Date(dateISO);
+  const today = new Date();
+
+  const isToday =
+    date.getDate() === today.getDate() &&
+    date.getMonth() === today.getMonth() &&
+    date.getFullYear() === today.getFullYear();
+
+  if (isToday) {
+    const hours = date.getHours().toString().padStart(2, "0");
+    const minutes = date.getMinutes().toString().padStart(2, "0");
+    return `${hours}:${minutes}`;
+  }
+
+  const day = date.getDate();
+  const month = date.getMonth() + 1;
+  const year = date.getFullYear();
+  return `${month}/${day}/${year}`;
+};

@@ -46,7 +46,7 @@ export const ChatFooter = ({
         )
       : [];
 
-    await onSendMessage(data.message, imageBase64s);
+    onSendMessage(data.message, imageBase64s);
     reset();
   };
 
