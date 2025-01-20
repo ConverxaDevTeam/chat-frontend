@@ -50,12 +50,12 @@ const SelectOrganization = ({ mobileResolution }: SelectOrganizationProps) => {
           : ""
       }`}
     >
-      Panel Admin
+      Panel Administrador
     </div>
   ) : null;
 
   const placeholder = user?.is_super_admin
-    ? "Panel admin"
+    ? "Panel Administrador"
     : "Seleccionar Organización";
 
   return (

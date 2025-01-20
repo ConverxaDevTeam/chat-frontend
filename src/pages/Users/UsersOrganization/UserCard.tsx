@@ -21,7 +21,7 @@ const UserCard = ({ userData }: UserCardProps) => {
 
           <div className="flex flex-col h-full justify-between flex-1">
             <p className="text-[14px] font-poppinsRegular text-app-dark">
-              {userData.first_name ? userData.first_name : "No registration"}
+              {userData.first_name ? userData.first_name : "Sin registro"}
             </p>
             <p className="text-[10px] 2xl:text-[11px] font-poppinsRegular text-app-gray">
               {userData.email}
@@ -31,7 +31,7 @@ const UserCard = ({ userData }: UserCardProps) => {
                 ID: {userData.id}
               </p>
               <p className="text-[12px] font-poppinsMedium text-app-dark bg-app-electricGreen px-[8px] py-[3px] rounded-full cursor-pointer">
-                rol:{" "}
+                Rol:{" "}
                 {userData.userOrganizations?.map(
                   organization => organization.role
                 )}
