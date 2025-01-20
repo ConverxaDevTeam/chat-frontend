@@ -16,13 +16,16 @@ const SelectOrganization = ({ mobileResolution }: SelectOrganizationProps) => {
   );
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
+  const realOrganizations = myOrganizations.filter(
+    organization => organization.organization
+  );
 
   useEffect(() => {
-    myOrganizations.every(organization => {
+    realOrganizations.every(organization => {
       joinRoom(`organization-${organization.organization.id}`);
     });
     return () => {
-      myOrganizations.every(organization => {
+      realOrganizations.every(organization => {
         leaveRoom(`organization-${organization.organization.id}`);
       });
     };
@@ -36,7 +39,7 @@ const SelectOrganization = ({ mobileResolution }: SelectOrganizationProps) => {
     dispatch(setOrganizationId(Number(organizationId)));
   };
 
-  const options = myOrganizations.map(org => ({
+  const options = realOrganizations.map(org => ({
     id: org.organization.id,
     name: org.organization.name,
   }));
