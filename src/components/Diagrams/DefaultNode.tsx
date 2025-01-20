@@ -24,9 +24,11 @@ const NodeLabel: React.FC<NodeLabelProps> = ({ name, selected }) => {
   if (selected) return null;
 
   return (
-    <div className="absolute bottom-[96px] left-1/2 -translate-x-1/2 z-10">
-      <div className="w-[200px] break-words text-center flex flex-col-reverse">
-        <span className="text-sm font-medium text-gray-700">{name}</span>
+    <div className="absolute top-[116px] left-1/2 -translate-x-1/2 z-10">
+      <div className="w-[85px] truncate text-ellipsis text-center flex flex-col">
+        <span className="text-center font-quicksand text-xs font-normal leading-none text-sofia-superDark">
+          {name}
+        </span>
       </div>
     </div>
   );
@@ -178,7 +180,9 @@ const DefaultNode: React.FC<CustomNodeProps> = ({
 
   return (
     <div className="relative" ref={ref}>
-      <NodeLabel name={name} selected={selected} />
+      {style !== NodeStyle.SMALL && (
+        <NodeLabel name={name} selected={selected} />
+      )}
       {(() => {
         switch (style) {
           case NodeStyle.CENTRAL:
@@ -188,11 +192,14 @@ const DefaultNode: React.FC<CustomNodeProps> = ({
                 <NeumorphicButton
                   externalProps={{
                     radius: "full",
+                    className: "pb-5",
                   }}
                   internalProps={{
                     radius: "full",
-                    backgroundColor: "node-gradient",
+                    className: "bg-node-gradient",
                   }}
+                  height="140px"
+                  width="140px"
                 >
                   {nodeContent}
                 </NeumorphicButton>
@@ -209,7 +216,12 @@ const DefaultNode: React.FC<CustomNodeProps> = ({
             return (
               <Fragment>
                 <NodeHandles allowedConnections={allowedConnections} />
-                <NeumorphicButton withContainer={false}>
+                <NeumorphicButton
+                  externalProps={{
+                    className: "rounded-[32px] pb-8",
+                  }}
+                  height="145px"
+                >
                   {nodeContent}
                 </NeumorphicButton>
               </Fragment>

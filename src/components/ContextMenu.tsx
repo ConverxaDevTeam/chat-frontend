@@ -56,10 +56,14 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
   return createPortal(
     <div
       ref={menuRef}
-      className="context-menu absolute bg-white shadow-lg rounded-lg p-2 min-w-[150px] z-50"
+      className="context-menu absolute inline-flex flex-col items-start p-3.5 gap-2 rounded-lg border border-sofia-navyBlue bg-sofia-blancoPuro z-50"
       style={{ left: x, top: y }}
     >
-      {children}
+      {React.Children.map(children, child => (
+        <div className="flex justify-center items-center gap-2.5 self-stretch rounded hover:bg-sofia-electricOlive cursor-pointer">
+          <div className="px-1 py-0.5">{child}</div>
+        </div>
+      ))}
     </div>,
     document.body
   );

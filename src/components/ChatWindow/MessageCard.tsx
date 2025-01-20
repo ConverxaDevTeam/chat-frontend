@@ -1,100 +1,123 @@
 import { apiUrls } from "@config/config";
-import { formatDateString } from "@utils/format";
-import { IMessage, MessageFormatType, MessageType } from "@utils/interfaces";
+import { Avatar } from "@components/ChatWindow/Avatar";
+import { ConversationResponseMessage } from "@interfaces/conversation";
+import { formatDateOrTime } from "@utils/format";
+import { MessageType } from "@utils/interfaces";
 import ReactMarkdown from "react-markdown";
 
 interface MessageCardProps {
-  message: IMessage;
+  userName: string;
+  message: ConversationResponseMessage;
 }
 
-const renderContent = (message: IMessage) => {
+const renderContent = (message: ConversationResponseMessage) => {
   return (
-    <>
+    <div className="flex flex-col gap-2">
       {message.images?.map((imageUrl, index) => (
-        <div key={index} className="mb-2">
-          <img
-            src={imageUrl}
-            alt={`Image ${index + 1}`}
-            className="max-w-[200px] rounded-lg"
-            onLoad={() => {
-              if (imageUrl.startsWith("blob:")) {
-                URL.revokeObjectURL(imageUrl);
-              }
-            }}
-          />
-        </div>
+        <img
+          key={index}
+          src={imageUrl}
+          alt={`Image ${index + 1}`}
+          className="rounded-lg w-[200px] h-[200px] object-cover"
+          onLoad={() => {
+            if (imageUrl.startsWith("blob:")) {
+              URL.revokeObjectURL(imageUrl);
+            }
+          }}
+        />
       ))}
-      {message.format === MessageFormatType.AUDIO && message.audio && (
+      {message.audio && (
         <audio
           controls
           src={apiUrls.mediaAudio(message.audio)}
           className="w-[220px] h-[35px]"
         />
       )}
-      <div
-        className={`p-[16px] text-sofiaCall-dark leading-[18px] font-poppinsRegular text-[14px] rounded-lg ${
-          message.type === MessageType.HITL
-            ? "bg-[#ffd6ff]"
-            : message.type === MessageType.AGENT
-              ? "bg-[#b1f6f0]"
-              : "bg-white"
-        }`}
-      >
-        {message.format === MessageFormatType.AUDIO && (
-          <strong>Transcripcion: </strong>
-        )}
-        <ReactMarkdown
-          components={{
-            p: ({ ...props }) => <p className="mb-2 last:mb-0" {...props} />,
-            a: ({ ...props }) => (
-              <a className="text-blue-500 hover:underline" {...props} />
-            ),
-            ul: ({ ...props }) => (
-              <ul className="list-disc ml-4 mb-2" {...props} />
-            ),
-            ol: ({ ...props }) => (
-              <ol className="list-decimal ml-4 mb-2" {...props} />
-            ),
-            code: ({ ...props }) => (
-              <code className="bg-gray-100 px-1 rounded" {...props} />
-            ),
-          }}
-        >
-          {message.text}
-        </ReactMarkdown>
-      </div>
-    </>
+      {message.text && (
+        <div className={`text-[14px] font-quicksand font-medium text-app-text`}>
+          {message.audio && <span className="font-bold">Transcripcion: </span>}
+          <ReactMarkdown
+            components={{
+              p: ({ ...props }) => <p className="mb-2 last:mb-0" {...props} />,
+              a: ({ ...props }) => (
+                <a className="text-blue-500 hover:underline" {...props} />
+              ),
+              ul: ({ ...props }) => (
+                <ul className="list-disc ml-4 mb-2" {...props} />
+              ),
+              ol: ({ ...props }) => (
+                <ol className="list-decimal ml-4 mb-2" {...props} />
+              ),
+              code: ({ ...props }) => (
+                <code className="bg-gray-100 px-1 rounded" {...props} />
+              ),
+            }}
+          >
+            {message.text}
+          </ReactMarkdown>
+        </div>
+      )}
+    </div>
   );
 };
 
-const MessageCard = ({ message }: MessageCardProps) => {
-  console.log(message);
+const MessageCard = ({ message, userName }: MessageCardProps) => {
   if (message.type === MessageType.AGENT || message.type === MessageType.HITL) {
     return (
-      <div className="flex gap-[10px]">
-        <div className="bg-white w-[40px] h-[40px] relative rounded-full flex justify-center items-center">
-          <img src="/img/sofia.svg" alt="sofia" />
-          <div className="bg-green-500 w-[18px] h-[18px] absolute border-[4px] border-sofiaCall-white rounded-full -bottom-[5px] -right-[5px]"></div>
-        </div>
-        <div className="flex flex-1 flex-col gap-[4px] items-start">
-          {renderContent(message)}
-          <p className="px-[16px] leading-[18px] font-poppinsRegular text-[12px] text-gray-500">
-            {formatDateString(message.created_at)}
-          </p>
+      <div className="inline-flex items-start gap-2 max-w-[546px]">
+        <div className="flex flex-col items-start gap-2">
+          <div className="flex items-start gap-2">
+            <div className="flex flex-col gap-1">
+              <div className="w-[40px] h-[40px] px-[7px] py-[10px] flex flex-col items-start rounded-full bg-sofia-electricGreen relative">
+                <img src="/icon.svg" alt="sofia" className="w-6 h-6" />
+                <div className="w-3 h-3 bg-green-500 absolute border-2 border-white rounded-full -bottom-0.5 -right-0.5" />
+              </div>
+            </div>
+            <div className="flex flex-col items-start gap-1">
+              <div className="flex justify-center items-center gap-2">
+                <span className="text-[14px] font-quicksand font-bold text-sofia-superDark">
+                  SOF.IA
+                </span>
+                <span className="text-[14px] font-quicksand font-bold text-app-newGray">
+                  {formatDateOrTime(message.created_at)}
+                </span>
+              </div>
+              <div className="flex justify-center items-center self-stretch p-2 rounded-lg bg-sofia-secundario shadow-[2px_2px_4px_0px_rgba(0,0,0,0.10)]">
+                {renderContent(message)}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="flex gap-[10px]">
-      <div className="flex flex-1 flex-col gap-[4px] items-end">
-        {renderContent(message)}
-        <p className="px-[16px] leading-[18px] font-poppinsRegular text-[12px] text-gray-500">
-          {formatDateString(message.created_at)}
-        </p>
+    <div className="flex justify-end max-w-[546px] ml-auto">
+      <div className="flex flex-col items-end gap-2">
+        <div className="flex items-start gap-2">
+          <div className="flex flex-col items-end gap-1">
+            <div className="flex justify-center items-center gap-2">
+              <span className="text-[14px] font-quicksand font-bold text-sofia-superDark">
+                {userName}
+              </span>
+              <span className="text-[14px] font-quicksand font-bold text-app-newGray">
+                {formatDateOrTime(message.created_at)}
+              </span>
+            </div>
+            <div className="flex justify-center items-center self-stretch p-2 rounded-lg bg-sofia-blancoPuro shadow-[2px_2px_4px_0px_rgba(0,0,0,0.10)]">
+              {renderContent(message)}
+            </div>
+          </div>
+          <div className="flex flex-col gap-1">
+            <Avatar
+              avatar={null}
+              secret={userName}
+              className="w-[40px] h-[40px]"
+            />
+          </div>
+        </div>
       </div>
-      <div className="bg-[#82c0cf] w-[40px] h-[40px] relative rounded-full flex justify-center items-center"></div>
     </div>
   );
 };

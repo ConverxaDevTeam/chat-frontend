@@ -2,14 +2,13 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 import { useSweetAlert } from "./useSweetAlert";
 import { AxiosError } from "axios";
-import { Conversation } from "@interfaces/conversation";
 import { assignConversationToHitl } from "@services/conversations";
 
 interface UseHitlProps {
   conversationId: number;
-  userId?: string;
-  currentUserId?: string;
-  onUpdateConversation: (conversation: Conversation) => void;
+  userId: number;
+  currentUserId: number;
+  onUpdateConversation: () => void;
 }
 
 export const useHitl = ({
@@ -26,13 +25,9 @@ export const useHitl = ({
     try {
       const updatedConversation =
         await assignConversationToHitl(conversationId);
+      toast.success("Conversación asignada exitosamente");
       if (updatedConversation) {
-        onUpdateConversation(updatedConversation);
-        toast.success(
-          userId === currentUserId
-            ? "Conversación desasignada exitosamente"
-            : "Conversación asignada exitosamente"
-        );
+        onUpdateConversation();
       }
     } catch (error: unknown) {
       if ((error as AxiosError).response?.status === 400) {
@@ -48,7 +43,7 @@ export const useHitl = ({
             const reassignedConversation =
               await assignConversationToHitl(conversationId);
             if (reassignedConversation) {
-              onUpdateConversation(reassignedConversation);
+              onUpdateConversation();
               toast.success("Conversación reasignada exitosamente");
             }
           } catch (reassignError) {
