@@ -58,7 +58,7 @@ const Sidebar = ({
                 />
               )}
             </div>
-            <ul className="flex flex-col w-full gap-[36px]">
+            <ul className="flex flex-col w-full gap-[15px]">
               {(selectOrganizationId === null && user?.is_super_admin) ||
               (selectOrganizationId === 0 && user?.is_super_admin)
                 ? sidebarAdminLinks.map((link, index) => {
