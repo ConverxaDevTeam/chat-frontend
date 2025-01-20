@@ -178,7 +178,7 @@ const nodeFactory = {
       `function-${func.id}`,
       position,
       {
-        name: `Función \n ${func.name}`,
+        name: func.name,
         description: "Función del agente",
         agentId,
         functionId: func.id,
@@ -466,7 +466,6 @@ const ZoomTransition = ({
   const reactFlowInstance = useReactFlow();
   const { fitView } = reactFlowInstance;
   useEffect(() => {
-    console.log("Nodes changed:", nodesState.length);
     setTimeout(() => {
       fitView({ padding: 0.5, includeHiddenNodes: true });
     }, 10);

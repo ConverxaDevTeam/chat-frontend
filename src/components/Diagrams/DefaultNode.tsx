@@ -4,6 +4,7 @@ import { NodeData, NodeStyle } from "@interfaces/workflow";
 import { NeumorphicButton } from "../NeumorphicButton";
 import DiagramContextMenu, { ContextMenuOption } from "./DiagramContextMenu";
 import { SmallNode } from "./nodes/SmallNode";
+import { updateNodePosition } from "@services/node";
 
 interface CustomNodeProps extends NodeProps {
   data: NodeData;
@@ -144,8 +145,10 @@ const DefaultNode: React.FC<CustomNodeProps> = ({
   children,
   headerActions,
   contextMenuOptions,
+  ...props
 }) => {
   const ref = useRef<HTMLDivElement>(null);
+  const timeoutRef = useRef<NodeJS.Timeout>();
 
   const [menuPosition, setMenuPosition] = useState<
     | {
@@ -163,6 +166,29 @@ const DefaultNode: React.FC<CustomNodeProps> = ({
       setMenuPosition({ x: left + width + 25, y: top });
     }
   }, [selected]);
+
+  useEffect(() => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+
+    timeoutRef.current = setTimeout(() => {
+      const [type, id] = props.id.split("-");
+      if (type === "function") {
+        updateNodePosition(Number(id), {
+          x: props.positionAbsoluteX,
+          y: props.positionAbsoluteY,
+          type: "function",
+        });
+      }
+    }, 300);
+
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, [props.positionAbsoluteX, props.positionAbsoluteY]);
 
   const nodeContent = (
     <NodeContent
