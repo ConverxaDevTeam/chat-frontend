@@ -1,11 +1,7 @@
 export enum ParamType {
   STRING = "string",
   NUMBER = "number",
-  ENUM = "enum",
-  REGEX = "regex",
   BOOLEAN = "boolean",
-  OBJECT = "object",
-  ARRAY = "array",
 }
 
 export interface CreateFunctionParamDto {
