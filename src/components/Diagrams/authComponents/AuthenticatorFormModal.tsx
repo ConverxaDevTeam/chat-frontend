@@ -243,40 +243,32 @@ const AuthenticatorFormModal = ({
     control,
     name: "type",
   });
+
+  // Inicialización con datos iniciales
   useEffect(() => {
-    // Reset form with new type but keep name and other common fields
     if (initialData) {
-      const currentValues = control._formValues;
-      const newValues = {
-        ...DEFAULT_VALUES(organizationId, authenticatorType),
-        name: currentValues.name,
-        id: currentValues.id,
-        field_name: currentValues.field_name || "Authorization",
-      };
-      reset(newValues);
+      reset(initialData);
+      if (initialData.type === AutenticadorType.ENDPOINT) {
+        const endpointData = initialData as EndpointAuthenticatorType;
+        const initialParams = Object.entries(
+          endpointData.config.params || {}
+        ).map(([key, value]) => ({ key, value }));
+        setParams(initialParams);
+      }
     }
-  }, [authenticatorType]);
+  }, [initialData, reset]);
 
+  // Manejo de cambio de tipo
   useEffect(() => {
-    // Reset form
-    const values =
-      initialData || DEFAULT_VALUES(organizationId, authenticatorType);
-    if (!values.field_name) {
-      values.field_name = "Authorization";
-    }
-    reset(values);
-
-    // Initialize params if endpoint type
-    if (values.type === AutenticadorType.ENDPOINT) {
-      const endpointData = values as EndpointAuthenticatorType;
-      const initialParams = Object.entries(
-        endpointData.config.params || {}
-      ).map(([key, value]) => ({ key, value }));
-      setParams(initialParams);
-    } else {
+    if (!initialData) {
+      const values = DEFAULT_VALUES(organizationId, authenticatorType);
+      if (!values.field_name) {
+        values.field_name = "Authorization";
+      }
+      reset(values);
       setParams([]);
     }
-  }, [authenticatorType, organizationId, initialData, reset]);
+  }, [authenticatorType, organizationId, reset, initialData]);
 
   const onUpdateParam = useCallback(
     (index: number, field: "key" | "value", value: string) => {
