@@ -253,6 +253,12 @@ interface AgentState {
   agentFunctions: {
     id: number;
     name: string;
+    config: {
+      position: {
+        x: number;
+        y: number;
+      };
+    };
     autenticador?: { id: number };
   }[];
   integrations: Array<{ id: number; type: IntegrationType }>;
@@ -288,11 +294,16 @@ const createInitialNodes = (
     const functionNodes = agentFunctions
       .map((func, index) => {
         if (!func.id) return null;
-        const position = nodePositioning.calculateCircularPosition(
-          index,
-          agentFunctions.length,
-          agentNode.position
-        );
+
+        // Usar posición guardada si existe, sino calcular nueva posición
+        const position =
+          func.config?.position ||
+          nodePositioning.calculateCircularPosition(
+            index,
+            agentFunctions.length,
+            agentNode.position
+          );
+
         return nodeFactory.createFunctionNode(func, position, agentId);
       })
       .filter(
