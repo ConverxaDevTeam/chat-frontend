@@ -3,6 +3,7 @@ import ItemSidebar from "./ItemSidebar";
 import { useDispatch, useSelector } from "react-redux";
 import { sidebarAdminLinks, sidebarLinks } from "@utils/lists";
 import { logOutAsync } from "@store/actions/auth";
+import { OrganizationRoleType } from "@utils/interfaces";
 
 type SidebarProps = {
   windowHeight: number;
@@ -17,8 +18,18 @@ const Sidebar = ({
   mobileResolution,
 }: SidebarProps) => {
   const dispatch = useDispatch<AppDispatch>();
-  const { selectOrganizationId, user } = useSelector(
+  const { selectOrganizationId, user, myOrganizations } = useSelector(
     (state: RootState) => state.auth
+  );
+
+  const userRoles = myOrganizations.map(organization => organization.role);
+  const sidebarAdminRoles = [OrganizationRoleType.ING_PREVENTA];
+  const useSidebarAdmin =
+    user?.is_super_admin ||
+    userRoles.some(role => sidebarAdminRoles.includes(role));
+  const userSidebarAdminLinks = sidebarAdminLinks.filter(
+    link =>
+      user?.is_super_admin || link.roles?.some(role => userRoles.includes(role))
   );
 
   return (
@@ -59,9 +70,9 @@ const Sidebar = ({
               )}
             </div>
             <ul className="flex flex-col w-full gap-[36px]">
-              {(selectOrganizationId === null && user?.is_super_admin) ||
-              (selectOrganizationId === 0 && user?.is_super_admin)
-                ? sidebarAdminLinks.map((link, index) => {
+              {(selectOrganizationId === null && useSidebarAdmin) ||
+              (selectOrganizationId === 0 && useSidebarAdmin)
+                ? userSidebarAdminLinks.map((link, index) => {
                     return (
                       <ItemSidebar
                         key={`${link.text}-${index}`}

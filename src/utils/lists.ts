@@ -72,6 +72,7 @@ export const sidebarAdminLinks = [
     to: "/organizations",
     text: "Organizaciones",
     active: ["/organizations"],
+    roles: [OrganizationRoleType.ING_PREVENTA],
     img: "house.svg",
   },
 ];
