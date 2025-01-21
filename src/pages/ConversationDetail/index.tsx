@@ -238,7 +238,11 @@ const ConversationDetail = () => {
         {/* Chat Header */}
         <ChatHeader
           avatar={null}
-          secret={conversation.chat_user.secret}
+          secret={
+            conversation?.chat_user?.secret ??
+            conversation?.chat_user?.identifier ??
+            ""
+          }
           searchTerm={searchTerm}
           onSearchChange={setSearchTerm}
           onMenuClick={e => {
@@ -258,7 +262,7 @@ const ConversationDetail = () => {
               <MessageCard
                 key={index}
                 message={message}
-                userName={conversation.chat_user.secret}
+                userName={conversation?.chat_user?.secret ?? ""}
               />
             ))}
             <div ref={messagesEndRef} />

@@ -34,7 +34,10 @@ import IntegrationItemNode from "./Diagrams/IntegrationItemNode";
 import ContextMenu from "./ContextMenu";
 import { useNodeSelection } from "./Diagrams/hooks/useNodeSelection";
 import { useContextMenu } from "./Diagrams/hooks/useContextMenu";
-import { useUnifiedNodeCreation } from "./Diagrams/hooks/useUnifiedNodeCreation";
+import {
+  nodePositioning,
+  useUnifiedNodeCreation,
+} from "./Diagrams/hooks/useUnifiedNodeCreation";
 import { useEdges } from "./workspace/hooks/Diagrams";
 import { AuthEdge } from "./Diagrams/edges/AuthEdge";
 import { FunctionEditModal } from "./Diagrams/funcionComponents/FunctionEditModal";
@@ -83,55 +86,6 @@ interface Position2D {
   y: number;
 }
 
-// Utilidades de posicionamiento
-const nodePositioning = {
-  calculateCircularPosition: (
-    index: number,
-    total: number,
-    centerPos: Position2D
-  ): Position2D => {
-    const radius = 300;
-    // Ajustamos para que solo use 240 grados (desde -30° hasta 210°)
-    // evitando así la zona izquierda donde está la integración
-    const startAngle = (-100 * Math.PI) / 180; // -30 grados en radianes
-    const endAngle = (210 * Math.PI) / 180; // 210 grados en radianes
-    const angleRange = endAngle - startAngle;
-    const angleStep = angleRange / (total - 1 || 1);
-    const angle = startAngle + index * angleStep;
-
-    return {
-      x: centerPos.x + radius * Math.cos(angle),
-      y: centerPos.y + radius * Math.sin(angle),
-    };
-  },
-
-  calculateTangentialPosition: (
-    index: number,
-    total: number,
-    integrationPos: Position2D,
-    agentPos: Position2D
-  ): Position2D => {
-    // Calculamos el ángulo entre el nodo de integración y el agente
-    const dx = agentPos.x - integrationPos.x;
-    const dy = agentPos.y - integrationPos.y;
-    const baseAngle = Math.atan2(dy, dx);
-
-    // Creamos un arco de 120 grados (-60 a +60 desde la perpendicular)
-    const arcRange = (120 * Math.PI) / 180;
-    const startAngle = baseAngle - Math.PI / 2 - arcRange / 2;
-    const angleStep = arcRange / (total - 1 || 1);
-
-    // Radio para los nodos de integración
-    const radius = 150;
-    const angle = startAngle + index * angleStep;
-
-    return {
-      x: integrationPos.x + radius * Math.cos(angle),
-      y: integrationPos.y + radius * Math.sin(angle),
-    };
-  },
-};
-
 // Factory de nodos
 const nodeFactory = {
   createBaseNode: <T extends NodeData>(
@@ -178,7 +132,7 @@ const nodeFactory = {
       `function-${func.id}`,
       position,
       {
-        name: `Función \n ${func.name}`,
+        name: func.name,
         description: "Función del agente",
         agentId,
         functionId: func.id,
@@ -253,6 +207,12 @@ interface AgentState {
   agentFunctions: {
     id: number;
     name: string;
+    config: {
+      position: {
+        x: number;
+        y: number;
+      };
+    };
     autenticador?: { id: number };
   }[];
   integrations: Array<{ id: number; type: IntegrationType }>;
@@ -285,19 +245,22 @@ const createInitialNodes = (
   ];
 
   if (agentFunctions?.length > 0 && agentId) {
-    const functionNodes = agentFunctions
-      .map((func, index) => {
-        if (!func.id) return null;
-        const position = nodePositioning.calculateCircularPosition(
-          index,
-          agentFunctions.length,
+    const functionNodes = agentFunctions.reduce<
+      Node<FunctionData<HttpRequestFunction>>[]
+    >((acc, func) => {
+      if (!func.id) return acc;
+
+      // Usar posición guardada si existe, sino calcular nueva posición
+      const position =
+        func.config?.position ||
+        nodePositioning.calculateCircularPosition(
+          acc, // Pasamos los nodos ya creados
           agentNode.position
         );
-        return nodeFactory.createFunctionNode(func, position, agentId);
-      })
-      .filter(
-        (node): node is Node<FunctionData<HttpRequestFunction>> => node !== null
-      );
+
+      const node = nodeFactory.createFunctionNode(func, position, agentId);
+      return [...acc, node];
+    }, []);
 
     nodes.push(...functionNodes);
     const authenticatorsIdsDict = agentFunctions
@@ -466,7 +429,6 @@ const ZoomTransition = ({
   const reactFlowInstance = useReactFlow();
   const { fitView } = reactFlowInstance;
   useEffect(() => {
-    console.log("Nodes changed:", nodesState.length);
     setTimeout(() => {
       fitView({ padding: 0.5, includeHiddenNodes: true });
     }, 10);

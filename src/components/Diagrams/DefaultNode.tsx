@@ -4,6 +4,7 @@ import { NodeData, NodeStyle } from "@interfaces/workflow";
 import { NeumorphicButton } from "../NeumorphicButton";
 import DiagramContextMenu, { ContextMenuOption } from "./DiagramContextMenu";
 import { SmallNode } from "./nodes/SmallNode";
+import { updateNodePosition } from "@services/node";
 
 interface CustomNodeProps extends NodeProps {
   data: NodeData;
@@ -25,10 +26,10 @@ const NodeLabel: React.FC<NodeLabelProps> = ({ name, selected }) => {
 
   return (
     <div className="absolute top-[116px] left-1/2 -translate-x-1/2 z-10">
-      <div className="w-[85px] truncate text-ellipsis text-center flex flex-col">
-        <span className="text-center font-quicksand text-xs font-normal leading-none text-sofia-superDark">
+      <div className="w-[100px] text-center">
+        <p className="text-center font-quicksand text-xs font-normal text-sofia-superDark line-clamp-2 overflow-hidden">
           {name}
-        </span>
+        </p>
       </div>
     </div>
   );
@@ -144,8 +145,10 @@ const DefaultNode: React.FC<CustomNodeProps> = ({
   children,
   headerActions,
   contextMenuOptions,
+  ...props
 }) => {
   const ref = useRef<HTMLDivElement>(null);
+  const timeoutRef = useRef<NodeJS.Timeout>();
 
   const [menuPosition, setMenuPosition] = useState<
     | {
@@ -163,6 +166,29 @@ const DefaultNode: React.FC<CustomNodeProps> = ({
       setMenuPosition({ x: left + width + 25, y: top });
     }
   }, [selected]);
+
+  useEffect(() => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+
+    timeoutRef.current = setTimeout(() => {
+      const [type, id] = props.id.split("-");
+      if (type === "function") {
+        updateNodePosition(Number(id), {
+          x: props.positionAbsoluteX,
+          y: props.positionAbsoluteY,
+          type: "function",
+        });
+      }
+    }, 300);
+
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, [props.positionAbsoluteX, props.positionAbsoluteY]);
 
   const nodeContent = (
     <NodeContent
@@ -220,7 +246,7 @@ const DefaultNode: React.FC<CustomNodeProps> = ({
                   externalProps={{
                     className: "rounded-[32px] pb-8",
                   }}
-                  height="145px"
+                  height="165px"
                 >
                   {nodeContent}
                 </NeumorphicButton>
