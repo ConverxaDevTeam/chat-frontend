@@ -81,5 +81,6 @@ export interface ConversationDetailResponse {
   messages: ConversationResponseMessage[];
   chat_user: {
     secret: string;
+    identifier: string;
   } | null;
 }
