@@ -11,6 +11,7 @@ interface UseRoleAuthReturn {
   isSuperAdmin: boolean;
   userRoles: OrganizationRoleType[];
   organizationRoles: (organizationId: number) => OrganizationRoleType[];
+  getErrorMessage: (action: string) => string;
 }
 
 export const useRoleAuth = (): UseRoleAuthReturn => {
@@ -40,11 +41,16 @@ export const useRoleAuth = (): UseRoleAuthReturn => {
     return isSuperAdmin || roles.some(role => orgRoles.includes(role));
   };
 
+  const getErrorMessage = (action: string): string => {
+    return `No tienes permisos suficientes para ${action}`;
+  };
+
   return {
     hasRole,
     hasOrganizationRole,
     isSuperAdmin,
     userRoles,
     organizationRoles,
+    getErrorMessage,
   };
 };
