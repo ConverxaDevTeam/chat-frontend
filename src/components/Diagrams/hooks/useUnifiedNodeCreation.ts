@@ -69,6 +69,55 @@ const createNewNode = ({
   };
 };
 
+// Utilidades de posicionamiento
+export const nodePositioning = {
+  calculateCircularPosition: (
+    index: number,
+    total: number,
+    centerPos: Position2D
+  ): Position2D => {
+    const radius = 300;
+    // Ajustamos para que solo use 240 grados (desde -30° hasta 210°)
+    // evitando así la zona izquierda donde está la integración
+    const startAngle = (-100 * Math.PI) / 180; // -30 grados en radianes
+    const endAngle = (210 * Math.PI) / 180; // 210 grados en radianes
+    const angleRange = endAngle - startAngle;
+    const angleStep = angleRange / (total - 1 || 1);
+    const angle = startAngle + index * angleStep;
+
+    return {
+      x: centerPos.x + radius * Math.cos(angle),
+      y: centerPos.y + radius * Math.sin(angle),
+    };
+  },
+
+  calculateTangentialPosition: (
+    index: number,
+    total: number,
+    integrationPos: Position2D,
+    agentPos: Position2D
+  ): Position2D => {
+    // Calculamos el ángulo entre el nodo de integración y el agente
+    const dx = agentPos.x - integrationPos.x;
+    const dy = agentPos.y - integrationPos.y;
+    const baseAngle = Math.atan2(dy, dx);
+
+    // Creamos un arco de 120 grados (-60 a +60 desde la perpendicular)
+    const arcRange = (120 * Math.PI) / 180;
+    const startAngle = baseAngle - Math.PI / 2 - arcRange / 2;
+    const angleStep = arcRange / (total - 1 || 1);
+
+    // Radio para los nodos de integración
+    const radius = 150;
+    const angle = startAngle + index * angleStep;
+
+    return {
+      x: integrationPos.x + radius * Math.cos(angle),
+      y: integrationPos.y + radius * Math.sin(angle),
+    };
+  },
+};
+
 // Función auxiliar para crear un nuevo edge
 const createNewEdge = (sourceNodeId: string, newNodeId: string) => {
   return {
@@ -136,10 +185,11 @@ const handleCreateWithSpacing = (
     node => node.type === "funcion" && node.data.parentNodeId === sourceNodeId
   );
 
-  const position = {
-    x: sourceNode.position.x + (sourceNode.width || 0) + 200,
-    y: sourceNode.position.y + connectedNodes.length * 300,
-  };
+  const position = nodePositioning.calculateCircularPosition(
+    connectedNodes.length,
+    connectedNodes.length + 1,
+    sourceNode.position
+  );
 
   const { node, edge } = createNode({
     position,
