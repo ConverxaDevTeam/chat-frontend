@@ -1,6 +1,7 @@
 import { IOrganizarion } from ".";
 import { getInitials } from "@utils/format";
 import { FiEdit2, FiTrash2 } from "react-icons/fi";
+import { useRoleAuth } from "@hooks/useRoleAuth";
 
 interface OrganizationCardProps {
   organization: IOrganizarion;
@@ -13,6 +14,8 @@ const OrganizationCard = ({
   onEdit,
   onDelete,
 }: OrganizationCardProps) => {
+  const { isSuperAdmin } = useRoleAuth();
+  const hasDeletePermission = isSuperAdmin;
   return (
     <div className="bg-app-c2 p-[30px] rounded-[8px] flex justify-between h-[140px] gap-[16px] border-[1px] border-app-c3">
       <div className="flex items-center gap-[16px] flex-1">
@@ -46,12 +49,14 @@ const OrganizationCard = ({
           >
             <FiEdit2 className="w-5 h-5" />
           </button>
-          <button
-            onClick={onDelete}
-            className="p-2 hover:bg-gray-100 rounded-full transition-colors text-red-500"
-          >
-            <FiTrash2 className="w-5 h-5" />
-          </button>
+          {hasDeletePermission && (
+            <button
+              onClick={onDelete}
+              className="p-2 hover:bg-gray-100 rounded-full transition-colors text-red-500"
+            >
+              <FiTrash2 className="w-5 h-5" />
+            </button>
+          )}
         </div>
       </div>
     </div>
