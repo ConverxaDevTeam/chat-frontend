@@ -72,22 +72,56 @@ const createNewNode = ({
 // Utilidades de posicionamiento
 export const nodePositioning = {
   calculateCircularPosition: (
-    index: number,
-    total: number,
+    existingNodes: Array<{ position: Position2D }>,
     centerPos: Position2D
   ): Position2D => {
     const radius = 300;
-    // Ajustamos para que solo use 240 grados (desde -30° hasta 210°)
-    // evitando así la zona izquierda donde está la integración
     const startAngle = (-100 * Math.PI) / 180; // -30 grados en radianes
     const endAngle = (210 * Math.PI) / 180; // 210 grados en radianes
     const angleRange = endAngle - startAngle;
-    const angleStep = angleRange / (total - 1 || 1);
-    const angle = startAngle + index * angleStep;
+
+    // Convertir posiciones de nodos a ángulos
+    const nodeAngles = existingNodes
+      .map(node => {
+        const dx = node.position.x - centerPos.x;
+        const dy = node.position.y - centerPos.y;
+        let angle = Math.atan2(dy, dx);
+        // Normalizar ángulo al rango [startAngle, endAngle]
+        if (angle < startAngle) angle += 2 * Math.PI;
+        return angle;
+      })
+      .sort((a, b) => a - b);
+
+    // Si no hay nodos, colocar en el centro del arco
+    if (nodeAngles.length === 0) {
+      const angle = startAngle + angleRange / 2;
+      return {
+        x: centerPos.x + radius * Math.cos(angle),
+        y: centerPos.y + radius * Math.sin(angle),
+      };
+    }
+
+    // Encontrar el espacio más grande entre nodos
+    let maxGap = nodeAngles[0] - startAngle;
+    let bestAngle = startAngle + maxGap / 2;
+
+    for (let i = 0; i < nodeAngles.length - 1; i++) {
+      const gap = nodeAngles[i + 1] - nodeAngles[i];
+      if (gap > maxGap) {
+        maxGap = gap;
+        bestAngle = nodeAngles[i] + gap / 2;
+      }
+    }
+
+    // Verificar el espacio hasta el final del arco
+    const lastGap = endAngle - nodeAngles[nodeAngles.length - 1];
+    if (lastGap > maxGap) {
+      bestAngle = nodeAngles[nodeAngles.length - 1] + lastGap / 2;
+    }
 
     return {
-      x: centerPos.x + radius * Math.cos(angle),
-      y: centerPos.y + radius * Math.sin(angle),
+      x: centerPos.x + radius * Math.cos(bestAngle),
+      y: centerPos.y + radius * Math.sin(bestAngle),
     };
   },
 
@@ -186,8 +220,7 @@ const handleCreateWithSpacing = (
   );
 
   const position = nodePositioning.calculateCircularPosition(
-    connectedNodes.length,
-    connectedNodes.length + 1,
+    connectedNodes,
     sourceNode.position
   );
 

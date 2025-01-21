@@ -34,7 +34,10 @@ import IntegrationItemNode from "./Diagrams/IntegrationItemNode";
 import ContextMenu from "./ContextMenu";
 import { useNodeSelection } from "./Diagrams/hooks/useNodeSelection";
 import { useContextMenu } from "./Diagrams/hooks/useContextMenu";
-import { nodePositioning, useUnifiedNodeCreation } from "./Diagrams/hooks/useUnifiedNodeCreation";
+import {
+  nodePositioning,
+  useUnifiedNodeCreation,
+} from "./Diagrams/hooks/useUnifiedNodeCreation";
 import { useEdges } from "./workspace/hooks/Diagrams";
 import { AuthEdge } from "./Diagrams/edges/AuthEdge";
 import { FunctionEditModal } from "./Diagrams/funcionComponents/FunctionEditModal";
@@ -242,24 +245,22 @@ const createInitialNodes = (
   ];
 
   if (agentFunctions?.length > 0 && agentId) {
-    const functionNodes = agentFunctions
-      .map((func, index) => {
-        if (!func.id) return null;
+    const functionNodes = agentFunctions.reduce<
+      Node<FunctionData<HttpRequestFunction>>[]
+    >((acc, func) => {
+      if (!func.id) return acc;
 
-        // Usar posición guardada si existe, sino calcular nueva posición
-        const position =
-          func.config?.position ||
-          nodePositioning.calculateCircularPosition(
-            index,
-            agentFunctions.length,
-            agentNode.position
-          );
+      // Usar posición guardada si existe, sino calcular nueva posición
+      const position =
+        func.config?.position ||
+        nodePositioning.calculateCircularPosition(
+          acc, // Pasamos los nodos ya creados
+          agentNode.position
+        );
 
-        return nodeFactory.createFunctionNode(func, position, agentId);
-      })
-      .filter(
-        (node): node is Node<FunctionData<HttpRequestFunction>> => node !== null
-      );
+      const node = nodeFactory.createFunctionNode(func, position, agentId);
+      return [...acc, node];
+    }, []);
 
     nodes.push(...functionNodes);
     const authenticatorsIdsDict = agentFunctions
