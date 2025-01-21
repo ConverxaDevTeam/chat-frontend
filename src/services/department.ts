@@ -16,6 +16,12 @@ interface DepartmentResponse {
       funciones: Array<{
         id: number;
         name: string;
+        config: {
+          position: {
+            x: number;
+            y: number;
+          };
+        };
         autenticador: {
           id: number;
         };

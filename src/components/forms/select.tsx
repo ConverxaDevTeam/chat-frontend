@@ -39,7 +39,7 @@ export const Select = <T extends FieldValues>({
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
           >
             <option value="" disabled>
-              {placeholder || "Select an option"}
+              {placeholder || "Seleccionar una opción"}
             </option>
             {options.map(option => (
               <option key={option.value} value={option.value}>

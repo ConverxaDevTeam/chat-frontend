@@ -69,6 +69,89 @@ const createNewNode = ({
   };
 };
 
+// Utilidades de posicionamiento
+export const nodePositioning = {
+  calculateCircularPosition: (
+    existingNodes: Array<{ position: Position2D }>,
+    centerPos: Position2D
+  ): Position2D => {
+    const radius = 300;
+    const startAngle = (-100 * Math.PI) / 180; // -30 grados en radianes
+    const endAngle = (210 * Math.PI) / 180; // 210 grados en radianes
+    const angleRange = endAngle - startAngle;
+
+    // Convertir posiciones de nodos a ángulos
+    const nodeAngles = existingNodes
+      .map(node => {
+        const dx = node.position.x - centerPos.x;
+        const dy = node.position.y - centerPos.y;
+        let angle = Math.atan2(dy, dx);
+        // Normalizar ángulo al rango [startAngle, endAngle]
+        if (angle < startAngle) angle += 2 * Math.PI;
+        return angle;
+      })
+      .sort((a, b) => a - b);
+
+    // Si no hay nodos, colocar en el centro del arco
+    if (nodeAngles.length === 0) {
+      const angle = startAngle + angleRange / 2;
+      return {
+        x: centerPos.x + radius * Math.cos(angle),
+        y: centerPos.y + radius * Math.sin(angle),
+      };
+    }
+
+    // Encontrar el espacio más grande entre nodos
+    let maxGap = nodeAngles[0] - startAngle;
+    let bestAngle = startAngle + maxGap / 2;
+
+    for (let i = 0; i < nodeAngles.length - 1; i++) {
+      const gap = nodeAngles[i + 1] - nodeAngles[i];
+      if (gap > maxGap) {
+        maxGap = gap;
+        bestAngle = nodeAngles[i] + gap / 2;
+      }
+    }
+
+    // Verificar el espacio hasta el final del arco
+    const lastGap = endAngle - nodeAngles[nodeAngles.length - 1];
+    if (lastGap > maxGap) {
+      bestAngle = nodeAngles[nodeAngles.length - 1] + lastGap / 2;
+    }
+
+    return {
+      x: centerPos.x + radius * Math.cos(bestAngle),
+      y: centerPos.y + radius * Math.sin(bestAngle),
+    };
+  },
+
+  calculateTangentialPosition: (
+    index: number,
+    total: number,
+    integrationPos: Position2D,
+    agentPos: Position2D
+  ): Position2D => {
+    // Calculamos el ángulo entre el nodo de integración y el agente
+    const dx = agentPos.x - integrationPos.x;
+    const dy = agentPos.y - integrationPos.y;
+    const baseAngle = Math.atan2(dy, dx);
+
+    // Creamos un arco de 120 grados (-60 a +60 desde la perpendicular)
+    const arcRange = (120 * Math.PI) / 180;
+    const startAngle = baseAngle - Math.PI / 2 - arcRange / 2;
+    const angleStep = arcRange / (total - 1 || 1);
+
+    // Radio para los nodos de integración
+    const radius = 150;
+    const angle = startAngle + index * angleStep;
+
+    return {
+      x: integrationPos.x + radius * Math.cos(angle),
+      y: integrationPos.y + radius * Math.sin(angle),
+    };
+  },
+};
+
 // Función auxiliar para crear un nuevo edge
 const createNewEdge = (sourceNodeId: string, newNodeId: string) => {
   return {
@@ -136,10 +219,10 @@ const handleCreateWithSpacing = (
     node => node.type === "funcion" && node.data.parentNodeId === sourceNodeId
   );
 
-  const position = {
-    x: sourceNode.position.x + (sourceNode.width || 0) + 200,
-    y: sourceNode.position.y + connectedNodes.length * 300,
-  };
+  const position = nodePositioning.calculateCircularPosition(
+    connectedNodes,
+    sourceNode.position
+  );
 
   const { node, edge } = createNode({
     position,

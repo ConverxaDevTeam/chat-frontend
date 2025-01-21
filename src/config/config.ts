@@ -97,6 +97,10 @@ export const apiUrls = {
     byId: (id: number) => `/api/agent-knowledgebase/${id}`,
     byAgent: (agentId: number) => `/api/agent-knowledgebase/agent/${agentId}`,
   },
+  // nodes
+  nodes: {
+    updateNodePosition: (nodeId: number) => `/api/nodes/${nodeId}/position`,
+  },
 } as const;
 
 export const tokenAccess = {
