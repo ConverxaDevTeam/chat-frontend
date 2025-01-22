@@ -9,28 +9,28 @@ const ResponsiveGridLayout = WidthProvider(Responsive);
 
 const defaultLayouts = {
   lg: [
-    { i: "users", x: 0, y: 0, w: 3, h: 1 },
-    { i: "iaMessages", x: 3, y: 0, w: 3, h: 1 },
-    { i: "htlMessages", x: 6, y: 0, w: 3, h: 1 },
-    { i: "sessions", x: 9, y: 0, w: 3, h: 1 },
+    { i: "users", x: 0, y: 0, w: 3, h: 2 },
+    { i: "iaMessages", x: 3, y: 0, w: 3, h: 2 },
+    { i: "htlMessages", x: 6, y: 0, w: 3, h: 2 },
+    { i: "sessions", x: 9, y: 0, w: 3, h: 2 },
   ],
   md: [
-    { i: "users", x: 0, y: 0, w: 4, h: 1 },
-    { i: "iaMessages", x: 4, y: 0, w: 4, h: 1 },
-    { i: "htlMessages", x: 0, y: 1, w: 4, h: 1 },
-    { i: "sessions", x: 4, y: 1, w: 4, h: 1 },
+    { i: "users", x: 0, y: 0, w: 4, h: 2 },
+    { i: "iaMessages", x: 4, y: 0, w: 4, h: 2 },
+    { i: "htlMessages", x: 0, y: 2, w: 4, h: 2 },
+    { i: "sessions", x: 4, y: 2, w: 4, h: 2 },
   ],
   sm: [
-    { i: "users", x: 0, y: 0, w: 6, h: 1 },
-    { i: "iaMessages", x: 6, y: 0, w: 6, h: 1 },
-    { i: "htlMessages", x: 0, y: 1, w: 6, h: 1 },
-    { i: "sessions", x: 6, y: 1, w: 6, h: 1 },
+    { i: "users", x: 0, y: 0, w: 6, h: 2 },
+    { i: "iaMessages", x: 6, y: 0, w: 6, h: 2 },
+    { i: "htlMessages", x: 0, y: 2, w: 6, h: 2 },
+    { i: "sessions", x: 6, y: 2, w: 6, h: 2 },
   ],
   xs: [
-    { i: "users", x: 0, y: 0, w: 12, h: 1 },
-    { i: "iaMessages", x: 0, y: 1, w: 12, h: 1 },
-    { i: "htlMessages", x: 0, y: 2, w: 12, h: 1 },
-    { i: "sessions", x: 0, y: 3, w: 12, h: 1 },
+    { i: "users", x: 0, y: 0, w: 12, h: 2 },
+    { i: "iaMessages", x: 0, y: 2, w: 12, h: 2 },
+    { i: "htlMessages", x: 0, y: 4, w: 12, h: 2 },
+    { i: "sessions", x: 0, y: 6, w: 12, h: 2 },
   ],
 };
 
@@ -51,7 +51,7 @@ const DashboardOrganization = () => {
         layouts={layouts}
         breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480 }}
         cols={{ lg: 12, md: 8, sm: 12, xs: 12 }}
-        rowHeight={150}
+        rowHeight={120}
         onLayoutChange={onLayoutChange}
         isDraggable={true}
         isResizable={true}
