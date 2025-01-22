@@ -58,21 +58,23 @@ export const StatisticsCard = ({
 
   const handleTimeClick = (e: React.MouseEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     const rect = e.currentTarget.getBoundingClientRect();
     const card = (e.currentTarget as HTMLElement).closest(
-      ".bg-[#F1F5F9]"
+      ".statistics-card-container"
     ) as HTMLElement;
     const cardRect = card.getBoundingClientRect();
+    const scrollTop = window.scrollY || document.documentElement.scrollTop;
     setTimeMenu({
       x: rect.left - cardRect.left,
-      y: rect.bottom - cardRect.top + 4,
+      y: rect.bottom + scrollTop - (cardRect.top + scrollTop) + 4,
     });
   };
 
   return (
     <div
       ref={containerRef}
-      className={`flex-shrink-0 bg-[#F1F5F9] rounded-lg p-4 relative h-full shadow-[-1px_-1px_0px_0px_#FFF_inset,_-2px_-2px_2px_0px_#B8CCE0_inset,_-1px_-1px_0px_0px_#FFF,_-2px_-2px_2px_0px_#B8CCE0] ${className}`}
+      className={`statistics-card-container flex-shrink-0 bg-[#F1F5F9] rounded-lg p-4 relative h-full shadow-[-1px_-1px_0px_0px_#FFF_inset,_-2px_-2px_2px_0px_#B8CCE0_inset,_-1px_-1px_0px_0px_#FFF,_-2px_-2px_2px_0px_#B8CCE0] ${className}`}
     >
       <div className="flex justify-between items-start gap-2 w-full">
         <div className="min-w-0 flex-1">
