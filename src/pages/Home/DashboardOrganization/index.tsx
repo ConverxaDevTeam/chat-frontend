@@ -3,7 +3,7 @@ import { StatisticsCard } from "../../../components/StatisticsCard";
 import { Responsive, WidthProvider } from "react-grid-layout";
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
-import { useEffect, useState } from "react";
+import { useLocalStorage } from "../../../hooks/useLocalStorage";
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
@@ -35,20 +35,12 @@ const defaultLayouts = {
 };
 
 const DashboardOrganization = () => {
-  const [layouts, setLayouts] = useState(() => {
-    const savedLayouts = localStorage.getItem("dashboardLayouts");
-    return savedLayouts ? JSON.parse(savedLayouts) : defaultLayouts;
-  });
-
-  useEffect(() => {
-    const savedLayouts = localStorage.getItem("dashboardLayouts");
-    if (savedLayouts) {
-      setLayouts(JSON.parse(savedLayouts));
-    }
-  }, []);
+  const [layouts, setLayouts] = useLocalStorage(
+    "dashboardLayouts",
+    defaultLayouts
+  );
 
   const onLayoutChange = (_: any, allLayouts: any) => {
-    localStorage.setItem("dashboardLayouts", JSON.stringify(allLayouts));
     setLayouts(allLayouts);
   };
 
@@ -67,7 +59,8 @@ const DashboardOrganization = () => {
       >
         <div key="users" className="bg-white rounded-lg shadow-sm">
           <StatisticsCard
-            title="Usuarios totales"
+            id="users"
+            defaultTitle="Usuarios totales"
             value="35"
             icon={<FaUsers size={20} />}
             trend={{ value: 12, isPositive: true }}
@@ -76,7 +69,8 @@ const DashboardOrganization = () => {
         </div>
         <div key="iaMessages" className="bg-white rounded-lg shadow-sm">
           <StatisticsCard
-            title="Mensajes IA por sesión"
+            id="iaMessages"
+            defaultTitle="Mensajes IA por sesión"
             value="87"
             icon={<FaRobot size={20} />}
             className="h-full"
@@ -84,7 +78,8 @@ const DashboardOrganization = () => {
         </div>
         <div key="htlMessages" className="bg-white rounded-lg shadow-sm">
           <StatisticsCard
-            title="Mensajes HTL por sesión"
+            id="htlMessages"
+            defaultTitle="Mensajes HTL por sesión"
             value="245"
             icon={<FaComments size={20} />}
             className="h-full"
@@ -92,7 +87,8 @@ const DashboardOrganization = () => {
         </div>
         <div key="sessions" className="bg-white rounded-lg shadow-sm">
           <StatisticsCard
-            title="Sesiones por usuario"
+            id="sessions"
+            defaultTitle="Sesiones por usuario"
             value="267"
             icon={<FaUsers size={20} />}
             trend={{ value: 5, isPositive: false }}
