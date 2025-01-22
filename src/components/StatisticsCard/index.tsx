@@ -59,15 +59,12 @@ export const StatisticsCard = ({
   const handleTimeClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    const rect = e.currentTarget.getBoundingClientRect();
-    const card = (e.currentTarget as HTMLElement).closest(
-      ".statistics-card-container"
-    ) as HTMLElement;
-    const cardRect = card.getBoundingClientRect();
-    const scrollTop = window.scrollY || document.documentElement.scrollTop;
+    const button = e.currentTarget as HTMLElement;
+    const buttonRect = button.getBoundingClientRect();
+
     setTimeMenu({
-      x: rect.left - cardRect.left,
-      y: rect.bottom + scrollTop - (cardRect.top + scrollTop) + 4,
+      x: 0,
+      y: buttonRect.height,
     });
   };
 

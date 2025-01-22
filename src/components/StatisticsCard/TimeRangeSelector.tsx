@@ -1,5 +1,6 @@
 import { TimeRange, timeRangeLabels } from "./types";
 import ContextMenu from "../ContextMenu";
+import { useEffect, useRef } from "react";
 
 interface TimeRangeSelectorProps {
   timeRange: TimeRange;
@@ -18,6 +19,33 @@ export const TimeRangeSelector = ({
   onMenuOpen,
   onMenuClose,
 }: TimeRangeSelectorProps) => {
+  const buttonRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    const button = buttonRef.current;
+    if (!button) return;
+
+    const handleTouchStart = (e: TouchEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const touch = e.touches[0];
+      const event = {
+        preventDefault: () => {},
+        stopPropagation: () => {},
+        currentTarget: button,
+        target: button,
+        clientX: touch.clientX,
+        clientY: touch.clientY,
+      } as unknown as React.MouseEvent;
+      onMenuOpen(event);
+    };
+
+    button.addEventListener("touchstart", handleTouchStart, { passive: false });
+    return () => {
+      button.removeEventListener("touchstart", handleTouchStart);
+    };
+  }, [onMenuOpen]);
+
   const handleMouseDown = (e: React.MouseEvent) => {
     e.stopPropagation();
     e.preventDefault();
@@ -38,6 +66,7 @@ export const TimeRangeSelector = ({
     <>
       {isWide ? (
         <button
+          ref={buttonRef}
           onClick={handleClick}
           onMouseDown={handleMouseDown}
           className="inline-flex w-[126px] items-center gap-2.5 px-2 py-1 text-sofia-superDark rounded-lg hover:bg-white/50 bg-sofia-secundario border border-sofia-superDark"
@@ -53,6 +82,7 @@ export const TimeRangeSelector = ({
         </button>
       ) : (
         <button
+          ref={buttonRef}
           onClick={handleClick}
           onMouseDown={handleMouseDown}
           className="inline-flex w-6 h-6 p-[5px_2px] flex-col justify-center items-center gap-2.5 flex-shrink-0 rounded-full border border-sofia-superDark bg-sofia-secundario"
