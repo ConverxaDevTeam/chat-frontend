@@ -67,7 +67,7 @@ export const StatisticsCard = ({
             onBlur={handleTitleBlur}
             onClick={e => e.stopPropagation()}
             onMouseDown={e => e.stopPropagation()}
-            className="text-gray-600 text-sm font-medium bg-transparent border-b border-gray-300 focus:outline-none focus:border-blue-500 px-1 min-w-[120px]"
+            className="text-[#001126] font-quicksand text-base font-semibold bg-transparent border-b border-gray-300 focus:outline-none focus:border-blue-500 px-1 min-w-[120px]"
             autoFocus
           />
         ) : (
@@ -76,7 +76,7 @@ export const StatisticsCard = ({
             onMouseDown={handleMouseDown}
             className="flex items-center gap-2 p-2 -m-2 rounded hover:bg-white/50 cursor-pointer group select-none"
           >
-            <span className="text-gray-600 text-sm font-medium group-hover:text-gray-800">
+            <span className="text-[#001126] font-quicksand text-base font-semibold group-hover:text-[#001126]/80">
               {cardTitle}
             </span>
             <FaEdit className="text-gray-400 text-xs opacity-0 group-hover:opacity-100 transition-opacity" />
