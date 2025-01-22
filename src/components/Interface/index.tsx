@@ -4,7 +4,6 @@ import Sidebar from "./Sidebar";
 import { RootState } from "@store";
 import { useSelector } from "react-redux";
 import BlockingPage from "./BlockingPage";
-
 import Navbar from "./Navbar";
 import Loading from "@components/Loading";
 
@@ -24,9 +23,28 @@ const Interface = () => {
     };
 
     window.addEventListener("resize", handleResize);
+    // Trigger initial resize
+    handleResize();
+
+    // Update on orientation change for mobile
+    window.addEventListener("orientationchange", handleResize);
 
     return () => {
       window.removeEventListener("resize", handleResize);
+      window.removeEventListener("orientationchange", handleResize);
+    };
+  }, []);
+
+  useEffect(() => {
+    // Ensure the viewport height is set correctly
+    document.documentElement.style.height = "100%";
+    document.body.style.height = "100%";
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.documentElement.style.height = "";
+      document.body.style.height = "";
+      document.body.style.overflow = "";
     };
   }, []);
 
@@ -39,7 +57,7 @@ const Interface = () => {
   }
 
   return (
-    <div className={`flex w-full h-full bg-sofia-background`}>
+    <div className="fixed inset-0 flex w-full h-full bg-sofia-background overflow-hidden">
       <Sidebar
         windowHeight={windowHeight}
         sidebarMinimized={sidebarMinimized}
@@ -47,7 +65,7 @@ const Interface = () => {
         mobileResolution={mobileResolution}
       />
       <div
-        className={`flex flex-1 flex-col min-h-full ${
+        className={`flex flex-1 flex-col min-h-full overflow-hidden ${
           mobileResolution ? "px-[10px] pb-[10px]" : "px-[20px] pb-[20px]"
         }`}
       >
