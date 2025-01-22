@@ -55,7 +55,7 @@ export const StatisticsCard = ({
       className={`flex-shrink-0 bg-[#F1F5F9] rounded-lg p-4 relative h-full shadow-[-1px_-1px_0px_0px_#FFF_inset,_-2px_-2px_2px_0px_#B8CCE0_inset,_-1px_-1px_0px_0px_#FFF,_-2px_-2px_2px_0px_#B8CCE0] ${className}`}
     >
       <div
-        className="absolute top-4 left-4 min-w-[200px] z-10"
+        className="absolute top-4 left-4 w-3/4 z-10"
         onMouseDown={handleMouseDown}
       >
         {isEditing ? (
@@ -67,7 +67,7 @@ export const StatisticsCard = ({
             onBlur={handleTitleBlur}
             onClick={e => e.stopPropagation()}
             onMouseDown={e => e.stopPropagation()}
-            className="text-[#001126] font-quicksand text-base font-semibold bg-transparent border-b border-gray-300 focus:outline-none focus:border-blue-500 px-1 min-w-[120px]"
+            className="text-[#001126] font-quicksand text-base font-semibold bg-transparent border-b border-gray-300 focus:outline-none focus:border-blue-500 px-1 w-full"
             autoFocus
           />
         ) : (
@@ -76,10 +76,10 @@ export const StatisticsCard = ({
             onMouseDown={handleMouseDown}
             className="flex items-center gap-2 p-2 -m-2 rounded hover:bg-white/50 cursor-pointer group select-none"
           >
-            <span className="text-[#001126] font-quicksand text-base font-semibold group-hover:text-[#001126]/80">
+            <span className="text-[#001126] font-quicksand text-base font-semibold group-hover:text-[#001126]/80 truncate">
               {cardTitle}
             </span>
-            <FaEdit className="text-gray-400 text-xs opacity-0 group-hover:opacity-100 transition-opacity" />
+            <FaEdit className="text-gray-400 text-xs opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
           </div>
         )}
       </div>
