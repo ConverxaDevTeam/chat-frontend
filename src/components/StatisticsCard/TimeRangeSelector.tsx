@@ -23,7 +23,7 @@ export const TimeRangeSelector = ({
       {isWide ? (
         <button
           onClick={onMenuOpen}
-          className="inline-flex w-[126px] items-center gap-2.5 px-2 py-1 text-[#001126] rounded-lg hover:bg-white/50 bg-[#D0FBF8] border border-[#001126]"
+          className="inline-flex w-[126px] items-center gap-2.5 px-2 py-1 text-sofia-superDark rounded-lg hover:bg-white/50 bg-sofia-secundario border border-sofia-superDark"
         >
           <span className="font-quicksand text-xs font-medium w-[88px] px-[2px] truncate flex items-center gap-2.5">
             {timeRangeLabels[timeRange]}
@@ -37,7 +37,7 @@ export const TimeRangeSelector = ({
       ) : (
         <button
           onClick={onMenuOpen}
-          className="inline-flex w-6 h-6 p-[5px_2px] flex-col justify-center items-center gap-2.5 flex-shrink-0 rounded-3xl border border-[#001126] bg-[#D0FBF8]"
+          className="inline-flex w-6 h-6 p-[5px_2px] flex-col justify-center items-center gap-2.5 flex-shrink-0 rounded-full border border-sofia-superDark bg-sofia-secundario"
         >
           <img src="/mvp/calendar.svg" alt="calendar" className="w-3 h-3.5" />
         </button>
