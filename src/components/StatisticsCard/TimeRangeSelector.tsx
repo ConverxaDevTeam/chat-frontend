@@ -92,24 +92,22 @@ export const TimeRangeSelector = ({
       )}
 
       {menuPosition && (
-        <div
-          className="absolute z-[100]"
-          style={{ left: menuPosition.x, top: menuPosition.y }}
-          onMouseDown={handleMouseDown}
+        <ContextMenu
+          x={menuPosition.x}
+          y={menuPosition.y}
+          onClose={onMenuClose}
         >
-          <ContextMenu x={0} y={0} onClose={onMenuClose}>
-            {Object.entries(timeRangeLabels).map(([value, label]) => (
-              <button
-                key={value}
-                className="w-full text-left px-3 py-2 text-sm font-quicksand hover:bg-sofia-secundario text-sofia-superDark"
-                onClick={() => handleOptionClick(value as TimeRange)}
-                onMouseDown={handleMouseDown}
-              >
-                {label}
-              </button>
-            ))}
-          </ContextMenu>
-        </div>
+          {Object.entries(timeRangeLabels).map(([value, label]) => (
+            <button
+              key={value}
+              className="w-[87px] text-left text-xs font-medium font-quicksand text-[#001126] leading-none self-stretch [font-feature-settings:'liga'_off,'clig'_off]"
+              onClick={() => handleOptionClick(value as TimeRange)}
+              onMouseDown={handleMouseDown}
+            >
+              {label}
+            </button>
+          ))}
+        </ContextMenu>
       )}
     </>
   );

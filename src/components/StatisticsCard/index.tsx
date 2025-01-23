@@ -61,11 +61,14 @@ export const StatisticsCard = ({
     e.stopPropagation();
     const button = e.currentTarget as HTMLElement;
     const buttonRect = button.getBoundingClientRect();
+    const containerRect = containerRef.current?.getBoundingClientRect();
 
-    setTimeMenu({
-      x: 0,
-      y: buttonRect.height,
-    });
+    if (containerRect) {
+      setTimeMenu({
+        x: buttonRect.x,
+        y: buttonRect.y + buttonRect.height + 4,
+      });
+    }
   };
 
   return (
