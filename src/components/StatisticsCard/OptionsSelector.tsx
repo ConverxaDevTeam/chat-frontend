@@ -24,49 +24,22 @@ interface DataOptionsModalProps {
 }
 
 const DataOptionsModal = ({ position, onClose }: DataOptionsModalProps) => {
-  const modalRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        modalRef.current &&
-        !modalRef.current.contains(event.target as Node)
-      ) {
-        onClose();
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [onClose]);
-
   const handleOptionClick = () => {
     onClose();
   };
 
   return (
-    <div
-      ref={modalRef}
-      className="fixed bg-white rounded-lg shadow-lg p-2 z-50"
-      style={{
-        top: position.y,
-        left: position.x,
-        maxHeight: "80vh",
-        overflowY: "auto",
-      }}
-    >
-      <div className="flex flex-col">
-        {dataOptions.map((option, index) => (
-          <button
-            key={index}
-            className="px-4 py-2 text-left text-xs font-medium font-quicksand text-sofia-superDark leading-none hover:bg-sofia-secundario [font-feature-settings:'liga'_off,'clig'_off] whitespace-nowrap"
-            onClick={handleOptionClick}
-          >
-            {option}
-          </button>
-        ))}
-      </div>
-    </div>
+    <ContextMenu x={position.x} y={position.y} onClose={onClose}>
+      {dataOptions.map((option, index) => (
+        <button
+          key={index}
+          className="text-left text-xs font-medium font-quicksand text-sofia-superDark leading-none[font-feature-settings:'liga'_off,'clig'_off] whitespace-nowrap"
+          onClick={handleOptionClick}
+        >
+          {option}
+        </button>
+      ))}
+    </ContextMenu>
   );
 };
 
