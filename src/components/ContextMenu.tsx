@@ -9,27 +9,21 @@ interface ContextMenuProps {
   parentId?: string;
 }
 
-// Mantener registro de los menús abiertos y sus relaciones padre-hijo
+// Registro de menús abiertos
 const openMenus: Map<string, { id: string; parentId?: string }> = new Map();
 
-const ContextMenu: React.FC<ContextMenuProps> = ({
-  x,
-  y,
-  onClose,
-  children,
-  parentId,
-}) => {
-  const menuRef = useRef<HTMLDivElement>(null);
-  const menuId = useRef(`menu-${Math.random()}`);
-
+// Hook para manejar el cierre de menús
+const useMenuClosing = (
+  menuId: string,
+  parentId: string | undefined,
+  onClose: () => void
+) => {
   useEffect(() => {
-    // Registrar este menú y su relación padre-hijo
-    openMenus.set(menuId.current, { id: menuId.current, parentId });
+    openMenus.set(menuId, { id: menuId, parentId });
 
-    // Si no es un menú hijo y hay otros menús abiertos que no son ancestros, cerrarlos
     if (!parentId) {
       const menusToClose = Array.from(openMenus.values()).filter(menu => {
-        return menu.id !== menuId.current && menu.id !== parentId;
+        return menu.id !== menuId && menu.id !== parentId;
       });
 
       menusToClose.forEach(menu => {
@@ -38,10 +32,22 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
       });
     }
 
+    return void openMenus.delete(menuId);
+  }, [menuId, parentId, onClose]);
+
+  return { closeMenu: () => openMenus.delete(menuId) };
+};
+
+// Hook para manejar clicks fuera del menú
+const useOutsideClick = (
+  menuId: string,
+  parentId: string | undefined,
+  onClose: () => void
+) => {
+  useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as HTMLElement;
 
-      // Si el click fue en un botón o checkbox dentro de cualquier menú, no hacer nada
       if (
         target.closest("button") ||
         target.closest('input[type="checkbox"]')
@@ -51,7 +57,6 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
 
       const isInsideAnyMenu = target.closest(".context-menu");
 
-      // Si el click fue fuera de cualquier menú, cerrar todos
       if (!isInsideAnyMenu) {
         Array.from(openMenus.values()).forEach(menu => {
           const event = new CustomEvent("closeMenu", {
@@ -62,19 +67,17 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
         return;
       }
 
-      // Si el click fue dentro de cualquier menú pero no en un elemento interactivo, no hacer nada
       if (isInsideAnyMenu) return;
 
-      // Si llegamos aquí, el click fue en otro menú, cerrar este
       onClose();
-      openMenus.delete(menuId.current);
+      openMenus.delete(menuId);
     };
 
     const handleCloseMenu = (e: Event) => {
       const event = e as CustomEvent;
-      if (event.detail.id === menuId.current) {
+      if (event.detail.id === menuId) {
         onClose();
-        openMenus.delete(menuId.current);
+        openMenus.delete(menuId);
       }
     };
 
@@ -84,10 +87,16 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
       document.removeEventListener("closeMenu", handleCloseMenu);
-      openMenus.delete(menuId.current);
     };
-  }, [onClose, parentId]);
+  }, [menuId, onClose, parentId]);
+};
 
+// Hook para ajustar la posición del menú
+const useMenuPosition = (
+  menuRef: React.RefObject<HTMLDivElement>,
+  x: number,
+  y: number
+) => {
   useEffect(() => {
     if (!menuRef.current) return;
 
@@ -99,12 +108,10 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
     let adjustedX = x;
     let adjustedY = y;
 
-    // Ajustar horizontalmente si se sale de la pantalla
     if (x + rect.width > windowWidth) {
       adjustedX = x - rect.width;
     }
 
-    // Ajustar verticalmente si se sale de la pantalla
     if (y + rect.height > windowHeight) {
       adjustedY = y - rect.height;
     }
@@ -112,34 +119,59 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
     menu.style.left = `${adjustedX}px`;
     menu.style.top = `${adjustedY}px`;
   }, [x, y]);
+};
 
-  // Función para cerrar menús hijos cuando se hace click en un botón del menú
-  const handleMenuItemClick = (child: React.ReactNode) => {
-    if (React.isValidElement<React.HTMLAttributes<HTMLElement>>(child)) {
-      const originalOnClick = child.props.onClick;
-      return React.cloneElement(child, {
-        onClick: (e: React.MouseEvent<HTMLElement>) => {
-          // Cerrar cualquier menú hijo abierto
-          const childMenus = Array.from(openMenus.values()).filter(
-            menu => menu.parentId === menuId.current
-          );
+// Componente para el divisor
+const MenuDivider = () => (
+  <div className="h-[1px] bg-sofia-navyBlue/20 w-[50px] mx-auto" />
+);
 
-          if (childMenus.length > 0) {
-            childMenus.forEach(menu => {
-              const event = new CustomEvent("closeMenu", {
-                detail: { id: menu.id },
-              });
-              document.dispatchEvent(event);
+// Componente para envolver items del menú
+const MenuItem: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <div className="flex justify-center items-center gap-2.5 self-stretch rounded hover:bg-sofia-electricOlive cursor-pointer">
+    <div className="px-1 py-0.5 w-full">{children}</div>
+  </div>
+);
+
+// Función para manejar clicks en items
+const handleMenuItemClick = (child: React.ReactNode, menuId: string) => {
+  if (React.isValidElement<React.HTMLAttributes<HTMLElement>>(child)) {
+    const originalOnClick = child.props.onClick;
+    return React.cloneElement(child, {
+      onClick: (e: React.MouseEvent<HTMLElement>) => {
+        const childMenus = Array.from(openMenus.values()).filter(
+          menu => menu.parentId === menuId
+        );
+
+        if (childMenus.length > 0) {
+          childMenus.forEach(menu => {
+            const event = new CustomEvent("closeMenu", {
+              detail: { id: menu.id },
             });
-          }
+            document.dispatchEvent(event);
+          });
+        }
 
-          // Ejecutar el onClick original después de cerrar los menús hijos
-          if (originalOnClick) originalOnClick(e);
-        },
-      });
-    }
-    return child;
-  };
+        if (originalOnClick) originalOnClick(e);
+      },
+    });
+  }
+  return child;
+};
+
+const ContextMenu: React.FC<ContextMenuProps> = ({
+  x,
+  y,
+  onClose,
+  children,
+  parentId,
+}) => {
+  const menuRef = useRef<HTMLDivElement>(null);
+  const menuId = useRef(`menu-${Math.random()}`);
+
+  useMenuClosing(menuId.current, parentId, onClose);
+  useOutsideClick(menuId.current, parentId, onClose);
+  useMenuPosition(menuRef, x, y);
 
   return createPortal(
     <div
@@ -149,19 +181,12 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
       style={{ left: x, top: y }}
     >
       {React.Children.map(children, child => {
-        // Verificar si es un divisor
         if (React.isValidElement(child) && child.props["data-divider"]) {
-          return (
-            <div className="h-[1px] bg-sofia-navyBlue/20 w-[50px] mx-auto" />
-          );
+          return <MenuDivider />;
         }
 
         return (
-          <div className="flex justify-center items-center gap-2.5 self-stretch rounded hover:bg-sofia-electricOlive cursor-pointer">
-            <div className="px-1 py-0.5 w-full">
-              {handleMenuItemClick(child)}
-            </div>
-          </div>
+          <MenuItem>{handleMenuItemClick(child, menuId.current)}</MenuItem>
         );
       })}
     </div>,
