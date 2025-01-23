@@ -66,8 +66,15 @@ const StatisticsTypeModal = ({
   onClose,
   parentId,
 }: StatisticsTypeModalProps) => {
+  const [showLegend, setShowLegend] = useState(false);
+
   const handleOptionClick = () => {
     onClose();
+  };
+
+  const handleLegendClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setShowLegend(!showLegend);
   };
 
   return (
@@ -87,13 +94,18 @@ const StatisticsTypeModal = ({
         </button>
       ))}
       <div data-divider />
-      <div className="flex items-center gap-2 text-left text-xs font-medium font-quicksand text-sofia-superDark leading-none [font-feature-settings:'liga'_off,'clig'_off] whitespace-nowrap">
+      <button
+        onClick={handleLegendClick}
+        className="flex items-center gap-2 text-left text-xs font-medium font-quicksand text-sofia-superDark leading-none [font-feature-settings:'liga'_off,'clig'_off] whitespace-nowrap"
+      >
         <input
           type="checkbox"
+          checked={showLegend}
+          readOnly
           className="w-3 h-3 rounded border-sofia-navyBlue/30 text-sofia-electricOlive focus:ring-sofia-electricOlive"
         />
         Mostrar leyenda
-      </div>
+      </button>
     </ContextMenu>
   );
 };
