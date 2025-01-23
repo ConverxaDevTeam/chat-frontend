@@ -1,43 +1,37 @@
 import ContextMenu from "../ContextMenu";
 import { useEffect, useRef, useState } from "react";
+import { getAnalyticOptions } from "../../services/analyticDataService";
+import {
+  displayTypeOptions,
+  AnalyticType,
+  StatisticsDisplayType,
+} from "../../services/analyticTypes";
 
-const dataOptions = [
-  "Total Usuarios",
-  "Nuevos Usuarios",
-  "Usuarios recurrentes",
-  "Sesiones, 30 minutos sin mensaje",
-  "Mensajes por IA",
-  "Mensajes por HITL",
-  "Total de Mensajes",
-  "Avg. Mensajes IA por Sesion",
-  "Avg Mensajes HITL por Sesion",
-  "Avg Sesiones por Usuario",
-  "Mensajes por Canal",
-  "Etiqueta por Sesion",
-  "Cant. Llamadas a Funcion",
-  "Funciones usadas por Sesion",
-];
-
-const statisticsTypes = ["Metrica", "Area", "Barras"];
+const dataOptions = getAnalyticOptions();
+const statisticsTypes = displayTypeOptions;
 
 interface DataOptionsModalProps {
   position: { x: number; y: number };
   onClose: () => void;
   parentId?: string;
+  onSelect?: (id: AnalyticType) => void;
 }
 
 interface StatisticsTypeModalProps {
   position: { x: number; y: number };
   onClose: () => void;
   parentId?: string;
+  onSelect?: (id: StatisticsDisplayType) => void;
 }
 
 const DataOptionsModal = ({
   position,
   onClose,
   parentId,
+  onSelect,
 }: DataOptionsModalProps) => {
-  const handleOptionClick = () => {
+  const handleOptionClick = (id: AnalyticType) => {
+    onSelect?.(id);
     onClose();
   };
 
@@ -48,13 +42,13 @@ const DataOptionsModal = ({
       onClose={onClose}
       parentId={parentId}
     >
-      {dataOptions.map((option, index) => (
+      {dataOptions.map(option => (
         <button
-          key={index}
+          key={option.id}
           className="text-left text-xs font-medium font-quicksand text-sofia-superDark leading-none self-stretch [font-feature-settings:'liga'_off,'clig'_off] whitespace-nowrap"
-          onClick={handleOptionClick}
+          onClick={() => handleOptionClick(option.id)}
         >
-          {option}
+          {option.label}
         </button>
       ))}
     </ContextMenu>
@@ -65,10 +59,12 @@ const StatisticsTypeModal = ({
   position,
   onClose,
   parentId,
+  onSelect,
 }: StatisticsTypeModalProps) => {
   const [showLegend, setShowLegend] = useState(false);
 
-  const handleOptionClick = () => {
+  const handleTypeClick = (id: StatisticsDisplayType) => {
+    onSelect?.(id);
     onClose();
   };
 
@@ -84,13 +80,13 @@ const StatisticsTypeModal = ({
       onClose={onClose}
       parentId={parentId}
     >
-      {statisticsTypes.map((type, index) => (
+      {statisticsTypes.map(option => (
         <button
-          key={index}
+          key={option.id}
           className="text-left text-xs font-medium font-quicksand text-sofia-superDark leading-none self-stretch [font-feature-settings:'liga'_off,'clig'_off] whitespace-nowrap"
-          onClick={handleOptionClick}
+          onClick={() => handleTypeClick(option.id)}
         >
-          {type}
+          {option.label}
         </button>
       ))}
       <div data-divider />
@@ -114,12 +110,16 @@ interface OptionsSelectorProps {
   menuPosition: { x: number; y: number } | null;
   onMenuOpen: (e: React.MouseEvent) => void;
   onMenuClose: () => void;
+  onDataOptionSelect?: (id: AnalyticType) => void;
+  onStatisticsTypeSelect?: (id: StatisticsDisplayType) => void;
 }
 
 export const OptionsSelector = ({
   menuPosition,
   onMenuOpen,
   onMenuClose,
+  onDataOptionSelect,
+  onStatisticsTypeSelect,
 }: OptionsSelectorProps) => {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const [dataModalPosition, setDataModalPosition] = useState<{
@@ -251,6 +251,7 @@ export const OptionsSelector = ({
           position={dataModalPosition}
           onClose={handleDataModalClose}
           parentId={menuId}
+          onSelect={onDataOptionSelect}
         />
       )}
 
@@ -259,6 +260,7 @@ export const OptionsSelector = ({
           position={statisticsTypePosition}
           onClose={handleStatisticsTypeClose}
           parentId={menuId}
+          onSelect={onStatisticsTypeSelect}
         />
       )}
     </>
