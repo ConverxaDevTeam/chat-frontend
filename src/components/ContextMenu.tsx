@@ -6,27 +6,67 @@ interface ContextMenuProps {
   y: number;
   onClose: () => void;
   children: React.ReactNode;
+  parentId?: string;
 }
+
+// Mantener registro de los menús abiertos
+const openMenus: Set<string> = new Set();
 
 const ContextMenu: React.FC<ContextMenuProps> = ({
   x,
   y,
   onClose,
   children,
+  parentId,
 }) => {
   const menuRef = useRef<HTMLDivElement>(null);
+  const menuId = useRef(`menu-${Math.random()}`);
 
   useEffect(() => {
+    // Registrar este menú como abierto
+    openMenus.add(menuId.current);
+
+    // Si hay un menú anterior abierto y no es el padre, cerrarlo
+    if (!parentId) {
+      openMenus.forEach(id => {
+        if (id !== menuId.current && id !== parentId) {
+          const event = new CustomEvent("closeMenu", { detail: { id } });
+          document.dispatchEvent(event);
+        }
+      });
+    }
+
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as HTMLElement;
-      if (!target.closest(".context-menu")) {
+      const isInsideCurrentMenu = target.closest(
+        `[data-menu-id="${menuId.current}"]`
+      );
+      const isInsideChildMenu = target.closest(".context-menu");
+
+      // Cerrar solo si el click no fue dentro de este menú ni de un menú hijo
+      if (!isInsideCurrentMenu && !isInsideChildMenu) {
         onClose();
+        openMenus.delete(menuId.current);
+      }
+    };
+
+    const handleCloseMenu = (e: Event) => {
+      const event = e as CustomEvent;
+      if (event.detail.id === menuId.current) {
+        onClose();
+        openMenus.delete(menuId.current);
       }
     };
 
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [onClose]);
+    document.addEventListener("closeMenu", handleCloseMenu);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("closeMenu", handleCloseMenu);
+      openMenus.delete(menuId.current);
+    };
+  }, [onClose, parentId]);
 
   useEffect(() => {
     if (!menuRef.current) return;
@@ -56,6 +96,7 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
   return createPortal(
     <div
       ref={menuRef}
+      data-menu-id={menuId.current}
       className="context-menu absolute inline-flex flex-col items-start p-3.5 gap-2 rounded-lg border border-sofia-navyBlue bg-sofia-blancoPuro z-50"
       style={{ left: x, top: y }}
     >

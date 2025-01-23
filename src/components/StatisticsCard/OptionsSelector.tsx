@@ -21,15 +21,25 @@ const dataOptions = [
 interface DataOptionsModalProps {
   position: { x: number; y: number };
   onClose: () => void;
+  parentId?: string;
 }
 
-const DataOptionsModal = ({ position, onClose }: DataOptionsModalProps) => {
+const DataOptionsModal = ({
+  position,
+  onClose,
+  parentId,
+}: DataOptionsModalProps) => {
   const handleOptionClick = () => {
     onClose();
   };
 
   return (
-    <ContextMenu x={position.x} y={position.y} onClose={onClose}>
+    <ContextMenu
+      x={position.x}
+      y={position.y}
+      onClose={onClose}
+      parentId={parentId}
+    >
       {dataOptions.map((option, index) => (
         <button
           key={index}
@@ -59,6 +69,13 @@ export const OptionsSelector = ({
     x: number;
     y: number;
   } | null>(null);
+  const [menuId, setMenuId] = useState<string>();
+
+  useEffect(() => {
+    if (menuPosition) {
+      setMenuId(`menu-${Math.random()}`);
+    }
+  }, [menuPosition]);
 
   useEffect(() => {
     const button = buttonRef.current;
@@ -141,10 +158,11 @@ export const OptionsSelector = ({
         </ContextMenu>
       )}
 
-      {dataModalPosition && (
+      {dataModalPosition && menuId && (
         <DataOptionsModal
           position={dataModalPosition}
           onClose={handleDataModalClose}
+          parentId={menuId}
         />
       )}
     </>
