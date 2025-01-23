@@ -100,11 +100,20 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
       className="context-menu absolute inline-flex flex-col items-start p-3.5 gap-2 rounded-lg border border-sofia-navyBlue bg-sofia-blancoPuro z-50"
       style={{ left: x, top: y }}
     >
-      {React.Children.map(children, child => (
-        <div className="flex justify-center items-center gap-2.5 self-stretch rounded hover:bg-sofia-electricOlive cursor-pointer">
-          <div className="px-1 py-0.5">{child}</div>
-        </div>
-      ))}
+      {React.Children.map(children, child => {
+        // Verificar si es un divisor
+        if (React.isValidElement(child) && child.props["data-divider"]) {
+          return (
+            <div className="h-[1px] bg-sofia-navyBlue/20 w-[50px] mx-auto" />
+          );
+        }
+
+        return (
+          <div className="flex justify-center items-center gap-2.5 self-stretch rounded hover:bg-sofia-electricOlive cursor-pointer">
+            <div className="px-1 py-0.5">{child}</div>
+          </div>
+        );
+      })}
     </div>,
     document.body
   );
