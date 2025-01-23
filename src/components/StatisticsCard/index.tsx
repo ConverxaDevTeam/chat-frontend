@@ -1,17 +1,28 @@
-import { ReactNode, useState, useRef, useEffect } from "react";
-import {
-  TimeRange,
-  AnalyticType,
-  StatisticsDisplayType,
-} from "../../services/analyticTypes";
+import { useState, useRef, useEffect } from "react";
 import { CardTitle } from "./CardTitle";
 import { TimeRangeSelector } from "./TimeRangeSelector";
 import { OptionsSelector } from "./OptionsSelector";
 import { Line, Bar, Pie } from "react-chartjs-2";
 import { ChartData } from "chart.js";
+import {
+  AnalyticType,
+  StatisticsDisplayType,
+  TimeRange,
+} from "../../services/analyticTypes";
+import { useAnalyticData } from "../../hooks/useAnalyticData";
+import "../../config/chartConfig";
+import { FaWhatsapp } from "react-icons/fa";
+
+const getIcon = (iconName: string) => {
+  switch (iconName) {
+    case "whatsapp":
+      return <FaWhatsapp className="text-[#25D366]" />;
+    default:
+      return null;
+  }
+};
 
 export interface StatisticsCardProps {
-  id: string;
   title: string;
   analyticType: AnalyticType;
   displayType: StatisticsDisplayType;
@@ -23,33 +34,15 @@ export interface StatisticsCardProps {
     analyticType?: AnalyticType;
     displayType?: StatisticsDisplayType;
   }) => void;
-  onTimeRangeChange?: (timeRange: TimeRange) => void;
-  onAnalyticTypeChange?: (type: AnalyticType) => void;
-  onDisplayTypeChange?: (type: StatisticsDisplayType) => void;
-  value?: string | number;
-  icon?: ReactNode;
-  trend?: {
-    value: number;
-    isPositive: boolean;
-  };
-  chartData?: ChartData<"line" | "bar" | "pie", number[], unknown>;
 }
 
 export const StatisticsCard = ({
-  id,
   title,
   analyticType,
   displayType,
   timeRange,
   className = "",
   onUpdateCard,
-  onTimeRangeChange,
-  onAnalyticTypeChange,
-  onDisplayTypeChange,
-  value,
-  icon,
-  trend,
-  chartData,
 }: StatisticsCardProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [timeMenu, setTimeMenu] = useState<{ x: number; y: number } | null>(
@@ -61,6 +54,9 @@ export const StatisticsCard = ({
   } | null>(null);
   const [isWide, setIsWide] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const metricsRef = useRef<HTMLDivElement>(null);
+
+  const data = useAnalyticData(analyticType, displayType, timeRange);
 
   useEffect(() => {
     const checkWidth = () => {
@@ -111,59 +107,110 @@ export const StatisticsCard = ({
 
   const handleTimeRangeChange = (newTimeRange: TimeRange) => {
     onUpdateCard?.({ timeRange: newTimeRange });
-    onTimeRangeChange?.(newTimeRange);
   };
 
   const handleAnalyticTypeChange = (type: AnalyticType) => {
     onUpdateCard?.({ analyticType: type });
-    onAnalyticTypeChange?.(type);
   };
 
   const handleDisplayTypeChange = (type: StatisticsDisplayType) => {
     onUpdateCard?.({ displayType: type });
-    onDisplayTypeChange?.(type);
   };
 
   const renderChart = () => {
-    if (!chartData) return null;
+    if (!data) return null;
 
     const baseOptions = {
       responsive: true,
       maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: displayType !== StatisticsDisplayType.METRIC,
+          position: "bottom" as const,
+        },
+      },
+      scales:
+        displayType !== StatisticsDisplayType.PIE
+          ? {
+              x: {
+                grid: { display: false },
+              },
+              y: {
+                beginAtZero: true,
+                grid: { color: "#E2E8F0" },
+              },
+            }
+          : undefined,
     };
 
     switch (displayType) {
       case StatisticsDisplayType.AREA:
         return (
-          <Line data={chartData as ChartData<"line">} options={baseOptions} />
+          <Line
+            data={data.chartData as ChartData<"line">}
+            options={baseOptions}
+          />
         );
       case StatisticsDisplayType.BAR:
         return (
-          <Bar data={chartData as ChartData<"bar">} options={baseOptions} />
+          <Bar
+            data={data.chartData as ChartData<"bar">}
+            options={baseOptions}
+          />
         );
       case StatisticsDisplayType.PIE:
         return (
-          <Pie data={chartData as ChartData<"pie">} options={baseOptions} />
+          <Pie
+            data={data.chartData as ChartData<"pie">}
+            options={baseOptions}
+          />
         );
       case StatisticsDisplayType.METRIC:
       default:
         return (
-          <div className="flex flex-col items-center gap-2">
-            <div className="flex items-center justify-end w-full">
-              {icon && <div className="text-gray-400">{icon}</div>}
-            </div>
-            <div className="flex items-end gap-2">
-              <span className="text-2xl font-bold">{value}</span>
-              {trend && (
-                <span
-                  className={`text-sm ${
-                    trend.isPositive ? "text-green-500" : "text-red-500"
-                  }`}
+          <div className="flex flex-col items-center h-[calc(100%-2rem)] w-full">
+            <div
+              ref={metricsRef}
+              className="flex flex-wrap justify-center items-start gap-4 overflow-auto w-full p-2 h-full"
+              style={{
+                maxHeight: "100%",
+                scrollbarWidth: "thin",
+                scrollbarColor: "#E2E8F0 transparent",
+              }}
+            >
+              {data.series.map((serie, index) => (
+                <div
+                  key={index}
+                  className="flex flex-col items-center min-w-[120px]"
                 >
-                  {trend.isPositive ? "+" : ""}
-                  {trend.value}%
-                </span>
-              )}
+                  <div className="text-[#001126] text-sm font-medium font-['Quicksand']">
+                    {serie.label}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {serie.icon ? (
+                      getIcon(serie.icon)
+                    ) : (
+                      <div
+                        className="w-3 h-3 rounded-full"
+                        style={{ backgroundColor: serie.color }}
+                      />
+                    )}
+                    <span className="text-2xl font-bold">{serie.value}</span>
+                  </div>
+                  {data.trend && (
+                    <span
+                      className={`text-sm ${
+                        data.trend.isPositive
+                          ? "text-green-500"
+                          : "text-red-500"
+                      }`}
+                    >
+                      {data.trend.isPositive ? "+" : ""}
+                      {data.trend.value}%
+                    </span>
+                  )}
+                </div>
+              ))}
             </div>
           </div>
         );
