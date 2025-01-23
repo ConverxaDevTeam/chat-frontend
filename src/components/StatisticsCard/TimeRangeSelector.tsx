@@ -100,7 +100,7 @@ export const TimeRangeSelector = ({
           {Object.entries(timeRangeLabels).map(([value, label]) => (
             <button
               key={value}
-              className="w-[87px] text-left text-xs font-medium font-quicksand text-[#001126] leading-none self-stretch [font-feature-settings:'liga'_off,'clig'_off]"
+              className="w-[87px] text-left text-xs font-medium font-quicksand text-sofia-superDark leading-none self-stretch [font-feature-settings:'liga'_off,'clig'_off]"
               onClick={() => handleOptionClick(value as TimeRange)}
               onMouseDown={handleMouseDown}
             >

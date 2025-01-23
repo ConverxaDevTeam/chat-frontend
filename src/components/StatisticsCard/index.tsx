@@ -1,9 +1,9 @@
 import { ReactNode, useState, useRef, useEffect } from "react";
 import { useLocalStorage } from "../../hooks/useLocalStorage";
-import { IoEllipsisVertical } from "react-icons/io5";
 import { TimeRange } from "./types";
 import { CardTitle } from "./CardTitle";
 import { TimeRangeSelector } from "./TimeRangeSelector";
+import { OptionsSelector } from "./OptionsSelector";
 
 interface StatisticsCardProps {
   id: string;
@@ -37,6 +37,10 @@ export const StatisticsCard = ({
   const [timeMenu, setTimeMenu] = useState<{ x: number; y: number } | null>(
     null
   );
+  const [optionsMenu, setOptionsMenu] = useState<{
+    x: number;
+    y: number;
+  } | null>(null);
   const [isWide, setIsWide] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -71,6 +75,18 @@ export const StatisticsCard = ({
     }
   };
 
+  const handleOptionsClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const button = e.currentTarget as HTMLElement;
+    const buttonRect = button.getBoundingClientRect();
+
+    setOptionsMenu({
+      x: buttonRect.x,
+      y: buttonRect.y + buttonRect.height + 4,
+    });
+  };
+
   return (
     <div
       ref={containerRef}
@@ -99,9 +115,11 @@ export const StatisticsCard = ({
             onMenuOpen={handleTimeClick}
             onMenuClose={() => setTimeMenu(null)}
           />
-          <button className="p-1.5 hover:bg-white/50 rounded-lg text-gray-500 hover:text-gray-700 transition-colors">
-            <IoEllipsisVertical className="w-4 h-4" />
-          </button>
+          <OptionsSelector
+            menuPosition={optionsMenu}
+            onMenuOpen={handleOptionsClick}
+            onMenuClose={() => setOptionsMenu(null)}
+          />
         </div>
       </div>
 
