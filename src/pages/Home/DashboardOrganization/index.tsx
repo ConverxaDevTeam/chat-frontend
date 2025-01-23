@@ -1,47 +1,49 @@
-import { FaUsers, FaComments, FaRobot } from "react-icons/fa";
-import { StatisticsCard } from "../../../components/StatisticsCard";
 import { Responsive, WidthProvider } from "react-grid-layout";
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
-import { useLocalStorage } from "../../../hooks/useLocalStorage";
+import { StatisticsCard } from "../../../components/StatisticsCard";
+import { DashboardCard } from "../../../services/dashboardTypes";
+import { useDashboard } from "../../../hooks/useDashboard";
+import { Layout } from "react-grid-layout";
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
-const defaultLayouts = {
-  lg: [
-    { i: "users", x: 0, y: 0, w: 3, h: 2 },
-    { i: "iaMessages", x: 3, y: 0, w: 3, h: 2 },
-    { i: "htlMessages", x: 6, y: 0, w: 3, h: 2 },
-    { i: "sessions", x: 9, y: 0, w: 3, h: 2 },
-  ],
-  md: [
-    { i: "users", x: 0, y: 0, w: 4, h: 2 },
-    { i: "iaMessages", x: 4, y: 0, w: 4, h: 2 },
-    { i: "htlMessages", x: 0, y: 2, w: 4, h: 2 },
-    { i: "sessions", x: 4, y: 2, w: 4, h: 2 },
-  ],
-  sm: [
-    { i: "users", x: 0, y: 0, w: 6, h: 2 },
-    { i: "iaMessages", x: 6, y: 0, w: 6, h: 2 },
-    { i: "htlMessages", x: 0, y: 2, w: 6, h: 2 },
-    { i: "sessions", x: 6, y: 2, w: 6, h: 2 },
-  ],
-  xs: [
-    { i: "users", x: 0, y: 0, w: 12, h: 2 },
-    { i: "iaMessages", x: 0, y: 2, w: 12, h: 2 },
-    { i: "htlMessages", x: 0, y: 4, w: 12, h: 2 },
-    { i: "sessions", x: 0, y: 6, w: 12, h: 2 },
-  ],
-};
-
 const DashboardOrganization = () => {
-  const [layouts, setLayouts] = useLocalStorage(
-    "dashboardLayouts",
-    defaultLayouts
-  );
+  const { state, updateCard } = useDashboard();
 
-  const onLayoutChange = (_: any, allLayouts: any) => {
-    setLayouts(allLayouts);
+  const onLayoutChange = (layout: Layout[]) => {
+    const newCards = state.cards.map(card => ({
+      ...card,
+      layout: {
+        lg: layout.find(l => l.i === card.id) || card.layout.lg,
+        md:
+          layout.find(l => l.i === card.id) || card.layout.md || card.layout.lg,
+        sm:
+          layout.find(l => l.i === card.id) || card.layout.sm || card.layout.lg,
+        xs:
+          layout.find(l => l.i === card.id) || card.layout.xs || card.layout.lg,
+      },
+    }));
+
+    newCards.forEach(card => {
+      updateCard(card.id, { layout: card.layout });
+    });
+  };
+
+  const layouts = {
+    lg: state.cards.map(card => ({ ...card.layout.lg, i: card.id })),
+    md: state.cards.map(card => ({
+      ...(card.layout.md || card.layout.lg),
+      i: card.id,
+    })),
+    sm: state.cards.map(card => ({
+      ...(card.layout.sm || card.layout.lg),
+      i: card.id,
+    })),
+    xs: state.cards.map(card => ({
+      ...(card.layout.xs || card.layout.lg),
+      i: card.id,
+    })),
   };
 
   return (
@@ -57,44 +59,19 @@ const DashboardOrganization = () => {
         isResizable={true}
         margin={[16, 16]}
       >
-        <div key="users" className="bg-white rounded-lg shadow-sm">
-          <StatisticsCard
-            id="users"
-            defaultTitle="Usuarios totales"
-            value="35"
-            icon={<FaUsers size={20} />}
-            trend={{ value: 12, isPositive: true }}
-            className="h-full"
-          />
-        </div>
-        <div key="iaMessages" className="bg-white rounded-lg shadow-sm">
-          <StatisticsCard
-            id="iaMessages"
-            defaultTitle="Mensajes IA por sesión"
-            value="87"
-            icon={<FaRobot size={20} />}
-            className="h-full"
-          />
-        </div>
-        <div key="htlMessages" className="bg-white rounded-lg shadow-sm">
-          <StatisticsCard
-            id="htlMessages"
-            defaultTitle="Mensajes HTL por sesión"
-            value="245"
-            icon={<FaComments size={20} />}
-            className="h-full"
-          />
-        </div>
-        <div key="sessions" className="bg-white rounded-lg shadow-sm">
-          <StatisticsCard
-            id="sessions"
-            defaultTitle="Sesiones por usuario"
-            value="267"
-            icon={<FaUsers size={20} />}
-            trend={{ value: 5, isPositive: false }}
-            className="h-full"
-          />
-        </div>
+        {state.cards.map((card: DashboardCard) => (
+          <div key={card.id} className="bg-white rounded-lg shadow-sm">
+            <StatisticsCard
+              id={card.id}
+              title={card.title}
+              analyticType={card.analyticType}
+              displayType={card.displayType}
+              timeRange={card.timeRange}
+              className="h-full"
+              onUpdateCard={updates => updateCard(card.id, updates)}
+            />
+          </div>
+        ))}
       </ResponsiveGridLayout>
     </div>
   );

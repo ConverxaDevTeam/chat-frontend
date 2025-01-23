@@ -18,13 +18,17 @@ export enum StatisticsDisplayType {
   METRIC = 1,
   AREA = 2,
   BAR = 3,
+  PIE = 4,
 }
 
 export enum TimeRange {
-  LAST_7_DAYS = "7d",
-  LAST_30_DAYS = "30d",
-  LAST_6_MONTHS = "6m",
-  LAST_YEAR = "1y",
+  LAST_DAY = "1d", // Último día
+  LAST_7_DAYS = "7d", // Últimos 7 días
+  LAST_30_DAYS = "30d", // Últimos 30 días
+  LAST_90_DAYS = "90d", // Últimos 90 días
+  LAST_180_DAYS = "180d", // Últimos 6 meses
+  LAST_365_DAYS = "365d", // Último año
+  LAST_YEAR = "1y", // Último año
 }
 
 export interface AnalyticOption {
@@ -93,9 +97,29 @@ export const displayTypeOptions = [
   { id: StatisticsDisplayType.BAR, label: "Barras" },
 ];
 
+export const timeRangeLabels: Record<TimeRange, string> = {
+  [TimeRange.LAST_DAY]: "Último día",
+  [TimeRange.LAST_7_DAYS]: "Últimos 7 días",
+  [TimeRange.LAST_30_DAYS]: "Últimos 30 días",
+  [TimeRange.LAST_90_DAYS]: "Últimos 90 días",
+  [TimeRange.LAST_180_DAYS]: "Últimos 6 meses",
+  [TimeRange.LAST_365_DAYS]: "Último año",
+  [TimeRange.LAST_YEAR]: "Último año",
+};
+
 export const timeRangeOptions = [
-  { id: TimeRange.LAST_7_DAYS, label: "Últimos 7 días" },
-  { id: TimeRange.LAST_30_DAYS, label: "Últimos 30 días" },
-  { id: TimeRange.LAST_6_MONTHS, label: "Últimos 6 meses" },
-  { id: TimeRange.LAST_YEAR, label: "Último año" },
+  { id: TimeRange.LAST_7_DAYS, label: timeRangeLabels[TimeRange.LAST_7_DAYS] },
+  {
+    id: TimeRange.LAST_30_DAYS,
+    label: timeRangeLabels[TimeRange.LAST_30_DAYS],
+  },
+  {
+    id: TimeRange.LAST_90_DAYS,
+    label: timeRangeLabels[TimeRange.LAST_90_DAYS],
+  },
+  {
+    id: TimeRange.LAST_180_DAYS,
+    label: timeRangeLabels[TimeRange.LAST_180_DAYS],
+  },
+  { id: TimeRange.LAST_YEAR, label: timeRangeLabels[TimeRange.LAST_YEAR] },
 ];

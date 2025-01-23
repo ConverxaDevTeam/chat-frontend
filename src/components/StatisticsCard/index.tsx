@@ -1,39 +1,57 @@
 import { ReactNode, useState, useRef, useEffect } from "react";
-import { useLocalStorage } from "../../hooks/useLocalStorage";
-import { TimeRange } from "./types";
+import {
+  TimeRange,
+  AnalyticType,
+  StatisticsDisplayType,
+} from "../../services/analyticTypes";
 import { CardTitle } from "./CardTitle";
 import { TimeRangeSelector } from "./TimeRangeSelector";
 import { OptionsSelector } from "./OptionsSelector";
+import { Line, Bar, Pie } from "react-chartjs-2";
+import { ChartData } from "chart.js";
 
-interface StatisticsCardProps {
+export interface StatisticsCardProps {
   id: string;
-  defaultTitle: string;
-  value: string | number;
-  icon?: ReactNode;
+  title: string;
+  analyticType: AnalyticType;
+  displayType: StatisticsDisplayType;
+  timeRange: TimeRange;
   className?: string;
+  onUpdateCard?: (update: {
+    title?: string;
+    timeRange?: TimeRange;
+    analyticType?: AnalyticType;
+    displayType?: StatisticsDisplayType;
+  }) => void;
+  onTimeRangeChange?: (timeRange: TimeRange) => void;
+  onAnalyticTypeChange?: (type: AnalyticType) => void;
+  onDisplayTypeChange?: (type: StatisticsDisplayType) => void;
+  value?: string | number;
+  icon?: ReactNode;
   trend?: {
     value: number;
     isPositive: boolean;
   };
+  chartData?: ChartData<"line" | "bar" | "pie", number[], unknown>;
 }
 
 export const StatisticsCard = ({
   id,
-  defaultTitle,
+  title,
+  analyticType,
+  displayType,
+  timeRange,
+  className = "",
+  onUpdateCard,
+  onTimeRangeChange,
+  onAnalyticTypeChange,
+  onDisplayTypeChange,
   value,
   icon,
-  className = "",
   trend,
+  chartData,
 }: StatisticsCardProps) => {
   const [isEditing, setIsEditing] = useState(false);
-  const [cardTitle, setCardTitle] = useLocalStorage(
-    `card-title-${id}`,
-    defaultTitle
-  );
-  const [timeRange, setTimeRange] = useLocalStorage<TimeRange>(
-    `card-timerange-${id}`,
-    "30d"
-  );
   const [timeMenu, setTimeMenu] = useState<{ x: number; y: number } | null>(
     null
   );
@@ -87,6 +105,71 @@ export const StatisticsCard = ({
     });
   };
 
+  const handleTitleChange = (newTitle: string) => {
+    onUpdateCard?.({ title: newTitle });
+  };
+
+  const handleTimeRangeChange = (newTimeRange: TimeRange) => {
+    onUpdateCard?.({ timeRange: newTimeRange });
+    onTimeRangeChange?.(newTimeRange);
+  };
+
+  const handleAnalyticTypeChange = (type: AnalyticType) => {
+    onUpdateCard?.({ analyticType: type });
+    onAnalyticTypeChange?.(type);
+  };
+
+  const handleDisplayTypeChange = (type: StatisticsDisplayType) => {
+    onUpdateCard?.({ displayType: type });
+    onDisplayTypeChange?.(type);
+  };
+
+  const renderChart = () => {
+    if (!chartData) return null;
+
+    const baseOptions = {
+      responsive: true,
+      maintainAspectRatio: false,
+    };
+
+    switch (displayType) {
+      case StatisticsDisplayType.AREA:
+        return (
+          <Line data={chartData as ChartData<"line">} options={baseOptions} />
+        );
+      case StatisticsDisplayType.BAR:
+        return (
+          <Bar data={chartData as ChartData<"bar">} options={baseOptions} />
+        );
+      case StatisticsDisplayType.PIE:
+        return (
+          <Pie data={chartData as ChartData<"pie">} options={baseOptions} />
+        );
+      case StatisticsDisplayType.METRIC:
+      default:
+        return (
+          <div className="flex flex-col items-center gap-2">
+            <div className="flex items-center justify-end w-full">
+              {icon && <div className="text-gray-400">{icon}</div>}
+            </div>
+            <div className="flex items-end gap-2">
+              <span className="text-2xl font-bold">{value}</span>
+              {trend && (
+                <span
+                  className={`text-sm ${
+                    trend.isPositive ? "text-green-500" : "text-red-500"
+                  }`}
+                >
+                  {trend.isPositive ? "+" : ""}
+                  {trend.value}%
+                </span>
+              )}
+            </div>
+          </div>
+        );
+    }
+  };
+
   return (
     <div
       ref={containerRef}
@@ -95,9 +178,9 @@ export const StatisticsCard = ({
       <div className="flex justify-between items-start gap-2 w-full">
         <div className="min-w-0 flex-1">
           <CardTitle
-            title={cardTitle}
+            title={title}
             isEditing={isEditing}
-            onTitleChange={setCardTitle}
+            onTitleChange={handleTitleChange}
             onStartEdit={() => setIsEditing(true)}
             onFinishEdit={() => setIsEditing(false)}
             onKeyDown={e => {
@@ -110,7 +193,7 @@ export const StatisticsCard = ({
           <TimeRangeSelector
             timeRange={timeRange}
             isWide={isWide}
-            onTimeRangeChange={setTimeRange}
+            onTimeRangeChange={handleTimeRangeChange}
             menuPosition={timeMenu}
             onMenuOpen={handleTimeClick}
             onMenuClose={() => setTimeMenu(null)}
@@ -119,29 +202,16 @@ export const StatisticsCard = ({
             menuPosition={optionsMenu}
             onMenuOpen={handleOptionsClick}
             onMenuClose={() => setOptionsMenu(null)}
+            onDataOptionSelect={handleAnalyticTypeChange}
+            onStatisticsTypeSelect={handleDisplayTypeChange}
+            selectedAnalyticType={analyticType}
+            selectedDisplayType={displayType}
           />
         </div>
       </div>
 
       <div className="flex justify-center items-center h-full pt-8">
-        <div className="flex flex-col items-center gap-2">
-          <div className="flex items-center justify-end w-full">
-            {icon && <div className="text-gray-400">{icon}</div>}
-          </div>
-          <div className="flex items-end gap-2">
-            <span className="text-2xl font-bold">{value}</span>
-            {trend && (
-              <span
-                className={`text-sm ${
-                  trend.isPositive ? "text-green-500" : "text-red-500"
-                }`}
-              >
-                {trend.isPositive ? "+" : ""}
-                {trend.value}%
-              </span>
-            )}
-          </div>
-        </div>
+        {renderChart()}
       </div>
     </div>
   );

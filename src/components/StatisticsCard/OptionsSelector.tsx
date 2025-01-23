@@ -1,13 +1,18 @@
 import ContextMenu from "../ContextMenu";
 import { useEffect, useRef, useState } from "react";
-import { getAnalyticOptions } from "../../services/analyticDataService";
 import {
   displayTypeOptions,
   AnalyticType,
   StatisticsDisplayType,
+  analyticOptions,
 } from "../../services/analyticTypes";
 
-const dataOptions = getAnalyticOptions();
+interface Option {
+  id: AnalyticType | StatisticsDisplayType;
+  label: string;
+}
+
+const dataOptions = analyticOptions;
 const statisticsTypes = displayTypeOptions;
 
 interface DataOptionsModalProps {
@@ -15,6 +20,7 @@ interface DataOptionsModalProps {
   onClose: () => void;
   parentId?: string;
   onSelect?: (id: AnalyticType) => void;
+  selectedAnalyticType?: AnalyticType;
 }
 
 interface StatisticsTypeModalProps {
@@ -22,6 +28,7 @@ interface StatisticsTypeModalProps {
   onClose: () => void;
   parentId?: string;
   onSelect?: (id: StatisticsDisplayType) => void;
+  selectedDisplayType?: StatisticsDisplayType;
 }
 
 const DataOptionsModal = ({
@@ -29,6 +36,7 @@ const DataOptionsModal = ({
   onClose,
   parentId,
   onSelect,
+  selectedAnalyticType,
 }: DataOptionsModalProps) => {
   const handleOptionClick = (id: AnalyticType) => {
     onSelect?.(id);
@@ -42,11 +50,15 @@ const DataOptionsModal = ({
       onClose={onClose}
       parentId={parentId}
     >
-      {dataOptions.map(option => (
+      {dataOptions.map((option: Option) => (
         <button
           key={option.id}
-          className="text-left text-xs font-medium font-quicksand text-sofia-superDark leading-none self-stretch [font-feature-settings:'liga'_off,'clig'_off] whitespace-nowrap"
-          onClick={() => handleOptionClick(option.id)}
+          className={`text-left text-xs font-medium font-quicksand text-sofia-superDark leading-none self-stretch [font-feature-settings:'liga'_off,'clig'_off] whitespace-nowrap ${
+            selectedAnalyticType === option.id
+              ? "bg-blue-100 text-blue-700"
+              : "hover:bg-gray-100"
+          }`}
+          onClick={() => handleOptionClick(option.id as AnalyticType)}
         >
           {option.label}
         </button>
@@ -60,6 +72,7 @@ const StatisticsTypeModal = ({
   onClose,
   parentId,
   onSelect,
+  selectedDisplayType,
 }: StatisticsTypeModalProps) => {
   const [showLegend, setShowLegend] = useState(false);
 
@@ -80,11 +93,15 @@ const StatisticsTypeModal = ({
       onClose={onClose}
       parentId={parentId}
     >
-      {statisticsTypes.map(option => (
+      {statisticsTypes.map((option: Option) => (
         <button
           key={option.id}
-          className="text-left text-xs font-medium font-quicksand text-sofia-superDark leading-none self-stretch [font-feature-settings:'liga'_off,'clig'_off] whitespace-nowrap"
-          onClick={() => handleTypeClick(option.id)}
+          className={`text-left text-xs font-medium font-quicksand text-sofia-superDark leading-none self-stretch [font-feature-settings:'liga'_off,'clig'_off] whitespace-nowrap ${
+            selectedDisplayType === option.id
+              ? "bg-blue-100 text-blue-700"
+              : "hover:bg-gray-100"
+          }`}
+          onClick={() => handleTypeClick(option.id as StatisticsDisplayType)}
         >
           {option.label}
         </button>
@@ -112,6 +129,8 @@ interface OptionsSelectorProps {
   onMenuClose: () => void;
   onDataOptionSelect?: (id: AnalyticType) => void;
   onStatisticsTypeSelect?: (id: StatisticsDisplayType) => void;
+  selectedAnalyticType?: AnalyticType;
+  selectedDisplayType?: StatisticsDisplayType;
 }
 
 export const OptionsSelector = ({
@@ -120,6 +139,8 @@ export const OptionsSelector = ({
   onMenuClose,
   onDataOptionSelect,
   onStatisticsTypeSelect,
+  selectedAnalyticType,
+  selectedDisplayType,
 }: OptionsSelectorProps) => {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const [dataModalPosition, setDataModalPosition] = useState<{
@@ -252,6 +273,7 @@ export const OptionsSelector = ({
           onClose={handleDataModalClose}
           parentId={menuId}
           onSelect={onDataOptionSelect}
+          selectedAnalyticType={selectedAnalyticType}
         />
       )}
 
@@ -261,6 +283,7 @@ export const OptionsSelector = ({
           onClose={handleStatisticsTypeClose}
           parentId={menuId}
           onSelect={onStatisticsTypeSelect}
+          selectedDisplayType={selectedDisplayType}
         />
       )}
     </>

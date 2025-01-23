@@ -1,93 +1,139 @@
-import {
-  mockData,
-  StatisticEntry,
-  getAggregatedData,
-  calculateTrend,
-} from "./mockData";
-import { AnalyticType, TimeRange, analyticOptions } from "./analyticTypes";
+import { AnalyticType, TimeRange } from "./analyticTypes";
 
-export interface AnalyticData {
-  id: AnalyticType;
-  data: StatisticEntry[];
-  trend?: {
-    value: number;
-    isPositive: boolean;
-  };
-  currentValue: number | string;
+interface StatisticEntry {
+  timestamp: string;
+  value: number;
 }
+
+interface AnalyticData {
+  type: AnalyticType;
+  entries: StatisticEntry[];
+}
+
+const generateMockData = (timeRange: TimeRange): StatisticEntry[] => {
+  const now = new Date();
+  const data: StatisticEntry[] = [];
+  let days = 0;
+
+  switch (timeRange) {
+    case TimeRange.LAST_DAY:
+      days = 1;
+      break;
+    case TimeRange.LAST_7_DAYS:
+      days = 7;
+      break;
+    case TimeRange.LAST_30_DAYS:
+      days = 30;
+      break;
+    case TimeRange.LAST_90_DAYS:
+      days = 90;
+      break;
+    case TimeRange.LAST_180_DAYS:
+      days = 180;
+      break;
+    case TimeRange.LAST_365_DAYS:
+    case TimeRange.LAST_YEAR:
+      days = 365;
+      break;
+  }
+
+  for (let i = 0; i < days; i++) {
+    const date = new Date(now);
+    date.setDate(date.getDate() - i);
+    data.push({
+      timestamp: date.toISOString(),
+      value: Math.floor(Math.random() * 1000),
+    });
+  }
+
+  return data;
+};
+
+const mockData = {
+  totalUsers: (timeRange: TimeRange) => generateMockData(timeRange),
+  newUsers: (timeRange: TimeRange) => generateMockData(timeRange),
+  recurringUsers: (timeRange: TimeRange) => generateMockData(timeRange),
+  sessions: (timeRange: TimeRange) => generateMockData(timeRange),
+  iaMessages: (timeRange: TimeRange) => generateMockData(timeRange),
+  hitlMessages: (timeRange: TimeRange) => generateMockData(timeRange),
+  totalMessages: (timeRange: TimeRange) => generateMockData(timeRange),
+  avgIaMessagesPerSession: (timeRange: TimeRange) =>
+    generateMockData(timeRange),
+  avgHitlMessagesPerSession: (timeRange: TimeRange) =>
+    generateMockData(timeRange),
+  avgSessionsPerUser: (timeRange: TimeRange) => generateMockData(timeRange),
+  messagesByChannel: (timeRange: TimeRange) => generateMockData(timeRange),
+  functionCalls: (timeRange: TimeRange) => generateMockData(timeRange),
+  functionsPerSession: (timeRange: TimeRange) => generateMockData(timeRange),
+};
 
 const getDataForType = (
   type: AnalyticType,
   timeRange: TimeRange
 ): AnalyticData => {
-  let data: StatisticEntry[] = [];
+  let entries: StatisticEntry[] = [];
 
   switch (type) {
     case AnalyticType.TOTAL_USERS:
-      data = getAggregatedData(mockData.totalUsers, timeRange);
+      entries = mockData.totalUsers(timeRange);
       break;
     case AnalyticType.NEW_USERS:
-      data = getAggregatedData(mockData.newUsers, timeRange);
+      entries = mockData.newUsers(timeRange);
       break;
     case AnalyticType.RECURRING_USERS:
-      data = getAggregatedData(mockData.recurringUsers, timeRange);
+      entries = mockData.recurringUsers(timeRange);
       break;
     case AnalyticType.SESSIONS:
-      data = getAggregatedData(mockData.sessions, timeRange);
+      entries = mockData.sessions(timeRange);
       break;
     case AnalyticType.IA_MESSAGES:
-      data = getAggregatedData(mockData.iaMessages, timeRange);
+      entries = mockData.iaMessages(timeRange);
       break;
     case AnalyticType.HITL_MESSAGES:
-      data = getAggregatedData(mockData.hitlMessages, timeRange);
+      entries = mockData.hitlMessages(timeRange);
       break;
     case AnalyticType.TOTAL_MESSAGES:
-      data = getAggregatedData(mockData.totalMessages, timeRange);
+      entries = mockData.totalMessages(timeRange);
       break;
     case AnalyticType.AVG_IA_MESSAGES_PER_SESSION:
-      data = getAggregatedData(mockData.avgIaMessagesPerSession, timeRange);
+      entries = mockData.avgIaMessagesPerSession(timeRange);
       break;
     case AnalyticType.AVG_HITL_MESSAGES_PER_SESSION:
-      data = getAggregatedData(mockData.avgHitlMessagesPerSession, timeRange);
+      entries = mockData.avgHitlMessagesPerSession(timeRange);
       break;
     case AnalyticType.AVG_SESSIONS_PER_USER:
-      data = getAggregatedData(mockData.avgSessionsPerUser, timeRange);
+      entries = mockData.avgSessionsPerUser(timeRange);
       break;
     case AnalyticType.MESSAGES_BY_CHANNEL:
-      data = getAggregatedData(mockData.messagesByChannel, timeRange);
+      entries = mockData.messagesByChannel(timeRange);
       break;
     case AnalyticType.FUNCTION_CALLS:
-      data = getAggregatedData(mockData.functionCalls, timeRange);
+      entries = mockData.functionCalls(timeRange);
       break;
     case AnalyticType.FUNCTIONS_PER_SESSION:
-      data = getAggregatedData(mockData.functionsPerSession, timeRange);
+      entries = mockData.functionsPerSession(timeRange);
       break;
   }
 
-  const currentValue = data[data.length - 1]?.value || 0;
-  const trend = calculateTrend(data);
-
-  return {
-    id: type,
-    data,
-    trend,
-    currentValue:
-      type === AnalyticType.MESSAGES_BY_CHANNEL
-        ? formatChannelData(data)
-        : currentValue,
-  };
+  return { type, entries };
 };
 
-const formatChannelData = (data: StatisticEntry[]): string => {
-  const latest = data.filter(d => d.date === data[data.length - 1].date);
-  return latest.reduce((acc, curr) => acc + curr.value, 0).toString();
+export const getLatestValue = (data: AnalyticData): string => {
+  const latest = data.entries.sort(
+    (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+  );
+  return latest[0]?.value.toString() || "0";
 };
 
-export const getAnalyticData = (
+export const getAnalyticData = async (
   types: AnalyticType[],
   timeRange: TimeRange
-): AnalyticData[] => {
-  return types.map(type => getDataForType(type, timeRange));
+): Promise<AnalyticData[]> => {
+  return Promise.all(
+    types.map(async type => {
+      // Simular delay de red
+      await new Promise(resolve => setTimeout(resolve, 500));
+      return getDataForType(type, timeRange);
+    })
+  );
 };
-
-export const getAnalyticOptions = () => analyticOptions;
