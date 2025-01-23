@@ -175,9 +175,12 @@ export const OptionsSelector = ({
   };
 
   const handleDataOptionClick = (e: React.MouseEvent) => {
-    e.preventDefault();
     e.stopPropagation();
+    e.preventDefault();
+
+    // Cerrar menú de estadísticas si está abierto
     setStatisticsTypePosition(null);
+
     const button = e.currentTarget as HTMLElement;
     const rect = button.getBoundingClientRect();
     setDataModalPosition({
@@ -187,9 +190,12 @@ export const OptionsSelector = ({
   };
 
   const handleStatisticsTypeClick = (e: React.MouseEvent) => {
-    e.preventDefault();
     e.stopPropagation();
+    e.preventDefault();
+
+    // Cerrar menú de datos si está abierto
     setDataModalPosition(null);
+
     const button = e.currentTarget as HTMLElement;
     const rect = button.getBoundingClientRect();
     setStatisticsTypePosition({

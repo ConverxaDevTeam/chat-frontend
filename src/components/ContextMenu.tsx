@@ -9,8 +9,8 @@ interface ContextMenuProps {
   parentId?: string;
 }
 
-// Mantener registro de los menús abiertos
-const openMenus: Set<string> = new Set();
+// Mantener registro de los menús abiertos y sus relaciones padre-hijo
+const openMenus: Map<string, { id: string; parentId?: string }> = new Map();
 
 const ContextMenu: React.FC<ContextMenuProps> = ({
   x,
@@ -23,31 +23,54 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
   const menuId = useRef(`menu-${Math.random()}`);
 
   useEffect(() => {
-    // Registrar este menú como abierto
-    openMenus.add(menuId.current);
+    // Registrar este menú y su relación padre-hijo
+    openMenus.set(menuId.current, { id: menuId.current, parentId });
 
-    // Si hay un menú anterior abierto y no es el padre, cerrarlo
+    // Si no es un menú hijo y hay otros menús abiertos que no son ancestros, cerrarlos
     if (!parentId) {
-      openMenus.forEach(id => {
-        if (id !== menuId.current && id !== parentId) {
-          const event = new CustomEvent("closeMenu", { detail: { id } });
-          document.dispatchEvent(event);
-        }
+      const menusToClose = Array.from(openMenus.values()).filter(menu => {
+        return menu.id !== menuId.current && menu.id !== parentId;
+      });
+
+      menusToClose.forEach(menu => {
+        const event = new CustomEvent("closeMenu", { detail: { id: menu.id } });
+        document.dispatchEvent(event);
       });
     }
 
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as HTMLElement;
+
+      // Si el click fue en un botón o checkbox dentro de cualquier menú, no hacer nada
+      if (
+        target.closest("button") ||
+        target.closest('input[type="checkbox"]')
+      ) {
+        return;
+      }
+
+      const isInsideAnyMenu = target.closest(".context-menu");
+
+      // Si el click fue fuera de cualquier menú, cerrar todos
+      if (!isInsideAnyMenu) {
+        Array.from(openMenus.values()).forEach(menu => {
+          const event = new CustomEvent("closeMenu", {
+            detail: { id: menu.id },
+          });
+          document.dispatchEvent(event);
+        });
+        return;
+      }
+
+      // Si el click fue dentro del menú actual, no hacer nada
       const isInsideCurrentMenu = target.closest(
         `[data-menu-id="${menuId.current}"]`
       );
-      const isInsideChildMenu = target.closest(".context-menu");
+      if (isInsideCurrentMenu) return;
 
-      // Cerrar solo si el click no fue dentro de este menú ni de un menú hijo
-      if (!isInsideCurrentMenu && !isInsideChildMenu) {
-        onClose();
-        openMenus.delete(menuId.current);
-      }
+      // Si el click fue en otro menú, cerrar este
+      onClose();
+      openMenus.delete(menuId.current);
     };
 
     const handleCloseMenu = (e: Event) => {
@@ -93,6 +116,34 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
     menu.style.top = `${adjustedY}px`;
   }, [x, y]);
 
+  // Función para cerrar menús hijos cuando se hace click en un botón del menú
+  const handleMenuItemClick = (child: React.ReactNode) => {
+    if (React.isValidElement(child)) {
+      const originalOnClick = child.props.onClick;
+      return React.cloneElement(child, {
+        onClick: (e: React.MouseEvent) => {
+          // Cerrar cualquier menú hijo abierto
+          const childMenus = Array.from(openMenus.values()).filter(
+            menu => menu.parentId === menuId.current
+          );
+
+          if (childMenus.length > 0) {
+            childMenus.forEach(menu => {
+              const event = new CustomEvent("closeMenu", {
+                detail: { id: menu.id },
+              });
+              document.dispatchEvent(event);
+            });
+          }
+
+          // Ejecutar el onClick original después de cerrar los menús hijos
+          if (originalOnClick) originalOnClick(e);
+        },
+      });
+    }
+    return child;
+  };
+
   return createPortal(
     <div
       ref={menuRef}
@@ -110,7 +161,9 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
 
         return (
           <div className="flex justify-center items-center gap-2.5 self-stretch rounded hover:bg-sofia-electricOlive cursor-pointer">
-            <div className="px-1 py-0.5">{child}</div>
+            <div className="px-1 py-0.5 w-full">
+              {handleMenuItemClick(child)}
+            </div>
           </div>
         );
       })}
