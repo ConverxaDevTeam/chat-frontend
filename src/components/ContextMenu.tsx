@@ -62,13 +62,10 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
         return;
       }
 
-      // Si el click fue dentro del menú actual, no hacer nada
-      const isInsideCurrentMenu = target.closest(
-        `[data-menu-id="${menuId.current}"]`
-      );
-      if (isInsideCurrentMenu) return;
+      // Si el click fue dentro de cualquier menú pero no en un elemento interactivo, no hacer nada
+      if (isInsideAnyMenu) return;
 
-      // Si el click fue en otro menú, cerrar este
+      // Si llegamos aquí, el click fue en otro menú, cerrar este
       onClose();
       openMenus.delete(menuId.current);
     };
@@ -118,10 +115,10 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
 
   // Función para cerrar menús hijos cuando se hace click en un botón del menú
   const handleMenuItemClick = (child: React.ReactNode) => {
-    if (React.isValidElement(child)) {
+    if (React.isValidElement<React.HTMLAttributes<HTMLElement>>(child)) {
       const originalOnClick = child.props.onClick;
       return React.cloneElement(child, {
-        onClick: (e: React.MouseEvent) => {
+        onClick: (e: React.MouseEvent<HTMLElement>) => {
           // Cerrar cualquier menú hijo abierto
           const childMenus = Array.from(openMenus.values()).filter(
             menu => menu.parentId === menuId.current
