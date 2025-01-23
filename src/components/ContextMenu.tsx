@@ -32,10 +32,26 @@ const useMenuClosing = (
       });
     }
 
-    return void openMenus.delete(menuId);
-  }, [menuId, parentId, onClose]);
+    return () => {
+      openMenus.delete(menuId);
+    };
+  }, [menuId, parentId]);
 
-  return { closeMenu: () => openMenus.delete(menuId) };
+  // Escuchar eventos de cierre
+  useEffect(() => {
+    const handleCloseEvent = (e: Event) => {
+      const event = e as CustomEvent;
+      if (event.detail.id === menuId) {
+        onClose();
+        openMenus.delete(menuId);
+      }
+    };
+
+    document.addEventListener("closeMenu", handleCloseEvent);
+    return () => {
+      document.removeEventListener("closeMenu", handleCloseEvent);
+    };
+  }, [menuId, onClose]);
 };
 
 // Hook para manejar clicks fuera del menú
@@ -58,35 +74,20 @@ const useOutsideClick = (
       const isInsideAnyMenu = target.closest(".context-menu");
 
       if (!isInsideAnyMenu) {
-        Array.from(openMenus.values()).forEach(menu => {
+        const menusToClose = Array.from(openMenus.values());
+        menusToClose.forEach(menu => {
           const event = new CustomEvent("closeMenu", {
             detail: { id: menu.id },
           });
           document.dispatchEvent(event);
         });
-        return;
-      }
-
-      if (isInsideAnyMenu) return;
-
-      onClose();
-      openMenus.delete(menuId);
-    };
-
-    const handleCloseMenu = (e: Event) => {
-      const event = e as CustomEvent;
-      if (event.detail.id === menuId) {
-        onClose();
-        openMenus.delete(menuId);
       }
     };
 
     document.addEventListener("mousedown", handleClickOutside);
-    document.addEventListener("closeMenu", handleCloseMenu);
 
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
-      document.removeEventListener("closeMenu", handleCloseMenu);
     };
   }, [menuId, onClose, parentId]);
 };
