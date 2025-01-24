@@ -77,13 +77,8 @@ const calculateTrend = (entries: StatisticEntry[]): MetricData["trend"] => {
   };
 };
 
-export const useAnalyticData = (
-  analyticTypes: AnalyticType[],
-  displayType: StatisticsDisplayType,
-  timeRange: TimeRange
-): AnalyticResult => {
+const useGroupedEntries = (entries: StatisticEntry[]) => {
   return useMemo(() => {
-    const entries = getAnalyticData(analyticTypes, timeRange);
     const sortedEntries = entries.sort(
       (a, b) => a.created_at.getTime() - b.created_at.getTime()
     );
@@ -102,26 +97,16 @@ export const useAnalyticData = (
       typeEntries => typeEntries[typeEntries.length - 1]
     );
 
+    return { groupedByType, lastEntries, sortedEntries };
+  }, [entries]);
+};
+
+const useMetricData = (
+  lastEntries: StatisticEntry[],
+  sortedEntries: StatisticEntry[]
+) => {
+  return useMemo(() => {
     const totalValue = lastEntries.reduce((sum, entry) => sum + entry.value, 0);
-
-    if (displayType === StatisticsDisplayType.METRIC) {
-      return {
-        value: totalValue,
-        trend: calculateTrend(sortedEntries),
-        series: lastEntries.map(entry => ({
-          label: entry.label,
-          value: entry.value,
-          color: entry.color,
-          icon: entry.icon,
-        })),
-      };
-    }
-
-    const uniqueDates = [
-      ...new Set(
-        sortedEntries.map(e => e.created_at.toISOString().split("T")[0])
-      ),
-    ];
 
     return {
       value: totalValue,
@@ -132,30 +117,63 @@ export const useAnalyticData = (
         color: entry.color,
         icon: entry.icon,
       })),
-      chartData: {
-        labels: uniqueDates,
-        datasets: Object.values(groupedByType).map(typeEntries => {
-          const firstEntry = typeEntries[0];
-          return {
-            label: firstEntry.label,
-            data: uniqueDates.map(date => {
-              const entry = typeEntries.find(
-                e => e.created_at.toISOString().split("T")[0] === date
-              );
-              return entry?.value || 0;
-            }),
-            borderColor: firstEntry.color,
-            backgroundColor:
-              displayType === StatisticsDisplayType.PIE
-                ? Object.values(groupedByType).map(e => e[0].color)
-                : displayType === StatisticsDisplayType.AREA
-                  ? `${firstEntry.color}1A`
-                  : firstEntry.color,
-            fill: displayType === StatisticsDisplayType.AREA,
-            tension: 0.4,
-          };
-        }),
-      },
     };
-  }, [analyticTypes, displayType, timeRange]);
+  }, [lastEntries, sortedEntries]);
+};
+
+const useChartData = (
+  groupedByType: Record<AnalyticType, StatisticEntry[]>,
+  sortedEntries: StatisticEntry[],
+  displayType: StatisticsDisplayType
+) => {
+  return useMemo(() => {
+    const uniqueDates = [
+      ...new Set(
+        sortedEntries.map(e => e.created_at.toISOString().split("T")[0])
+      ),
+    ];
+
+    return {
+      labels: uniqueDates,
+      datasets: Object.values(groupedByType).map(typeEntries => {
+        const firstEntry = typeEntries[0];
+        return {
+          label: firstEntry.label,
+          data: uniqueDates.map(date => {
+            const entry = typeEntries.find(
+              e => e.created_at.toISOString().split("T")[0] === date
+            );
+            return entry?.value || 0;
+          }),
+          borderColor: firstEntry.color,
+          backgroundColor:
+            displayType === StatisticsDisplayType.PIE
+              ? Object.values(groupedByType).map(e => e[0].color)
+              : displayType === StatisticsDisplayType.AREA
+                ? `${firstEntry.color}1A`
+                : firstEntry.color,
+          fill: displayType === StatisticsDisplayType.AREA,
+          tension: 0.4,
+        };
+      }),
+    };
+  }, [groupedByType, sortedEntries, displayType]);
+};
+
+export const useAnalyticData = (
+  analyticTypes: AnalyticType[],
+  displayType: StatisticsDisplayType,
+  timeRange: TimeRange
+): AnalyticResult => {
+  const entries = getAnalyticData(analyticTypes, timeRange);
+  const { groupedByType, lastEntries, sortedEntries } =
+    useGroupedEntries(entries);
+  const metricData = useMetricData(lastEntries, sortedEntries);
+  const chartData = useChartData(groupedByType, sortedEntries, displayType);
+
+  if (displayType === StatisticsDisplayType.METRIC) {
+    return metricData;
+  }
+
+  return { ...metricData, chartData };
 };
