@@ -14,7 +14,16 @@ const defaultCards: DashboardCard[] = [
     analyticType: AnalyticType.TOTAL_USERS,
     displayType: StatisticsDisplayType.METRIC,
     timeRange: TimeRange.LAST_30_DAYS,
-    layout: { lg: { i: 1, x: 0, y: 0, w: 6, h: 2 } },
+    layout: {
+      lg: {
+        i: 1,
+        x: 0,
+        y: 0,
+        w: 18,
+        h: 6,
+      },
+    },
+    showLegend: true,
   },
   {
     id: 2,
@@ -22,7 +31,15 @@ const defaultCards: DashboardCard[] = [
     analyticType: AnalyticType.TOTAL_MESSAGES,
     displayType: StatisticsDisplayType.AREA,
     timeRange: TimeRange.LAST_7_DAYS,
-    layout: { lg: { i: 2, x: 6, y: 0, w: 6, h: 2 } },
+    layout: {
+      lg: {
+        i: 2,
+        x: 18,
+        y: 0,
+        w: 18,
+        h: 6,
+      },
+    },
     showLegend: true,
   },
   {
@@ -31,7 +48,15 @@ const defaultCards: DashboardCard[] = [
     analyticType: AnalyticType.AVG_IA_MESSAGES_PER_SESSION,
     displayType: StatisticsDisplayType.METRIC,
     timeRange: TimeRange.LAST_30_DAYS,
-    layout: { lg: { i: 3, x: 0, y: 2, w: 3, h: 2 } },
+    layout: {
+      lg: {
+        i: 3,
+        x: 0,
+        y: 6,
+        w: 9,
+        h: 6,
+      },
+    },
   },
   {
     id: 4,
@@ -39,7 +64,15 @@ const defaultCards: DashboardCard[] = [
     analyticType: AnalyticType.AVG_HITL_MESSAGES_PER_SESSION,
     displayType: StatisticsDisplayType.METRIC,
     timeRange: TimeRange.LAST_30_DAYS,
-    layout: { lg: { i: 4, x: 3, y: 2, w: 3, h: 2 } },
+    layout: {
+      lg: {
+        i: 4,
+        x: 9,
+        y: 6,
+        w: 9,
+        h: 6,
+      },
+    },
   },
   {
     id: 5,
@@ -47,7 +80,15 @@ const defaultCards: DashboardCard[] = [
     analyticType: AnalyticType.AVG_SESSIONS_PER_USER,
     displayType: StatisticsDisplayType.METRIC,
     timeRange: TimeRange.LAST_30_DAYS,
-    layout: { lg: { i: 5, x: 6, y: 2, w: 3, h: 2 } },
+    layout: {
+      lg: {
+        i: 5,
+        x: 18,
+        y: 6,
+        w: 9,
+        h: 6,
+      },
+    },
   },
   {
     id: 6,
@@ -55,7 +96,15 @@ const defaultCards: DashboardCard[] = [
     analyticType: AnalyticType.MESSAGES_BY_CHANNEL,
     displayType: StatisticsDisplayType.METRIC,
     timeRange: TimeRange.LAST_30_DAYS,
-    layout: { lg: { i: 6, x: 9, y: 2, w: 3, h: 2 } },
+    layout: {
+      lg: {
+        i: 6,
+        x: 27,
+        y: 6,
+        w: 9,
+        h: 6,
+      },
+    },
   },
   {
     id: 7,
@@ -63,7 +112,15 @@ const defaultCards: DashboardCard[] = [
     analyticType: AnalyticType.FUNCTIONS_PER_SESSION,
     displayType: StatisticsDisplayType.AREA,
     timeRange: TimeRange.LAST_7_DAYS,
-    layout: { lg: { i: 7, x: 0, y: 4, w: 12, h: 2 } },
+    layout: {
+      lg: {
+        i: 7,
+        x: 0,
+        y: 12,
+        w: 36,
+        h: 6,
+      },
+    },
     showLegend: true,
   },
   {
@@ -72,7 +129,15 @@ const defaultCards: DashboardCard[] = [
     analyticType: AnalyticType.MESSAGES_BY_CHANNEL,
     displayType: StatisticsDisplayType.PIE,
     timeRange: TimeRange.LAST_30_DAYS,
-    layout: { lg: { i: 8, x: 0, y: 6, w: 4, h: 3 } },
+    layout: {
+      lg: {
+        i: 8,
+        x: 0,
+        y: 18,
+        w: 12,
+        h: 9,
+      },
+    },
     showLegend: true,
   },
 ];

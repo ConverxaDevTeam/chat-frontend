@@ -33,7 +33,12 @@ const DashboardOrganization = () => {
         // @ts-expect-error - Los tipos de @types/react-grid-layout están desactualizados respecto a la versión actual del paquete
         layouts={layouts}
         breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480 }}
-        cols={{ lg: 12, md: 10, sm: 6, xs: 4 }}
+        cols={{ lg: 36, md: 30, sm: 18, xs: 12 }}
+        rowHeight={30}
+        margin={[10, 10]}
+        containerPadding={[10, 10]}
+        compactType="vertical"
+        useCSSTransforms
       >
         {state.cards.map(card => (
           <div key={String(card.id)}>
