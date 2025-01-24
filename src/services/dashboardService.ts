@@ -186,17 +186,20 @@ export const dashboardService = {
     const newState = {
       ...state,
       cards: state.cards.map(card => {
-        const layout = layouts.lg?.find(l => Number(l.i) === card.id);
-        if (layout) {
-          return {
-            ...card,
-            layout: {
-              ...card.layout,
-              lg: { ...layout, i: card.id },
-            },
-          };
-        }
-        return card;
+        Object.entries(layouts).forEach(([breakpoint, layoutArray]) => {
+          const layout = layoutArray?.find(l => Number(l.i) === card.id);
+          if (layout) {
+            card.layout[breakpoint as keyof GridLayouts] = {
+              ...layout,
+              i: card.id,
+            };
+          }
+        });
+
+        return {
+          ...card,
+          layout: card.layout,
+        };
       }),
     };
     updateState(newState);
