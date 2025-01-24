@@ -33,7 +33,7 @@ interface MetricData {
   }>;
 }
 
-type AnalyticResult = {
+export type AnalyticResult = {
   chartData?: ChartData;
 } & MetricData;
 

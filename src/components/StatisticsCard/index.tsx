@@ -11,7 +11,7 @@ import {
   StatisticsDisplayType,
   TimeRange,
 } from "../../services/analyticTypes";
-import { useAnalyticData } from "../../hooks/useAnalyticData";
+import { useAnalyticData, AnalyticResult } from "../../hooks/useAnalyticData";
 import "../../config/chartConfig";
 import { FaWhatsapp } from "react-icons/fa";
 
@@ -129,6 +129,94 @@ const ChartView = ({ data, displayType }: ChartViewProps) => {
   }
 };
 
+const useCardWidth = (containerRef: React.RefObject<HTMLDivElement>) => {
+  const [isWide, setIsWide] = useState(false);
+
+  useEffect(() => {
+    const checkWidth = () => {
+      if (containerRef.current) {
+        setIsWide(containerRef.current.offsetWidth >= 400);
+      }
+    };
+
+    checkWidth();
+    const observer = new ResizeObserver(checkWidth);
+    if (containerRef.current) {
+      observer.observe(containerRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
+
+  return isWide;
+};
+
+const useMenuPosition = () => {
+  const [position, setPosition] = useState<{ x: number; y: number } | null>(
+    null
+  );
+
+  const handleMenuClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const button = e.currentTarget as HTMLElement;
+    const buttonRect = button.getBoundingClientRect();
+
+    setPosition({
+      x: buttonRect.x,
+      y: buttonRect.y + buttonRect.height + 4,
+    });
+  };
+
+  return { position, setPosition, handleMenuClick };
+};
+
+const CardHeader: React.FC<{
+  title: string;
+  isEditing: boolean;
+  onTitleChange: (title: string) => void;
+  onStartEdit: () => void;
+  onFinishEdit: () => void;
+  onKeyDown: (e: React.KeyboardEvent) => void;
+}> = ({
+  title,
+  isEditing,
+  onTitleChange,
+  onStartEdit,
+  onFinishEdit,
+  onKeyDown,
+}) => (
+  <div className="min-w-0 flex-1">
+    <CardTitle
+      title={title}
+      isEditing={isEditing}
+      onTitleChange={onTitleChange}
+      onStartEdit={onStartEdit}
+      onFinishEdit={onFinishEdit}
+      onKeyDown={onKeyDown}
+    />
+  </div>
+);
+
+const CardContent: React.FC<{
+  displayType: StatisticsDisplayType;
+  data: AnalyticResult | null;
+  showLegend?: boolean;
+  metricsRef: React.RefObject<HTMLDivElement>;
+}> = ({ displayType, data, showLegend, metricsRef }) => (
+  <div className="flex-1 flex justify-center items-center min-h-0">
+    {displayType === StatisticsDisplayType.METRIC && data ? (
+      <MetricsView
+        data={data}
+        showLegend={showLegend}
+        metricsRef={metricsRef}
+      />
+    ) : data?.chartData ? (
+      <ChartView data={data} displayType={displayType} />
+    ) : null}
+  </div>
+);
+
 export interface StatisticsCardProps {
   id: number;
   title: string;
@@ -158,61 +246,13 @@ export const StatisticsCard = ({
   onUpdateCard,
 }: StatisticsCardProps) => {
   const [isEditing, setIsEditing] = useState(false);
-  const [timeMenu, setTimeMenu] = useState<{ x: number; y: number } | null>(
-    null
-  );
-  const [optionsMenu, setOptionsMenu] = useState<{
-    x: number;
-    y: number;
-  } | null>(null);
-  const [isWide, setIsWide] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const metricsRef = useRef<HTMLDivElement>(null);
+  const timeMenu = useMenuPosition();
+  const optionsMenu = useMenuPosition();
+  const isWide = useCardWidth(containerRef);
 
   const data = useAnalyticData(analyticTypes, displayType, timeRange);
-
-  useEffect(() => {
-    const checkWidth = () => {
-      if (containerRef.current) {
-        setIsWide(containerRef.current.offsetWidth >= 400);
-      }
-    };
-
-    checkWidth();
-    const observer = new ResizeObserver(checkWidth);
-    if (containerRef.current) {
-      observer.observe(containerRef.current);
-    }
-
-    return () => observer.disconnect();
-  }, []);
-
-  const handleTimeClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    const button = e.currentTarget as HTMLElement;
-    const buttonRect = button.getBoundingClientRect();
-    const containerRect = containerRef.current?.getBoundingClientRect();
-
-    if (containerRect) {
-      setTimeMenu({
-        x: buttonRect.x,
-        y: buttonRect.y + buttonRect.height + 4,
-      });
-    }
-  };
-
-  const handleOptionsClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    const button = e.currentTarget as HTMLElement;
-    const buttonRect = button.getBoundingClientRect();
-
-    setOptionsMenu({
-      x: buttonRect.x,
-      y: buttonRect.y + buttonRect.height + 4,
-    });
-  };
 
   const handleTitleChange = (newTitle: string) => {
     onUpdateCard?.({ id, title: newTitle });
@@ -240,32 +280,29 @@ export const StatisticsCard = ({
       className={`statistics-card-container flex flex-col flex-shrink-0 bg-[#F1F5F9] rounded-lg p-4 relative h-full shadow-[-1px_-1px_0px_0px_#FFF_inset,_-2px_-2px_2px_0px_#B8CCE0_inset,_-1px_-1px_0px_0px_#FFF,_-2px_-2px_2px_0px_#B8CCE0] ${className}`}
     >
       <div className="flex justify-between items-start gap-2 w-full">
-        <div className="min-w-0 flex-1">
-          <CardTitle
-            title={title}
-            isEditing={isEditing}
-            onTitleChange={handleTitleChange}
-            onStartEdit={() => setIsEditing(true)}
-            onFinishEdit={() => setIsEditing(false)}
-            onKeyDown={(e: React.KeyboardEvent) => {
-              if (e.key === "Enter") setIsEditing(false);
-            }}
-          />
-        </div>
-
+        <CardHeader
+          title={title}
+          isEditing={isEditing}
+          onTitleChange={handleTitleChange}
+          onStartEdit={() => setIsEditing(true)}
+          onFinishEdit={() => setIsEditing(false)}
+          onKeyDown={(e: React.KeyboardEvent) => {
+            if (e.key === "Enter") setIsEditing(false);
+          }}
+        />
         <div className="flex items-center gap-1 flex-shrink-0">
           <TimeRangeSelector
             timeRange={timeRange}
             isWide={isWide}
             onTimeRangeChange={handleTimeRangeChange}
-            menuPosition={timeMenu}
-            onMenuOpen={handleTimeClick}
-            onMenuClose={() => setTimeMenu(null)}
+            menuPosition={timeMenu.position}
+            onMenuOpen={timeMenu.handleMenuClick}
+            onMenuClose={() => timeMenu.setPosition(null)}
           />
           <OptionsSelector
-            menuPosition={optionsMenu}
-            onMenuOpen={handleOptionsClick}
-            onMenuClose={() => setOptionsMenu(null)}
+            menuPosition={optionsMenu.position}
+            onMenuOpen={optionsMenu.handleMenuClick}
+            onMenuClose={() => optionsMenu.setPosition(null)}
             onDataOptionSelect={handleAnalyticTypeChange}
             onStatisticsTypeSelect={handleDisplayTypeChange}
             onShowLegendChange={handleShowLegendChange}
@@ -276,17 +313,12 @@ export const StatisticsCard = ({
         </div>
       </div>
 
-      <div className="flex-1 flex justify-center items-center min-h-0">
-        {displayType === StatisticsDisplayType.METRIC && data ? (
-          <MetricsView
-            data={data}
-            showLegend={showLegend}
-            metricsRef={metricsRef}
-          />
-        ) : data?.chartData ? (
-          <ChartView data={data} displayType={displayType} />
-        ) : null}
-      </div>
+      <CardContent
+        displayType={displayType}
+        data={data}
+        showLegend={showLegend}
+        metricsRef={metricsRef}
+      />
     </div>
   );
 };
