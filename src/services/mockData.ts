@@ -102,6 +102,7 @@ const generateData = (
   variance: number
 ): StatisticEntry[] => {
   const metadata = ANALYTIC_METADATA[type];
+  const rangeMultiplier = days <= 7 ? 1 : days / 7;
 
   return Array.from({ length: days }).map((_, index) => ({
     type,
@@ -109,7 +110,7 @@ const generateData = (
     label: metadata.label,
     value: Math.max(
       0,
-      baseValue + Math.floor(Math.random() * variance - variance / 2)
+      Math.floor(baseValue * rangeMultiplier + Math.random() * variance)
     ),
     color: metadata.color,
     icon: metadata.icon,
@@ -123,20 +124,20 @@ export const getMockData = (
   const config: Partial<
     Record<AnalyticType, { base: number; variance: number }>
   > = {
-    [AnalyticType.TOTAL_USERS]: { base: 35, variance: 10 },
-    [AnalyticType.NEW_USERS]: { base: 18, variance: 8 },
-    [AnalyticType.RECURRING_USERS]: { base: 23, variance: 6 },
-    [AnalyticType.SESSIONS]: { base: 267, variance: 50 },
-    [AnalyticType.IA_MESSAGES]: { base: 897, variance: 100 },
-    [AnalyticType.HITL_MESSAGES]: { base: 567, variance: 80 },
-    [AnalyticType.TOTAL_MESSAGES]: { base: 1024, variance: 200 },
-    [AnalyticType.AVG_IA_MESSAGES_PER_SESSION]: { base: 87, variance: 20 },
-    [AnalyticType.AVG_HITL_MESSAGES_PER_SESSION]: { base: 245, variance: 40 },
-    [AnalyticType.AVG_SESSIONS_PER_USER]: { base: 267, variance: 30 },
-    [AnalyticType.MESSAGES_BY_WHATSAPP]: { base: 450, variance: 50 },
-    [AnalyticType.MESSAGES_BY_FACEBOOK]: { base: 350, variance: 40 },
-    [AnalyticType.MESSAGES_BY_WEB]: { base: 224, variance: 30 },
-    [AnalyticType.FUNCTION_CALLS]: { base: 421, variance: 60 },
+    [AnalyticType.TOTAL_USERS]: { base: 35, variance: 15 },
+    [AnalyticType.NEW_USERS]: { base: 18, variance: 10 },
+    [AnalyticType.RECURRING_USERS]: { base: 23, variance: 8 },
+    [AnalyticType.SESSIONS]: { base: 267, variance: 80 },
+    [AnalyticType.IA_MESSAGES]: { base: 897, variance: 350 },
+    [AnalyticType.HITL_MESSAGES]: { base: 567, variance: 320 },
+    [AnalyticType.TOTAL_MESSAGES]: { base: 1024, variance: 800 },
+    [AnalyticType.AVG_IA_MESSAGES_PER_SESSION]: { base: 87, variance: 25 },
+    [AnalyticType.AVG_HITL_MESSAGES_PER_SESSION]: { base: 245, variance: 50 },
+    [AnalyticType.AVG_SESSIONS_PER_USER]: { base: 267, variance: 40 },
+    [AnalyticType.MESSAGES_BY_WHATSAPP]: { base: 450, variance: 80 },
+    [AnalyticType.MESSAGES_BY_FACEBOOK]: { base: 350, variance: 60 },
+    [AnalyticType.MESSAGES_BY_WEB]: { base: 224, variance: 45 },
+    [AnalyticType.FUNCTION_CALLS]: { base: 421, variance: 90 },
     [AnalyticType.FUNCTIONS_PER_SESSION]: { base: 3, variance: 2 },
   };
 
