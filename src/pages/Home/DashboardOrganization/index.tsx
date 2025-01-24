@@ -2,51 +2,13 @@ import { Responsive, WidthProvider } from "react-grid-layout";
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
 import { StatisticsCard } from "../../../components/StatisticsCard";
-import { GridLayout, GridLayouts } from "../../../services/dashboardTypes";
+import { GridLayouts } from "../../../services/dashboardTypes";
 import { useDashboard } from "../../../hooks/useDashboard";
 
-const ResponsiveGridLayout = WidthProvider<GridLayouts>(Responsive);
+const ResponsiveGridLayout = WidthProvider(Responsive);
 
 const DashboardOrganization = () => {
   const { state, updateCard } = useDashboard();
-
-  const onLayoutChange = (
-    currentLayout: GridLayout[],
-    allLayouts: GridLayouts
-  ) => {
-    const newCards = state.cards.map(card => ({
-      ...card,
-      layout: {
-        lg: {
-          ...(currentLayout.find(l => l.i === String(card.id)) ||
-            card.layout.lg),
-          i: card.id,
-        },
-        md: {
-          ...(allLayouts.md?.find(l => l.i === String(card.id)) ||
-            card.layout.md ||
-            card.layout.lg),
-          i: card.id,
-        },
-        sm: {
-          ...(allLayouts.sm?.find(l => l.i === String(card.id)) ||
-            card.layout.sm ||
-            card.layout.lg),
-          i: card.id,
-        },
-        xs: {
-          ...(allLayouts.xs?.find(l => l.i === String(card.id)) ||
-            card.layout.xs ||
-            card.layout.lg),
-          i: card.id,
-        },
-      },
-    }));
-
-    newCards.forEach(card => {
-      updateCard(card.id, { layout: card.layout });
-    });
-  };
 
   const layouts: GridLayouts = {
     lg: state.cards.map(card => ({ ...card.layout.lg, i: String(card.id) })),
@@ -68,6 +30,7 @@ const DashboardOrganization = () => {
     <div className="p-6">
       <ResponsiveGridLayout
         className="layout"
+        // @ts-expect-error - Los tipos de @types/react-grid-layout están desactualizados respecto a la versión actual del paquete
         layouts={layouts}
         breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480 }}
         cols={{ lg: 12, md: 10, sm: 6, xs: 4 }}
