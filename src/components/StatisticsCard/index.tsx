@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, Fragment } from "react";
 import { CardTitle } from "./CardTitle";
 import { TimeRangeSelector } from "./TimeRangeSelector";
 import { OptionsSelector } from "./OptionsSelector";
-import { ChartData } from "chart.js";
+import { ChartData, ChartTypeRegistry } from "chart.js";
 import { AreaChart } from "./components/AreaChart";
 import { BarChart } from "./components/BarChart";
 import { PieChart } from "./components/PieChart";
@@ -19,6 +19,111 @@ const getIcon = (iconName: string) => {
   switch (iconName) {
     case "whatsapp":
       return <FaWhatsapp className="text-[#25D366]" />;
+    default:
+      return null;
+  }
+};
+
+interface MetricsViewProps {
+  data: {
+    series: Array<{
+      label: string;
+      value: number;
+      color?: string;
+      icon?: string;
+    }>;
+    trend?: {
+      value: number;
+      isPositive: boolean;
+    };
+  };
+  showLegend?: boolean;
+  metricsRef: React.RefObject<HTMLDivElement>;
+}
+
+const MetricsView = ({ data, showLegend, metricsRef }: MetricsViewProps) => (
+  <div className="flex flex-col items-center justify-center h-[calc(100%-2rem)] w-full">
+    <div
+      ref={metricsRef}
+      className="flex flex-wrap justify-center items-center gap-4 overflow-auto w-full p-2 max-h-full"
+      style={{
+        scrollbarWidth: "thin",
+        scrollbarColor: "#E2E8F0 transparent",
+      }}
+    >
+      {data.series.map((serie, index) => (
+        <div key={index} className="flex flex-col items-center min-w-[120px]">
+          <div className="text-[#001126] text-sm font-medium font-['Quicksand'] flex items-center gap-2">
+            {showLegend && (
+              <Fragment>
+                <div
+                  className="w-3 h-3 rounded-full"
+                  style={{ backgroundColor: serie.color }}
+                />
+                {serie.label}
+              </Fragment>
+            )}
+          </div>
+          <div className="flex items-center gap-2">
+            {serie.icon && getIcon(serie.icon)}
+            <span className="text-2xl font-bold">{serie.value}</span>
+          </div>
+          {data.trend && (
+            <span
+              className={`text-sm ${
+                data.trend.isPositive ? "text-green-500" : "text-red-500"
+              }`}
+            >
+              {data.trend.isPositive ? "+" : ""}
+              {data.trend.value}%
+            </span>
+          )}
+        </div>
+      ))}
+    </div>
+  </div>
+);
+
+interface ChartViewProps {
+  data: {
+    chartData?: ChartData<keyof ChartTypeRegistry>;
+    series: Array<{
+      label: string;
+      value: number;
+      color?: string;
+      icon?: string;
+    }>;
+  };
+  displayType: StatisticsDisplayType;
+}
+
+const ChartView = ({ data, displayType }: ChartViewProps) => {
+  if (!data.chartData) return null;
+
+  const chartSeries = data.series.map(s => ({ color: s.color || "#000000" }));
+
+  switch (displayType) {
+    case StatisticsDisplayType.AREA:
+      return (
+        <AreaChart
+          data={data.chartData as ChartData<"line">}
+          series={chartSeries}
+        />
+      );
+    case StatisticsDisplayType.BAR:
+      return (
+        <BarChart
+          data={data.chartData as ChartData<"bar">}
+          series={chartSeries}
+        />
+      );
+    case StatisticsDisplayType.PIE:
+      return (
+        <PieChart
+          data={data.chartData as ChartData<"pie">}
+          series={chartSeries}
+        />
+      );
     default:
       return null;
   }
@@ -129,38 +234,6 @@ export const StatisticsCard = ({
     onUpdateCard?.({ id, showLegend: show });
   };
 
-  const renderChart = () => {
-    if (!data) return null;
-
-    const chartSeries = data.series.map(s => ({ color: s.color || "#000000" }));
-
-    switch (displayType) {
-      case StatisticsDisplayType.AREA:
-        return (
-          <AreaChart
-            data={data.chartData as ChartData<"line">}
-            series={chartSeries}
-          />
-        );
-      case StatisticsDisplayType.BAR:
-        return (
-          <BarChart
-            data={data.chartData as ChartData<"bar">}
-            series={chartSeries}
-          />
-        );
-      case StatisticsDisplayType.PIE:
-        return (
-          <PieChart
-            data={data.chartData as ChartData<"pie">}
-            series={chartSeries}
-          />
-        );
-      default:
-        return null;
-    }
-  };
-
   return (
     <div
       ref={containerRef}
@@ -204,55 +277,15 @@ export const StatisticsCard = ({
       </div>
 
       <div className="flex-1 flex justify-center items-center min-h-0">
-        {displayType === StatisticsDisplayType.METRIC ? (
-          <div className="flex flex-col items-center justify-center h-[calc(100%-2rem)] w-full">
-            <div
-              ref={metricsRef}
-              className="flex flex-wrap justify-center items-center gap-4 overflow-auto w-full p-2 max-h-full"
-              style={{
-                scrollbarWidth: "thin",
-                scrollbarColor: "#E2E8F0 transparent",
-              }}
-            >
-              {data.series.map((serie, index) => (
-                <div
-                  key={index}
-                  className="flex flex-col items-center min-w-[120px]"
-                >
-                  <div className="text-[#001126] text-sm font-medium font-['Quicksand'] flex items-center gap-2">
-                    {showLegend && (
-                      <Fragment>
-                        <div
-                          className="w-3 h-3 rounded-full"
-                          style={{ backgroundColor: serie.color }}
-                        />
-                        {serie.label}
-                      </Fragment>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-2">
-                    {serie.icon && getIcon(serie.icon)}
-                    <span className="text-2xl font-bold">{serie.value}</span>
-                  </div>
-                  {data.trend && (
-                    <span
-                      className={`text-sm ${
-                        data.trend.isPositive
-                          ? "text-green-500"
-                          : "text-red-500"
-                      }`}
-                    >
-                      {data.trend.isPositive ? "+" : ""}
-                      {data.trend.value}%
-                    </span>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        ) : (
-          renderChart()
-        )}
+        {displayType === StatisticsDisplayType.METRIC && data ? (
+          <MetricsView
+            data={data}
+            showLegend={showLegend}
+            metricsRef={metricsRef}
+          />
+        ) : data?.chartData ? (
+          <ChartView data={data} displayType={displayType} />
+        ) : null}
       </div>
     </div>
   );
