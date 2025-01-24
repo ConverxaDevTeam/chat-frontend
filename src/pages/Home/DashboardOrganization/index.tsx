@@ -44,6 +44,7 @@ const DashboardOrganization = () => {
               displayType={card.displayType}
               timeRange={card.timeRange}
               className="h-full"
+              showLegend={card.showLegend}
               onUpdateCard={updates => updateCard(card.id, updates)}
             />
           </div>

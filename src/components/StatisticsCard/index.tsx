@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, Fragment } from "react";
 import { CardTitle } from "./CardTitle";
 import { TimeRangeSelector } from "./TimeRangeSelector";
 import { OptionsSelector } from "./OptionsSelector";
@@ -47,7 +47,7 @@ export const StatisticsCard = ({
   displayType,
   timeRange,
   className = "",
-  showLegend = true,
+  showLegend,
   onUpdateCard,
 }: StatisticsCardProps) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -146,18 +146,19 @@ export const StatisticsCard = ({
                 key={index}
                 className="flex flex-col items-center min-w-[120px]"
               >
-                <div className="text-[#001126] text-sm font-medium font-['Quicksand']">
-                  {serie.label}
+                <div className="text-[#001126] text-sm font-medium font-['Quicksand'] flex items-center gap-2">
+                  {showLegend && (
+                    <Fragment>
+                      <div
+                        className="w-3 h-3 rounded-full"
+                        style={{ backgroundColor: serie.color }}
+                      />
+                      {serie.label}
+                    </Fragment>
+                  )}
                 </div>
                 <div className="flex items-center gap-2">
-                  {serie.icon ? (
-                    getIcon(serie.icon)
-                  ) : (
-                    <div
-                      className="w-3 h-3 rounded-full"
-                      style={{ backgroundColor: serie.color }}
-                    />
-                  )}
+                  {serie.icon && getIcon(serie.icon)}
                   <span className="text-2xl font-bold">{serie.value}</span>
                 </div>
                 {data.trend && (
@@ -285,8 +286,7 @@ export const StatisticsCard = ({
             onShowLegendChange={handleShowLegendChange}
             selectedAnalyticType={analyticType}
             selectedDisplayType={displayType}
-            showLegend={showLegend}
-            displayType={displayType}
+            showLegend={showLegend ?? false}
           />
         </div>
       </div>
