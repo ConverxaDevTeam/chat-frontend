@@ -127,6 +127,20 @@ const useChartData = (
   displayType: StatisticsDisplayType
 ) => {
   return useMemo(() => {
+    if (displayType === StatisticsDisplayType.PIE) {
+      const allTypes = Object.values(groupedByType).map(entries => entries[0]);
+      return {
+        labels: allTypes.map(e => e.type),
+        datasets: [
+          {
+            label: "",
+            data: allTypes.map(e => e.value),
+            backgroundColor: allTypes.map(e => e.color),
+          },
+        ],
+      };
+    }
+
     const uniqueDates = [
       ...new Set(
         sortedEntries.map(e => e.created_at.toISOString().split("T")[0])
@@ -146,12 +160,7 @@ const useChartData = (
             return entry?.value || 0;
           }),
           borderColor: firstEntry.color,
-          backgroundColor:
-            displayType === StatisticsDisplayType.PIE
-              ? Object.values(groupedByType).map(e => e[0].color)
-              : displayType === StatisticsDisplayType.AREA
-                ? `${firstEntry.color}1A`
-                : firstEntry.color,
+          backgroundColor: firstEntry.color,
           fill: displayType === StatisticsDisplayType.AREA,
           tension: 0.4,
         };

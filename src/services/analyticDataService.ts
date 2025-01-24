@@ -15,7 +15,7 @@ const MAX_BAR_ENTRIES = 6;
 type RangeGroup = Record<number, StatisticEntry>;
 type TypeRangeGroups = Record<AnalyticType, RangeGroup>;
 
-const groupDataByRanges = (
+const groupByTimeRanges = (
   entries: StatisticEntry[],
   days: number
 ): StatisticEntry[] => {
@@ -26,7 +26,6 @@ const groupDataByRanges = (
   const maxTime = Math.max(...timestamps);
   const rangeSize = (maxTime - minTime) / MAX_BAR_ENTRIES;
 
-  // Primero agrupamos por tipo y rango
   const groupedByTypeAndRange = entries.reduce<TypeRangeGroups>(
     (acc, entry) => {
       const rangeIndex = Math.floor(
@@ -47,10 +46,22 @@ const groupDataByRanges = (
     {} as TypeRangeGroups
   );
 
-  // Convertimos el resultado a un array plano manteniendo la separación por tipo
   return Object.values(groupedByTypeAndRange)
     .flatMap<StatisticEntry>(ranges => Object.values(ranges))
     .sort((a, b) => a.created_at.getTime() - b.created_at.getTime());
+};
+
+const groupForPieChart = (entries: StatisticEntry[]): StatisticEntry[] => {
+  console.log(entries);
+  const statisticDict = entries.reduce<Record<AnalyticType, StatisticEntry>>(
+    (acc, entry) => {
+      acc[entry.type] = acc[entry.type] ?? entry;
+      acc[entry.type].value += entry.value;
+      return acc;
+    },
+    {} as Record<AnalyticType, StatisticEntry>
+  );
+  return Object.values(statisticDict);
 };
 
 export const getAnalyticData = (
@@ -67,7 +78,13 @@ export const getAnalyticData = (
     return getDataInRange(typeData, startDate, endDate);
   });
 
-  return displayType === StatisticsDisplayType.BAR
-    ? groupDataByRanges(data, days)
-    : data;
+  if (displayType === StatisticsDisplayType.BAR) {
+    return groupByTimeRanges(data, days);
+  }
+
+  if (displayType === StatisticsDisplayType.PIE) {
+    return groupForPieChart(data);
+  }
+
+  return data;
 };
