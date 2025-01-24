@@ -74,16 +74,9 @@ const StatisticsTypeModal = ({
   onSelect,
   selectedDisplayType,
 }: StatisticsTypeModalProps) => {
-  const [showLegend, setShowLegend] = useState(false);
-
   const handleTypeClick = (id: StatisticsDisplayType) => {
     onSelect?.(id);
     onClose();
-  };
-
-  const handleLegendClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setShowLegend(!showLegend);
   };
 
   return (
@@ -106,19 +99,6 @@ const StatisticsTypeModal = ({
           {option.label}
         </button>
       ))}
-      <div data-divider />
-      <button
-        onClick={handleLegendClick}
-        className="flex items-center gap-2 text-left text-xs font-medium font-quicksand text-sofia-superDark leading-none [font-feature-settings:'liga'_off,'clig'_off] whitespace-nowrap"
-      >
-        <input
-          type="checkbox"
-          checked={showLegend}
-          readOnly
-          className="w-3 h-3 rounded border-sofia-navyBlue/30 text-sofia-electricOlive focus:ring-sofia-electricOlive"
-        />
-        Mostrar leyenda
-      </button>
     </ContextMenu>
   );
 };
@@ -133,7 +113,6 @@ interface OptionsSelectorProps {
   selectedAnalyticType: AnalyticType;
   selectedDisplayType: StatisticsDisplayType;
   showLegend: boolean;
-  displayType: StatisticsDisplayType;
 }
 
 export const OptionsSelector = ({
@@ -240,11 +219,6 @@ export const OptionsSelector = ({
     onMenuClose();
   };
 
-  const handleLegendClick = () => {
-    onShowLegendChange(!showLegend);
-    onMenuClose();
-  };
-
   return (
     <>
       <button
@@ -274,8 +248,12 @@ export const OptionsSelector = ({
           >
             Tipo de estadística
           </button>
+          <div data-divider />
           <button
-            onClick={handleLegendClick}
+            onClick={() => {
+              onShowLegendChange(!showLegend);
+              onMenuClose();
+            }}
             className="flex items-center gap-2 text-left text-xs font-medium font-quicksand text-sofia-superDark leading-none [font-feature-settings:'liga'_off,'clig'_off] whitespace-nowrap"
           >
             <input
