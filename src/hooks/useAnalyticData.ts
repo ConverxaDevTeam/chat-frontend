@@ -43,14 +43,37 @@ const calculateTrend = (entries: StatisticEntry[]): MetricData["trend"] => {
   const sorted = [...entries].sort(
     (a, b) => a.created_at.getTime() - b.created_at.getTime()
   );
-  const lastValue = sorted[sorted.length - 1].value;
-  const previousValue = sorted[sorted.length - 2].value;
-  const difference = lastValue - previousValue;
-  const percentageChange = (difference / previousValue) * 100;
+
+  // Convertir fechas a números (días desde el inicio)
+  const startTime = sorted[0].created_at.getTime();
+  const points = sorted.map(entry => ({
+    x: (entry.created_at.getTime() - startTime) / (1000 * 60 * 60 * 24),
+    y: entry.value,
+  }));
+
+  // Calcular medias
+  const n = points.length;
+  const meanX = points.reduce((sum, p) => sum + p.x, 0) / n;
+  const meanY = points.reduce((sum, p) => sum + p.y, 0) / n;
+
+  // Calcular pendiente (m) de la línea de regresión
+  const numerator = points.reduce(
+    (sum, p) => sum + (p.x - meanX) * (p.y - meanY),
+    0
+  );
+  const denominator = points.reduce(
+    (sum, p) => sum + Math.pow(p.x - meanX, 2),
+    0
+  );
+  const slope = numerator / denominator;
+
+  // Calcular el porcentaje de cambio total
+  const firstValue = sorted[0].value;
+  const predictedChange = ((slope * (n - 1)) / firstValue) * 100;
 
   return {
-    value: Math.abs(Math.round(percentageChange)),
-    isPositive: difference >= 0,
+    value: Math.abs(Math.round(predictedChange)),
+    isPositive: slope >= 0,
   };
 };
 
@@ -111,7 +134,7 @@ export const useAnalyticData = (
       })),
       chartData: {
         labels: uniqueDates,
-        datasets: Object.entries(groupedByType).map(([_, typeEntries]) => {
+        datasets: Object.values(groupedByType).map(typeEntries => {
           const firstEntry = typeEntries[0];
           return {
             label: firstEntry.label,
