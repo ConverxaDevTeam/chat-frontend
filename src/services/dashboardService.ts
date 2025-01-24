@@ -9,68 +9,71 @@ const DASHBOARD_STORAGE_KEY = "dashboard_state";
 
 const defaultCards: DashboardCard[] = [
   {
-    id: "users",
+    id: 1,
     title: "Usuarios",
     analyticType: AnalyticType.TOTAL_USERS,
     displayType: StatisticsDisplayType.METRIC,
     timeRange: TimeRange.LAST_30_DAYS,
-    layout: { lg: { i: "users", x: 0, y: 0, w: 6, h: 2 } },
+    layout: { lg: { i: 1, x: 0, y: 0, w: 6, h: 2 } },
   },
   {
-    id: "messages",
+    id: 2,
     title: "Mensajes",
     analyticType: AnalyticType.TOTAL_MESSAGES,
     displayType: StatisticsDisplayType.AREA,
     timeRange: TimeRange.LAST_7_DAYS,
-    layout: { lg: { i: "messages", x: 6, y: 0, w: 6, h: 2 } },
+    layout: { lg: { i: 2, x: 6, y: 0, w: 6, h: 2 } },
+    showLegend: true,
   },
   {
-    id: "iaMessages",
+    id: 3,
     title: "Avg. Mensajes IA por sesión",
     analyticType: AnalyticType.AVG_IA_MESSAGES_PER_SESSION,
     displayType: StatisticsDisplayType.METRIC,
     timeRange: TimeRange.LAST_30_DAYS,
-    layout: { lg: { i: "iaMessages", x: 0, y: 2, w: 3, h: 2 } },
+    layout: { lg: { i: 3, x: 0, y: 2, w: 3, h: 2 } },
   },
   {
-    id: "htlMessages",
+    id: 4,
     title: "Avg. Mensajes HITL por sesión",
     analyticType: AnalyticType.AVG_HITL_MESSAGES_PER_SESSION,
     displayType: StatisticsDisplayType.METRIC,
     timeRange: TimeRange.LAST_30_DAYS,
-    layout: { lg: { i: "htlMessages", x: 3, y: 2, w: 3, h: 2 } },
+    layout: { lg: { i: 4, x: 3, y: 2, w: 3, h: 2 } },
   },
   {
-    id: "sessions",
+    id: 5,
     title: "Avg. Sesiones por usuario",
     analyticType: AnalyticType.AVG_SESSIONS_PER_USER,
     displayType: StatisticsDisplayType.METRIC,
     timeRange: TimeRange.LAST_30_DAYS,
-    layout: { lg: { i: "sessions", x: 6, y: 2, w: 3, h: 2 } },
+    layout: { lg: { i: 5, x: 6, y: 2, w: 3, h: 2 } },
   },
   {
-    id: "channels",
+    id: 6,
     title: "Mensajes por canal",
     analyticType: AnalyticType.MESSAGES_BY_CHANNEL,
     displayType: StatisticsDisplayType.METRIC,
     timeRange: TimeRange.LAST_30_DAYS,
-    layout: { lg: { i: "channels", x: 9, y: 2, w: 3, h: 2 } },
+    layout: { lg: { i: 6, x: 9, y: 2, w: 3, h: 2 } },
   },
   {
-    id: "functions",
+    id: 7,
     title: "Funciones",
     analyticType: AnalyticType.FUNCTIONS_PER_SESSION,
     displayType: StatisticsDisplayType.AREA,
     timeRange: TimeRange.LAST_7_DAYS,
-    layout: { lg: { i: "functions", x: 0, y: 4, w: 12, h: 2 } },
+    layout: { lg: { i: 7, x: 0, y: 4, w: 12, h: 2 } },
+    showLegend: true,
   },
   {
-    id: "channels-pie",
+    id: 8,
     title: "Distribución por canal",
     analyticType: AnalyticType.MESSAGES_BY_CHANNEL,
     displayType: StatisticsDisplayType.PIE,
     timeRange: TimeRange.LAST_30_DAYS,
-    layout: { lg: { i: "channels-pie", x: 0, y: 6, w: 4, h: 3 } },
+    layout: { lg: { i: 8, x: 0, y: 6, w: 4, h: 3 } },
+    showLegend: true,
   },
 ];
 
@@ -98,7 +101,7 @@ export const dashboardService = {
   updateState,
   updateCard: (
     state: DashboardState,
-    cardId: string,
+    cardId: number,
     updates: Partial<DashboardCard>
   ): DashboardState => {
     const newState = {
@@ -117,7 +120,7 @@ export const dashboardService = {
   ): DashboardState => {
     const newCard = {
       ...card,
-      id: `card-${state.nextId}`,
+      id: state.nextId,
     };
 
     const newState = {
@@ -129,7 +132,7 @@ export const dashboardService = {
     return newState;
   },
 
-  removeCard: (state: DashboardState, cardId: string): DashboardState => {
+  removeCard: (state: DashboardState, cardId: number): DashboardState => {
     const newState = {
       ...state,
       cards: state.cards.filter(card => card.id !== cardId),
@@ -138,7 +141,7 @@ export const dashboardService = {
     return newState;
   },
 
-  reorderCards: (state: DashboardState, cardIds: string[]): DashboardState => {
+  reorderCards: (state: DashboardState, cardIds: number[]): DashboardState => {
     const newState = {
       ...state,
       cards: cardIds

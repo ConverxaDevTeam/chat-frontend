@@ -4,29 +4,46 @@ import {
   TimeRange,
 } from "./analyticTypes";
 
-interface Layout {
-  i: string;
+interface BaseLayout {
   x: number;
   y: number;
   w: number;
   h: number;
 }
 
-interface Layouts {
-  lg: Layout;
-  md?: Layout;
-  sm?: Layout;
-  xs?: Layout;
+interface CardLayout extends BaseLayout {
+  i: number;
+}
+
+interface GridLayout extends BaseLayout {
+  i: string;
+}
+
+interface CardLayouts {
+  lg: CardLayout;
+  md?: CardLayout;
+  sm?: CardLayout;
+  xs?: CardLayout;
+}
+
+interface GridLayouts {
+  lg: GridLayout[];
+  md?: GridLayout[];
+  sm?: GridLayout[];
+  xs?: GridLayout[];
 }
 
 export interface DashboardCard {
-  id: string;
+  id: number;
   title: string;
   analyticType: AnalyticType;
   displayType: StatisticsDisplayType;
   timeRange: TimeRange;
-  layout: Layouts;
+  layout: CardLayouts;
+  showLegend?: boolean;
 }
+
+export type { GridLayout, GridLayouts };
 
 export interface DashboardState {
   cards: DashboardCard[];

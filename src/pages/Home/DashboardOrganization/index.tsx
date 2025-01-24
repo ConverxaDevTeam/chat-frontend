@@ -2,26 +2,44 @@ import { Responsive, WidthProvider } from "react-grid-layout";
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
 import { StatisticsCard } from "../../../components/StatisticsCard";
-import { DashboardCard } from "../../../services/dashboardTypes";
+import { GridLayout, GridLayouts } from "../../../services/dashboardTypes";
 import { useDashboard } from "../../../hooks/useDashboard";
-import { Layout } from "react-grid-layout";
 
-const ResponsiveGridLayout = WidthProvider(Responsive);
+const ResponsiveGridLayout = WidthProvider<GridLayouts>(Responsive);
 
 const DashboardOrganization = () => {
   const { state, updateCard } = useDashboard();
 
-  const onLayoutChange = (layout: Layout[]) => {
+  const onLayoutChange = (
+    currentLayout: GridLayout[],
+    allLayouts: GridLayouts
+  ) => {
     const newCards = state.cards.map(card => ({
       ...card,
       layout: {
-        lg: layout.find(l => l.i === card.id) || card.layout.lg,
-        md:
-          layout.find(l => l.i === card.id) || card.layout.md || card.layout.lg,
-        sm:
-          layout.find(l => l.i === card.id) || card.layout.sm || card.layout.lg,
-        xs:
-          layout.find(l => l.i === card.id) || card.layout.xs || card.layout.lg,
+        lg: {
+          ...(currentLayout.find(l => l.i === String(card.id)) ||
+            card.layout.lg),
+          i: card.id,
+        },
+        md: {
+          ...(allLayouts.md?.find(l => l.i === String(card.id)) ||
+            card.layout.md ||
+            card.layout.lg),
+          i: card.id,
+        },
+        sm: {
+          ...(allLayouts.sm?.find(l => l.i === String(card.id)) ||
+            card.layout.sm ||
+            card.layout.lg),
+          i: card.id,
+        },
+        xs: {
+          ...(allLayouts.xs?.find(l => l.i === String(card.id)) ||
+            card.layout.xs ||
+            card.layout.lg),
+          i: card.id,
+        },
       },
     }));
 
@@ -30,19 +48,19 @@ const DashboardOrganization = () => {
     });
   };
 
-  const layouts = {
-    lg: state.cards.map(card => ({ ...card.layout.lg, i: card.id })),
+  const layouts: GridLayouts = {
+    lg: state.cards.map(card => ({ ...card.layout.lg, i: String(card.id) })),
     md: state.cards.map(card => ({
       ...(card.layout.md || card.layout.lg),
-      i: card.id,
+      i: String(card.id),
     })),
     sm: state.cards.map(card => ({
       ...(card.layout.sm || card.layout.lg),
-      i: card.id,
+      i: String(card.id),
     })),
     xs: state.cards.map(card => ({
       ...(card.layout.xs || card.layout.lg),
-      i: card.id,
+      i: String(card.id),
     })),
   };
 
@@ -52,15 +70,10 @@ const DashboardOrganization = () => {
         className="layout"
         layouts={layouts}
         breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480 }}
-        cols={{ lg: 12, md: 8, sm: 12, xs: 12 }}
-        rowHeight={120}
-        onLayoutChange={onLayoutChange}
-        isDraggable={true}
-        isResizable={true}
-        margin={[16, 16]}
+        cols={{ lg: 12, md: 10, sm: 6, xs: 4 }}
       >
-        {state.cards.map((card: DashboardCard) => (
-          <div key={card.id} className="bg-white rounded-lg shadow-sm">
+        {state.cards.map(card => (
+          <div key={String(card.id)}>
             <StatisticsCard
               id={card.id}
               title={card.title}

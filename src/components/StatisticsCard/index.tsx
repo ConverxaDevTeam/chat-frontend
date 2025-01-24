@@ -23,25 +23,31 @@ const getIcon = (iconName: string) => {
 };
 
 export interface StatisticsCardProps {
+  id: number;
   title: string;
   analyticType: AnalyticType;
   displayType: StatisticsDisplayType;
   timeRange: TimeRange;
   className?: string;
+  showLegend?: boolean;
   onUpdateCard?: (update: {
+    id: number;
     title?: string;
     timeRange?: TimeRange;
     analyticType?: AnalyticType;
     displayType?: StatisticsDisplayType;
+    showLegend?: boolean;
   }) => void;
 }
 
 export const StatisticsCard = ({
+  id,
   title,
   analyticType,
   displayType,
   timeRange,
   className = "",
+  showLegend = true,
   onUpdateCard,
 }: StatisticsCardProps) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -102,31 +108,91 @@ export const StatisticsCard = ({
   };
 
   const handleTitleChange = (newTitle: string) => {
-    onUpdateCard?.({ title: newTitle });
+    onUpdateCard?.({ id, title: newTitle });
   };
 
   const handleTimeRangeChange = (newTimeRange: TimeRange) => {
-    onUpdateCard?.({ timeRange: newTimeRange });
+    onUpdateCard?.({ id, timeRange: newTimeRange });
   };
 
   const handleAnalyticTypeChange = (type: AnalyticType) => {
-    onUpdateCard?.({ analyticType: type });
+    onUpdateCard?.({ id, analyticType: type });
   };
 
   const handleDisplayTypeChange = (type: StatisticsDisplayType) => {
-    onUpdateCard?.({ displayType: type });
+    onUpdateCard?.({ id, displayType: type });
+  };
+
+  const handleShowLegendChange = (show: boolean) => {
+    onUpdateCard?.({ id, showLegend: show });
   };
 
   const renderChart = () => {
     if (!data) return null;
+
+    if (displayType === StatisticsDisplayType.METRIC) {
+      return (
+        <div className="flex flex-col items-center justify-center h-[calc(100%-2rem)] w-full">
+          <div
+            ref={metricsRef}
+            className="flex flex-wrap justify-center items-center gap-4 overflow-auto w-full p-2 max-h-full"
+            style={{
+              scrollbarWidth: "thin",
+              scrollbarColor: "#E2E8F0 transparent",
+            }}
+          >
+            {data.series.map((serie, index) => (
+              <div
+                key={index}
+                className="flex flex-col items-center min-w-[120px]"
+              >
+                <div className="text-[#001126] text-sm font-medium font-['Quicksand']">
+                  {serie.label}
+                </div>
+                <div className="flex items-center gap-2">
+                  {serie.icon ? (
+                    getIcon(serie.icon)
+                  ) : (
+                    <div
+                      className="w-3 h-3 rounded-full"
+                      style={{ backgroundColor: serie.color }}
+                    />
+                  )}
+                  <span className="text-2xl font-bold">{serie.value}</span>
+                </div>
+                {data.trend && (
+                  <span
+                    className={`text-sm ${
+                      data.trend.isPositive ? "text-green-500" : "text-red-500"
+                    }`}
+                  >
+                    {data.trend.isPositive ? "+" : ""}
+                    {data.trend.value}%
+                  </span>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
 
     const baseOptions = {
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
         legend: {
-          display: displayType !== StatisticsDisplayType.METRIC,
+          display: showLegend,
           position: "bottom" as const,
+          labels: {
+            usePointStyle: true,
+            boxWidth: 6,
+            padding: 15,
+            font: {
+              family: "'Quicksand', sans-serif",
+              size: 12,
+            },
+          },
         },
       },
       scales:
@@ -134,10 +200,22 @@ export const StatisticsCard = ({
           ? {
               x: {
                 grid: { display: false },
+                ticks: {
+                  font: {
+                    family: "'Quicksand', sans-serif",
+                    size: 12,
+                  },
+                },
               },
               y: {
                 beginAtZero: true,
                 grid: { color: "#E2E8F0" },
+                ticks: {
+                  font: {
+                    family: "'Quicksand', sans-serif",
+                    size: 12,
+                  },
+                },
               },
             }
           : undefined,
@@ -165,54 +243,8 @@ export const StatisticsCard = ({
             options={baseOptions}
           />
         );
-      case StatisticsDisplayType.METRIC:
       default:
-        return (
-          <div className="flex flex-col items-center justify-center h-[calc(100%-2rem)] w-full">
-            <div
-              ref={metricsRef}
-              className="flex flex-wrap justify-center items-center gap-4 overflow-auto w-full p-2 max-h-full"
-              style={{
-                scrollbarWidth: "thin",
-                scrollbarColor: "#E2E8F0 transparent",
-              }}
-            >
-              {data.series.map((serie, index) => (
-                <div
-                  key={index}
-                  className="flex flex-col items-center min-w-[120px]"
-                >
-                  <div className="text-[#001126] text-sm font-medium font-['Quicksand']">
-                    {serie.label}
-                  </div>
-                  <div className="flex items-center gap-2">
-                    {serie.icon ? (
-                      getIcon(serie.icon)
-                    ) : (
-                      <div
-                        className="w-3 h-3 rounded-full"
-                        style={{ backgroundColor: serie.color }}
-                      />
-                    )}
-                    <span className="text-2xl font-bold">{serie.value}</span>
-                  </div>
-                  {data.trend && (
-                    <span
-                      className={`text-sm ${
-                        data.trend.isPositive
-                          ? "text-green-500"
-                          : "text-red-500"
-                      }`}
-                    >
-                      {data.trend.isPositive ? "+" : ""}
-                      {data.trend.value}%
-                    </span>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        );
+        return null;
     }
   };
 
@@ -250,8 +282,11 @@ export const StatisticsCard = ({
             onMenuClose={() => setOptionsMenu(null)}
             onDataOptionSelect={handleAnalyticTypeChange}
             onStatisticsTypeSelect={handleDisplayTypeChange}
+            onShowLegendChange={handleShowLegendChange}
             selectedAnalyticType={analyticType}
             selectedDisplayType={displayType}
+            showLegend={showLegend}
+            displayType={displayType}
           />
         </div>
       </div>

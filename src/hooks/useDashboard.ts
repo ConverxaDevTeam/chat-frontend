@@ -3,28 +3,24 @@ import { dashboardService } from "../services/dashboardService";
 import { DashboardCard, DashboardState } from "../services/dashboardTypes";
 
 export const useDashboard = () => {
-  const [state, setState] = useState<DashboardState>(() =>
+  const [state, setState] = useState<DashboardState>(
     dashboardService.getInitialState()
   );
 
-  const updateCard = (cardId: string, updates: Partial<DashboardCard>) => {
-    setState(currentState =>
-      dashboardService.updateCard(currentState, cardId, updates)
-    );
+  const updateCard = (cardId: number, updates: Partial<DashboardCard>) => {
+    setState(dashboardService.updateCard(state, cardId, updates));
   };
 
   const addCard = (card: Omit<DashboardCard, "id">) => {
-    setState(currentState => dashboardService.addCard(currentState, card));
+    setState(dashboardService.addCard(state, card));
   };
 
-  const removeCard = (cardId: string) => {
-    setState(currentState => dashboardService.removeCard(currentState, cardId));
+  const removeCard = (cardId: number) => {
+    setState(dashboardService.removeCard(state, cardId));
   };
 
-  const reorderCards = (cardIds: string[]) => {
-    setState(currentState =>
-      dashboardService.reorderCards(currentState, cardIds)
-    );
+  const reorderCards = (cardIds: number[]) => {
+    setState(dashboardService.reorderCards(state, cardIds));
   };
 
   return {
