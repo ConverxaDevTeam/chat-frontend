@@ -46,7 +46,6 @@ const CreateUserModal = ({
   const role = watch("role");
 
   const onSubmit = async (data: FormData) => {
-    console.log("Formulario enviado con datos:", data);
     const success = await createGlobalUser(
       data.email,
       role,

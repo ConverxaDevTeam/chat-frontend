@@ -52,7 +52,6 @@ const groupByTimeRanges = (
 };
 
 const groupForPieChart = (entries: StatisticEntry[]): StatisticEntry[] => {
-  console.log(entries);
   const statisticDict = entries.reduce<Record<AnalyticType, StatisticEntry>>(
     (acc, entry) => {
       acc[entry.type] = acc[entry.type] ?? entry;

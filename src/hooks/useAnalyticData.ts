@@ -130,12 +130,15 @@ const useChartData = (
     if (displayType === StatisticsDisplayType.PIE) {
       const allTypes = Object.values(groupedByType).map(entries => entries[0]);
       return {
-        labels: allTypes.map(e => e.type),
+        labels: allTypes.map(e => e.label),
         datasets: [
           {
             label: "",
             data: allTypes.map(e => e.value),
             backgroundColor: allTypes.map(e => e.color),
+            borderColor: "#ffffff",
+            fill: false,
+            tension: 0.4,
           },
         ],
       };
