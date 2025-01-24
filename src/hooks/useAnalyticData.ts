@@ -165,7 +165,7 @@ export const useAnalyticData = (
   displayType: StatisticsDisplayType,
   timeRange: TimeRange
 ): AnalyticResult => {
-  const entries = getAnalyticData(analyticTypes, timeRange);
+  const entries = getAnalyticData(analyticTypes, timeRange, displayType);
   const { groupedByType, lastEntries, sortedEntries } =
     useGroupedEntries(entries);
   const metricData = useMetricData(lastEntries, sortedEntries);
