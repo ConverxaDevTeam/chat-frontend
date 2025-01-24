@@ -95,6 +95,7 @@ export const displayTypeOptions = [
   { id: StatisticsDisplayType.METRIC, label: "Metrica" },
   { id: StatisticsDisplayType.AREA, label: "Area" },
   { id: StatisticsDisplayType.BAR, label: "Barras" },
+  { id: StatisticsDisplayType.PIE, label: "Pastel" },
 ];
 
 export const timeRangeLabels: Record<TimeRange, string> = {
