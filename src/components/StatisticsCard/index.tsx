@@ -143,8 +143,10 @@ export const StatisticsCard = ({
             padding: 15,
             font: {
               family: "'Quicksand', sans-serif",
-              size: 12,
+              size: 10,
+              weight: "normal" as const,
             },
+            color: "#001126",
           },
         },
       },
@@ -156,8 +158,10 @@ export const StatisticsCard = ({
                 ticks: {
                   font: {
                     family: "'Quicksand', sans-serif",
-                    size: 12,
+                    size: 10,
+                    weight: "normal" as const,
                   },
+                  color: "#001126",
                 },
               },
               y: {
@@ -166,8 +170,10 @@ export const StatisticsCard = ({
                 ticks: {
                   font: {
                     family: "'Quicksand', sans-serif",
-                    size: 12,
+                    size: 10,
+                    weight: "normal" as const,
                   },
+                  color: "#001126",
                 },
               },
             }
@@ -178,8 +184,94 @@ export const StatisticsCard = ({
       case StatisticsDisplayType.AREA:
         return (
           <Line
-            data={data.chartData as ChartData<"line">}
-            options={baseOptions}
+            data={{
+              ...(data.chartData as ChartData<"line">),
+              datasets: (data.chartData as ChartData<"line">).datasets.map(
+                (dataset, index) => {
+                  const ctx = document.createElement("canvas").getContext("2d");
+                  if (!ctx) return dataset;
+
+                  const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+                  const color = data.series[index].color;
+                  gradient.addColorStop(0, `${color}99`); // 60% opacity
+                  gradient.addColorStop(0.15, `${color}66`); // 40% opacity
+                  gradient.addColorStop(0.3, `${color}00`); // 0% opacity
+
+                  return {
+                    ...dataset,
+                    fill: "origin",
+                    tension: 0.4,
+                    borderWidth: 1,
+                    borderColor: color,
+                    backgroundColor: gradient,
+                  };
+                }
+              ),
+            }}
+            options={{
+              ...baseOptions,
+              maintainAspectRatio: false,
+              aspectRatio: 14.4,
+              scales: {
+                x: {
+                  grid: {
+                    display: false,
+                  },
+                  border: {
+                    display: false,
+                  },
+                },
+                y: {
+                  grid: {
+                    color: "#E9E9E9",
+                    lineWidth: 1,
+                    drawTicks: false,
+                  },
+                  border: {
+                    display: false,
+                  },
+                  ticks: {
+                    display: true,
+                    align: "end",
+                    color: "#A6A8AB",
+                    font: {
+                      family: "'Quicksand', sans-serif",
+                      size: 12,
+                      weight: 500 as const,
+                    },
+                    padding: 8,
+                  },
+                },
+              },
+              plugins: {
+                ...baseOptions.plugins,
+                legend: {
+                  position: "top" as const,
+                  align: "end" as const,
+                  labels: {
+                    usePointStyle: true,
+                    boxWidth: 6,
+                    padding: 15,
+                    font: {
+                      family: "'Quicksand', sans-serif",
+                      size: 10,
+                      weight: "normal" as const,
+                    },
+                    color: "#001126",
+                  },
+                },
+              },
+              elements: {
+                point: {
+                  radius: 0,
+                  hitRadius: 10,
+                },
+                line: {
+                  tension: 0.4,
+                  borderWidth: 1,
+                },
+              },
+            }}
           />
         );
       case StatisticsDisplayType.BAR:

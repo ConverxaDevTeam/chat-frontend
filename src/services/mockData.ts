@@ -42,12 +42,12 @@ const ANALYTIC_METADATA: Record<
   },
   [AnalyticType.IA_MESSAGES]: {
     label: "Mensajes IA",
-    color: "#60A5FA",
+    color: "#15ECDA",
     icon: "cpu",
   },
   [AnalyticType.HITL_MESSAGES]: {
     label: "Mensajes HITL",
-    color: "#60A5FA",
+    color: "#001126",
     icon: "user",
   },
   [AnalyticType.TOTAL_MESSAGES]: {
