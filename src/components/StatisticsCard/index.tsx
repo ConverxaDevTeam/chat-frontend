@@ -62,7 +62,7 @@ export const StatisticsCard = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const metricsRef = useRef<HTMLDivElement>(null);
 
-  const data = useAnalyticData(analyticTypes[0], displayType, timeRange);
+  const data = useAnalyticData(analyticTypes, displayType, timeRange);
 
   useEffect(() => {
     const checkWidth = () => {

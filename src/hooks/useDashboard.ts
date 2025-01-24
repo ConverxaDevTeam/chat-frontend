@@ -1,34 +1,39 @@
 import { useState } from "react";
-import { dashboardService } from "../services/dashboardService";
 import {
   DashboardCard,
   DashboardState,
   GridLayouts,
 } from "../services/dashboardTypes";
+import {
+  getInitialState,
+  updateCard as updateCardService,
+  updateLayouts as updateLayoutsService,
+  addCard as addCardService,
+  removeCard as removeCardService,
+  reorderCards as reorderCardsService,
+} from "@services/dashboardService";
 
 export const useDashboard = () => {
-  const [state, setState] = useState<DashboardState>(
-    dashboardService.getInitialState()
-  );
+  const [state, setState] = useState<DashboardState>(getInitialState());
 
   const updateCard = (cardId: number, updates: Partial<DashboardCard>) => {
-    setState(dashboardService.updateCard(state, cardId, updates));
+    setState(updateCardService(state, cardId, updates));
   };
 
   const updateLayouts = (layouts: GridLayouts) => {
-    setState(dashboardService.updateLayouts(state, layouts));
+    setState(updateLayoutsService(state, layouts));
   };
 
   const addCard = (card: Omit<DashboardCard, "id">) => {
-    setState(dashboardService.addCard(state, card));
+    setState(addCardService(state, card));
   };
 
   const removeCard = (cardId: number) => {
-    setState(dashboardService.removeCard(state, cardId));
+    setState(removeCardService(state, cardId));
   };
 
   const reorderCards = (cardIds: number[]) => {
-    setState(dashboardService.reorderCards(state, cardIds));
+    setState(reorderCardsService(state, cardIds));
   };
 
   return {
