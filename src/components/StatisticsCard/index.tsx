@@ -154,7 +154,9 @@ export const StatisticsCard = ({
         displayType !== StatisticsDisplayType.PIE
           ? {
               x: {
-                grid: { display: false },
+                grid: {
+                  display: false,
+                },
                 ticks: {
                   font: {
                     family: "'Quicksand', sans-serif",
@@ -193,8 +195,8 @@ export const StatisticsCard = ({
 
                   const gradient = ctx.createLinearGradient(0, 0, 0, 400);
                   const color = data.series[index].color;
-                  gradient.addColorStop(0, `${color}99`); // 60% opacity
-                  gradient.addColorStop(0.15, `${color}66`); // 40% opacity
+                  gradient.addColorStop(0, `${color}CC`); // 80% opacity
+                  gradient.addColorStop(0.15, `${color}99`); // 60% opacity
                   gradient.addColorStop(0.3, `${color}00`); // 0% opacity
 
                   return {
@@ -219,6 +221,14 @@ export const StatisticsCard = ({
                   },
                   border: {
                     display: false,
+                  },
+                  ticks: {
+                    color: "#A6A8AB",
+                    font: {
+                      family: "'Quicksand', sans-serif",
+                      size: 12,
+                      weight: 500 as const,
+                    },
                   },
                 },
                 y: {
