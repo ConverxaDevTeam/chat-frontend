@@ -69,16 +69,16 @@ export const TimeRangeSelector = ({
           ref={buttonRef}
           onClick={handleClick}
           onMouseDown={handleMouseDown}
-          className="inline-flex w-[126px] items-center gap-2.5 px-2 py-1 text-sofia-superDark rounded-lg hover:bg-white/50 bg-sofia-secundario border border-sofia-superDark"
+          className="inline-flex w-[126px] items-center justify-between px-2 py-1 text-sofia-superDark rounded-lg hover:bg-white/50 bg-sofia-secundario border border-sofia-superDark"
         >
-          <span className="font-quicksand text-xs font-medium w-[88px] px-[2px] truncate flex items-center gap-2.5">
+          <span className="font-quicksand text-xs font-medium truncate">
             {timeRangeLabels[timeRange]}
-            <img
-              src="/mvp/chevron-down.svg"
-              alt="chevron"
-              className="w-2.5 h-2.5"
-            />
           </span>
+          <img
+            src="/mvp/chevron-down.svg"
+            alt="chevron"
+            className="w-[12px] h-[12px]"
+          />
         </button>
       ) : (
         <button
