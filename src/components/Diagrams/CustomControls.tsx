@@ -8,20 +8,17 @@ export const CustomControls = () => {
   const [isLocked, setIsLocked] = useState(false);
 
   const handleZoomIn = (e: MouseEvent<HTMLButtonElement>) => {
-    console.log("Zoom in");
     e.preventDefault();
     zoomIn();
   };
 
   const handleZoomOut = (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    console.log("Zoom out");
     zoomOut();
   };
 
   const handleFitView = (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    console.log("Fit view");
     fitView();
   };
 
