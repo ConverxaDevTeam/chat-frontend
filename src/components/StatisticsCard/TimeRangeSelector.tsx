@@ -77,7 +77,7 @@ export const TimeRangeSelector = ({
           <img
             src="/mvp/chevron-down.svg"
             alt="chevron"
-            className="w-[12px] h-[12px]"
+            className="w-[14px] h-[14px]"
           />
         </button>
       ) : (
