@@ -16,9 +16,13 @@ const defaultCards: DashboardCard[] = [
   {
     id: 1,
     title: "Usuarios",
-    analyticTypes: [AnalyticType.TOTAL_USERS],
+    analyticTypes: [
+      AnalyticType.RECURRING_USERS,
+      AnalyticType.TOTAL_USERS,
+      AnalyticType.NEW_USERS,
+    ],
     displayType: StatisticsDisplayType.METRIC,
-    timeRange: TimeRange.LAST_30_DAYS,
+    timeRange: TimeRange.LAST_90_DAYS,
     layout: {
       lg: {
         w: 18,
@@ -28,7 +32,7 @@ const defaultCards: DashboardCard[] = [
         i: 1,
       },
       md: {
-        w: 15,
+        w: 14,
         h: 6,
         x: 0,
         y: 0,
@@ -54,9 +58,9 @@ const defaultCards: DashboardCard[] = [
   {
     id: 2,
     title: "Mensajes",
-    analyticTypes: [AnalyticType.TOTAL_MESSAGES],
+    analyticTypes: [AnalyticType.IA_MESSAGES, AnalyticType.HITL_MESSAGES],
     displayType: StatisticsDisplayType.AREA,
-    timeRange: TimeRange.LAST_30_DAYS,
+    timeRange: TimeRange.LAST_7_DAYS,
     layout: {
       lg: {
         w: 18,
@@ -98,14 +102,14 @@ const defaultCards: DashboardCard[] = [
     layout: {
       lg: {
         w: 9,
-        h: 4,
+        h: 5,
         x: 0,
         y: 6,
         i: 3,
       },
       md: {
         w: 9,
-        h: 4,
+        h: 5,
         x: 0,
         y: 6,
         i: 3,
@@ -135,14 +139,14 @@ const defaultCards: DashboardCard[] = [
     layout: {
       lg: {
         w: 9,
-        h: 4,
-        x: 12,
-        y: 6,
+        h: 5,
+        x: 9,
+        y: 11,
         i: 4,
       },
       md: {
         w: 9,
-        h: 4,
+        h: 5,
         x: 9,
         y: 6,
         i: 4,
@@ -172,16 +176,16 @@ const defaultCards: DashboardCard[] = [
     layout: {
       lg: {
         w: 9,
-        h: 4,
-        x: 0,
-        y: 10,
+        h: 5,
+        x: 9,
+        y: 6,
         i: 5,
       },
       md: {
         w: 9,
-        h: 4,
+        h: 5,
         x: 0,
-        y: 10,
+        y: 11,
         i: 5,
       },
       sm: {
@@ -208,21 +212,21 @@ const defaultCards: DashboardCard[] = [
       AnalyticType.MESSAGES_BY_FACEBOOK,
       AnalyticType.MESSAGES_BY_WEB,
     ],
-    displayType: StatisticsDisplayType.METRIC,
+    displayType: StatisticsDisplayType.PIE,
     timeRange: TimeRange.LAST_30_DAYS,
     layout: {
       lg: {
         w: 9,
-        h: 4,
-        x: 12,
-        y: 10,
+        h: 5,
+        x: 0,
+        y: 11,
         i: 6,
       },
       md: {
         w: 9,
-        h: 4,
+        h: 5,
         x: 9,
-        y: 10,
+        y: 11,
         i: 6,
       },
       sm: {
@@ -240,26 +244,27 @@ const defaultCards: DashboardCard[] = [
         i: 6,
       },
     },
+    showLegend: false,
   },
   {
     id: 7,
     title: "Funciones",
     analyticTypes: [AnalyticType.FUNCTIONS_PER_SESSION],
-    displayType: StatisticsDisplayType.AREA,
+    displayType: StatisticsDisplayType.BAR,
     timeRange: TimeRange.LAST_7_DAYS,
     layout: {
       lg: {
         w: 36,
         h: 6,
         x: 0,
-        y: 14,
+        y: 16,
         i: 7,
       },
       md: {
         w: 30,
         h: 6,
         x: 0,
-        y: 14,
+        y: 16,
         i: 7,
       },
       sm: {
@@ -292,14 +297,14 @@ const defaultCards: DashboardCard[] = [
     layout: {
       lg: {
         w: 12,
-        h: 8,
+        h: 10,
         x: 24,
         y: 6,
         i: 8,
       },
       md: {
         w: 12,
-        h: 8,
+        h: 10,
         x: 18,
         y: 6,
         i: 8,
