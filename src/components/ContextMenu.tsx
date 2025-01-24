@@ -96,7 +96,8 @@ const useOutsideClick = (
 const useMenuPosition = (
   menuRef: React.RefObject<HTMLDivElement>,
   x: number,
-  y: number
+  y: number,
+  parentId?: string
 ) => {
   useEffect(() => {
     if (!menuRef.current) return;
@@ -105,21 +106,38 @@ const useMenuPosition = (
     const rect = menu.getBoundingClientRect();
     const windowWidth = window.innerWidth;
     const windowHeight = window.innerHeight;
+    const threshold = windowHeight * 0.75; // 3/4 de la pantalla
 
     let adjustedX = x;
     let adjustedY = y;
 
-    if (x + rect.width > windowWidth) {
-      adjustedX = x - rect.width;
+    if (parentId) {
+      const parentMenu = document.querySelector(`[data-menu-id="${parentId}"]`);
+      if (parentMenu) {
+        const parentRect = parentMenu.getBoundingClientRect();
+        adjustedX = parentRect.right;
+        adjustedY =
+          parentRect.top > threshold
+            ? parentRect.top - rect.height
+            : parentRect.top;
+      }
+    } else {
+      adjustedY = y > threshold ? y - rect.height : y;
     }
 
-    if (y + rect.height > windowHeight) {
-      adjustedY = y - rect.height;
+    // Ajuste horizontal
+    if (adjustedX + rect.width > windowWidth) {
+      adjustedX = parentId
+        ? adjustedX - rect.width - rect.width
+        : windowWidth - rect.width;
     }
+
+    // Asegurar que no se salga de la pantalla
+    adjustedY = Math.max(0, Math.min(windowHeight - rect.height, adjustedY));
 
     menu.style.left = `${adjustedX}px`;
     menu.style.top = `${adjustedY}px`;
-  }, [x, y]);
+  }, [x, y, parentId]);
 };
 
 // Componente para el divisor
@@ -172,7 +190,7 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
 
   useMenuClosing(menuId.current, parentId, onClose);
   useOutsideClick(menuId.current, parentId, onClose);
-  useMenuPosition(menuRef, x, y);
+  useMenuPosition(menuRef, x, y, parentId);
 
   return createPortal(
     <div
