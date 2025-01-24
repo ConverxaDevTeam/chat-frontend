@@ -68,32 +68,41 @@ const MetricsView = ({ data, showLegend, metricsRef }: MetricsViewProps) => (
         scrollbarColor: "#E2E8F0 transparent",
       }}
     >
-      {data.series.map((serie, index) => (
-        <div key={index} className="flex flex-col items-center min-w-[120px]">
-          <div className="text-[#001126] text-sm font-medium font-['Quicksand'] flex items-center gap-2">
-            {showLegend && (
-              <LegendView
-                color={serie.color}
-                label={serie.label}
-                icon={serie.icon}
-              />
+      {data.series.length > 0 ? (
+        data.series.map((serie, index) => (
+          <div key={index} className="flex flex-col items-center min-w-[120px]">
+            <div className="text-[#001126] text-sm font-medium font-['Quicksand'] flex items-center gap-2">
+              {showLegend && (
+                <LegendView
+                  color={serie.color}
+                  label={serie.label}
+                  icon={serie.icon}
+                />
+              )}
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-2xl font-bold">{serie.value}</span>
+            </div>
+            {data.trend && (
+              <span
+                className={`text-sm ${
+                  data.trend.isPositive ? "text-green-500" : "text-red-500"
+                }`}
+              >
+                {data.trend.isPositive ? "+" : ""}
+                {data.trend.value}%
+              </span>
             )}
           </div>
-          <div className="flex items-center gap-2">
-            <span className="text-2xl font-bold">{serie.value}</span>
-          </div>
-          {data.trend && (
-            <span
-              className={`text-sm ${
-                data.trend.isPositive ? "text-green-500" : "text-red-500"
-              }`}
-            >
-              {data.trend.isPositive ? "+" : ""}
-              {data.trend.value}%
-            </span>
-          )}
+        ))
+      ) : (
+        <div className="flex flex-col items-center justify-center p-8 text-gray-500">
+          <span className="text-lg font-medium">No hay datos disponibles</span>
+          <span className="text-sm">
+            Intenta seleccionar otro rango de fechas
+          </span>
         </div>
-      ))}
+      )}
     </div>
   </div>
 );
