@@ -50,19 +50,17 @@ const DataOptionsModal = ({
       onClose={onClose}
       parentId={parentId}
     >
-      <div className="flex flex-col gap-1 p-2">
-        {dataOptions.map(option => (
-          <button
-            key={option.id}
-            className={`flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-100 rounded-md ${
-              selectedTypes.includes(option.id) ? "bg-gray-100" : ""
-            }`}
-            onClick={() => handleOptionClick(option.id)}
-          >
-            {option.label}
-          </button>
-        ))}
-      </div>
+      {dataOptions.map(option => (
+        <button
+          key={option.id}
+          className={`flex items-center gap-2 px-4 py-2 text-sm rounded-md ${
+            selectedTypes.includes(option.id) ? "bg-sofia-electricOlive" : ""
+          }`}
+          onClick={() => handleOptionClick(option.id)}
+        >
+          {option.label}
+        </button>
+      ))}
     </ContextMenu>
   );
 };
@@ -99,7 +97,7 @@ const StatisticsTypeModal = ({
           key={option.id}
           className={`text-left text-xs font-medium font-quicksand text-sofia-superDark leading-none self-stretch [font-feature-settings:'liga'_off,'clig'_off] whitespace-nowrap ${
             selectedDisplayType === option.id
-              ? "bg-blue-100 text-blue-700"
+              ? "bg-sofia-electricOlive text-sofia-superDark"
               : "hover:bg-gray-100"
           }`}
           onClick={() => handleTypeClick(option.id as StatisticsDisplayType)}
