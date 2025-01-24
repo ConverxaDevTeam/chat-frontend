@@ -8,7 +8,7 @@ import { useDashboard } from "../../../hooks/useDashboard";
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
 const DashboardOrganization = () => {
-  const { state, updateCard } = useDashboard();
+  const { state, updateCard, updateLayouts } = useDashboard();
 
   const layouts: GridLayouts = {
     lg: state.cards.map(card => ({ ...card.layout.lg, i: String(card.id) })),
@@ -39,6 +39,8 @@ const DashboardOrganization = () => {
         containerPadding={[10, 10]}
         compactType="vertical"
         useCSSTransforms
+        // @ts-expect-error - Los tipos de @types/react-grid-layout están desactualizados respecto a la versión actual del paquete
+        onLayoutChange={(_, allLayouts) => updateLayouts(allLayouts)}
       >
         {state.cards.map(card => (
           <div key={String(card.id)}>

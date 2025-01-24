@@ -1,4 +1,4 @@
-import { DashboardCard, DashboardState } from "./dashboardTypes";
+import { DashboardCard, DashboardState, GridLayouts } from "./dashboardTypes";
 import {
   AnalyticType,
   StatisticsDisplayType,
@@ -174,6 +174,30 @@ export const dashboardService = {
       cards: state.cards.map(card =>
         card.id === cardId ? { ...card, ...updates } : card
       ),
+    };
+    updateState(newState);
+    return newState;
+  },
+
+  updateLayouts: (
+    state: DashboardState,
+    layouts: GridLayouts
+  ): DashboardState => {
+    const newState = {
+      ...state,
+      cards: state.cards.map(card => {
+        const layout = layouts.lg?.find(l => Number(l.i) === card.id);
+        if (layout) {
+          return {
+            ...card,
+            layout: {
+              ...card.layout,
+              lg: { ...layout, i: card.id },
+            },
+          };
+        }
+        return card;
+      }),
     };
     updateState(newState);
     return newState;

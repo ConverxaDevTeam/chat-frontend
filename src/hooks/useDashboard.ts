@@ -1,6 +1,10 @@
 import { useState } from "react";
 import { dashboardService } from "../services/dashboardService";
-import { DashboardCard, DashboardState } from "../services/dashboardTypes";
+import {
+  DashboardCard,
+  DashboardState,
+  GridLayouts,
+} from "../services/dashboardTypes";
 
 export const useDashboard = () => {
   const [state, setState] = useState<DashboardState>(
@@ -9,6 +13,10 @@ export const useDashboard = () => {
 
   const updateCard = (cardId: number, updates: Partial<DashboardCard>) => {
     setState(dashboardService.updateCard(state, cardId, updates));
+  };
+
+  const updateLayouts = (layouts: GridLayouts) => {
+    setState(dashboardService.updateLayouts(state, layouts));
   };
 
   const addCard = (card: Omit<DashboardCard, "id">) => {
@@ -26,6 +34,7 @@ export const useDashboard = () => {
   return {
     state,
     updateCard,
+    updateLayouts,
     addCard,
     removeCard,
     reorderCards,
