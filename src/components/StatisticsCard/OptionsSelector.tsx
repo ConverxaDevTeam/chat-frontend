@@ -259,26 +259,7 @@ interface OptionsSelectorProps {
   showLegend: boolean;
 }
 
-export const OptionsSelector = ({
-  menuPosition,
-  onMenuOpen,
-  onMenuClose,
-  onDataOptionSelect,
-  onStatisticsTypeSelect,
-  onShowLegendChange,
-  selectedAnalyticTypes,
-  selectedDisplayType,
-  showLegend,
-}: OptionsSelectorProps) => {
-  const buttonRef = useRef<HTMLButtonElement>(null);
-  const [dataModalPosition, setDataModalPosition] = useState<{
-    x: number;
-    y: number;
-  } | null>(null);
-  const [statisticsTypePosition, setStatisticsTypePosition] = useState<{
-    x: number;
-    y: number;
-  } | null>(null);
+const useMenuId = (menuPosition: { x: number; y: number } | null) => {
   const [menuId, setMenuId] = useState<string>();
 
   useEffect(() => {
@@ -287,6 +268,13 @@ export const OptionsSelector = ({
     }
   }, [menuPosition]);
 
+  return menuId;
+};
+
+const useTouchEvents = (
+  buttonRef: React.RefObject<HTMLButtonElement>,
+  onMenuOpen: (e: React.MouseEvent) => void
+) => {
   useEffect(() => {
     const button = buttonRef.current;
     if (!button) return;
@@ -310,8 +298,35 @@ export const OptionsSelector = ({
     return () => {
       button.removeEventListener("touchstart", handleTouchStart);
     };
-  }, [onMenuOpen]);
+  }, [onMenuOpen, buttonRef]);
+};
 
+const useModalPosition = () => {
+  const [dataModalPosition, setDataModalPosition] = useState<{
+    x: number;
+    y: number;
+  } | null>(null);
+  const [statisticsTypePosition, setStatisticsTypePosition] = useState<{
+    x: number;
+    y: number;
+  } | null>(null);
+
+  return {
+    dataModalPosition,
+    statisticsTypePosition,
+    setDataModalPosition,
+    setStatisticsTypePosition,
+  };
+};
+
+const useModalHandlers = (
+  setDataModalPosition: (position: { x: number; y: number } | null) => void,
+  setStatisticsTypePosition: (
+    position: { x: number; y: number } | null
+  ) => void,
+  onMenuOpen: (e: React.MouseEvent) => void,
+  onMenuClose: () => void
+) => {
   const handleMouseDown = (e: React.MouseEvent) => {
     e.stopPropagation();
     e.preventDefault();
@@ -362,6 +377,50 @@ export const OptionsSelector = ({
     setStatisticsTypePosition(null);
     onMenuClose();
   };
+
+  return {
+    handleMouseDown,
+    handleClick,
+    handleDataOptionClick,
+    handleStatisticsTypeClick,
+    handleDataModalClose,
+    handleStatisticsTypeClose,
+  };
+};
+
+export const OptionsSelector = ({
+  menuPosition,
+  onMenuOpen,
+  onMenuClose,
+  onDataOptionSelect,
+  onStatisticsTypeSelect,
+  onShowLegendChange,
+  selectedAnalyticTypes,
+  selectedDisplayType,
+  showLegend,
+}: OptionsSelectorProps) => {
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const menuId = useMenuId(menuPosition);
+  const {
+    dataModalPosition,
+    statisticsTypePosition,
+    setDataModalPosition,
+    setStatisticsTypePosition,
+  } = useModalPosition();
+  const {
+    handleMouseDown,
+    handleClick,
+    handleDataOptionClick,
+    handleStatisticsTypeClick,
+    handleDataModalClose,
+    handleStatisticsTypeClose,
+  } = useModalHandlers(
+    setDataModalPosition,
+    setStatisticsTypePosition,
+    onMenuOpen,
+    onMenuClose
+  );
+  useTouchEvents(buttonRef, onMenuOpen);
 
   return (
     <>
