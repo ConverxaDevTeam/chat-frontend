@@ -9,9 +9,11 @@ export enum AnalyticType {
   AVG_IA_MESSAGES_PER_SESSION = 8,
   AVG_HITL_MESSAGES_PER_SESSION = 9,
   AVG_SESSIONS_PER_USER = 10,
-  MESSAGES_BY_CHANNEL = 11,
-  FUNCTION_CALLS = 12,
-  FUNCTIONS_PER_SESSION = 13,
+  MESSAGES_BY_WHATSAPP = 11,
+  MESSAGES_BY_FACEBOOK = 12,
+  MESSAGES_BY_WEB = 13,
+  FUNCTION_CALLS = 14,
+  FUNCTIONS_PER_SESSION = 15,
 }
 
 export enum StatisticsDisplayType {
@@ -78,8 +80,16 @@ export const analyticOptions: AnalyticOption[] = [
     label: "Avg Sesiones por Usuario",
   },
   {
-    id: AnalyticType.MESSAGES_BY_CHANNEL,
-    label: "Mensajes por Canal",
+    id: AnalyticType.MESSAGES_BY_WHATSAPP,
+    label: "Mensajes por WhatsApp",
+  },
+  {
+    id: AnalyticType.MESSAGES_BY_FACEBOOK,
+    label: "Mensajes por Facebook",
+  },
+  {
+    id: AnalyticType.MESSAGES_BY_WEB,
+    label: "Mensajes por Web",
   },
   {
     id: AnalyticType.FUNCTION_CALLS,

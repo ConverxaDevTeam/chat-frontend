@@ -203,7 +203,11 @@ const defaultCards: DashboardCard[] = [
   {
     id: 6,
     title: "Mensajes por canal",
-    analyticTypes: [AnalyticType.MESSAGES_BY_CHANNEL],
+    analyticTypes: [
+      AnalyticType.MESSAGES_BY_WHATSAPP,
+      AnalyticType.MESSAGES_BY_FACEBOOK,
+      AnalyticType.MESSAGES_BY_WEB,
+    ],
     displayType: StatisticsDisplayType.METRIC,
     timeRange: TimeRange.LAST_30_DAYS,
     layout: {
@@ -278,7 +282,11 @@ const defaultCards: DashboardCard[] = [
   {
     id: 8,
     title: "Distribución por canal",
-    analyticTypes: [AnalyticType.MESSAGES_BY_CHANNEL],
+    analyticTypes: [
+      AnalyticType.MESSAGES_BY_WHATSAPP,
+      AnalyticType.MESSAGES_BY_FACEBOOK,
+      AnalyticType.MESSAGES_BY_WEB,
+    ],
     displayType: StatisticsDisplayType.PIE,
     timeRange: TimeRange.LAST_30_DAYS,
     layout: {
@@ -315,7 +323,7 @@ const defaultCards: DashboardCard[] = [
   },
 ];
 
-const getInitialState = (): DashboardState => {
+export const getInitialState = (): DashboardState => {
   const storedState = localStorage.getItem(DASHBOARD_STORAGE_KEY);
   if (storedState) {
     return JSON.parse(storedState);
@@ -334,88 +342,87 @@ const updateState = (state: DashboardState): void => {
   localStorage.setItem(DASHBOARD_STORAGE_KEY, JSON.stringify(state));
 };
 
-export const dashboardService = {
-  getInitialState,
-  updateState,
-  updateCard: (
-    state: DashboardState,
-    cardId: number,
-    updates: Partial<DashboardCard>
-  ): DashboardState => {
-    const newState = {
-      ...state,
-      cards: state.cards.map(card =>
-        card.id === cardId ? { ...card, ...updates } : card
-      ),
-    };
-    updateState(newState);
-    return newState;
-  },
+export const updateCard = (
+  state: DashboardState,
+  cardId: number,
+  updates: Partial<DashboardCard>
+): DashboardState => {
+  const newState = {
+    ...state,
+    cards: state.cards.map(card =>
+      card.id === cardId ? { ...card, ...updates } : card
+    ),
+  };
+  updateState(newState);
+  return newState;
+};
 
-  updateLayouts: (
-    state: DashboardState,
-    layouts: GridLayouts
-  ): DashboardState => {
-    const newState = {
-      ...state,
-      cards: state.cards.map(card => {
-        Object.entries(layouts).forEach(([breakpoint, layoutArray]) => {
-          const layout = layoutArray?.find(
-            (l: GridLayout) => Number(l.i) === card.id
-          );
-          if (layout) {
-            card.layout[breakpoint as keyof GridLayouts] = {
-              ...layout,
-              i: card.id,
-            };
-          }
-        });
+export const updateLayouts = (
+  state: DashboardState,
+  layouts: GridLayouts
+): DashboardState => {
+  const newState = {
+    ...state,
+    cards: state.cards.map(card => {
+      const updatedLayout = { ...card.layout };
 
-        return {
-          ...card,
-          layout: card.layout,
-        };
-      }),
-    };
-    updateState(newState);
-    return newState;
-  },
+      Object.entries(layouts).forEach(([breakpoint, layoutArray]) => {
+        const layout = layoutArray?.find(
+          (l: GridLayout) => Number(l.i) === card.id
+        );
+        if (layout) {
+          updatedLayout[breakpoint as keyof GridLayouts] = {
+            ...layout,
+            i: card.id,
+          };
+        }
+      });
 
-  addCard: (
-    state: DashboardState,
-    card: Omit<DashboardCard, "id">
-  ): DashboardState => {
-    const newCard = {
-      ...card,
-      id: state.nextId,
-    };
+      return {
+        ...card,
+        layout: updatedLayout,
+      };
+    }),
+  };
+  updateState(newState);
+  return newState;
+};
 
-    const newState = {
-      ...state,
-      cards: [...state.cards, newCard],
-      nextId: state.nextId + 1,
-    };
-    updateState(newState);
-    return newState;
-  },
+export const addCard = (
+  state: DashboardState,
+  card: Omit<DashboardCard, "id">
+): DashboardState => {
+  const newState = {
+    ...state,
+    cards: [...state.cards, { ...card, id: state.nextId }],
+    nextId: state.nextId + 1,
+  };
+  updateState(newState);
+  return newState;
+};
 
-  removeCard: (state: DashboardState, cardId: number): DashboardState => {
-    const newState = {
-      ...state,
-      cards: state.cards.filter(card => card.id !== cardId),
-    };
-    updateState(newState);
-    return newState;
-  },
+export const removeCard = (
+  state: DashboardState,
+  cardId: number
+): DashboardState => {
+  const newState = {
+    ...state,
+    cards: state.cards.filter(card => card.id !== cardId),
+  };
+  updateState(newState);
+  return newState;
+};
 
-  reorderCards: (state: DashboardState, cardIds: number[]): DashboardState => {
-    const newState = {
-      ...state,
-      cards: cardIds
-        .map(id => state.cards.find(card => card.id === id))
-        .filter((card): card is DashboardCard => card !== undefined),
-    };
-    updateState(newState);
-    return newState;
-  },
+export const reorderCards = (
+  state: DashboardState,
+  cardIds: number[]
+): DashboardState => {
+  const newState = {
+    ...state,
+    cards: cardIds
+      .map(id => state.cards.find(card => card.id === id))
+      .filter((card): card is DashboardCard => card !== undefined),
+  };
+  updateState(newState);
+  return newState;
 };

@@ -1,84 +1,157 @@
-import { subDays, format } from "date-fns";
+import { subDays } from "date-fns";
+import { AnalyticType } from "./analyticTypes";
 
 export interface StatisticEntry {
-  date: string;
+  type: AnalyticType;
+  created_at: Date;
+  label: string;
   value: number;
-  channel?: "whatsapp" | "facebook" | "web" | "other";
-  type?: "ia" | "hitl";
+  color: string;
+  icon: string;
 }
 
-// Genera datos aleatorios para un rango de días
-const generateTimeSeriesData = (
+const CHANNEL_METADATA = {
+  whatsapp: { color: "#25D366", icon: "whatsapp" },
+  facebook: { color: "#1877F2", icon: "facebook" },
+  web: { color: "#60A5FA", icon: "globe" },
+} as const;
+
+const ANALYTIC_METADATA: Record<
+  AnalyticType,
+  { label: string; color: string; icon: string }
+> = {
+  [AnalyticType.TOTAL_USERS]: {
+    label: "Total Usuarios",
+    color: "#10B981",
+    icon: "users",
+  },
+  [AnalyticType.NEW_USERS]: {
+    label: "Nuevos Usuarios",
+    color: "#10B981",
+    icon: "user-plus",
+  },
+  [AnalyticType.RECURRING_USERS]: {
+    label: "Usuarios Recurrentes",
+    color: "#10B981",
+    icon: "users",
+  },
+  [AnalyticType.SESSIONS]: {
+    label: "Sesiones",
+    color: "#8B5CF6",
+    icon: "activity",
+  },
+  [AnalyticType.IA_MESSAGES]: {
+    label: "Mensajes IA",
+    color: "#60A5FA",
+    icon: "cpu",
+  },
+  [AnalyticType.HITL_MESSAGES]: {
+    label: "Mensajes HITL",
+    color: "#60A5FA",
+    icon: "user",
+  },
+  [AnalyticType.TOTAL_MESSAGES]: {
+    label: "Total Mensajes",
+    color: "#60A5FA",
+    icon: "message-circle",
+  },
+  [AnalyticType.AVG_IA_MESSAGES_PER_SESSION]: {
+    label: "Promedio Mensajes IA por Sesión",
+    color: "#60A5FA",
+    icon: "cpu",
+  },
+  [AnalyticType.AVG_HITL_MESSAGES_PER_SESSION]: {
+    label: "Promedio Mensajes HITL por Sesión",
+    color: "#60A5FA",
+    icon: "user",
+  },
+  [AnalyticType.AVG_SESSIONS_PER_USER]: {
+    label: "Promedio Sesiones por Usuario",
+    color: "#8B5CF6",
+    icon: "activity",
+  },
+  [AnalyticType.MESSAGES_BY_WHATSAPP]: {
+    label: "Mensajes por WhatsApp",
+    ...CHANNEL_METADATA.whatsapp,
+  },
+  [AnalyticType.MESSAGES_BY_FACEBOOK]: {
+    label: "Mensajes por Facebook",
+    ...CHANNEL_METADATA.facebook,
+  },
+  [AnalyticType.MESSAGES_BY_WEB]: {
+    label: "Mensajes por Web",
+    ...CHANNEL_METADATA.web,
+  },
+  [AnalyticType.FUNCTION_CALLS]: {
+    label: "Llamadas a Funciones",
+    color: "#F59E0B",
+    icon: "zap",
+  },
+  [AnalyticType.FUNCTIONS_PER_SESSION]: {
+    label: "Funciones por Sesión",
+    color: "#F59E0B",
+    icon: "zap",
+  },
+};
+
+// Genera datos genéricos para cualquier tipo
+const generateData = (
+  type: AnalyticType,
   days: number,
   baseValue: number,
   variance: number
 ): StatisticEntry[] => {
+  const metadata = ANALYTIC_METADATA[type];
+
   return Array.from({ length: days }).map((_, index) => ({
-    date: format(subDays(new Date(), days - index - 1), "yyyy-MM-dd"),
+    type,
+    created_at: subDays(new Date(), days - index - 1),
+    label: metadata.label,
     value: Math.max(
       0,
       baseValue + Math.floor(Math.random() * variance - variance / 2)
     ),
+    color: metadata.color,
+    icon: metadata.icon,
   }));
 };
 
-// Genera datos por canal
-const generateChannelData = (days: number): StatisticEntry[] => {
-  const channels: ("whatsapp" | "facebook" | "web" | "other")[] = [
-    "whatsapp",
-    "facebook",
-    "web",
-    "other",
-  ];
-  return channels.flatMap(channel =>
-    Array.from({ length: days }).map((_, index) => ({
-      date: format(subDays(new Date(), days - index - 1), "yyyy-MM-dd"),
-      value: Math.floor(Math.random() * 100),
-      channel,
-    }))
-  );
-};
-
-// Mock data para cada tipo de estadística
-export const mockData = {
-  totalUsers: generateTimeSeriesData(30, 35, 10),
-  newUsers: generateTimeSeriesData(30, 18, 8),
-  recurringUsers: generateTimeSeriesData(30, 23, 6),
-  sessions: generateTimeSeriesData(30, 267, 50),
-  iaMessages: generateTimeSeriesData(30, 897, 100),
-  hitlMessages: generateTimeSeriesData(30, 567, 80),
-  totalMessages: generateTimeSeriesData(30, 1024, 200),
-  avgIaMessagesPerSession: generateTimeSeriesData(30, 87, 20),
-  avgHitlMessagesPerSession: generateTimeSeriesData(30, 245, 40),
-  avgSessionsPerUser: generateTimeSeriesData(30, 267, 30),
-  messagesByChannel: generateChannelData(30),
-  functionCalls: generateTimeSeriesData(30, 421, 60),
-  functionsPerSession: generateTimeSeriesData(30, 3, 2),
-};
-
-// Función para obtener datos agrupados por periodo
-export const getAggregatedData = (
-  data: StatisticEntry[],
-  period: "7d" | "30d" | "6m" | "1y" = "30d"
+export const getMockData = (
+  type: AnalyticType,
+  days: number = 30
 ): StatisticEntry[] => {
-  const days =
-    period === "7d" ? 7 : period === "30d" ? 30 : period === "6m" ? 180 : 365;
-  return data.slice(-days);
+  const config: Partial<
+    Record<AnalyticType, { base: number; variance: number }>
+  > = {
+    [AnalyticType.TOTAL_USERS]: { base: 35, variance: 10 },
+    [AnalyticType.NEW_USERS]: { base: 18, variance: 8 },
+    [AnalyticType.RECURRING_USERS]: { base: 23, variance: 6 },
+    [AnalyticType.SESSIONS]: { base: 267, variance: 50 },
+    [AnalyticType.IA_MESSAGES]: { base: 897, variance: 100 },
+    [AnalyticType.HITL_MESSAGES]: { base: 567, variance: 80 },
+    [AnalyticType.TOTAL_MESSAGES]: { base: 1024, variance: 200 },
+    [AnalyticType.AVG_IA_MESSAGES_PER_SESSION]: { base: 87, variance: 20 },
+    [AnalyticType.AVG_HITL_MESSAGES_PER_SESSION]: { base: 245, variance: 40 },
+    [AnalyticType.AVG_SESSIONS_PER_USER]: { base: 267, variance: 30 },
+    [AnalyticType.MESSAGES_BY_WHATSAPP]: { base: 450, variance: 50 },
+    [AnalyticType.MESSAGES_BY_FACEBOOK]: { base: 350, variance: 40 },
+    [AnalyticType.MESSAGES_BY_WEB]: { base: 224, variance: 30 },
+    [AnalyticType.FUNCTION_CALLS]: { base: 421, variance: 60 },
+    [AnalyticType.FUNCTIONS_PER_SESSION]: { base: 3, variance: 2 },
+  };
+
+  const defaultConfig = { base: 0, variance: 0 };
+  const { base, variance } = config[type] || defaultConfig;
+  return generateData(type, days, base, variance);
 };
 
-// Función para calcular tendencia
-export const calculateTrend = (
-  data: StatisticEntry[]
-): { value: number; isPositive: boolean } => {
-  if (data.length < 2) return { value: 0, isPositive: true };
-
-  const lastValue = data[data.length - 1].value;
-  const previousValue = data[data.length - 2].value;
-  const difference = lastValue - previousValue;
-  const percentageChange = (difference / previousValue) * 100;
-
-  return {
-    value: Math.abs(Math.round(percentageChange)),
-    isPositive: difference >= 0,
-  };
+// Función para obtener datos dentro de un rango de fechas
+export const getDataInRange = (
+  data: StatisticEntry[],
+  startDate: Date,
+  endDate: Date
+): StatisticEntry[] => {
+  return data.filter(
+    entry => entry.created_at >= startDate && entry.created_at <= endDate
+  );
 };
