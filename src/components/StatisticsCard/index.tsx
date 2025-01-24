@@ -67,7 +67,7 @@ export const StatisticsCard = ({
   useEffect(() => {
     const checkWidth = () => {
       if (containerRef.current) {
-        setIsWide(containerRef.current.offsetWidth >= 300);
+        setIsWide(containerRef.current.offsetWidth >= 400);
       }
     };
 
@@ -262,7 +262,7 @@ export const StatisticsCard = ({
             onTitleChange={handleTitleChange}
             onStartEdit={() => setIsEditing(true)}
             onFinishEdit={() => setIsEditing(false)}
-            onKeyDown={e => {
+            onKeyDown={(e: React.KeyboardEvent) => {
               if (e.key === "Enter") setIsEditing(false);
             }}
           />
