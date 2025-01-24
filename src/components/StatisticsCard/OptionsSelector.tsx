@@ -19,16 +19,8 @@ interface DataOptionsModalProps {
   position: { x: number; y: number };
   onClose: () => void;
   parentId?: string;
-  onSelect?: (id: AnalyticType) => void;
-  selectedAnalyticType?: AnalyticType;
-}
-
-interface StatisticsTypeModalProps {
-  position: { x: number; y: number };
-  onClose: () => void;
-  parentId?: string;
-  onSelect?: (id: StatisticsDisplayType) => void;
-  selectedDisplayType?: StatisticsDisplayType;
+  onSelect?: (types: AnalyticType[]) => void;
+  selectedAnalyticTypes?: AnalyticType[];
 }
 
 const DataOptionsModal = ({
@@ -36,11 +28,19 @@ const DataOptionsModal = ({
   onClose,
   parentId,
   onSelect,
-  selectedAnalyticType,
+  selectedAnalyticTypes = [],
 }: DataOptionsModalProps) => {
+  const [selectedTypes, setSelectedTypes] = useState<AnalyticType[]>(
+    selectedAnalyticTypes
+  );
+
   const handleOptionClick = (id: AnalyticType) => {
-    onSelect?.(id);
-    onClose();
+    const newTypes = selectedTypes.includes(id)
+      ? selectedTypes.filter(t => t !== id)
+      : [...selectedTypes, id];
+
+    setSelectedTypes(newTypes);
+    onSelect?.(newTypes);
   };
 
   return (
@@ -50,22 +50,30 @@ const DataOptionsModal = ({
       onClose={onClose}
       parentId={parentId}
     >
-      {dataOptions.map((option: Option) => (
-        <button
-          key={option.id}
-          className={`text-left text-xs font-medium font-quicksand text-sofia-superDark leading-none self-stretch [font-feature-settings:'liga'_off,'clig'_off] whitespace-nowrap ${
-            selectedAnalyticType === option.id
-              ? "bg-blue-100 text-blue-700"
-              : "hover:bg-gray-100"
-          }`}
-          onClick={() => handleOptionClick(option.id as AnalyticType)}
-        >
-          {option.label}
-        </button>
-      ))}
+      <div className="flex flex-col gap-1 p-2">
+        {dataOptions.map(option => (
+          <button
+            key={option.id}
+            className={`flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-100 rounded-md ${
+              selectedTypes.includes(option.id) ? "bg-gray-100" : ""
+            }`}
+            onClick={() => handleOptionClick(option.id)}
+          >
+            {option.label}
+          </button>
+        ))}
+      </div>
     </ContextMenu>
   );
 };
+
+interface StatisticsTypeModalProps {
+  position: { x: number; y: number };
+  onClose: () => void;
+  parentId?: string;
+  onSelect?: (id: StatisticsDisplayType) => void;
+  selectedDisplayType?: StatisticsDisplayType;
+}
 
 const StatisticsTypeModal = ({
   position,
@@ -107,10 +115,10 @@ interface OptionsSelectorProps {
   menuPosition: { x: number; y: number } | null;
   onMenuOpen: (e: React.MouseEvent) => void;
   onMenuClose: () => void;
-  onDataOptionSelect: (type: AnalyticType) => void;
+  onDataOptionSelect: (types: AnalyticType[]) => void;
   onStatisticsTypeSelect: (type: StatisticsDisplayType) => void;
   onShowLegendChange: (show: boolean) => void;
-  selectedAnalyticType: AnalyticType;
+  selectedAnalyticTypes: AnalyticType[];
   selectedDisplayType: StatisticsDisplayType;
   showLegend: boolean;
 }
@@ -122,7 +130,7 @@ export const OptionsSelector = ({
   onDataOptionSelect,
   onStatisticsTypeSelect,
   onShowLegendChange,
-  selectedAnalyticType,
+  selectedAnalyticTypes,
   selectedDisplayType,
   showLegend,
 }: OptionsSelectorProps) => {
@@ -273,7 +281,7 @@ export const OptionsSelector = ({
           onClose={handleDataModalClose}
           parentId={menuId}
           onSelect={onDataOptionSelect}
-          selectedAnalyticType={selectedAnalyticType}
+          selectedAnalyticTypes={selectedAnalyticTypes}
         />
       )}
 

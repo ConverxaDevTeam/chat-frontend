@@ -16,7 +16,7 @@ const defaultCards: DashboardCard[] = [
   {
     id: 1,
     title: "Usuarios",
-    analyticType: AnalyticType.TOTAL_USERS,
+    analyticTypes: [AnalyticType.TOTAL_USERS],
     displayType: StatisticsDisplayType.METRIC,
     timeRange: TimeRange.LAST_30_DAYS,
     layout: {
@@ -54,7 +54,7 @@ const defaultCards: DashboardCard[] = [
   {
     id: 2,
     title: "Mensajes",
-    analyticType: AnalyticType.TOTAL_MESSAGES,
+    analyticTypes: [AnalyticType.TOTAL_MESSAGES],
     displayType: StatisticsDisplayType.AREA,
     timeRange: TimeRange.LAST_30_DAYS,
     layout: {
@@ -92,7 +92,7 @@ const defaultCards: DashboardCard[] = [
   {
     id: 3,
     title: "Avg. Mensajes IA por sesión",
-    analyticType: AnalyticType.AVG_IA_MESSAGES_PER_SESSION,
+    analyticTypes: [AnalyticType.AVG_IA_MESSAGES_PER_SESSION],
     displayType: StatisticsDisplayType.METRIC,
     timeRange: TimeRange.LAST_30_DAYS,
     layout: {
@@ -129,7 +129,7 @@ const defaultCards: DashboardCard[] = [
   {
     id: 4,
     title: "Avg. Mensajes HITL por sesión",
-    analyticType: AnalyticType.AVG_HITL_MESSAGES_PER_SESSION,
+    analyticTypes: [AnalyticType.AVG_HITL_MESSAGES_PER_SESSION],
     displayType: StatisticsDisplayType.METRIC,
     timeRange: TimeRange.LAST_30_DAYS,
     layout: {
@@ -166,7 +166,7 @@ const defaultCards: DashboardCard[] = [
   {
     id: 5,
     title: "Avg. Sesiones por usuario",
-    analyticType: AnalyticType.AVG_SESSIONS_PER_USER,
+    analyticTypes: [AnalyticType.AVG_SESSIONS_PER_USER],
     displayType: StatisticsDisplayType.METRIC,
     timeRange: TimeRange.LAST_30_DAYS,
     layout: {
@@ -203,7 +203,7 @@ const defaultCards: DashboardCard[] = [
   {
     id: 6,
     title: "Mensajes por canal",
-    analyticType: AnalyticType.MESSAGES_BY_CHANNEL,
+    analyticTypes: [AnalyticType.MESSAGES_BY_CHANNEL],
     displayType: StatisticsDisplayType.METRIC,
     timeRange: TimeRange.LAST_30_DAYS,
     layout: {
@@ -240,7 +240,7 @@ const defaultCards: DashboardCard[] = [
   {
     id: 7,
     title: "Funciones",
-    analyticType: AnalyticType.FUNCTIONS_PER_SESSION,
+    analyticTypes: [AnalyticType.FUNCTIONS_PER_SESSION],
     displayType: StatisticsDisplayType.AREA,
     timeRange: TimeRange.LAST_7_DAYS,
     layout: {
@@ -278,7 +278,7 @@ const defaultCards: DashboardCard[] = [
   {
     id: 8,
     title: "Distribución por canal",
-    analyticType: AnalyticType.MESSAGES_BY_CHANNEL,
+    analyticTypes: [AnalyticType.MESSAGES_BY_CHANNEL],
     displayType: StatisticsDisplayType.PIE,
     timeRange: TimeRange.LAST_30_DAYS,
     layout: {

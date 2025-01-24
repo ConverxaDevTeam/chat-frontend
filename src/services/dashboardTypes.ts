@@ -36,7 +36,7 @@ interface GridLayouts {
 export interface DashboardCard {
   id: number;
   title: string;
-  analyticType: AnalyticType;
+  analyticTypes: AnalyticType[];
   displayType: StatisticsDisplayType;
   timeRange: TimeRange;
   layout: CardLayouts;

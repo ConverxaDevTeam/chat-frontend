@@ -25,7 +25,7 @@ const getIcon = (iconName: string) => {
 export interface StatisticsCardProps {
   id: number;
   title: string;
-  analyticType: AnalyticType;
+  analyticTypes: AnalyticType[];
   displayType: StatisticsDisplayType;
   timeRange: TimeRange;
   className?: string;
@@ -34,7 +34,7 @@ export interface StatisticsCardProps {
     id: number;
     title?: string;
     timeRange?: TimeRange;
-    analyticType?: AnalyticType;
+    analyticTypes?: AnalyticType[];
     displayType?: StatisticsDisplayType;
     showLegend?: boolean;
   }) => void;
@@ -43,7 +43,7 @@ export interface StatisticsCardProps {
 export const StatisticsCard = ({
   id,
   title,
-  analyticType,
+  analyticTypes,
   displayType,
   timeRange,
   className = "",
@@ -62,7 +62,7 @@ export const StatisticsCard = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const metricsRef = useRef<HTMLDivElement>(null);
 
-  const data = useAnalyticData(analyticType, displayType, timeRange);
+  const data = useAnalyticData(analyticTypes[0], displayType, timeRange);
 
   useEffect(() => {
     const checkWidth = () => {
@@ -115,8 +115,8 @@ export const StatisticsCard = ({
     onUpdateCard?.({ id, timeRange: newTimeRange });
   };
 
-  const handleAnalyticTypeChange = (type: AnalyticType) => {
-    onUpdateCard?.({ id, analyticType: type });
+  const handleAnalyticTypeChange = (types: AnalyticType[]) => {
+    onUpdateCard?.({ id, analyticTypes: types });
   };
 
   const handleDisplayTypeChange = (type: StatisticsDisplayType) => {
@@ -128,55 +128,7 @@ export const StatisticsCard = ({
   };
 
   const renderChart = () => {
-    if (!data) return null;
-
-    if (displayType === StatisticsDisplayType.METRIC) {
-      return (
-        <div className="flex flex-col items-center justify-center h-[calc(100%-2rem)] w-full">
-          <div
-            ref={metricsRef}
-            className="flex flex-wrap justify-center items-center gap-4 overflow-auto w-full p-2 max-h-full"
-            style={{
-              scrollbarWidth: "thin",
-              scrollbarColor: "#E2E8F0 transparent",
-            }}
-          >
-            {data.series.map((serie, index) => (
-              <div
-                key={index}
-                className="flex flex-col items-center min-w-[120px]"
-              >
-                <div className="text-[#001126] text-sm font-medium font-['Quicksand'] flex items-center gap-2">
-                  {showLegend && (
-                    <Fragment>
-                      <div
-                        className="w-3 h-3 rounded-full"
-                        style={{ backgroundColor: serie.color }}
-                      />
-                      {serie.label}
-                    </Fragment>
-                  )}
-                </div>
-                <div className="flex items-center gap-2">
-                  {serie.icon && getIcon(serie.icon)}
-                  <span className="text-2xl font-bold">{serie.value}</span>
-                </div>
-                {data.trend && (
-                  <span
-                    className={`text-sm ${
-                      data.trend.isPositive ? "text-green-500" : "text-red-500"
-                    }`}
-                  >
-                    {data.trend.isPositive ? "+" : ""}
-                    {data.trend.value}%
-                  </span>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-      );
-    }
+    if (!data.chartData) return null;
 
     const baseOptions = {
       responsive: true,
@@ -284,7 +236,7 @@ export const StatisticsCard = ({
             onDataOptionSelect={handleAnalyticTypeChange}
             onStatisticsTypeSelect={handleDisplayTypeChange}
             onShowLegendChange={handleShowLegendChange}
-            selectedAnalyticType={analyticType}
+            selectedAnalyticTypes={analyticTypes}
             selectedDisplayType={displayType}
             showLegend={showLegend ?? false}
           />
@@ -292,7 +244,55 @@ export const StatisticsCard = ({
       </div>
 
       <div className="flex-1 flex justify-center items-center min-h-0">
-        {renderChart()}
+        {displayType === StatisticsDisplayType.METRIC ? (
+          <div className="flex flex-col items-center justify-center h-[calc(100%-2rem)] w-full">
+            <div
+              ref={metricsRef}
+              className="flex flex-wrap justify-center items-center gap-4 overflow-auto w-full p-2 max-h-full"
+              style={{
+                scrollbarWidth: "thin",
+                scrollbarColor: "#E2E8F0 transparent",
+              }}
+            >
+              {data.series.map((serie, index) => (
+                <div
+                  key={index}
+                  className="flex flex-col items-center min-w-[120px]"
+                >
+                  <div className="text-[#001126] text-sm font-medium font-['Quicksand'] flex items-center gap-2">
+                    {showLegend && (
+                      <Fragment>
+                        <div
+                          className="w-3 h-3 rounded-full"
+                          style={{ backgroundColor: serie.color }}
+                        />
+                        {serie.label}
+                      </Fragment>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {serie.icon && getIcon(serie.icon)}
+                    <span className="text-2xl font-bold">{serie.value}</span>
+                  </div>
+                  {data.trend && (
+                    <span
+                      className={`text-sm ${
+                        data.trend.isPositive
+                          ? "text-green-500"
+                          : "text-red-500"
+                      }`}
+                    >
+                      {data.trend.isPositive ? "+" : ""}
+                      {data.trend.value}%
+                    </span>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : (
+          renderChart()
+        )}
       </div>
     </div>
   );

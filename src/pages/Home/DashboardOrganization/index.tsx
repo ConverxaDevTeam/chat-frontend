@@ -47,7 +47,7 @@ const DashboardOrganization = () => {
             <StatisticsCard
               id={card.id}
               title={card.title}
-              analyticType={card.analyticType}
+              analyticTypes={card.analyticTypes}
               displayType={card.displayType}
               timeRange={card.timeRange}
               className="h-full"
