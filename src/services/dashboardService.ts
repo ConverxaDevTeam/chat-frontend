@@ -1,4 +1,9 @@
-import { DashboardCard, DashboardState, GridLayouts } from "./dashboardTypes";
+import {
+  DashboardCard,
+  DashboardState,
+  GridLayouts,
+  GridLayout,
+} from "./dashboardTypes";
 import {
   AnalyticType,
   StatisticsDisplayType,
@@ -16,11 +21,32 @@ const defaultCards: DashboardCard[] = [
     timeRange: TimeRange.LAST_30_DAYS,
     layout: {
       lg: {
-        i: 1,
-        x: 0,
-        y: 0,
         w: 18,
         h: 6,
+        x: 0,
+        y: 0,
+        i: 1,
+      },
+      md: {
+        w: 15,
+        h: 6,
+        x: 0,
+        y: 0,
+        i: 1,
+      },
+      sm: {
+        w: 18,
+        h: 6,
+        x: 0,
+        y: 0,
+        i: 1,
+      },
+      xs: {
+        w: 12,
+        h: 6,
+        x: 0,
+        y: 0,
+        i: 1,
       },
     },
     showLegend: true,
@@ -30,14 +56,35 @@ const defaultCards: DashboardCard[] = [
     title: "Mensajes",
     analyticType: AnalyticType.TOTAL_MESSAGES,
     displayType: StatisticsDisplayType.AREA,
-    timeRange: TimeRange.LAST_7_DAYS,
+    timeRange: TimeRange.LAST_30_DAYS,
     layout: {
       lg: {
-        i: 2,
-        x: 18,
-        y: 0,
         w: 18,
         h: 6,
+        x: 18,
+        y: 0,
+        i: 2,
+      },
+      md: {
+        w: 15,
+        h: 6,
+        x: 15,
+        y: 0,
+        i: 2,
+      },
+      sm: {
+        w: 18,
+        h: 6,
+        x: 0,
+        y: 6,
+        i: 2,
+      },
+      xs: {
+        w: 12,
+        h: 6,
+        x: 0,
+        y: 6,
+        i: 2,
       },
     },
     showLegend: true,
@@ -50,11 +97,32 @@ const defaultCards: DashboardCard[] = [
     timeRange: TimeRange.LAST_30_DAYS,
     layout: {
       lg: {
-        i: 3,
-        x: 0,
-        y: 6,
         w: 9,
         h: 6,
+        x: 0,
+        y: 6,
+        i: 3,
+      },
+      md: {
+        w: 15,
+        h: 6,
+        x: 0,
+        y: 6,
+        i: 3,
+      },
+      sm: {
+        w: 18,
+        h: 6,
+        x: 0,
+        y: 12,
+        i: 3,
+      },
+      xs: {
+        w: 12,
+        h: 6,
+        x: 0,
+        y: 12,
+        i: 3,
       },
     },
   },
@@ -66,11 +134,32 @@ const defaultCards: DashboardCard[] = [
     timeRange: TimeRange.LAST_30_DAYS,
     layout: {
       lg: {
-        i: 4,
-        x: 9,
-        y: 6,
         w: 9,
         h: 6,
+        x: 9,
+        y: 6,
+        i: 4,
+      },
+      md: {
+        w: 15,
+        h: 6,
+        x: 15,
+        y: 6,
+        i: 4,
+      },
+      sm: {
+        w: 18,
+        h: 6,
+        x: 0,
+        y: 18,
+        i: 4,
+      },
+      xs: {
+        w: 12,
+        h: 6,
+        x: 0,
+        y: 18,
+        i: 4,
       },
     },
   },
@@ -82,11 +171,32 @@ const defaultCards: DashboardCard[] = [
     timeRange: TimeRange.LAST_30_DAYS,
     layout: {
       lg: {
-        i: 5,
-        x: 18,
-        y: 6,
         w: 9,
         h: 6,
+        x: 18,
+        y: 6,
+        i: 5,
+      },
+      md: {
+        w: 15,
+        h: 6,
+        x: 0,
+        y: 12,
+        i: 5,
+      },
+      sm: {
+        w: 18,
+        h: 6,
+        x: 0,
+        y: 24,
+        i: 5,
+      },
+      xs: {
+        w: 12,
+        h: 6,
+        x: 0,
+        y: 24,
+        i: 5,
       },
     },
   },
@@ -98,11 +208,32 @@ const defaultCards: DashboardCard[] = [
     timeRange: TimeRange.LAST_30_DAYS,
     layout: {
       lg: {
-        i: 6,
-        x: 27,
-        y: 6,
         w: 9,
         h: 6,
+        x: 27,
+        y: 6,
+        i: 6,
+      },
+      md: {
+        w: 15,
+        h: 6,
+        x: 15,
+        y: 12,
+        i: 6,
+      },
+      sm: {
+        w: 18,
+        h: 6,
+        x: 0,
+        y: 30,
+        i: 6,
+      },
+      xs: {
+        w: 12,
+        h: 6,
+        x: 0,
+        y: 30,
+        i: 6,
       },
     },
   },
@@ -114,14 +245,34 @@ const defaultCards: DashboardCard[] = [
     timeRange: TimeRange.LAST_7_DAYS,
     layout: {
       lg: {
-        i: 7,
-        x: 0,
-        y: 12,
         w: 36,
         h: 6,
+        x: 0,
+        y: 12,
+        i: 7,
+      },
+      md: {
+        w: 30,
+        h: 6,
+        x: 0,
+        y: 18,
+        i: 7,
+      },
+      sm: {
+        w: 18,
+        h: 6,
+        x: 0,
+        y: 36,
+        i: 7,
+      },
+      xs: {
+        w: 12,
+        h: 6,
+        x: 0,
+        y: 36,
+        i: 7,
       },
     },
-    showLegend: true,
   },
   {
     id: 8,
@@ -131,14 +282,34 @@ const defaultCards: DashboardCard[] = [
     timeRange: TimeRange.LAST_30_DAYS,
     layout: {
       lg: {
-        i: 8,
+        w: 12,
+        h: 6,
         x: 0,
         y: 18,
+        i: 8,
+      },
+      md: {
+        w: 15,
+        h: 6,
+        x: 0,
+        y: 24,
+        i: 8,
+      },
+      sm: {
+        w: 18,
+        h: 6,
+        x: 0,
+        y: 42,
+        i: 8,
+      },
+      xs: {
         w: 12,
-        h: 9,
+        h: 6,
+        x: 0,
+        y: 42,
+        i: 8,
       },
     },
-    showLegend: true,
   },
 ];
 
@@ -187,7 +358,9 @@ export const dashboardService = {
       ...state,
       cards: state.cards.map(card => {
         Object.entries(layouts).forEach(([breakpoint, layoutArray]) => {
-          const layout = layoutArray?.find(l => Number(l.i) === card.id);
+          const layout = layoutArray?.find(
+            (l: GridLayout) => Number(l.i) === card.id
+          );
           if (layout) {
             card.layout[breakpoint as keyof GridLayouts] = {
               ...layout,
