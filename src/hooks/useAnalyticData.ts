@@ -38,9 +38,24 @@ export type AnalyticResult = {
 } & MetricData;
 
 const calculateTrend = (entries: StatisticEntry[]): MetricData["trend"] => {
-  if (entries.length < 2) return undefined;
+  // Agrupar por tipo
+  const entriesByType = entries.reduce(
+    (acc, entry) => {
+      acc[entry.type] = acc[entry.type] || [];
+      acc[entry.type].push(entry);
+      return acc;
+    },
+    {} as Record<string, StatisticEntry[]>
+  );
 
-  const sorted = [...entries].sort(
+  // Filtrar solo los tipos con suficientes datos
+  const validEntries = Object.values(entriesByType)
+    .filter(typeEntries => typeEntries.length >= 2)
+    .flat();
+
+  if (validEntries.length === 0) return undefined;
+
+  const sorted = [...validEntries].sort(
     (a, b) => a.created_at.getTime() - b.created_at.getTime()
   );
 

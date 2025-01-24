@@ -68,7 +68,7 @@ export const getAnalyticData = (
   timeRange: TimeRange,
   displayType: StatisticsDisplayType
 ): StatisticEntry[] => {
-  const endDate = startOfDay(new Date());
+  const endDate = new Date();
   const days = getTimeRangeDays(timeRange);
   const startDate = startOfDay(subDays(endDate, days));
 

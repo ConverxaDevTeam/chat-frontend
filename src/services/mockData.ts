@@ -91,10 +91,11 @@ const generateData = (
 ): StatisticEntry[] => {
   const metadata = ANALYTIC_METADATA[type];
   const rangeMultiplier = days <= 7 ? 1 : days / 7;
+  const today = new Date();
 
-  return Array.from({ length: days }).map((_, index) => ({
+  return Array.from({ length: Math.max(1, days) }).map((_, index) => ({
     type,
-    created_at: subDays(new Date(), days - index - 1),
+    created_at: days === 1 ? today : subDays(today, days - index - 1),
     label: metadata.label,
     value: Math.max(
       0,
