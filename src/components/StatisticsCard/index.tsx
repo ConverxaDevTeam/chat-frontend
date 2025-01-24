@@ -13,15 +13,32 @@ import {
 } from "../../services/analyticTypes";
 import { useAnalyticData, AnalyticResult } from "../../hooks/useAnalyticData";
 import "../../config/chartConfig";
-import { FaWhatsapp } from "react-icons/fa";
 
-const getIcon = (iconName: string) => {
-  switch (iconName) {
-    case "whatsapp":
-      return <FaWhatsapp className="text-[#25D366]" />;
-    default:
-      return null;
-  }
+interface SerieProps {
+  color?: string;
+  label: string;
+  icon?: string;
+}
+
+const LegendView = ({ color, label, icon }: SerieProps) => {
+  console.log({ color, label, icon });
+  if (icon)
+    return (
+      <img
+        src={`/mvp/${icon}.svg`}
+        alt={icon}
+        className="w-[24px] h-[24px] rounded-full"
+      />
+    );
+  return (
+    <Fragment>
+      <div
+        className="w-3 h-3 rounded-full"
+        style={{ backgroundColor: color }}
+      />
+      <span>{label}</span>
+    </Fragment>
+  );
 };
 
 interface MetricsViewProps {
@@ -55,17 +72,14 @@ const MetricsView = ({ data, showLegend, metricsRef }: MetricsViewProps) => (
         <div key={index} className="flex flex-col items-center min-w-[120px]">
           <div className="text-[#001126] text-sm font-medium font-['Quicksand'] flex items-center gap-2">
             {showLegend && (
-              <Fragment>
-                <div
-                  className="w-3 h-3 rounded-full"
-                  style={{ backgroundColor: serie.color }}
-                />
-                {serie.label}
-              </Fragment>
+              <LegendView
+                color={serie.color}
+                label={serie.label}
+                icon={serie.icon}
+              />
             )}
           </div>
           <div className="flex items-center gap-2">
-            {serie.icon && getIcon(serie.icon)}
             <span className="text-2xl font-bold">{serie.value}</span>
           </div>
           {data.trend && (

@@ -7,68 +7,58 @@ export interface StatisticEntry {
   label: string;
   value: number;
   color: string;
-  icon: string;
+  icon?: string;
 }
 
 const CHANNEL_METADATA = {
   whatsapp: { color: "#25D366", icon: "whatsapp" },
-  facebook: { color: "#1877F2", icon: "facebook" },
+  facebook: { color: "#1877F2", icon: "messenger" },
   web: { color: "#60A5FA", icon: "globe" },
 } as const;
 
 const ANALYTIC_METADATA: Record<
   AnalyticType,
-  { label: string; color: string; icon: string }
+  { label: string; color: string; icon?: string }
 > = {
   [AnalyticType.TOTAL_USERS]: {
     label: "Total Usuarios",
     color: "#10B981",
-    icon: "users",
   },
   [AnalyticType.NEW_USERS]: {
     label: "Nuevos Usuarios",
     color: "#10B981",
-    icon: "user-plus",
   },
   [AnalyticType.RECURRING_USERS]: {
     label: "Usuarios Recurrentes",
     color: "#10B981",
-    icon: "users",
   },
   [AnalyticType.SESSIONS]: {
     label: "Sesiones",
     color: "#8B5CF6",
-    icon: "activity",
   },
   [AnalyticType.IA_MESSAGES]: {
     label: "Mensajes IA",
     color: "#15ECDA",
-    icon: "cpu",
   },
   [AnalyticType.HITL_MESSAGES]: {
     label: "Mensajes HITL",
     color: "#001126",
-    icon: "user",
   },
   [AnalyticType.TOTAL_MESSAGES]: {
     label: "Total Mensajes",
     color: "#60A5FA",
-    icon: "message-circle",
   },
   [AnalyticType.AVG_IA_MESSAGES_PER_SESSION]: {
     label: "Promedio Mensajes IA por Sesión",
     color: "#60A5FA",
-    icon: "cpu",
   },
   [AnalyticType.AVG_HITL_MESSAGES_PER_SESSION]: {
     label: "Promedio Mensajes HITL por Sesión",
     color: "#60A5FA",
-    icon: "user",
   },
   [AnalyticType.AVG_SESSIONS_PER_USER]: {
     label: "Promedio Sesiones por Usuario",
     color: "#8B5CF6",
-    icon: "activity",
   },
   [AnalyticType.MESSAGES_BY_WHATSAPP]: {
     label: "Mensajes por WhatsApp",
@@ -85,12 +75,10 @@ const ANALYTIC_METADATA: Record<
   [AnalyticType.FUNCTION_CALLS]: {
     label: "Llamadas a Funciones",
     color: "#F59E0B",
-    icon: "zap",
   },
   [AnalyticType.FUNCTIONS_PER_SESSION]: {
     label: "Funciones por Sesión",
     color: "#F59E0B",
-    icon: "zap",
   },
 };
 
