@@ -37,23 +37,21 @@ export const useDashboard = (organizationId: number | null) => {
   ) => {
     try {
       const updatedCard = await updateCardService(cardId, updates);
-      setState(prev => ({
-        ...prev,
-        cards: prev.map(card => (card.id === cardId ? updatedCard : card)),
-      }));
+      setState(prev =>
+        prev.map(card => (card.id === cardId ? updatedCard : card))
+      );
     } catch (error) {
       console.error("Error updating card:", error);
       toast.error("Error al actualizar la tarjeta");
     }
   };
 
-  const updateLayouts = async (layouts: GridLayouts, cardId: number) => {
+  const updateLayouts = async (cardId: number, layouts: GridLayouts) => {
     try {
-      const updatedCards = await updateLayoutsService(cardId, layouts);
-      setState(prev => ({
-        ...prev,
-        cards: updatedCards,
-      }));
+      const [updatedCard] = await updateLayoutsService(cardId, layouts);
+      setState(prev =>
+        prev.map(card => (card.id === cardId ? updatedCard : card))
+      );
     } catch (error) {
       console.error("Error updating layouts:", error);
       toast.error("Error al actualizar el diseño");
@@ -73,10 +71,7 @@ export const useDashboard = (organizationId: number | null) => {
   const removeCard = async (cardId: number) => {
     try {
       await removeCardService(cardId);
-      setState(prev => ({
-        ...prev,
-        cards: prev.filter(card => card.id !== cardId),
-      }));
+      setState(prev => prev.filter(card => card.id !== cardId));
     } catch (error) {
       console.error("Error removing card:", error);
       toast.error("Error al eliminar la tarjeta");
@@ -86,10 +81,7 @@ export const useDashboard = (organizationId: number | null) => {
   const reorderCards = async (cardIds: number[]) => {
     try {
       const updatedCards = await reorderCardsService(organizationId, cardIds);
-      setState(prev => ({
-        ...prev,
-        cards: updatedCards,
-      }));
+      setState(updatedCards);
     } catch (error) {
       console.error("Error reordering cards:", error);
       toast.error("Error al reordenar las tarjetas");

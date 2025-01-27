@@ -41,11 +41,18 @@ export const updateLayouts = async (
   cardId: number,
   layouts: GridLayouts
 ): Promise<DashboardCard[]> => {
-  const response = await axiosInstance.put<DashboardCard[]>(
+  const response = await axiosInstance.put<DashboardCard>(
     apiUrls.dashboardCards.byId(cardId),
-    { layouts }
+    {
+      layout: {
+        lg: layouts.lg.find(l => l.i === String(cardId)),
+        md: layouts.md?.find(l => l.i === String(cardId)),
+        sm: layouts.sm?.find(l => l.i === String(cardId)),
+        xs: layouts.xs?.find(l => l.i === String(cardId)),
+      },
+    }
   );
-  return response.data;
+  return [response.data];
 };
 
 export const reorderCards = async (
