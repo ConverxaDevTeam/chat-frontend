@@ -36,7 +36,11 @@ const DashboardOrganization = () => {
   );
   const roles = useSelector((state: RootState) => state.auth.myOrganizations);
 
-  const { state, updateLayouts } = useDashboard(organizationId);
+  const {
+    state,
+    updateLayouts,
+    updateCard: updateCardService,
+  } = useDashboard(organizationId);
   const [currentBreakpoint, setCurrentBreakpoint] = useState(
     getBreakpoint(window.innerWidth)
   );
@@ -89,7 +93,16 @@ const DashboardOrganization = () => {
       >
         {state.map(card => (
           <div key={card.id}>
-            <StatisticsCard {...card} />
+            <StatisticsCard
+              id={card.id}
+              title={card.title}
+              analyticTypes={card.analyticTypes}
+              displayType={card.displayType}
+              timeRange={card.timeRange}
+              className="h-full"
+              showLegend={card.showLegend}
+              onUpdateCard={updates => updateCardService(card.id, updates)}
+            />
           </div>
         ))}
       </ResponsiveGridLayout>
