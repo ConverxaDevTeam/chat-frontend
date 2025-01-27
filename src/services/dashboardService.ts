@@ -1,6 +1,7 @@
-import { DashboardCard, GridLayouts } from "./dashboardTypes";
+import { DashboardCard } from "./dashboardTypes";
 import { axiosInstance } from "@store/actions/auth";
 import { apiUrls } from "@/config/config";
+import { Layout } from "react-grid-layout";
 
 export const getCards = async (
   organizationId: number | null
@@ -37,19 +38,16 @@ export const removeCard = async (cardId: number): Promise<void> => {
   await axiosInstance.delete(apiUrls.dashboardCards.byId(cardId));
 };
 
-export const updateLayouts = async (
-  cardId: number,
-  layouts: GridLayouts
+export const updateLayout = async (
+  layouts: Layout[],
+  breakpoint: string,
+  relationId: number
 ): Promise<DashboardCard[]> => {
   const response = await axiosInstance.put<DashboardCard>(
-    apiUrls.dashboardCards.byId(cardId),
+    apiUrls.dashboardCards.layout(relationId),
     {
-      layout: {
-        lg: layouts.lg.find(l => l.i === String(cardId)),
-        md: layouts.md?.find(l => l.i === String(cardId)),
-        sm: layouts.sm?.find(l => l.i === String(cardId)),
-        xs: layouts.xs?.find(l => l.i === String(cardId)),
-      },
+      layouts,
+      breakpoint,
     }
   );
   return [response.data];

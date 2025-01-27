@@ -5,16 +5,41 @@ import { StatisticsCard } from "../../../components/StatisticsCard";
 import { useDashboard } from "../../../hooks/useDashboard";
 import { useSelector } from "react-redux";
 import { RootState } from "@store";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
+
+const BREAKPOINTS = {
+  lg: 1200,
+  md: 996,
+  sm: 768,
+  xs: 480,
+} as const;
+
+const COLS = {
+  lg: 36,
+  md: 30,
+  sm: 18,
+  xs: 12,
+} as const;
+
+const getBreakpoint = (width: number) => {
+  if (width >= BREAKPOINTS.lg) return "lg";
+  if (width >= BREAKPOINTS.md) return "md";
+  if (width >= BREAKPOINTS.sm) return "sm";
+  return "xs";
+};
 
 const DashboardOrganization = () => {
   const organizationId = useSelector(
     (state: RootState) => state.auth.selectOrganizationId
   );
+  const roles = useSelector((state: RootState) => state.auth.myOrganizations);
 
   const { state, updateLayouts } = useDashboard(organizationId);
+  const [currentBreakpoint, setCurrentBreakpoint] = useState(
+    getBreakpoint(window.innerWidth)
+  );
 
   // @ts-expect-error - Los tipos de @types/react-grid-layout están desactualizados
   const layouts: Layouts = useMemo(() => {
@@ -38,33 +63,11 @@ const DashboardOrganization = () => {
     };
   }, [state]);
 
-  const handleLayoutChange = (currentLayout: Layout[], allLayouts: Layouts) => {
-    if (!currentLayout?.length || !allLayouts) return;
-
-    const width = window.innerWidth;
-    const breakpoint =
-      width >= 1200 ? "lg" : width >= 996 ? "md" : width >= 768 ? "sm" : "xs";
-
-    const movedCard = currentLayout.find((layout, i) => {
-      const card = state[i];
-      const cardLayout = card?.layout[breakpoint] || card?.layout.lg;
-      return (
-        card &&
-        cardLayout &&
-        (layout.x !== cardLayout.x ||
-          layout.y !== cardLayout.y ||
-          layout.w !== cardLayout.w ||
-          layout.h !== cardLayout.h)
-      );
-    });
-
-    if (movedCard) {
-      const cardId = Number(movedCard.i);
-      const newLayouts = { ...layouts };
-      newLayouts[breakpoint] = currentLayout;
-      // @ts-expect-error - Los tipos de @types/react-grid-layout están desactualizados
-      updateLayouts(cardId, newLayouts);
-    }
+  const handleItemChange = (layout: Layout[]) => {
+    console.log(roles);
+    const roleId = roles.find(org => org.id === organizationId)?.id;
+    if (!roleId) return;
+    updateLayouts(layout, currentBreakpoint, roleId);
   };
 
   return (
@@ -72,18 +75,20 @@ const DashboardOrganization = () => {
       <ResponsiveGridLayout
         className="layout"
         layouts={layouts}
-        breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480 }}
-        cols={{ lg: 36, md: 30, sm: 18, xs: 12 }}
+        breakpoints={BREAKPOINTS}
+        cols={COLS}
         rowHeight={30}
         margin={[10, 10]}
         containerPadding={[10, 10]}
         isResizable
         isDraggable
         useCSSTransforms
-        onLayoutChange={handleLayoutChange}
+        onDragStop={handleItemChange}
+        onResizeStop={handleItemChange}
+        onBreakpointChange={setCurrentBreakpoint}
       >
         {state.map(card => (
-          <div key={String(card.id)}>
+          <div key={card.id}>
             <StatisticsCard {...card} />
           </div>
         ))}

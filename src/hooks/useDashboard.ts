@@ -1,14 +1,15 @@
 import { useEffect, useState } from "react";
-import { DashboardCard, GridLayouts } from "../services/dashboardTypes";
+import { DashboardCard } from "../services/dashboardTypes";
 import {
   updateCard as updateCardService,
-  updateLayouts as updateLayoutsService,
   addCard as addCardService,
   removeCard as removeCardService,
   reorderCards as reorderCardsService,
+  updateLayout as updateLayoutService,
   getCards,
 } from "@services/dashboardService";
 import { toast } from "react-toastify";
+import { Layout } from "react-grid-layout";
 
 export const useDashboard = (organizationId: number | null) => {
   const [state, setState] = useState<DashboardCard[]>([]);
@@ -46,11 +47,19 @@ export const useDashboard = (organizationId: number | null) => {
     }
   };
 
-  const updateLayouts = async (cardId: number, layouts: GridLayouts) => {
+  const updateLayouts = async (
+    layout: Layout[],
+    breakpoint: string,
+    relationId: number
+  ) => {
     try {
-      const [updatedCard] = await updateLayoutsService(cardId, layouts);
+      const [updatedCard] = await updateLayoutService(
+        layout,
+        breakpoint,
+        relationId
+      );
       setState(prev =>
-        prev.map(card => (card.id === cardId ? updatedCard : card))
+        prev.map(card => (card.id === updatedCard.id ? updatedCard : card))
       );
     } catch (error) {
       console.error("Error updating layouts:", error);

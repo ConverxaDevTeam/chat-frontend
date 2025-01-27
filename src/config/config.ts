@@ -105,6 +105,7 @@ export const apiUrls = {
     base: (organizationId: number | null) =>
       `/api/dashboard-cards/${organizationId ?? ""}`,
     byId: (cardId: number) => `/api/dashboard-cards/${cardId}`,
+    layout: (relationId: number) => `/api/dashboard-cards/${relationId}/layout`,
   },
 } as const;
 
