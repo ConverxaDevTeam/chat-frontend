@@ -121,13 +121,14 @@ const useMetricData = (
   sortedEntries: StatisticEntry[]
 ) => {
   return useMemo(() => {
+    console.log(lastEntries, sortedEntries);
     const totalValue = lastEntries.reduce((sum, entry) => sum + entry.value, 0);
-
+    console.log(totalValue);
     return {
       value: totalValue,
       trend: calculateTrend(sortedEntries),
       series: lastEntries.map(entry => ({
-        label: entry.label,
+        label: String(entry.label || entry.type),
         value: entry.value,
         color: entry.color,
         icon: entry.icon,
@@ -191,8 +192,20 @@ export const useAnalyticData = (
   analyticTypes: AnalyticType[],
   displayType: StatisticsDisplayType,
   timeRange: TimeRange
-): AnalyticResult => {
-  const entries = getAnalyticData(analyticTypes, timeRange, displayType);
+): AnalyticResult | null => {
+  const entries = useMemo(() => {
+    if (!analyticTypes?.length) return [];
+
+    try {
+      return getAnalyticData(analyticTypes, timeRange, displayType);
+    } catch (error) {
+      console.error("Error getting analytic data:", error);
+      return [];
+    }
+  }, [analyticTypes, timeRange, displayType]);
+
+  if (!entries.length) return null;
+
   const { groupedByType, lastEntries, sortedEntries } =
     useGroupedEntries(entries);
   const metricData = useMetricData(lastEntries, sortedEntries);

@@ -101,6 +101,11 @@ export const apiUrls = {
   nodes: {
     updateNodePosition: (nodeId: number) => `/api/nodes/${nodeId}/position`,
   },
+  dashboardCards: {
+    base: (organizationId: number | null) =>
+      `/api/dashboard-cards/${organizationId ?? ""}`,
+    byId: (cardId: number) => `/api/dashboard-cards/${cardId}`,
+  },
 } as const;
 
 export const tokenAccess = {

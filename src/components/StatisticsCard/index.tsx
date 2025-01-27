@@ -297,6 +297,29 @@ export const StatisticsCard = ({
     onUpdateCard?.({ id, showLegend: show });
   };
 
+  const renderContent = () => {
+    if (!analyticTypes?.length) {
+      return (
+        <div className="text-gray-500">
+          Selecciona al menos un tipo de analítica
+        </div>
+      );
+    }
+
+    if (!data) {
+      return <div className="text-gray-500">No hay datos disponibles</div>;
+    }
+
+    return (
+      <CardContent
+        displayType={displayType}
+        data={data}
+        showLegend={showLegend}
+        metricsRef={metricsRef}
+      />
+    );
+  };
+
   return (
     <div
       ref={containerRef}
@@ -336,12 +359,9 @@ export const StatisticsCard = ({
         </div>
       </div>
 
-      <CardContent
-        displayType={displayType}
-        data={data}
-        showLegend={showLegend}
-        metricsRef={metricsRef}
-      />
+      <div className="flex-1 flex justify-center items-center min-h-0">
+        {renderContent()}
+      </div>
     </div>
   );
 };

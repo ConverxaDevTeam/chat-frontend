@@ -17,7 +17,7 @@ const CHANNEL_METADATA = {
 } as const;
 
 const ANALYTIC_METADATA: Record<
-  AnalyticType,
+  string,
   { label: string; color: string; icon?: string }
 > = {
   [AnalyticType.TOTAL_USERS]: {
@@ -80,9 +80,8 @@ const ANALYTIC_METADATA: Record<
     label: "Funciones por Sesión",
     color: "#F59E0B",
   },
-};
+} as const;
 
-// Genera datos genéricos para cualquier tipo
 const generateData = (
   type: AnalyticType,
   days: number,
@@ -90,20 +89,38 @@ const generateData = (
   variance: number
 ): StatisticEntry[] => {
   const metadata = ANALYTIC_METADATA[type];
+  console.log("generateData:", { type, metadata });
   const rangeMultiplier = days <= 7 ? 1 : days / 7;
   const today = new Date();
 
-  return Array.from({ length: Math.max(1, days) }).map((_, index) => ({
-    type,
-    created_at: days === 1 ? today : subDays(today, days - index - 1),
-    label: metadata.label,
-    value: Math.max(
-      0,
-      Math.floor(baseValue * rangeMultiplier + Math.random() * variance)
-    ),
-    color: metadata.color,
-    icon: metadata.icon,
-  }));
+  return Array.from({ length: Math.max(1, days) }).map((_, index) => {
+    if (!metadata) {
+      console.error("No metadata found for type:", type);
+      return {
+        type,
+        created_at: days === 1 ? today : subDays(today, days - index - 1),
+        label: String(type),
+        value: Math.max(
+          0,
+          Math.floor(baseValue * rangeMultiplier + Math.random() * variance)
+        ),
+        color: "#60A5FA",
+        icon: undefined,
+      };
+    }
+
+    return {
+      type,
+      created_at: days === 1 ? today : subDays(today, days - index - 1),
+      label: metadata.label,
+      value: Math.max(
+        0,
+        Math.floor(baseValue * rangeMultiplier + Math.random() * variance)
+      ),
+      color: metadata.color,
+      icon: metadata.icon,
+    };
+  });
 };
 
 export const getMockData = (

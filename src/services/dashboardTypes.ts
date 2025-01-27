@@ -45,7 +45,6 @@ export interface DashboardCard {
 
 export type { GridLayout, GridLayouts };
 
-export interface DashboardState {
-  cards: DashboardCard[];
-  nextId: number;
+export interface CreateDashboardDto extends Omit<DashboardCard, "id"> {
+  organizationId: number;
 }

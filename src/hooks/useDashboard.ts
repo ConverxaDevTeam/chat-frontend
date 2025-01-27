@@ -1,43 +1,104 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { DashboardCard, GridLayouts } from "../services/dashboardTypes";
 import {
-  DashboardCard,
-  DashboardState,
-  GridLayouts,
-} from "../services/dashboardTypes";
-import {
-  getInitialState,
   updateCard as updateCardService,
   updateLayouts as updateLayoutsService,
   addCard as addCardService,
   removeCard as removeCardService,
   reorderCards as reorderCardsService,
+  getCards,
 } from "@services/dashboardService";
+import { toast } from "react-toastify";
 
-export const useDashboard = () => {
-  const [state, setState] = useState<DashboardState>(getInitialState());
+export const useDashboard = (organizationId: number | null) => {
+  const [state, setState] = useState<DashboardCard[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const updateCard = (cardId: number, updates: Partial<DashboardCard>) => {
-    setState(updateCardService(state, cardId, updates));
+  useEffect(() => {
+    const loadCards = async () => {
+      try {
+        setLoading(true);
+        const initialState = await getCards(organizationId);
+        setState(initialState);
+      } catch (error) {
+        console.error("Error loading cards:", error);
+        toast.error("Error al cargar las tarjetas");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadCards();
+  }, [organizationId]);
+
+  const updateCard = async (
+    cardId: number,
+    updates: Partial<DashboardCard>
+  ) => {
+    try {
+      const updatedCard = await updateCardService(cardId, updates);
+      setState(prev => ({
+        ...prev,
+        cards: prev.map(card => (card.id === cardId ? updatedCard : card)),
+      }));
+    } catch (error) {
+      console.error("Error updating card:", error);
+      toast.error("Error al actualizar la tarjeta");
+    }
   };
 
-  const updateLayouts = (layouts: GridLayouts) => {
-    setState(updateLayoutsService(state, layouts));
+  const updateLayouts = async (layouts: GridLayouts, cardId: number) => {
+    try {
+      const updatedCards = await updateLayoutsService(cardId, layouts);
+      setState(prev => ({
+        ...prev,
+        cards: updatedCards,
+      }));
+    } catch (error) {
+      console.error("Error updating layouts:", error);
+      toast.error("Error al actualizar el diseño");
+    }
   };
 
-  const addCard = (card: Omit<DashboardCard, "id">) => {
-    setState(addCardService(state, card));
+  const addCard = async (card: Omit<DashboardCard, "id">) => {
+    try {
+      const newCard = await addCardService(organizationId, card);
+      setState(prev => [...prev, newCard]);
+    } catch (error) {
+      console.error("Error adding card:", error);
+      toast.error("Error al agregar la tarjeta");
+    }
   };
 
-  const removeCard = (cardId: number) => {
-    setState(removeCardService(state, cardId));
+  const removeCard = async (cardId: number) => {
+    try {
+      await removeCardService(cardId);
+      setState(prev => ({
+        ...prev,
+        cards: prev.filter(card => card.id !== cardId),
+      }));
+    } catch (error) {
+      console.error("Error removing card:", error);
+      toast.error("Error al eliminar la tarjeta");
+    }
   };
 
-  const reorderCards = (cardIds: number[]) => {
-    setState(reorderCardsService(state, cardIds));
+  const reorderCards = async (cardIds: number[]) => {
+    try {
+      const updatedCards = await reorderCardsService(organizationId, cardIds);
+      setState(prev => ({
+        ...prev,
+        cards: updatedCards,
+      }));
+    } catch (error) {
+      console.error("Error reordering cards:", error);
+      toast.error("Error al reordenar las tarjetas");
+    }
   };
 
   return {
     state,
+    loading,
     updateCard,
     updateLayouts,
     addCard,
