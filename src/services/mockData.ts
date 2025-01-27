@@ -89,7 +89,6 @@ const generateData = (
   variance: number
 ): StatisticEntry[] => {
   const metadata = ANALYTIC_METADATA[type];
-  console.log("generateData:", { type, metadata });
   const rangeMultiplier = days <= 7 ? 1 : days / 7;
   const today = new Date();
 

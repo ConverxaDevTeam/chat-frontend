@@ -21,7 +21,6 @@ interface SerieProps {
 }
 
 const LegendView = ({ color, label, icon }: SerieProps) => {
-  console.log({ color, label, icon });
   if (icon)
     return (
       <img

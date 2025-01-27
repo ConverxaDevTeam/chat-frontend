@@ -121,9 +121,7 @@ const useMetricData = (
   sortedEntries: StatisticEntry[]
 ) => {
   return useMemo(() => {
-    console.log(lastEntries, sortedEntries);
     const totalValue = lastEntries.reduce((sum, entry) => sum + entry.value, 0);
-    console.log(totalValue);
     return {
       value: totalValue,
       trend: calculateTrend(sortedEntries),

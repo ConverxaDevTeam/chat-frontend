@@ -68,17 +68,14 @@ export const getAnalyticData = (
   timeRange: TimeRange,
   displayType: StatisticsDisplayType
 ): StatisticEntry[] => {
-  console.log("getAnalyticData:", { types, timeRange, displayType });
   const endDate = new Date();
   const days = getTimeRangeDays(timeRange);
   const startDate = startOfDay(subDays(endDate, days));
 
   const data = types.flatMap(type => {
-    console.log("Getting data for type:", type);
     const typeData = getMockData(type, days);
     return getDataInRange(typeData, startDate, endDate);
   });
-  console.log("Data generated:", data);
 
   if (displayType === StatisticsDisplayType.BAR) {
     return groupByTimeRanges(data, days);
