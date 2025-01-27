@@ -17,10 +17,10 @@ export enum AnalyticType {
 }
 
 export enum StatisticsDisplayType {
-  METRIC = 1,
-  AREA = 2,
-  BAR = 3,
-  PIE = 4,
+  PIE = "PIE",
+  BAR = "BAR",
+  AREA = "AREA",
+  METRIC = "METRIC",
 }
 
 export enum TimeRange {
