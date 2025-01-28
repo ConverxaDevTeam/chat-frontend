@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useEffect, useState } from "react";
 import {
   AnalyticType,
   StatisticsDisplayType,
@@ -94,98 +94,92 @@ const calculateTrend = (entries: StatisticEntry[]): MetricData["trend"] => {
   };
 };
 
-const useGroupedEntries = (entries: StatisticEntry[]) => {
-  return useMemo(() => {
-    const sortedEntries = entries.sort(
-      (a, b) => a.created_at.getTime() - b.created_at.getTime()
-    );
+const processEntries = (entries: StatisticEntry[]) => {
+  const sortedEntries = entries.sort(
+    (a, b) => a.created_at.getTime() - b.created_at.getTime()
+  );
 
-    const groupedByType = sortedEntries.reduce<
-      Record<AnalyticType, StatisticEntry[]>
-    >(
-      (acc, entry) => ({
-        ...acc,
-        [entry.type]: [...(acc[entry.type] || []), entry],
-      }),
-      {} as Record<AnalyticType, StatisticEntry[]>
-    );
+  const groupedByType = sortedEntries.reduce<
+    Record<AnalyticType, StatisticEntry[]>
+  >(
+    (acc, entry) => ({
+      ...acc,
+      [entry.type]: [...(acc[entry.type] || []), entry],
+    }),
+    {} as Record<AnalyticType, StatisticEntry[]>
+  );
 
-    const lastEntries = Object.values(groupedByType).map(
-      typeEntries => typeEntries[typeEntries.length - 1]
-    );
+  const lastEntries = Object.values(groupedByType).map(
+    typeEntries => typeEntries[typeEntries.length - 1]
+  );
 
-    return { groupedByType, lastEntries, sortedEntries };
-  }, [entries]);
+  return { groupedByType, lastEntries, sortedEntries };
 };
 
-const useMetricData = (
+const getMetricData = (
   lastEntries: StatisticEntry[],
   sortedEntries: StatisticEntry[]
 ) => {
-  return useMemo(() => {
-    const totalValue = lastEntries.reduce((sum, entry) => sum + entry.value, 0);
-    return {
-      value: totalValue,
-      trend: calculateTrend(sortedEntries),
-      series: lastEntries.map(entry => ({
-        label: String(entry.label || entry.type),
-        value: entry.value,
-        color: entry.color,
-        icon: entry.icon,
-      })),
-    };
-  }, [lastEntries, sortedEntries]);
+  const totalValue = lastEntries.reduce((sum, entry) => sum + entry.value, 0);
+  return {
+    value: totalValue,
+    trend: calculateTrend(sortedEntries),
+    series: lastEntries.map(entry => ({
+      label: String(entry.label || entry.type),
+      value: entry.value,
+      color: entry.color,
+      icon: entry.icon,
+    })),
+  };
 };
 
-const useChartData = (
+const getChartData = (
   groupedByType: Record<AnalyticType, StatisticEntry[]>,
   sortedEntries: StatisticEntry[],
   displayType: StatisticsDisplayType
 ) => {
-  return useMemo(() => {
-    if (displayType === StatisticsDisplayType.PIE) {
-      const allTypes = Object.values(groupedByType).map(entries => entries[0]);
-      return {
-        labels: allTypes.map(e => e.label),
-        datasets: [
-          {
-            label: "",
-            data: allTypes.map(e => e.value),
-            backgroundColor: allTypes.map(e => e.color),
-            borderColor: "#ffffff",
-            fill: false,
-            tension: 0.4,
-          },
-        ],
-      };
-    }
-
-    const uniqueDates = [
-      ...new Set(
-        sortedEntries.map(e => e.created_at.toISOString().split("T")[0])
-      ),
-    ];
-
+  if (displayType === StatisticsDisplayType.PIE) {
+    const allTypes = Object.values(groupedByType).map(entries => entries[0]);
     return {
-      labels: uniqueDates,
-      datasets: Object.values(groupedByType).map(typeEntries => {
-        const firstEntry = typeEntries[0];
-        return {
-          label: firstEntry.label,
-          data: uniqueDates.map(date => {
-            const entry = typeEntries.find(
-              e => e.created_at.toISOString().split("T")[0] === date
-            );
-            return entry?.value || 0;
-          }),
-          borderColor: firstEntry.color,
-          backgroundColor: firstEntry.color,
-          fill: displayType === StatisticsDisplayType.AREA,
+      labels: allTypes.map(e => e.label),
+      datasets: [
+        {
+          label: "",
+          data: allTypes.map(e => e.value),
+          backgroundColor: allTypes.map(e => e.color),
+          borderColor: "#ffffff",
+          fill: false,
           tension: 0.4,
-        };
-      }),
+        },
+      ],
     };
-  }, [groupedByType, sortedEntries, displayType]);
+  }
+
+  const uniqueDates = [
+    ...new Set(
+      sortedEntries.map(e => e.created_at.toISOString().split("T")[0])
+    ),
+  ];
+
+  return {
+    labels: uniqueDates,
+    datasets: Object.values(groupedByType).map(typeEntries => {
+      const firstEntry = typeEntries[0];
+      return {
+        label: firstEntry.label,
+        data: uniqueDates.map(date => {
+          const entry = typeEntries.find(
+            e => e.created_at.toISOString().split("T")[0] === date
+          );
+          return entry?.value || 0;
+        }),
+        borderColor: firstEntry.color,
+        backgroundColor: firstEntry.color,
+        fill: displayType === StatisticsDisplayType.AREA,
+        tension: 0.4,
+      };
+    }),
+  };
 };
 
 export const useAnalyticData = (
@@ -196,32 +190,31 @@ export const useAnalyticData = (
   const organizationId = useSelector(
     (state: RootState) => state.auth.selectOrganizationId
   );
-  const entries = useMemo(() => {
-    if (!analyticTypes?.length || !organizationId) return [];
+  const [entries, setEntries] = useState<StatisticEntry[]>([]);
 
-    try {
-      return getAnalyticData(
-        analyticTypes,
-        timeRange,
-        displayType,
-        organizationId
-      );
-    } catch (error) {
-      console.error("Error getting analytic data:", error);
-      return [];
+  useEffect(() => {
+    if (!analyticTypes?.length || !organizationId) return;
+
+    getAnalyticData(analyticTypes, timeRange, displayType, organizationId)
+      .then(setEntries)
+      .catch(error => {
+        console.error("Error getting analytic data:", error);
+        setEntries([]);
+      });
+  }, [analyticTypes, timeRange, displayType, organizationId]);
+
+  return useMemo(() => {
+    if (!entries.length) return null;
+
+    const { groupedByType, lastEntries, sortedEntries } =
+      processEntries(entries);
+    const metricData = getMetricData(lastEntries, sortedEntries);
+
+    if (displayType === StatisticsDisplayType.METRIC) {
+      return metricData;
     }
-  }, [analyticTypes, timeRange, displayType]);
 
-  if (!entries.length) return null;
-
-  const { groupedByType, lastEntries, sortedEntries } =
-    useGroupedEntries(entries);
-  const metricData = useMetricData(lastEntries, sortedEntries);
-  const chartData = useChartData(groupedByType, sortedEntries, displayType);
-
-  if (displayType === StatisticsDisplayType.METRIC) {
-    return metricData;
-  }
-
-  return { ...metricData, chartData };
+    const chartData = getChartData(groupedByType, sortedEntries, displayType);
+    return { ...metricData, chartData };
+  }, [entries, displayType]);
 };

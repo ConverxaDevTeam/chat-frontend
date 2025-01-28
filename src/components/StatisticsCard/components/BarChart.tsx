@@ -10,7 +10,7 @@ interface BarChartProps {
 
 export const BarChart = ({ data, series }: BarChartProps) => {
   return (
-    <div className="h-full w-full flex items-center justify-center min-h-[200px]">
+    <div className="h-full w-full flex items-center justify-center">
       <div className="h-[90%] w-[90%]">
         <Bar
           data={{
