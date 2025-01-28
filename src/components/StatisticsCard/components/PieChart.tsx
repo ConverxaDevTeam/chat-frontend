@@ -76,25 +76,29 @@ const pieOptions: ChartOptions<"pie"> = {
 
 export const PieChart = ({ data }: PieChartProps) => {
   return (
-    <Pie
-      data={{
-        ...data,
-        datasets: data.datasets.map(dataset => ({
-          ...dataset,
-          backgroundColor: context => {
-            const chart = context.chart;
-            const { ctx } = chart;
-            const colors = dataset.backgroundColor as string[];
-            const index = context.dataIndex;
-            return createGradient(ctx, colors[index]);
-          },
-        })),
-      }}
-      options={{
-        ...pieOptions,
-        maintainAspectRatio: false,
-        aspectRatio: 1.5,
-      }}
-    />
+    <div className="h-full w-full flex items-center justify-center">
+      <div className="h-[90%] w-[90%]">
+        <Pie
+          data={{
+            ...data,
+            datasets: data.datasets.map(dataset => ({
+              ...dataset,
+              backgroundColor: context => {
+                const chart = context.chart;
+                const { ctx } = chart;
+                const colors = dataset.backgroundColor as string[];
+                const index = context.dataIndex;
+                return createGradient(ctx, colors[index]);
+              },
+            })),
+          }}
+          options={{
+            ...pieOptions,
+            maintainAspectRatio: false,
+            responsive: true,
+          }}
+        />
+      </div>
+    </div>
   );
 };

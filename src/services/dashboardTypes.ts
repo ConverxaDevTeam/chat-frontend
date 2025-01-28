@@ -11,12 +11,8 @@ interface BaseLayout {
   h: number;
 }
 
-interface CardLayout extends BaseLayout {
+export interface CardLayout extends BaseLayout {
   i: number;
-}
-
-interface GridLayout extends BaseLayout {
-  i: string;
 }
 
 interface CardLayouts {
@@ -27,10 +23,10 @@ interface CardLayouts {
 }
 
 interface GridLayouts {
-  lg: GridLayout[];
-  md?: GridLayout[];
-  sm?: GridLayout[];
-  xs?: GridLayout[];
+  lg: CardLayout[];
+  md?: CardLayout[];
+  sm?: CardLayout[];
+  xs?: CardLayout[];
 }
 
 export interface DashboardCard {
@@ -43,9 +39,8 @@ export interface DashboardCard {
   showLegend?: boolean;
 }
 
-export type { GridLayout, GridLayouts };
+export type { GridLayouts, CardLayouts };
 
-export interface DashboardState {
-  cards: DashboardCard[];
-  nextId: number;
+export interface CreateDashboardDto extends Omit<DashboardCard, "id"> {
+  organizationId: number;
 }

@@ -10,30 +10,34 @@ interface BarChartProps {
 
 export const BarChart = ({ data, series }: BarChartProps) => {
   return (
-    <Bar
-      data={{
-        ...data,
-        datasets: data.datasets.map((dataset, index) => {
-          const ctx = document.createElement("canvas").getContext("2d");
-          if (!ctx) return dataset;
+    <div className="h-full w-full flex items-center justify-center">
+      <div className="h-[90%] w-[90%]">
+        <Bar
+          data={{
+            ...data,
+            datasets: data.datasets.map((dataset, index) => {
+              const ctx = document.createElement("canvas").getContext("2d");
+              if (!ctx) return dataset;
 
-          const gradient = createChartGradient(ctx, series[index].color);
+              const gradient = createChartGradient(ctx, series[index].color);
 
-          return {
-            ...dataset,
-            borderWidth: 1,
-            borderColor: series[index].color,
-            backgroundColor: gradient,
-            borderRadius: 4,
-            barThickness: 20,
-          };
-        }),
-      }}
-      options={{
-        ...baseChartOptions,
-        maintainAspectRatio: false,
-        aspectRatio: 14.4,
-      }}
-    />
+              return {
+                ...dataset,
+                borderWidth: 1,
+                borderColor: series[index].color,
+                backgroundColor: gradient,
+                borderRadius: 4,
+                barThickness: 20,
+              };
+            }),
+          }}
+          options={{
+            ...baseChartOptions,
+            maintainAspectRatio: false,
+            responsive: true,
+          }}
+        />
+      </div>
+    </div>
   );
 };

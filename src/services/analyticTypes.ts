@@ -1,26 +1,26 @@
 export enum AnalyticType {
-  TOTAL_USERS = 1,
-  NEW_USERS = 2,
-  RECURRING_USERS = 3,
-  SESSIONS = 4,
-  IA_MESSAGES = 5,
-  HITL_MESSAGES = 6,
-  TOTAL_MESSAGES = 7,
-  AVG_IA_MESSAGES_PER_SESSION = 8,
-  AVG_HITL_MESSAGES_PER_SESSION = 9,
-  AVG_SESSIONS_PER_USER = 10,
-  MESSAGES_BY_WHATSAPP = 11,
-  MESSAGES_BY_FACEBOOK = 12,
-  MESSAGES_BY_WEB = 13,
-  FUNCTION_CALLS = 14,
-  FUNCTIONS_PER_SESSION = 15,
+  TOTAL_USERS = "TOTAL_USERS",
+  NEW_USERS = "NEW_USERS",
+  MESSAGES_BY_WHATSAPP = "MESSAGES_BY_WHATSAPP",
+  MESSAGES_BY_FACEBOOK = "MESSAGES_BY_FACEBOOK",
+  MESSAGES_BY_WEB = "MESSAGES_BY_WEB",
+  TOTAL_MESSAGES = "TOTAL_MESSAGES",
+  IA_MESSAGES = "IA_MESSAGES",
+  HITL_MESSAGES = "HITL_MESSAGES",
+  FUNCTION_CALLS = "FUNCTION_CALLS",
+  RECURRING_USERS = "RECURRING_USERS",
+  SESSIONS = "SESSIONS",
+  IA_MESSAGES_PER_SESSION = "IA_MESSAGES_PER_SESSION",
+  HITL_MESSAGES_PER_SESSION = "HITL_MESSAGES_PER_SESSION",
+  SESSIONS_PER_USER = "SESSIONS_PER_USER",
+  FUNCTIONS_PER_SESSION = "FUNCTIONS_PER_SESSION",
 }
 
 export enum StatisticsDisplayType {
-  METRIC = 1,
-  AREA = 2,
-  BAR = 3,
-  PIE = 4,
+  PIE = "PIE",
+  BAR = "BAR",
+  AREA = "AREA",
+  METRIC = "METRIC",
 }
 
 export enum TimeRange {
@@ -67,16 +67,16 @@ export const analyticOptions: AnalyticOption[] = [
     label: "Total de Mensajes",
   },
   {
-    id: AnalyticType.AVG_IA_MESSAGES_PER_SESSION,
-    label: "Avg. Mensajes IA por Sesion",
+    id: AnalyticType.IA_MESSAGES_PER_SESSION,
+    label: "Mensajes IA por Sesion",
   },
   {
-    id: AnalyticType.AVG_HITL_MESSAGES_PER_SESSION,
-    label: "Avg Mensajes HITL por Sesion",
+    id: AnalyticType.HITL_MESSAGES_PER_SESSION,
+    label: "Mensajes HITL por Sesion",
   },
   {
-    id: AnalyticType.AVG_SESSIONS_PER_USER,
-    label: "Avg Sesiones por Usuario",
+    id: AnalyticType.SESSIONS_PER_USER,
+    label: "Sesiones por Usuario",
   },
   {
     id: AnalyticType.MESSAGES_BY_WHATSAPP,
