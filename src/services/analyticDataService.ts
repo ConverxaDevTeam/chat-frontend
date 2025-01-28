@@ -46,16 +46,16 @@ const ANALYTIC_METADATA: Record<
     label: "Total Mensajes",
     color: "#60A5FA",
   },
-  [AnalyticType.AVG_IA_MESSAGES_PER_SESSION]: {
-    label: "Promedio Mensajes IA por Sesión",
+  [AnalyticType.IA_MESSAGES_PER_SESSION]: {
+    label: "Mensajes IA por Sesión",
     color: "#60A5FA",
   },
-  [AnalyticType.AVG_HITL_MESSAGES_PER_SESSION]: {
-    label: "Promedio Mensajes HITL por Sesión",
+  [AnalyticType.HITL_MESSAGES_PER_SESSION]: {
+    label: "Mensajes HITL por Sesión",
     color: "#60A5FA",
   },
-  [AnalyticType.AVG_SESSIONS_PER_USER]: {
-    label: "Promedio Sesiones por Usuario",
+  [AnalyticType.SESSIONS_PER_USER]: {
+    label: "Sesiones por Usuario",
     color: "#8B5CF6",
   },
   [AnalyticType.MESSAGES_BY_WHATSAPP]: {

@@ -48,16 +48,16 @@ const ANALYTIC_METADATA: Record<
     label: "Total Mensajes",
     color: "#60A5FA",
   },
-  [AnalyticType.AVG_IA_MESSAGES_PER_SESSION]: {
-    label: "Promedio Mensajes IA por Sesión",
+  [AnalyticType.IA_MESSAGES_PER_SESSION]: {
+    label: "Mensajes IA por Sesión",
     color: "#60A5FA",
   },
-  [AnalyticType.AVG_HITL_MESSAGES_PER_SESSION]: {
-    label: "Promedio Mensajes HITL por Sesión",
+  [AnalyticType.HITL_MESSAGES_PER_SESSION]: {
+    label: "Mensajes HITL por Sesión",
     color: "#60A5FA",
   },
-  [AnalyticType.AVG_SESSIONS_PER_USER]: {
-    label: "Promedio Sesiones por Usuario",
+  [AnalyticType.SESSIONS_PER_USER]: {
+    label: "Sesiones por Usuario",
     color: "#8B5CF6",
   },
   [AnalyticType.MESSAGES_BY_WHATSAPP]: {
@@ -136,9 +136,9 @@ export const getMockData = (
     [AnalyticType.IA_MESSAGES]: { base: 897, variance: 350 },
     [AnalyticType.HITL_MESSAGES]: { base: 567, variance: 320 },
     [AnalyticType.TOTAL_MESSAGES]: { base: 1024, variance: 800 },
-    [AnalyticType.AVG_IA_MESSAGES_PER_SESSION]: { base: 87, variance: 25 },
-    [AnalyticType.AVG_HITL_MESSAGES_PER_SESSION]: { base: 245, variance: 50 },
-    [AnalyticType.AVG_SESSIONS_PER_USER]: { base: 267, variance: 40 },
+    [AnalyticType.IA_MESSAGES_PER_SESSION]: { base: 87, variance: 25 },
+    [AnalyticType.HITL_MESSAGES_PER_SESSION]: { base: 245, variance: 50 },
+    [AnalyticType.SESSIONS_PER_USER]: { base: 267, variance: 40 },
     [AnalyticType.MESSAGES_BY_WHATSAPP]: { base: 450, variance: 80 },
     [AnalyticType.MESSAGES_BY_FACEBOOK]: { base: 350, variance: 60 },
     [AnalyticType.MESSAGES_BY_WEB]: { base: 224, variance: 45 },
