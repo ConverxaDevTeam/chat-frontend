@@ -6,6 +6,8 @@ import {
 } from "../services/analyticTypes";
 import { getAnalyticData } from "../services/analyticDataService";
 import { StatisticEntry } from "../services/mockData";
+import { useSelector } from "react-redux";
+import { RootState } from "@store";
 
 interface ChartData {
   labels: string[];
@@ -191,11 +193,19 @@ export const useAnalyticData = (
   displayType: StatisticsDisplayType,
   timeRange: TimeRange
 ): AnalyticResult | null => {
+  const organizationId = useSelector(
+    (state: RootState) => state.auth.selectOrganizationId
+  );
   const entries = useMemo(() => {
-    if (!analyticTypes?.length) return [];
+    if (!analyticTypes?.length || !organizationId) return [];
 
     try {
-      return getAnalyticData(analyticTypes, timeRange, displayType);
+      return getAnalyticData(
+        analyticTypes,
+        timeRange,
+        displayType,
+        organizationId
+      );
     } catch (error) {
       console.error("Error getting analytic data:", error);
       return [];
