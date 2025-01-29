@@ -15,6 +15,7 @@ import {
   FieldErrors,
   Control,
 } from "react-hook-form";
+import { Button } from "@components/common/Button";
 
 // Types
 interface ParamFormModalProps {
@@ -129,31 +130,20 @@ const ParamFormFields = ({
 
 // Form Actions Component
 const ParamFormActions = ({
-  onClose,
   isEdit,
   disabled = false,
 }: {
-  onClose: () => void;
   isEdit: boolean;
   disabled?: boolean;
 }) => (
-  <div className="flex justify-end space-x-2">
-    <button
-      type="button"
-      onClick={onClose}
-      className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
-      disabled={disabled}
-    >
-      Cancelar
-    </button>
-    <button
-      type="submit"
-      className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700"
-      disabled={disabled}
-    >
-      {isEdit ? "Actualizar" : "Crear"}
-    </button>
-  </div>
+  <Button
+    type="submit"
+    variant="primary"
+    className="w-full"
+    disabled={disabled}
+  >
+    {isEdit ? "Actualizar parámetro" : "Crear parámetro"}
+  </Button>
 );
 
 // Main Component
@@ -203,7 +193,7 @@ export const ParamFormModal = ({
           control={control}
           errors={errors}
         />
-        <ParamFormActions onClose={handleClose} isEdit={!!param} />
+        <ParamFormActions isEdit={!!param} />
       </form>
     </Modal>
   );
