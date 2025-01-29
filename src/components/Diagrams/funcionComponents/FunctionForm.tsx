@@ -229,8 +229,8 @@ export const FunctionForm = (props: FunctionFormProps) => {
   }>;
 
   return (
-    <form onSubmit={onSubmit} className="grid gap-4">
-      <div className="max-h-[75vh] overflow-y-auto">
+    <form onSubmit={onSubmit} className="grid gap-[42px]">
+      <div className="max-h-[75vh] w-[470px] overflow-y-auto grid gap-[24px]">
         {formFields.map(field => (
           <FormField
             key={field.name}

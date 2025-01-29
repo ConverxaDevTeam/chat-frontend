@@ -19,7 +19,7 @@ export const TextArea: React.FC<TextAreaProps> = ({
 }) => {
   return (
     <textarea
-      className={`w-full rounded-md bg-gray-100 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-3 py-2 sm:text-sm ${
+      className={`flex px-3 py-4 items-center gap-[11px] self-stretch rounded-lg border border-sofia-darkBlue text-sofia-superDark font-quicksand text-[14px] font-normal leading-normal ${
         error ? "border-red-500" : ""
       } ${className}`}
       placeholder={placeholder}
