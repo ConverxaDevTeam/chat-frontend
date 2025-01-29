@@ -4,7 +4,7 @@ import {
   FunctionParam,
   CreateFunctionParamDto,
 } from "@interfaces/function-params.interface";
-import { FaPlus } from "react-icons/fa";
+import { Button } from "../../common/Button";
 import { ParamList } from "./ParamList";
 import { ParamFormModal } from "./ParamFormModal";
 import { useParamManagement } from "../hooks/useParamManagement";
@@ -70,14 +70,14 @@ export const ParamsModal = ({
     >
       <div className="space-y-4">
         <div className="flex justify-end">
-          <button
-            onClick={handleAdd}
-            disabled={isLoading}
-            className="flex items-center px-3 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 disabled:opacity-50"
-          >
-            <FaPlus className="mr-2" />
-            Agregar Parámetro
-          </button>
+          <Button onClick={handleAdd} disabled={isLoading} variant="primary">
+            <img
+              src="/mvp/plus.svg"
+              alt="Agregar"
+              className="mr-2 w-[16px] h-[16px]"
+            />
+            <span>Agregar Parámetro</span>
+          </Button>
         </div>
 
         <ParamList

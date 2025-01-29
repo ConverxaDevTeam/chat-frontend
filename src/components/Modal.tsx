@@ -5,13 +5,16 @@ const ModalHeader: React.FC<{
   children: React.ReactNode;
   handleClose: () => void;
 }> = ({ children, handleClose }) => (
-  <header className="flex justify-between items-center">
-    {children}
+  <header className="flex justify-between items-center p-6 self-stretch rounded-t-2xl border-b border-sofia-darkBlue bg-white">
+    <span className="text-sofia-superDark font-quicksand text-2xl font-bold leading-6">
+      {children}
+    </span>
     <button
       onClick={() => handleClose()}
-      className="text-gray-500 hover:text-gray-700"
+      className="text-sofia-superDark hover:opacity-80"
+      aria-label="Cerrar modal"
     >
-      &times;
+      <img src="/mvp/XIcon.svg" alt="Cerrar" className="w-6 h-6" />
     </button>
   </header>
 );
@@ -49,11 +52,11 @@ const Modal: React.FC<ModalProps> = ({
           className="fixed z-[100] w-full h-full flex justify-center items-center top-0 left-0 bg-[#212121] bg-opacity-75"
           onClick={handleBackgroundClick}
         >
-          <div className="bg-white rounded-lg shadow-lg w-full max-w-lg mx-auto p-6 space-y-6 overflow-hidden ">
+          <div className="bg-white rounded-2xl shadow-lg w-[518px] flex flex-col items-start border-3 border-sofia-darkBlue overflow-hidden space-y-6">
             {header && (
               <ModalHeader handleClose={onClose}>{header}</ModalHeader>
             )}
-            {children}
+            <div className="p-[24px]">{children}</div>
             {footer && <footer className="mt-4">{footer}</footer>}
           </div>
         </div>,
