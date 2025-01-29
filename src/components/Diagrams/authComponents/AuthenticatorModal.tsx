@@ -1,12 +1,14 @@
 import Modal from "@components/Modal";
 import { useState, useEffect, useCallback } from "react";
-import { FaTrash, FaEdit, FaPlus, FaCheck, FaSquare } from "react-icons/fa";
+import { FaPlus } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { useSweetAlert } from "@/hooks/useSweetAlert";
 import { authenticatorService } from "@/services/authenticator.service";
-import { functionsService } from "@/services/functions.service"; // Import the functionsService
+import { functionsService } from "@/services/functions.service";
 import AuthenticatorFormModal from "./AuthenticatorFormModal";
 import { AuthenticatorType } from "@interfaces/autenticators.interface";
+import { Button } from "@components/common/Button";
+import { DataList } from "@components/common/DataList";
 
 interface AuthenticatorModalProps {
   show: boolean;
@@ -166,126 +168,55 @@ const AuthenticatorTable = ({
   onDelete,
   onSelect,
   selectedAuthenticatorId,
-}: AuthenticatorTableProps) => (
-  <div className="overflow-x-auto rounded-lg border border-gray-200 shadow-sm">
-    <table className="min-w-full divide-y divide-gray-200">
-      <thead className="bg-gray-50">
-        <tr>
-          <th
-            scope="col"
-            className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-          >
-            Nombre
-          </th>
-          <th
-            scope="col"
-            className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-          >
-            URL
-          </th>
-          <th
-            scope="col"
-            className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
-          >
-            Acciones
-          </th>
-        </tr>
-      </thead>
-      <tbody className="bg-white divide-y divide-gray-200">
-        {authenticators.length === 0 ? (
-          <tr>
-            <td
-              colSpan={3}
-              className="px-6 py-4 text-center text-sm text-gray-500"
-            >
-              No hay autenticadores configurados
-            </td>
-          </tr>
-        ) : (
-          authenticators.map(auth => (
-            <AuthenticatorRow
-              key={auth.id}
-              auth={auth}
-              onEdit={onEdit}
-              onDelete={onDelete}
-              onSelect={onSelect}
-              isSelected={auth.id === selectedAuthenticatorId}
-            />
-          ))
-        )}
-      </tbody>
-    </table>
-  </div>
-);
+}: AuthenticatorTableProps) => {
+  const items = authenticators.map(auth => ({
+    fields: [
+      { label: "Nombre", value: auth.name },
+      {
+        label: "URL",
+        value: (auth.config as { url: string })?.url || auth.value,
+      },
+    ],
+    actions: (
+      <>
+        <button
+          onClick={e => {
+            e.stopPropagation();
+            onEdit(auth);
+          }}
+          className="p-2 hover:bg-sofia-electricOlive/10 rounded-lg transition-colors"
+        >
+          <img src="/mvp/square-pen.svg" alt="Editar" className="w-4 h-4" />
+        </button>
+        <button
+          onClick={e => {
+            e.stopPropagation();
+            onDelete(auth.id!);
+          }}
+          className="p-2 hover:bg-sofia-electricOlive/10 rounded-lg transition-colors"
+        >
+          <img src="/mvp/trash.svg" alt="Eliminar" className="w-4 h-4" />
+        </button>
+      </>
+    ),
+    selected: auth.id === selectedAuthenticatorId,
+    onClick: () => onSelect(auth.id!),
+  }));
 
-interface AuthenticatorRowProps {
-  auth: AuthenticatorType;
-  onEdit: (auth: AuthenticatorType) => void;
-  onDelete: (id: number) => void;
-  onSelect: (id: number) => void;
-  isSelected: boolean;
-}
-
-const AuthenticatorRow = ({
-  auth,
-  onEdit,
-  onDelete,
-  onSelect,
-  isSelected,
-}: AuthenticatorRowProps) => (
-  <tr className="hover:bg-gray-50 transition-colors">
-    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 max-w-[10rem] truncate">
-      {auth.name}
-    </td>
-    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 max-w-[10rem] truncate">
-      {(auth.config as { url: string }).url ?? auth.value}
-    </td>
-    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-3">
-      {auth.id && (
-        <>
-          <button
-            type="button"
-            className={`${isSelected ? "text-blue-600" : "text-gray-400"} hover:text-blue-900 inline-flex items-center`}
-            onClick={() => onSelect(auth.id!)}
-          >
-            {isSelected ? (
-              <FaCheck className="h-4 w-4" />
-            ) : (
-              <FaSquare className="h-4 w-4" />
-            )}
-          </button>
-          <button
-            type="button"
-            className="text-red-600 hover:text-red-900 inline-flex items-center"
-            onClick={() => onDelete(auth.id!)}
-          >
-            <FaTrash className="h-4 w-4" />
-          </button>
-        </>
-      )}
-      <button
-        type="button"
-        className="text-blue-600 hover:text-blue-900 inline-flex items-center"
-        onClick={() => onEdit(auth)}
-      >
-        <FaEdit className="h-4 w-4" />
-      </button>
-    </td>
-  </tr>
-);
+  return (
+    <DataList items={items} emptyMessage="No hay autenticadores configurados" />
+  );
+};
 
 interface AddAuthenticatorButtonProps {
   onClick: () => void;
 }
 
 const AddAuthenticatorButton = ({ onClick }: AddAuthenticatorButtonProps) => (
-  <button
-    onClick={onClick}
-    className="w-full flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
-  >
+  <Button onClick={onClick} variant="primary" className="w-full">
     <FaPlus className="mr-2" />
     Agregar Autenticador
-  </button>
+  </Button>
 );
 
 export function AuthenticatorModal({
@@ -357,8 +288,7 @@ export function AuthenticatorModal({
           </div>
         }
       >
-        <div className="space-y-4">
-          <AddAuthenticatorButton onClick={handleAddNew} />
+        <div className="space-y-6">
           <AuthenticatorTable
             authenticators={authenticators}
             onEdit={handleEdit}
@@ -366,6 +296,7 @@ export function AuthenticatorModal({
             onSelect={handleSelect}
             selectedAuthenticatorId={selectedAuthenticatorId}
           />
+          <AddAuthenticatorButton onClick={handleAddNew} />
         </div>
       </Modal>
 

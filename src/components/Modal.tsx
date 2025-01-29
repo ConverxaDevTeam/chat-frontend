@@ -52,7 +52,7 @@ const Modal: React.FC<ModalProps> = ({
           className="fixed z-[100] w-full h-full flex justify-center items-center top-0 left-0 bg-[#212121] bg-opacity-75"
           onClick={handleBackgroundClick}
         >
-          <div className="bg-white rounded-2xl shadow-lg w-[518px] flex flex-col items-start border-3 border-sofia-darkBlue overflow-hidden space-y-6">
+          <div className="bg-white rounded-2xl shadow-lg flex flex-col items-start border-3 border-sofia-darkBlue overflow-hidden space-y-6">
             {header && (
               <ModalHeader handleClose={onClose}>{header}</ModalHeader>
             )}
