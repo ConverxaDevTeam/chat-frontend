@@ -21,14 +21,14 @@ export const DataListItem: React.FC<DataListItemProps> = ({
   return (
     <div className="grid">
       <div
-        className={`border border-sofia-navyBlue rounded-lg cursor-pointer transition-colors ${
+        className={`flex flex-col items-start gap-4 p-4 self-stretch rounded-t-lg rounded-bl-lg border border-[#DBEAF2] bg-[#FCFCFC] cursor-pointer transition-colors ${
           selected
             ? "bg-sofia-electricOlive/10"
             : "hover:bg-sofia-electricOlive/5"
         }`}
         onClick={onClick}
       >
-        <div className="p-4 grid">
+        <div className="p-0 grid">
           {fields.map((field, index) => (
             <div key={index} className="grid">
               <span className="text-[#001126] font-quicksand text-[14px] font-[500] leading-normal">
@@ -42,8 +42,8 @@ export const DataListItem: React.FC<DataListItemProps> = ({
         </div>
       </div>
       {actions && (
-        <div className="grid justify-items-end">
-          <div className="border border-sofia-navyBlue rounded-lg grid grid-flow-col gap-2 p-2">
+        <div className="flex justify-end">
+          <div className="inline-flex items-center gap-2 px-4 py-1 rounded-b-lg border-x border-b border-[#DBEAF2] bg-[#FCFCFC]">
             {actions}
           </div>
         </div>
