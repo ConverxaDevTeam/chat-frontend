@@ -45,13 +45,13 @@ const Chat = memo(({ onClose, agentId }: ChatProps) => {
 
   return (
     <div className="grid grid-rows-[auto,1fr,auto] max-w-full w-full h-full bg-gray-100 border-r border-gray-300 shadow-lg">
-      <div className="min-w-0">
+      <div className="w-full">
         <ChatHeader onClose={handleChatClose} />
       </div>
-      <div className="min-w-0">
+      <div className="w-full h-full overflow-y-auto">
         <ChatHistory messages={messages} />
       </div>
-      <div className="min-w-0">
+      <div className="w-full">
         <ChatFooter
           onSendMessage={handleSendMessage}
           conversation={{ id: -1, user: { id: -1 } }}
