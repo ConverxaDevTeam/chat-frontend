@@ -1,5 +1,6 @@
 import { FunctionParam } from "@interfaces/function-params.interface";
 import { DataListItem } from "@components/common/DataList";
+import { Fragment } from "react/jsx-runtime";
 
 // Types
 interface ParamListProps {
@@ -24,26 +25,25 @@ interface PaginationProps {
   onPageChange: (page: number) => void;
 }
 
+const NameLabel = ({ name, type }: { name: string; type: string }) => (
+  <div className="flex items-center gap-2">
+    <span className="text-sofia-superDark font-quicksand text-[14px] font-semibold leading-[16px]">
+      {name}
+    </span>
+    <span className="text-app-newGray font-quicksand text-[14px] font-semibold leading-[16px]">
+      ({type})
+    </span>
+  </div>
+);
+
 // Param Item Component
 const ParamItem = ({ param, onEdit, onDelete }: ParamItemProps) => (
   <DataListItem
     fields={[
       {
-        label: "Nombre",
-        value: param.name,
+        label: <NameLabel name={param.name} type={param.type} />,
+        value: param.description,
       },
-      {
-        label: "Tipo",
-        value: param.type,
-      },
-      ...(param.description
-        ? [
-            {
-              label: "Descripción",
-              value: param.description,
-            },
-          ]
-        : []),
     ]}
     actions={
       <>
@@ -113,7 +113,7 @@ const ParamListContent = ({
   onEdit: (param: FunctionParam, index: number) => void;
   onDelete: (index: number) => void;
 }) => (
-  <div className="grid gap-4">
+  <div className="grid gap-[8px]">
     {params.map((param, index) => (
       <ParamItem
         key={`${param.name}-${index}`}

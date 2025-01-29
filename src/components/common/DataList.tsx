@@ -1,7 +1,7 @@
 import React from "react";
 
 interface DataField {
-  label: string;
+  label: string | React.ReactNode;
   value: React.ReactNode;
 }
 
@@ -30,10 +30,14 @@ export const DataListItem: React.FC<DataListItemProps> = ({
       >
         <div className="p-0 grid gap-[8px]">
           {fields.map((field, index) => (
-            <div key={index} className="grid">
-              <span className="text-sofia-superDark font-quicksand text-[14px] font-semibold leading-[16px]">
-                {field.label}
-              </span>
+            <div key={index} className="grid gap-[8px]">
+              {typeof field.label === "string" ? (
+                <span className="text-sofia-superDark font-quicksand text-[14px] font-semibold leading-[16px]">
+                  {field.label}
+                </span>
+              ) : (
+                field.label
+              )}
               <span className="text-sofia-superDark font-quicksand text-[14px] font-normal leading-normal truncate">
                 {field.value}
               </span>
@@ -43,7 +47,7 @@ export const DataListItem: React.FC<DataListItemProps> = ({
       </div>
       {actions && (
         <div className="flex justify-end">
-          <div className="inline-flex items-center gap-2 px-4 py-1 rounded-b-lg border-x border-b border-sofia-darkBlue bg-sofia-[#FCFCFC]">
+          <div className="inline-flex items-center gap-2 px-4 py-1 rounded-b-lg border-x border-b border-sofia-darkBlue bg-[#FCFCFC]">
             {actions}
           </div>
         </div>
