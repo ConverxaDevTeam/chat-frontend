@@ -2,7 +2,7 @@ import MessageCard from "@components/ChatWindow/MessageCard";
 import { Message } from "../chatHook";
 import { MessageType } from "@utils/interfaces";
 import { ConversationResponseMessage } from "@interfaces/conversation";
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef } from "react";
 
 interface ChatHistoryProps {
   messages: Message[];
