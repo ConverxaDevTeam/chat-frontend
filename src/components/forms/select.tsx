@@ -24,7 +24,7 @@ export const Select = <T extends FieldValues>({
     return null;
   }
   return (
-    <div>
+    <div className="w-full">
       <label className="block text-sm font-medium text-gray-700">
         {placeholder}
       </label>
@@ -35,14 +35,18 @@ export const Select = <T extends FieldValues>({
         render={({ field }) => (
           <select
             {...field}
-            value={field.value || ""} // Aseguramos un valor predeterminado si `value` es `undefined`
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+            value={field.value || ""}
+            className="flex w-full px-3 py-4 items-center gap-[11px] bg-[#FCFCFC] self-stretch rounded-lg border border-sofia-darkBlue text-sofia-superDark font-quicksand text-[14px] font-normal leading-normal appearance-none bg-[url('/mvp/chevron-down.svg')] bg-no-repeat bg-[center_right_1rem] focus:outline-none focus:ring-0 focus:border-sofia-darkBlue"
           >
             <option value="" disabled>
               {placeholder || "Seleccionar una opción"}
             </option>
             {options.map(option => (
-              <option key={option.value} value={option.value}>
+              <option
+                key={option.value}
+                value={option.value}
+                className="py-2 px-3"
+              >
                 {option.label}
               </option>
             ))}

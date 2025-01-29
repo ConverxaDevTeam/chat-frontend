@@ -93,6 +93,7 @@ interface FormFieldProps {
   register: UseFormRegister<FunctionFormValues>;
   control: Control<FunctionFormValues>;
   name: keyof FunctionFormValues;
+  label: string;
   placeholder: string;
   validation?: Record<string, unknown>;
   type?: FieldType;
@@ -137,6 +138,7 @@ const FormField = ({
   control,
   errors,
   name,
+  label,
   placeholder,
   validation = {},
   type = "input",
@@ -144,11 +146,12 @@ const FormField = ({
   rows = 2,
 }: FormFieldProps & { errors: FieldErrors<FunctionFormValues> }) => {
   return (
-    <InputGroup label={name} errors={errors[name]}>
+    <InputGroup label={label} errors={errors[name]}>
       <RenderField
         register={register}
         control={control}
         name={name}
+        label={label}
         placeholder={placeholder}
         validation={validation}
         type={type}
@@ -195,12 +198,14 @@ export const FunctionForm = (props: FunctionFormProps) => {
   const formFields = [
     {
       name: "name",
+      label: "Nombre",
       placeholder: "Nombre de la función",
       validation: { required: "El nombre es obligatorio" },
       type: "input",
     },
     {
       name: "description",
+      label: "Descripción",
       placeholder: "Descripción de la función",
       validation: { required: "La descripción es obligatoria" },
       type: "textarea",
@@ -208,12 +213,14 @@ export const FunctionForm = (props: FunctionFormProps) => {
     },
     {
       name: "url",
+      label: "URL",
       placeholder: "URL del endpoint",
       validation: { required: "La URL es obligatoria" },
       type: "input",
     },
     {
       name: "method",
+      label: "Método",
       placeholder: "",
       validation: { required: "El tipo de operación es obligatorio" },
       type: "select",
@@ -221,6 +228,7 @@ export const FunctionForm = (props: FunctionFormProps) => {
     },
   ] as const satisfies Array<{
     name: keyof FunctionFormValues;
+    label: string;
     placeholder: string;
     validation: { required: string; pattern?: string };
     type: string;
