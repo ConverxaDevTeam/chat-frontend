@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 export interface ContextMenuOption {
   child: React.ReactNode;
   onClick: () => void;
+  tooltip: string;
 }
 
 interface DiagramContextMenuProps {

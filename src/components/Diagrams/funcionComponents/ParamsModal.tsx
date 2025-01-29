@@ -20,13 +20,11 @@ interface ParamsModalProps {
   setParams: (params: FunctionParam[]) => void;
 }
 
-export const ParamsModal = ({
-  isShown,
-  onClose,
+const useParamsModal = ({
   functionData,
   params,
   setParams,
-}: ParamsModalProps) => {
+}: Omit<ParamsModalProps, "isShown" | "onClose">) => {
   const [showParamForm, setShowParamForm] = useState(false);
   const [editingParam, setEditingParam] = useState<{
     param: FunctionParam;
@@ -61,6 +59,44 @@ export const ParamsModal = ({
     }
     setShowParamForm(false);
   };
+
+  return {
+    showParamForm,
+    setShowParamForm,
+    editingParam,
+    currentPage,
+    itemsPerPage,
+    totalPages,
+    isLoading,
+    handleAdd,
+    handleEdit,
+    handleSubmit,
+    deleteParam,
+    setCurrentPage,
+  };
+};
+
+export const ParamsModal = ({
+  isShown,
+  onClose,
+  functionData,
+  params,
+  setParams,
+}: ParamsModalProps) => {
+  const {
+    showParamForm,
+    setShowParamForm,
+    editingParam,
+    currentPage,
+    itemsPerPage,
+    totalPages,
+    isLoading,
+    handleAdd,
+    handleEdit,
+    handleSubmit,
+    deleteParam,
+    setCurrentPage,
+  } = useParamsModal({ functionData, params, setParams });
 
   return (
     <Modal

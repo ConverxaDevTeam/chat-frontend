@@ -5,6 +5,7 @@ import { NeumorphicButton } from "../NeumorphicButton";
 import DiagramContextMenu, { ContextMenuOption } from "./DiagramContextMenu";
 import { SmallNode } from "./nodes/SmallNode";
 import { updateNodePosition } from "@services/node";
+import { DiagramContextMenuV2 } from "./components/DiagramContextMenuV2";
 
 interface CustomNodeProps extends NodeProps {
   data: NodeData;
@@ -14,6 +15,7 @@ interface CustomNodeProps extends NodeProps {
   width?: number;
   headerActions?: React.ReactNode;
   contextMenuOptions?: ContextMenuOption[];
+  contextMenuVersion?: "v1" | "v2";
 }
 
 interface NodeLabelProps {
@@ -78,6 +80,7 @@ interface NodeContentProps {
   isSelected: boolean;
   headerActions?: React.ReactNode;
   contextMenuOptions?: ContextMenuOption[];
+  contextMenuVersion?: "v1" | "v2";
   menuPosition?: {
     x: number;
     y: number;
@@ -92,6 +95,7 @@ const NodeContent: React.FC<NodeContentProps> = ({
   icon,
   headerActions,
   contextMenuOptions,
+  contextMenuVersion = "v1",
   menuPosition,
 }) => {
   const renderIcon = () => {
@@ -110,12 +114,21 @@ const NodeContent: React.FC<NodeContentProps> = ({
     return (
       <Fragment>
         {renderIcon()}
-        <DiagramContextMenu
-          options={contextMenuOptions}
-          x={menuPosition?.x ?? 0}
-          y={menuPosition?.y ?? 0}
-          onClose={() => {}}
-        />
+        {contextMenuVersion === "v1" ? (
+          <DiagramContextMenu
+            options={contextMenuOptions}
+            x={menuPosition?.x ?? 0}
+            y={menuPosition?.y ?? 0}
+            onClose={() => {}}
+          />
+        ) : (
+          <DiagramContextMenuV2
+            options={contextMenuOptions}
+            x={menuPosition?.x ?? 0}
+            y={menuPosition?.y ?? 0}
+            onClose={() => {}}
+          />
+        )}
       </Fragment>
     );
   }
@@ -145,6 +158,7 @@ const DefaultNode: React.FC<CustomNodeProps> = ({
   children,
   headerActions,
   contextMenuOptions,
+  contextMenuVersion,
   ...props
 }) => {
   const ref = useRef<HTMLDivElement>(null);
@@ -198,6 +212,7 @@ const DefaultNode: React.FC<CustomNodeProps> = ({
       isSelected={selected ?? false}
       headerActions={headerActions}
       contextMenuOptions={contextMenuOptions}
+      contextMenuVersion={contextMenuVersion}
       menuPosition={menuPosition}
     >
       {children}
