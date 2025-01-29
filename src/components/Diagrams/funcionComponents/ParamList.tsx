@@ -1,5 +1,6 @@
 import { FunctionParam } from "@interfaces/function-params.interface";
 import { FaEdit, FaTrash } from "react-icons/fa";
+import { DataListItem } from "@components/common/DataList";
 
 // Types
 interface ParamListProps {
@@ -26,31 +27,44 @@ interface PaginationProps {
 
 // Param Item Component
 const ParamItem = ({ param, onEdit, onDelete }: ParamItemProps) => (
-  <div className="flex items-center justify-between p-2 bg-gray-50 rounded">
-    <div>
-      <span className="font-semibold">{param.name}</span>
-      <span className="text-sm text-gray-500 ml-2">({param.type})</span>
-      {param.description && (
-        <p className="text-sm text-gray-600 mt-1">{param.description}</p>
-      )}
-    </div>
-    <div className="flex space-x-2">
-      <button
-        onClick={onEdit}
-        className="p-1 text-blue-600 hover:text-blue-800"
-        title="Editar parámetro"
-      >
-        <FaEdit />
-      </button>
-      <button
-        onClick={onDelete}
-        className="p-1 text-red-600 hover:text-red-800"
-        title="Eliminar parámetro"
-      >
-        <FaTrash />
-      </button>
-    </div>
-  </div>
+  <DataListItem
+    fields={[
+      {
+        label: "Nombre",
+        value: param.name,
+      },
+      {
+        label: "Tipo",
+        value: param.type,
+      },
+      ...(param.description
+        ? [
+            {
+              label: "Descripción",
+              value: param.description,
+            },
+          ]
+        : []),
+    ]}
+    actions={
+      <>
+        <button
+          onClick={onEdit}
+          className="text-sofia-superDark hover:text-sofia-electricGreen"
+          title="Editar parámetro"
+        >
+          <FaEdit size={16} />
+        </button>
+        <button
+          onClick={onDelete}
+          className="text-sofia-superDark hover:text-sofia-electricGreen"
+          title="Eliminar parámetro"
+        >
+          <FaTrash size={16} />
+        </button>
+      </>
+    }
+  />
 );
 
 // Pagination Component
@@ -92,7 +106,7 @@ const ParamListContent = ({
   onEdit: (param: FunctionParam, index: number) => void;
   onDelete: (index: number) => void;
 }) => (
-  <div className="space-y-2">
+  <div className="grid gap-4">
     {params.map((param, index) => (
       <ParamItem
         key={`${param.name}-${index}`}
