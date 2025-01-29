@@ -1,5 +1,4 @@
 import { FunctionParam } from "@interfaces/function-params.interface";
-import { FaEdit, FaTrash } from "react-icons/fa";
 import { DataListItem } from "@components/common/DataList";
 
 // Types
@@ -53,14 +52,22 @@ const ParamItem = ({ param, onEdit, onDelete }: ParamItemProps) => (
           className="text-sofia-superDark hover:text-sofia-electricGreen"
           title="Editar parámetro"
         >
-          <FaEdit size={16} />
+          <img
+            src="/mvp/square-pen.svg"
+            className="w-4 h-4 text-sofia-superDark"
+            alt="Editar"
+          />
         </button>
         <button
           onClick={onDelete}
           className="text-sofia-superDark hover:text-sofia-electricGreen"
           title="Eliminar parámetro"
         >
-          <FaTrash size={16} />
+          <img
+            src="/mvp/trash.svg"
+            className="w-4 h-4 text-sofia-superDark"
+            alt="Eliminar"
+          />
         </button>
       </>
     }
