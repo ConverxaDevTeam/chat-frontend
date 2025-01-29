@@ -1,4 +1,3 @@
-import { FaFacebook } from "react-icons/fa";
 import ButtonIntegracion from "../ButtonIntegracion";
 import { createIntegrationMessager } from "@services/facebook";
 import { useSelector } from "react-redux";
@@ -101,7 +100,7 @@ const ButtonMessagerIntegration = ({
   return (
     <ButtonIntegracion
       action={handleConnectFacebook}
-      Icon={FaFacebook}
+      Icon="messenger"
       text="Messager"
     />
   );

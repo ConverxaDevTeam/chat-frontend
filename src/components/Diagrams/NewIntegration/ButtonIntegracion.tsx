@@ -1,8 +1,6 @@
-import { IconType } from "react-icons";
-
 interface ButtonIntegracionProps {
   action: () => void;
-  Icon: IconType;
+  Icon: string;
   text: string;
   disabled?: boolean;
 }
@@ -16,16 +14,20 @@ const ButtonIntegracion = ({
   return (
     <button
       type="button"
-      className={`p-4 rounded-md flex flex-col items-center justify-center gap-[10px] ${
+      className={`flex flex-col items-center gap-4 rounded bg-white ${
         disabled
           ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-          : "bg-blue-100 hover:bg-blue-200 text-blue-900"
+          : "hover:bg-sofia-grayLight"
       }`}
-      // disabled={disabled}
       onClick={action}
     >
-      <Icon size={24} className="w-8 h-8" />
-      <p className="text-sm">{text}</p>
+      <div className="p-4">
+        <img
+          src={`/mvp/${Icon}.svg`}
+          className="w-[56px] h-[56px] text-sofia-superDark"
+        />
+      </div>
+      <p className="text-sm font-quicksand text-sofia-superDark">{text}</p>
     </button>
   );
 };

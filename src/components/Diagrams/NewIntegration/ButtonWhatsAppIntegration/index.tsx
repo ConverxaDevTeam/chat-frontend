@@ -1,4 +1,3 @@
-import { BsWhatsapp } from "react-icons/bs";
 import ButtonIntegracion from "../ButtonIntegracion";
 import { createIntegrationWhatsApp } from "@services/facebook";
 import { useSelector } from "react-redux";
@@ -102,7 +101,7 @@ const ButtonWhatsAppIntegration = ({
   return (
     <ButtonIntegracion
       action={handleConnectFacebook}
-      Icon={BsWhatsapp}
+      Icon="whatsapp"
       text="Whatsapp"
     />
   );

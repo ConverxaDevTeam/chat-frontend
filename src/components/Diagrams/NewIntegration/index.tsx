@@ -1,4 +1,3 @@
-import { FaSlack } from "react-icons/fa";
 import ButtonIntegracion from "./ButtonIntegracion";
 import ButtonWhatsAppIntegration from "./ButtonWhatsAppIntegration";
 import ButtonMessagerIntegration from "./ButtonMessagerIntegration";
@@ -16,7 +15,7 @@ const NewIntegration = ({
 }: NewIntegrationProps) => {
   return (
     <div>
-      <div className="grid grid-cols-3 gap-[10px]">
+      <div className="grid grid-cols-3 gap-[10px] w-[470px]">
         <ButtonWhatsAppIntegration
           getDataIntegrations={getDataIntegrations}
           departmentId={departmentId}
@@ -28,7 +27,7 @@ const NewIntegration = ({
         />
         <ButtonIntegracion
           action={() => setIsMenuVisible(false)}
-          Icon={FaSlack}
+          Icon="slack"
           text="Slack"
           disabled
         />
