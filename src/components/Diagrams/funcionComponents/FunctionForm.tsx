@@ -16,6 +16,7 @@ import {
   FunctionData,
   FunctionNodeTypes,
 } from "@interfaces/functions.interface";
+import { Button } from "@components/common/Button";
 
 // Tipos y constantes
 interface FunctionFormValues {
@@ -169,17 +170,18 @@ interface SubmitButtonProps {
 }
 
 const SubmitButton = ({ isLoading, isCreating }: SubmitButtonProps) => (
-  <button
+  <Button
     type="submit"
+    variant="primary"
+    className="w-full"
     disabled={isLoading}
-    className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 disabled:opacity-50"
   >
     {isLoading
       ? "Guardando..."
       : isCreating
         ? "Crear función"
         : "Actualizar función"}
-  </button>
+  </Button>
 );
 
 // Componente principal
