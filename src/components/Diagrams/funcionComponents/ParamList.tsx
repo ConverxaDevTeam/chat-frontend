@@ -1,6 +1,5 @@
 import { FunctionParam } from "@interfaces/function-params.interface";
 import { DataListItem } from "@components/common/DataList";
-import { Fragment } from "react/jsx-runtime";
 
 // Types
 interface ParamListProps {
