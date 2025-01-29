@@ -19,22 +19,22 @@ export const DataListItem: React.FC<DataListItemProps> = ({
   onClick,
 }) => {
   return (
-    <div className="grid">
+    <div className="grid w-full sm:w-[470px]">
       <div
-        className={`flex flex-col items-start gap-4 p-4 self-stretch rounded-t-lg rounded-bl-lg border border-[#DBEAF2] bg-[#FCFCFC] cursor-pointer transition-colors ${
+        className={`flex flex-col items-start gap-4 p-[16px] self-stretch rounded-t-lg rounded-bl-lg border border-sofia-darkBlue cursor-pointer transition-colors ${
           selected
             ? "bg-sofia-electricOlive/10"
             : "hover:bg-sofia-electricOlive/5"
         }`}
         onClick={onClick}
       >
-        <div className="p-0 grid">
+        <div className="p-0 grid gap-[8px]">
           {fields.map((field, index) => (
             <div key={index} className="grid">
-              <span className="text-[#001126] font-quicksand text-[14px] font-[500] leading-normal">
+              <span className="text-sofia-superDark font-quicksand text-[14px] font-semibold leading-[16px]">
                 {field.label}
               </span>
-              <span className="text-[#001126] font-quicksand text-[14px] leading-normal truncate">
+              <span className="text-sofia-superDark font-quicksand text-[14px] font-normal leading-normal truncate">
                 {field.value}
               </span>
             </div>
@@ -43,7 +43,7 @@ export const DataListItem: React.FC<DataListItemProps> = ({
       </div>
       {actions && (
         <div className="flex justify-end">
-          <div className="inline-flex items-center gap-2 px-4 py-1 rounded-b-lg border-x border-b border-[#DBEAF2] bg-[#FCFCFC]">
+          <div className="inline-flex items-center gap-2 px-4 py-1 rounded-b-lg border-x border-b border-sofia-darkBlue bg-sofia-[#FCFCFC]">
             {actions}
           </div>
         </div>
@@ -63,7 +63,7 @@ export const DataList: React.FC<DataListProps> = ({
 }) => {
   if (items.length === 0) {
     return (
-      <div className="text-center text-[#001126] font-quicksand text-[14px] py-4">
+      <div className="text-center text-sofia-superDark font-quicksand text-[14px] py-4">
         {emptyMessage}
       </div>
     );

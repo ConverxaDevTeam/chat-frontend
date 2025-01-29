@@ -1,5 +1,5 @@
 import Modal from "@components/Modal";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, Fragment } from "react";
 import { FaPlus } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { useSweetAlert } from "@/hooks/useSweetAlert";
@@ -178,7 +178,28 @@ const AuthenticatorTable = ({
       },
     ],
     actions: (
-      <>
+      <Fragment>
+        <button
+          onClick={e => {
+            e.stopPropagation();
+            onSelect(auth.id!);
+          }}
+          className={`flex w-5 h-5 p-[2px] justify-center items-center gap-[10px] rounded-[24px] ${
+            auth.id === selectedAuthenticatorId
+              ? "bg-sofia-electricOlive"
+              : "bg-sofia-error"
+          }`}
+        >
+          <img
+            src={
+              auth.id === selectedAuthenticatorId
+                ? "/mvp/check.svg"
+                : "/mvp/XIcon.svg"
+            }
+            alt="Seleccionar"
+            className="w-4 h-4"
+          />
+        </button>
         <button
           onClick={e => {
             e.stopPropagation();
@@ -197,7 +218,7 @@ const AuthenticatorTable = ({
         >
           <img src="/mvp/trash.svg" alt="Eliminar" className="w-4 h-4" />
         </button>
-      </>
+      </Fragment>
     ),
     selected: auth.id === selectedAuthenticatorId,
     onClick: () => onSelect(auth.id!),
@@ -289,6 +310,8 @@ export function AuthenticatorModal({
         }
       >
         <div className="space-y-6">
+          <AddAuthenticatorButton onClick={handleAddNew} />
+
           <AuthenticatorTable
             authenticators={authenticators}
             onEdit={handleEdit}
@@ -296,7 +319,6 @@ export function AuthenticatorModal({
             onSelect={handleSelect}
             selectedAuthenticatorId={selectedAuthenticatorId}
           />
-          <AddAuthenticatorButton onClick={handleAddNew} />
         </div>
       </Modal>
 
