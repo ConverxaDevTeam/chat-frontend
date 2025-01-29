@@ -34,7 +34,6 @@ const ButtonMessagerIntegration = ({
   const handleConnectFacebook = async () => {
     FB.login(
       response => {
-        console.log(response);
         if (response.authResponse && response.authResponse.code) {
           const code = response.authResponse.code;
           setData(prev => ({ ...prev, code }));
@@ -54,7 +53,6 @@ const ButtonMessagerIntegration = ({
   };
 
   const handleMessage = async (event: MessageEvent) => {
-    console.log(event);
     if (
       event.origin !== "https://www.facebook.com" &&
       event.origin !== "https://web.facebook.com"
@@ -63,7 +61,6 @@ const ButtonMessagerIntegration = ({
     }
 
     if (event.type === "message") {
-      console.log(event.data);
       setData(prev => ({
         ...prev,
         data: event.data,
