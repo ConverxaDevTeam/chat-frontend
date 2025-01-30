@@ -41,10 +41,10 @@ const ConfigPanel: FC<ConfigPanelProps> = ({
               <button
                 key={tab.id}
                 onClick={() => onTabChange(tab.id)}
-                className={`w-full px-4 py-3 text-left flex items-center gap-2 ${
+                className={`w-full px-4 py-3 text-left flex items-center gap-2 font-quicksand text-base text-sofia-superDark ${
                   activeTab === tab.id
-                    ? "bg-cyan-50 text-cyan-600 border-r-2 border-cyan-500"
-                    : "text-gray-600 hover:bg-gray-100"
+                    ? "h-[35px] flex-shrink-0 bg-sofia-electricGreen font-semibold"
+                    : "font-normal hover:bg-sofia-electricGreen-100"
                 }`}
               >
                 {tab.id === "cors" && (
