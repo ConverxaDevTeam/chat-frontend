@@ -13,7 +13,6 @@ interface ConfigPanelProps {
   children: ReactNode;
   actions?: ReactNode;
   isLoading?: boolean;
-  width?: string;
 }
 
 const ConfigPanel: FC<ConfigPanelProps> = ({
@@ -23,10 +22,9 @@ const ConfigPanel: FC<ConfigPanelProps> = ({
   children,
   actions,
   isLoading,
-  width = "w-[700px]",
 }) => (
   <div
-    className={`${width} bg-sofia-blancoPuro shadow-lg rounded-2xl overflow-hidden py-[38px]`}
+    className={`bg-sofia-blancoPuro shadow-lg rounded-2xl overflow-hidden py-[38px]`}
   >
     {isLoading ? (
       <div className="w-full min-h-[400px] flex justify-center items-center">

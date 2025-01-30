@@ -1,11 +1,11 @@
-import { themeColors } from "@utils/lists";
 import { useState } from "react";
 import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
 import { Integracion } from "./CustomizeChat";
 import ChatPreview from "./ChatPreview";
-import { ColorResult, ChromePicker } from "react-color";
+import { Chrome } from "@uiw/react-color";
 import LabelColor from "./LabelColor";
+import { themeColors } from "@utils/lists";
 
 interface ChatEditorProps {
   integration: Integracion;
@@ -22,14 +22,14 @@ const ChatEditor = ({ integration, setIntegration }: ChatEditorProps) => {
     color: integration.config.bg_color,
   });
 
-  const handleChangeColor = (colorSelect: ColorResult) => {
-    setSelectColor({ ...selectColor, color: colorSelect.hex });
+  const handleChangeColor = (color: { hex: string }) => {
+    setSelectColor({ ...selectColor, color: color.hex });
     if (selectColor.element) {
       setIntegration({
         ...integration,
         config: {
           ...integration.config,
-          [selectColor.element]: colorSelect.hex,
+          [selectColor.element]: color.hex,
         },
       });
     }
@@ -222,19 +222,18 @@ const ChatEditor = ({ integration, setIntegration }: ChatEditorProps) => {
         />
 
         <div className="col-span-2 px-[10px]">
-          <ChromePicker
+          <Chrome
+            color={
+              selectColor.element
+                ? integration.config[selectColor.element]
+                : selectColor.color
+            }
             onChange={handleChangeColor}
-            color={selectColor.color}
-            disableAlpha
-            styles={{
-              default: {
-                picker: {
-                  boxShadow: "none",
-                  border: "none",
-                  padding: "0px",
-                  width: "100%",
-                },
-              },
+            style={{
+              boxShadow: "none",
+              border: "none",
+              padding: "0px",
+              width: "100%",
             }}
           />
         </div>
