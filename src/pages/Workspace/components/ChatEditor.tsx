@@ -143,6 +143,18 @@ const RadiusControls = ({
   </>
 );
 
+const colorConfigs = [
+  { label: "bg_color", title: "Color de header" },
+  { label: "text_title", title: "Texto de header" },
+  { label: "bg_chat", title: "Fondo del chat" },
+  { label: "text_color", title: "Color de Textos" },
+  { label: "bg_assistant", title: "Mensaje sofia" },
+  { label: "bg_user", title: "Mensaje usuario" },
+  { label: "button_color", title: "Color de Enviar" },
+  { label: "button_text", title: "Color de Enviar" },
+  { label: "text_date", title: "Fecha de mensajes" },
+] as const;
+
 const ColorPicker = ({
   integration,
   selectColor,
@@ -158,69 +170,16 @@ const ColorPicker = ({
   handleChangeColor: (color: { hex: string }) => void;
 }) => (
   <>
-    <LabelColor
-      label="bg_color"
-      title="Color de header"
-      integration={integration}
-      selectColor={selectColor}
-      setSelectColor={setSelectColor}
-    />
-    <LabelColor
-      label="text_title"
-      title="Texto de header"
-      integration={integration}
-      selectColor={selectColor}
-      setSelectColor={setSelectColor}
-    />
-    <LabelColor
-      label="bg_chat"
-      title="Fondo del chat"
-      integration={integration}
-      selectColor={selectColor}
-      setSelectColor={setSelectColor}
-    />
-    <LabelColor
-      label="text_color"
-      title="Color de Textos"
-      integration={integration}
-      selectColor={selectColor}
-      setSelectColor={setSelectColor}
-    />
-    <LabelColor
-      label="bg_assistant"
-      title="Mensaje sofia"
-      integration={integration}
-      selectColor={selectColor}
-      setSelectColor={setSelectColor}
-    />
-    <LabelColor
-      label="bg_user"
-      title="Mensaje usuario"
-      integration={integration}
-      selectColor={selectColor}
-      setSelectColor={setSelectColor}
-    />
-    <LabelColor
-      label="button_color"
-      title="Color de Enviar"
-      integration={integration}
-      selectColor={selectColor}
-      setSelectColor={setSelectColor}
-    />
-    <LabelColor
-      label="button_text"
-      title="Color de Enviar"
-      integration={integration}
-      selectColor={selectColor}
-      setSelectColor={setSelectColor}
-    />
-    <LabelColor
-      label="text_date"
-      title="Fecha de mensajes"
-      integration={integration}
-      selectColor={selectColor}
-      setSelectColor={setSelectColor}
-    />
+    {colorConfigs.map(({ label, title }) => (
+      <LabelColor
+        key={label}
+        label={label}
+        title={title}
+        integration={integration}
+        selectColor={selectColor}
+        setSelectColor={setSelectColor}
+      />
+    ))}
     <div className="col-span-2 px-[10px]">
       <Chrome
         color={
