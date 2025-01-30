@@ -23,19 +23,19 @@ const ThemeSelector = ({
   themeId: number;
   setThemeId: (id: number) => void;
 }) => (
-  <div className="flex flex-col items-start gap-[10px] flex-1 col-span-2">
-    <p className="text-[12px] font-poppinsSemiBold bg-app-c3 px-[6px] rounded-t-lg pt-[4px]">
-      Tema predeterminado
-    </p>
-    <div className="flex gap-1 p-[2px] select-none">
+  <div className="flex flex-col items-start gap-[10px] flex-1 col-span-2 border-b border-dashed border-app-gray pb-7">
+    <h3 className="my-2 text-sofia-superDark text-[14px] font-semibold leading-[16px]">
+      Temas predeterminados
+    </h3>
+    <div className="grid grid-cols-5 auto-rows-auto gap-2 w-full">
       {themeColors.map(theme => (
         <button
           key={theme.id}
           type="button"
-          className={`w-7 h-7 bg-white rounded-full transition border-[4px] flex justify-center items-center ${
+          className={`h-[10px] w-[60px] rounded transition overflow-hidden ${
             themeId === theme.id
-              ? "border-app-gray"
-              : "border-white cursor-pointer"
+              ? "ring-2 ring-app-gray"
+              : "hover:ring-1 hover:ring-app-gray/50"
           }`}
           title={theme.name}
           onClick={() => {
@@ -57,12 +57,24 @@ const ThemeSelector = ({
             });
           }}
         >
-          <div
-            className="w-full h-full rounded-full"
-            style={{
-              backgroundColor: theme.bg_color,
-            }}
-          />
+          <div className="flex h-full w-full">
+            <div
+              className="flex-1"
+              style={{ backgroundColor: theme.bg_color }}
+            />
+            <div
+              className="flex-1"
+              style={{ backgroundColor: theme.bg_chat }}
+            />
+            <div
+              className="flex-1"
+              style={{ backgroundColor: theme.bg_assistant }}
+            />
+            <div
+              className="flex-1"
+              style={{ backgroundColor: theme.bg_user }}
+            />
+          </div>
         </button>
       ))}
     </div>
@@ -77,7 +89,7 @@ const RadiusControls = ({
   setIntegration: (integration: Integracion) => void;
 }) => (
   <>
-    <div className="flex flex-col items-start gap-[10px]">
+    <div className="flex flex-col items-start gap-[10px] border-b border-dashed border-app-gray pb-4">
       <p className="text-[12px] mx-auto font-poppinsSemiBold bg-app-c3 px-[6px] rounded-t-lg pt-[4px]">
         Radio de ventana
       </p>
@@ -109,7 +121,7 @@ const RadiusControls = ({
       />
     </div>
 
-    <div className="flex flex-col items-start gap-[10px]">
+    <div className="flex flex-col items-start gap-[10px] border-b border-dashed border-app-gray pb-4">
       <p className="text-[12px] mx-auto font-poppinsSemiBold bg-app-c3 px-[6px] rounded-t-lg pt-[4px]">
         Radio de mensajes
       </p>
@@ -225,7 +237,10 @@ const ChatConfigurations = ({
   setThemeId: (id: number) => void;
   handleChangeColor: (color: { hex: string }) => void;
 }) => (
-  <div className="grid grid-cols-2 gap-[10px] items-start flex-1">
+  <div className="grid grid-cols-2 gap-[10px] items-start flex-1 bg-white rounded-lg p-4">
+    <h3 className="col-span-2 text-sofia-superDark text-[14px] font-semibold leading-[16px] mb-2">
+      Colores y estilo
+    </h3>
     <ThemeSelector
       integration={integration}
       setIntegration={setIntegration}
@@ -233,6 +248,9 @@ const ChatConfigurations = ({
       setThemeId={setThemeId}
     />
     <RadiusControls integration={integration} setIntegration={setIntegration} />
+    <p className="col-span-2 text-[12px] font-poppinsSemiBold bg-app-c3 px-[6px] rounded-t-lg pt-[4px] mt-4">
+      Colores personalizados
+    </p>
     <ColorPicker
       integration={integration}
       selectColor={selectColor}
@@ -270,7 +288,7 @@ const ChatEditor = ({ integration, setIntegration }: ChatEditorProps) => {
   };
 
   return (
-    <div className="flex gap-[20px] items-start">
+    <div className="grid grid-cols-[1fr_auto] gap-5">
       <ChatConfigurations
         integration={integration}
         setIntegration={setIntegration}
@@ -280,7 +298,9 @@ const ChatEditor = ({ integration, setIntegration }: ChatEditorProps) => {
         setThemeId={setThemeId}
         handleChangeColor={handleChangeColor}
       />
-      <ChatPreviewContainer config={integration.config} />
+      <div className="w-[375px]">
+        <ChatPreviewContainer config={integration.config} />
+      </div>
     </div>
   );
 };
