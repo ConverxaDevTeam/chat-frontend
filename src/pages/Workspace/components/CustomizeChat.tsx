@@ -9,6 +9,7 @@ import ChatEditor from "./ChatEditor";
 import EditTexts from "./EditTexts";
 import EditCors from "./EditCors";
 import ConfigPanel from "@components/ConfigPanel";
+import { Button } from "@components/common/Button";
 
 interface CustomizeChatProps {
   onClose: () => void;
@@ -65,20 +66,12 @@ const ActionButtons: FC<ActionButtonsProps> = ({
   cancelText = "Cancelar",
 }) => (
   <div className="flex justify-end space-x-2 mt-auto">
-    <button
-      type="button"
-      onClick={onCancel}
-      className="px-4 py-2 rounded-md shadow bg-gray-300 text-gray-700 hover:bg-gray-400"
-    >
+    <Button onClick={onCancel} className="w-[134px]">
       {cancelText}
-    </button>
-    <button
-      type="button"
-      onClick={onSave}
-      className="px-4 py-2 rounded-md shadow bg-blue-600 text-white hover:bg-blue-700"
-    >
+    </Button>
+    <Button variant="primary" className="w-[134px]" onClick={onSave}>
       {saveText}
-    </button>
+    </Button>
   </div>
 );
 

@@ -1,8 +1,6 @@
 import { alertConfirm } from "@utils/alerts";
 import { Integracion } from "./CustomizeChat";
 import { urlFiles } from "@config/config";
-import { HiOutlineClipboard } from "react-icons/hi";
-import { MdClose } from "react-icons/md";
 import { useState } from "react";
 import { InputGroup } from "@components/forms/inputGroup";
 import { Input } from "@components/forms/input";
@@ -19,14 +17,21 @@ const CorsTagList = ({
   cors: string[];
   onRemove: (cor: string) => void;
 }) => (
-  <div className="flex gap-[10px] pb-2 flex-wrap">
+  <div className="flex gap-[10px] flex-wrap">
     {cors.map((cor, index) => (
       <div
         key={`cor-${index}`}
-        className="bg-app-c3 flex items-center gap-[5px] px-2 py-1 rounded-md"
+        className="flex items-center gap-2 px-3 py-2 rounded-lg border border-sofia-darkBlue"
       >
-        <p>{cor}</p>
-        <MdClose className="cursor-pointer" onClick={() => onRemove(cor)} />
+        <p className="truncate text-sofia-superDark text-xs font-normal">
+          {cor}
+        </p>
+        <button
+          onClick={() => onRemove(cor)}
+          className="flex-none w-4 h-4 hover:text-sofia-electricGreen"
+        >
+          <img src="/mvp/trash.svg" alt="Eliminar" />
+        </button>
       </div>
     ))}
   </div>
@@ -48,12 +53,13 @@ const CorsInput = ({
         value={value}
         placeholder="https://tu-dominio.com"
         onChange={e => onChange(e.target.value)}
+        className="text-sofia-superDark text-xs font-normal"
       />
     </InputGroup>
     <button
       type="button"
       onClick={onAdd}
-      className="flex h-[55px] p-[15px]  items-center gap-[11px] rounded-lg bg-sofia-electricOlive"
+      className="flex h-[55px] p-[15px] items-center gap-[11px] rounded-lg bg-sofia-electricOlive text-sofia-superDark text-center text-sm font-semibold"
     >
       Agregar
     </button>
@@ -69,7 +75,7 @@ const ScriptViewer = ({
 }) => (
   <InputGroup label="Script de Integración">
     <div className="flex p-[12px] justify-between items-center gap-10 self-stretch rounded-lg border border-sofia-darkBlue">
-      <div className="flex-1 truncate text-gray-800 text-sm font-mono">
+      <div className="flex-1 truncate text-sofia-superDark text-xs font-normal">
         {script}
       </div>
       <button
@@ -136,7 +142,7 @@ const EditCors = ({ integration, setIntegration }: EditCorsProps) => {
 
   return (
     <div className="flex flex-col gap-[24px] w-[375px]">
-      <label className="text-sofia-superDark font-quicksand text-[14px] font-semibold leading-[16px]">
+      <label className="text-sofia-superDark text-[14px] font-semibold leading-[16px]">
         Dominios
       </label>
       <CorsTagList
