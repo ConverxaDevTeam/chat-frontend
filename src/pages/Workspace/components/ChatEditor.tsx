@@ -91,7 +91,7 @@ const ControlItem = ({
   <div className="col-span-2 flex flex-col gap-4">
     <div className="w-full h-[1px] bg-[#DBEAF2]" />
     <div className="flex items-center justify-between w-full gap-4">
-      <span className="text-[12px] text-sofia-superDark font-quicksand font-normal">
+      <span className="text-[12px] text-sofia-superDark font-normal">
         {label}
       </span>
       <div className="w-[95px]">{children}</div>
@@ -292,7 +292,7 @@ const ChatConfigurations = ({
       themeId={themeId}
       setThemeId={setThemeId}
     />
-    <p className="text-[14px] text-[#2C2C2C] font-quicksand font-bold mt-4">
+    <p className="text-[14px] text-[#2C2C2C] font-bold mt-4">
       Colores personalizados
     </p>
     <RadiusControls integration={integration} setIntegration={setIntegration} />
