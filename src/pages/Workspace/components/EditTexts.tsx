@@ -7,7 +7,9 @@ interface EditTextsProps {
 }
 
 const EditTexts = ({ integration, setIntegration }: EditTextsProps) => {
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     setIntegration({
       ...integration,
       config: {
@@ -51,6 +53,8 @@ const EditTexts = ({ integration, setIntegration }: EditTextsProps) => {
           <label className="text-sm font-medium text-gray-600">Subtítulo</label>
           <input
             type="text"
+            name="sub_title"
+            onChange={handleInputChange}
             className="w-full border border-gray-200 rounded-md p-2"
             value={integration.config.sub_title}
           />
@@ -60,6 +64,8 @@ const EditTexts = ({ integration, setIntegration }: EditTextsProps) => {
             Descripción
           </label>
           <textarea
+            name="description"
+            onChange={handleInputChange}
             className="w-full border border-gray-200 rounded-md p-2 "
             value={integration.config.description}
           />
