@@ -1,10 +1,9 @@
-import Loading from "@components/Loading";
 import {
   getIntegrationWebChat,
   updateIntegrationWebChat,
 } from "@services/integration";
 import { RootState } from "@store";
-import { FC, useEffect, useState, ReactNode } from "react";
+import { FC, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import ChatEditor from "./ChatEditor";
 import EditTexts from "./EditTexts";
@@ -80,26 +79,6 @@ const ActionButtons: FC<ActionButtonsProps> = ({
     >
       {saveText}
     </button>
-  </div>
-);
-
-interface CustomizeContainerProps {
-  children: ReactNode;
-  isLoading?: boolean;
-}
-
-const CustomizeContainer: FC<CustomizeContainerProps> = ({
-  children,
-  isLoading,
-}) => (
-  <div className="w-[700px] bg-white p-[20px] shadow-lg rounded-md">
-    {isLoading ? (
-      <div className="w-full min-h-[400px] flex justify-center items-center">
-        <Loading />
-      </div>
-    ) : (
-      children
-    )}
   </div>
 );
 
@@ -211,24 +190,21 @@ const CustomizeChat: FC<CustomizeChatProps> = ({ onClose }) => {
   const { activeTab, setActiveTab, tabs } = useTabNavigation("cors");
 
   return (
-    <CustomizeContainer isLoading={loading}>
+    <ConfigPanel
+      activeTab={activeTab}
+      onTabChange={setActiveTab}
+      tabs={tabs}
+      isLoading={loading}
+      actions={<ActionButtons onCancel={onClose} onSave={handleSaveChat} />}
+    >
       {integration && (
-        <div className="flex flex-col gap-[20px] min-h-[500px]">
-          <ConfigPanel
-            activeTab={activeTab}
-            onTabChange={setActiveTab}
-            tabs={tabs}
-          >
-            <IntegrationContent
-              integration={integration}
-              setIntegration={setIntegration}
-              activeTab={activeTab}
-            />
-          </ConfigPanel>
-          <ActionButtons onCancel={onClose} onSave={handleSaveChat} />
-        </div>
+        <IntegrationContent
+          integration={integration}
+          setIntegration={setIntegration}
+          activeTab={activeTab}
+        />
       )}
-    </CustomizeContainer>
+    </ConfigPanel>
   );
 };
 
