@@ -23,7 +23,7 @@ const ThemeSelector = ({
   themeId: number;
   setThemeId: (id: number) => void;
 }) => (
-  <div className="flex flex-col items-start gap-[10px] flex-1 col-span-2 border-b border-dashed border-app-gray pb-7">
+  <div className="flex flex-col items-start gap-[10px] flex-1 col-span-2 pb-7">
     <h3 className="my-2 text-sofia-superDark text-[14px] font-semibold leading-[16px]">
       Temas predeterminados
     </h3>
@@ -78,6 +78,7 @@ const ThemeSelector = ({
         </button>
       ))}
     </div>
+    <div className="w-full h-[1px] bg-[#2C2C2C] mt-4" />
   </div>
 );
 
