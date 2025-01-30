@@ -6,7 +6,7 @@ const ModalHeader: React.FC<{
   handleClose: () => void;
 }> = ({ children, handleClose }) => (
   <header className="flex justify-between items-center p-6 self-stretch rounded-t-2xl border-b border-sofia-darkBlue bg-white">
-    <span className="text-sofia-superDark font-quicksand text-2xl font-bold leading-6">
+    <span className="text-sofia-superDark text-2xl font-bold leading-6">
       {children}
     </span>
     <button

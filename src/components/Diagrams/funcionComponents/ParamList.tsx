@@ -26,10 +26,10 @@ interface PaginationProps {
 
 const NameLabel = ({ name, type }: { name: string; type: string }) => (
   <div className="flex items-center gap-2">
-    <span className="text-sofia-superDark font-quicksand text-[14px] font-semibold leading-[16px]">
+    <span className="text-sofia-superDark text-[14px] font-semibold leading-[16px]">
       {name}
     </span>
-    <span className="text-app-newGray font-quicksand text-[14px] font-semibold leading-[16px]">
+    <span className="text-app-newGray text-[14px] font-semibold leading-[16px]">
       ({type})
     </span>
   </div>

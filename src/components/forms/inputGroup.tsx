@@ -16,7 +16,7 @@ export const InputGroup = ({ label, children, errors }: InputGroupProps) => {
 
   return (
     <div className="flex flex-col items-start gap-2 self-stretch">
-      <label className="text-sofia-superDark font-quicksand text-[14px] font-[600] leading-[16px]">
+      <label className="text-sofia-superDark text-[14px] font-[600] leading-[16px]">
         {label}
       </label>
       {children}

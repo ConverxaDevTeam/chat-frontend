@@ -5,10 +5,10 @@ interface ChatHeaderProps {
 export const ChatHeader = ({ onClose }: ChatHeaderProps) => {
   return (
     <div className="flex flex-col justify-center items-center w-[335px] h-[89px] px-6 py-4 gap-2 flex-shrink-0 rounded-t-lg bg-sofia-electricOlive">
-      <span className="text-left text-sofia-superDark font-quicksand text-xl font-semibold">
+      <span className="text-left text-sofia-superDark text-xl font-semibold">
         Web Chat
       </span>
-      <span className="text-left text-sofia-superDark font-quicksand text-xs font-normal">
+      <span className="text-left text-sofia-superDark text-xs font-normal">
         Prueba la funcionalidad de tu Web Chat
       </span>
       {onClose && (

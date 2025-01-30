@@ -29,7 +29,7 @@ const NodeLabel: React.FC<NodeLabelProps> = ({ name, selected }) => {
   return (
     <div className="absolute top-[116px] left-1/2 -translate-x-1/2 z-10">
       <div className="w-[100px] text-center">
-        <p className="text-center font-quicksand text-xs font-normal text-sofia-superDark line-clamp-2 overflow-hidden">
+        <p className="text-center text-xs font-normal text-sofia-superDark line-clamp-2 overflow-hidden">
           {name}
         </p>
       </div>

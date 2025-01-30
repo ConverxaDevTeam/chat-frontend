@@ -34,7 +34,7 @@ const renderContent = (message: ConversationResponseMessage) => {
         />
       )}
       {message.text && (
-        <div className={`text-[14px] font-quicksand font-medium text-app-text`}>
+        <div className={`text-[14px] font-medium text-app-text`}>
           {message.audio && <span className="font-bold">Transcripcion: </span>}
           <ReactMarkdown
             components={{
@@ -75,10 +75,10 @@ const MessageCard = ({ message, userName }: MessageCardProps) => {
             </div>
             <div className="flex flex-col items-start gap-1">
               <div className="flex justify-center items-center gap-2">
-                <span className="text-[14px] font-quicksand font-bold text-sofia-superDark">
+                <span className="text-[14px] font-bold text-sofia-superDark">
                   SOF.IA
                 </span>
-                <span className="text-[14px] font-quicksand font-bold text-app-newGray">
+                <span className="text-[14px] font-bold text-app-newGray">
                   {formatDateOrTime(message.created_at)}
                 </span>
               </div>
@@ -98,10 +98,10 @@ const MessageCard = ({ message, userName }: MessageCardProps) => {
         <div className="flex items-start gap-2">
           <div className="flex flex-col items-end gap-1">
             <div className="flex justify-center items-center gap-2">
-              <span className="text-[14px] font-quicksand font-bold text-sofia-superDark">
+              <span className="text-[14px] font-bold text-sofia-superDark">
                 {userName}
               </span>
-              <span className="text-[14px] font-quicksand font-bold text-app-newGray">
+              <span className="text-[14px] font-bold text-app-newGray">
                 {formatDateOrTime(message.created_at)}
               </span>
             </div>

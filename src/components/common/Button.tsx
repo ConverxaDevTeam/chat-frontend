@@ -13,7 +13,7 @@ export const Button: React.FC<ButtonProps> = ({
   ...props
 }) => {
   const baseStyles =
-    "flex justify-center items-center font-quicksand text-base font-bold leading-none text-sofia-superDark";
+    "flex justify-center items-center text-base font-bold leading-none text-sofia-superDark";
   const variantStyles = {
     primary: "flex-1 p-4 bg-sofia-electricGreen rounded-lg",
     default: "flex-1 p-4 border border-sofia-navyBlue rounded-lg",

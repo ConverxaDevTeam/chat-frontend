@@ -32,13 +32,13 @@ export const DataListItem: React.FC<DataListItemProps> = ({
           {fields.map((field, index) => (
             <div key={index} className="grid gap-[8px]">
               {typeof field.label === "string" ? (
-                <span className="text-sofia-superDark font-quicksand text-[14px] font-semibold leading-[16px]">
+                <span className="text-sofia-superDark text-[14px] font-semibold leading-[16px]">
                   {field.label}
                 </span>
               ) : (
                 field.label
               )}
-              <span className="text-sofia-superDark font-quicksand text-[14px] font-normal leading-normal truncate">
+              <span className="text-sofia-superDark text-[14px] font-normal leading-normal truncate">
                 {field.value}
               </span>
             </div>
@@ -67,7 +67,7 @@ export const DataList: React.FC<DataListProps> = ({
 }) => {
   if (items.length === 0) {
     return (
-      <div className="text-center text-sofia-superDark font-quicksand text-[14px] py-4">
+      <div className="text-center text-sofia-superDark text-[14px] py-4">
         {emptyMessage}
       </div>
     );

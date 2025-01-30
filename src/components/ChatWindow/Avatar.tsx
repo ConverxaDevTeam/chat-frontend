@@ -20,7 +20,7 @@ export const Avatar = ({
       ) : (
         <div className="w-full h-full flex items-center justify-center relative">
           <div className="absolute inset-0 rounded-full bg-sofia-electricLight border border-sofia-superDark" />
-          <span className="relative z-10 font-quicksand text-base font-semibold text-sofia-superDark">
+          <span className="relative z-10 text-base font-semibold text-sofia-superDark">
             {secret?.substring(0, 2)}
           </span>
         </div>

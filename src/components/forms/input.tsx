@@ -30,7 +30,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
     return (
       <input
         type={type}
-        className={`flex px-3 py-4 items-center gap-[11px] bg-[#FCFCFC] self-stretch rounded-lg border border-sofia-darkBlue text-sofia-superDark font-quicksand text-[14px] font-normal leading-normal ${
+        className={`flex px-3 py-4 items-center gap-[11px] bg-[#FCFCFC] self-stretch rounded-lg border border-sofia-darkBlue text-sofia-superDark text-[14px] font-normal leading-normal ${
           error ? "border-red-500" : ""
         } ${disabled ? "bg-gray-200" : ""} ${className}`}
         placeholder={placeholder}

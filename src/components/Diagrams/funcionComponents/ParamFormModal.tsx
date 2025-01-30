@@ -121,7 +121,7 @@ const ParamFormFields = ({
         {...register("required")}
         className="h-4 w-4 rounded border-gray-300 accent-sofia-electricOlive"
       />
-      <label className="ml-2 text-sofia-superDark font-quicksand text-[14px] font-semibold leading-[16px]">
+      <label className="ml-2 text-sofia-superDark text-[14px] font-semibold leading-[16px]">
         Requerido
       </label>
     </div>

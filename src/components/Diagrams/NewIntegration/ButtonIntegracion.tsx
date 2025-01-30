@@ -27,7 +27,7 @@ const ButtonIntegracion = ({
           className="w-[56px] h-[56px] text-sofia-superDark"
         />
       </div>
-      <p className="text-sm font-quicksand text-sofia-superDark">{text}</p>
+      <p className="text-sm text-sofia-superDark">{text}</p>
     </button>
   );
 };
