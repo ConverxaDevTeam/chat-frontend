@@ -4,6 +4,8 @@ import { urlFiles } from "@config/config";
 import { HiOutlineClipboard } from "react-icons/hi";
 import { MdClose } from "react-icons/md";
 import { useState } from "react";
+import { InputGroup } from "@components/forms/inputGroup";
+import { Input } from "@components/forms/input";
 
 interface EditCorsProps {
   integration: Integracion;
@@ -39,16 +41,20 @@ const CorsInput = ({
   onChange: (value: string) => void;
   onAdd: () => void;
 }) => (
-  <div className="flex flex-col gap-[10px]">
-    <label className="block text-sm font-medium text-gray-600">Cors</label>
-    <input
-      type="text"
-      value={value}
-      className="w-full border border-gray-200 rounded-md p-2"
-      placeholder="https://tu-dominio.com"
-      onChange={e => onChange(e.target.value)}
-    />
-    <button type="button" onClick={onAdd}>
+  <div className="grid grid-cols-[1fr_auto] gap-[10px] items-end">
+    <InputGroup label="Dominio">
+      <Input
+        type="text"
+        value={value}
+        placeholder="https://tu-dominio.com"
+        onChange={e => onChange(e.target.value)}
+      />
+    </InputGroup>
+    <button
+      type="button"
+      onClick={onAdd}
+      className="flex h-[55px] p-[15px]  items-center gap-[11px] rounded-lg bg-sofia-electricOlive"
+    >
       Agregar
     </button>
   </div>
@@ -61,24 +67,21 @@ const ScriptViewer = ({
   script: string;
   onCopy: () => void;
 }) => (
-  <>
-    <label className="block text-sm font-medium text-gray-600">
-      Script de Integración
-    </label>
-    <div className="grid grid-cols-[1fr_auto] bg-gray-50 p-4 rounded-md border border-gray-200 shadow-inner">
-      <div className="text-gray-800 text-sm font-mono leading-tight whitespace-pre-wrap break-all">
+  <InputGroup label="Script de Integración">
+    <div className="flex p-[12px] justify-between items-center gap-10 self-stretch rounded-lg border border-sofia-darkBlue">
+      <div className="flex-1 truncate text-gray-800 text-sm font-mono">
         {script}
       </div>
       <button
         onClick={onCopy}
         type="button"
-        className="text-gray-500 hover:text-gray-700 ml-2"
+        className="flex-none text-gray-500 hover:text-gray-700 w-[24px] h-[24px]"
         aria-label="Copiar script"
       >
-        <HiOutlineClipboard size={24} className="h-5 w-5" />
+        <img src="/mvp/copy.svg" alt="Copiar" />
       </button>
     </div>
-  </>
+  </InputGroup>
 );
 
 const useDomainManager = (
@@ -132,8 +135,10 @@ const EditCors = ({ integration, setIntegration }: EditCorsProps) => {
   const { script, handleCopy } = useScriptManager(integration.id);
 
   return (
-    <div className="flex flex-col gap-[10px]">
-      <label className="block text-sm font-medium text-gray-600">Cors</label>
+    <div className="flex flex-col gap-[24px] w-[375px]">
+      <label className="text-sofia-superDark font-quicksand text-[14px] font-semibold leading-[16px]">
+        Dominios
+      </label>
       <CorsTagList
         cors={integration.config.cors}
         onRemove={handleRemoveDomain}
