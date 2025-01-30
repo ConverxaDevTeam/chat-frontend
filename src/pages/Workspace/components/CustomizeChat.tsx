@@ -60,16 +60,16 @@ interface ActionButtonsProps {
 }
 
 const ActionButtons: FC<ActionButtonsProps> = ({
-  onCancel,
   onSave,
+  onCancel,
   saveText = "Guardar",
   cancelText = "Cancelar",
 }) => (
-  <div className="flex justify-end space-x-2 mt-auto">
+  <div className="flex gap-[10px]">
     <Button onClick={onCancel} className="w-[134px]">
       {cancelText}
     </Button>
-    <Button variant="primary" className="w-[134px]" onClick={onSave}>
+    <Button variant="primary" onClick={onSave}>
       {saveText}
     </Button>
   </div>

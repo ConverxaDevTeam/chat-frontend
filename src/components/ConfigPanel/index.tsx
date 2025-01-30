@@ -47,8 +47,8 @@ const ConfigPanel: FC<ConfigPanelProps> = ({
             ))}
           </div>
           <div className="flex-1 px-[38px]">
-            <div className="flex flex-col gap-[38px]">
-              {children}
+            <div className="w-fit flex flex-col gap-[38px]">
+              <div>{children}</div>
               {actions && (
                 <div className="flex justify-end gap-[10px]">{actions}</div>
               )}
