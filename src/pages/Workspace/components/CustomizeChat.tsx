@@ -9,6 +9,7 @@ import { useSelector } from "react-redux";
 import ChatEditor from "./ChatEditor";
 import EditTexts from "./EditTexts";
 import EditCors from "./EditCors";
+import ConfigPanel from "@components/ConfigPanel";
 
 interface CustomizeChatProps {
   onClose: () => void;
@@ -99,37 +100,6 @@ const CustomizeContainer: FC<CustomizeContainerProps> = ({
     ) : (
       children
     )}
-  </div>
-);
-
-interface Tab {
-  id: string;
-  label: string;
-}
-
-interface ViewTabsProps {
-  activeTab: string;
-  onTabChange: (tabId: string) => void;
-  tabs: Tab[];
-}
-
-const ViewTabs: FC<ViewTabsProps> = ({ activeTab, onTabChange, tabs }) => (
-  <div className="flex w-full">
-    {tabs.map((tab, index) => (
-      <button
-        key={tab.id}
-        onClick={() => onTabChange(tab.id)}
-        className={`${
-          activeTab === tab.id
-            ? "bg-blue-600 text-white"
-            : "bg-gray-200 text-gray-600"
-        } flex-1 py-2 ${index === 0 ? "rounded-tl-md" : ""} ${
-          index === tabs.length - 1 ? "rounded-tr-md" : ""
-        }`}
-      >
-        {tab.label}
-      </button>
-    ))}
   </div>
 );
 
@@ -243,17 +213,18 @@ const CustomizeChat: FC<CustomizeChatProps> = ({ onClose }) => {
   return (
     <CustomizeContainer isLoading={loading}>
       {integration && (
-        <div className="flex flex-col gap-[20px] min-h-[400px]">
-          <ViewTabs
+        <div className="flex flex-col gap-[20px] min-h-[500px]">
+          <ConfigPanel
             activeTab={activeTab}
             onTabChange={setActiveTab}
             tabs={tabs}
-          />
-          <IntegrationContent
-            integration={integration}
-            setIntegration={setIntegration}
-            activeTab={activeTab}
-          />
+          >
+            <IntegrationContent
+              integration={integration}
+              setIntegration={setIntegration}
+              activeTab={activeTab}
+            />
+          </ConfigPanel>
           <ActionButtons onCancel={onClose} onSave={handleSaveChat} />
         </div>
       )}
