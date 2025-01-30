@@ -4,7 +4,7 @@ import {
   updateIntegrationWebChat,
 } from "@services/integration";
 import { RootState } from "@store";
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect, useState, ReactNode } from "react";
 import { useSelector } from "react-redux";
 import ChatEditor from "./ChatEditor";
 import EditTexts from "./EditTexts";
@@ -13,6 +13,7 @@ import EditCors from "./EditCors";
 interface CustomizeChatProps {
   onClose: () => void;
 }
+
 export enum IntegracionType {
   CHAT_WEB = "chat_web",
   WHATSAPP = "whatsapp",
@@ -49,6 +50,88 @@ export interface Integracion {
   type: IntegracionType;
   config: ConfigWebChat;
 }
+
+interface ActionButtonsProps {
+  onCancel: () => void;
+  onSave: () => void;
+  saveText?: string;
+  cancelText?: string;
+}
+
+const ActionButtons: FC<ActionButtonsProps> = ({
+  onCancel,
+  onSave,
+  saveText = "Guardar",
+  cancelText = "Cancelar",
+}) => (
+  <div className="flex justify-end space-x-2 mt-auto">
+    <button
+      type="button"
+      onClick={onCancel}
+      className="px-4 py-2 rounded-md shadow bg-gray-300 text-gray-700 hover:bg-gray-400"
+    >
+      {cancelText}
+    </button>
+    <button
+      type="button"
+      onClick={onSave}
+      className="px-4 py-2 rounded-md shadow bg-blue-600 text-white hover:bg-blue-700"
+    >
+      {saveText}
+    </button>
+  </div>
+);
+
+interface CustomizeContainerProps {
+  children: ReactNode;
+  isLoading?: boolean;
+}
+
+const CustomizeContainer: FC<CustomizeContainerProps> = ({
+  children,
+  isLoading,
+}) => (
+  <div className="w-[700px] bg-white p-[20px] shadow-lg rounded-md">
+    {isLoading ? (
+      <div className="w-full min-h-[400px] flex justify-center items-center">
+        <Loading />
+      </div>
+    ) : (
+      children
+    )}
+  </div>
+);
+
+interface Tab {
+  id: string;
+  label: string;
+}
+
+interface ViewTabsProps {
+  activeTab: string;
+  onTabChange: (tabId: string) => void;
+  tabs: Tab[];
+}
+
+const ViewTabs: FC<ViewTabsProps> = ({ activeTab, onTabChange, tabs }) => (
+  <div className="flex w-full">
+    {tabs.map((tab, index) => (
+      <button
+        key={tab.id}
+        onClick={() => onTabChange(tab.id)}
+        className={`${
+          activeTab === tab.id
+            ? "bg-blue-600 text-white"
+            : "bg-gray-200 text-gray-600"
+        } flex-1 py-2 ${index === 0 ? "rounded-tl-md" : ""} ${
+          index === tabs.length - 1 ? "rounded-tr-md" : ""
+        }`}
+      >
+        {tab.label}
+      </button>
+    ))}
+  </div>
+);
 
 const CustomizeChat: FC<CustomizeChatProps> = ({ onClose }) => {
   const { selectOrganizationId } = useSelector(
@@ -105,45 +188,18 @@ const CustomizeChat: FC<CustomizeChatProps> = ({ onClose }) => {
   }, [selectOrganizationId, selectedDepartmentId]);
 
   return (
-    <div className="w-[700px] bg-white p-[20px] shadow-lg rounded-md">
-      {loading ? (
-        <div className="w-full min-h-[400px] flex justify-center items-center">
-          <Loading />
-        </div>
-      ) : integration ? (
+    <CustomizeContainer isLoading={loading}>
+      {integration && (
         <div className="flex flex-col gap-[20px] min-h-[400px]">
-          <div className="flex w-full">
-            <button
-              onClick={() => setViwer("cors")}
-              className={`${
-                viwer === "cors"
-                  ? "bg-blue-600 text-white"
-                  : "bg-gray-200 text-gray-600"
-              } flex-1 py-2 rounded-tl-md`}
-            >
-              Script
-            </button>
-            <button
-              onClick={() => setViwer("text")}
-              className={`${
-                viwer === "text"
-                  ? "bg-blue-600 text-white"
-                  : "bg-gray-200 text-gray-600"
-              } flex-1 py-2`}
-            >
-              Textos
-            </button>
-            <button
-              onClick={() => setViwer("interface")}
-              className={`${
-                viwer === "interface"
-                  ? "bg-blue-600 text-white"
-                  : "bg-gray-200 text-gray-600"
-              } flex-1 py-2 rounded-tr-md`}
-            >
-              Interface
-            </button>
-          </div>
+          <ViewTabs
+            activeTab={viwer}
+            onTabChange={setViwer}
+            tabs={[
+              { id: "cors", label: "Script" },
+              { id: "text", label: "Textos" },
+              { id: "interface", label: "Interface" },
+            ]}
+          />
           {viwer === "cors" && (
             <EditCors
               integration={integration}
@@ -162,29 +218,10 @@ const CustomizeChat: FC<CustomizeChatProps> = ({ onClose }) => {
               setIntegration={setIntegration}
             />
           )}
-          <div className="flex justify-end space-x-2 mt-auto">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 shadow"
-            >
-              Cancelar
-            </button>
-            <button
-              type="button"
-              onClick={handleSaveChat}
-              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 shadow"
-            >
-              Guardar
-            </button>
-          </div>
-        </div>
-      ) : (
-        <div className="w-full min-h-[400px] flex justify-center items-center">
-          <Loading />
+          <ActionButtons onCancel={onClose} onSave={handleSaveChat} />
         </div>
       )}
-    </div>
+    </CustomizeContainer>
   );
 };
 
