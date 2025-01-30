@@ -81,16 +81,11 @@ const ScriptViewer = ({
   </>
 );
 
-const EditCors = ({ integration, setIntegration }: EditCorsProps) => {
+const useDomainManager = (
+  integration: Integracion,
+  setIntegration: (i: Integracion) => void
+) => {
   const [domain, setDomain] = useState<string>("");
-
-  const handleCopy = () => {
-    if (!integration) return alertConfirm("No se ha podido copiar el script");
-    navigator.clipboard
-      .writeText(generatedScript(integration?.id))
-      .then(() => alertConfirm("Script copiado al portapapeles"))
-      .catch(error => console.error("Error al copiar:", error));
-  };
 
   const handleAddDomain = () => {
     if (!domain) return;
@@ -115,8 +110,26 @@ const EditCors = ({ integration, setIntegration }: EditCorsProps) => {
     });
   };
 
-  const generatedScript = (integrationId: number) =>
-    `<script src="${urlFiles}/sofia-chat/CI${integrationId}.js"></script>`;
+  return { domain, setDomain, handleAddDomain, handleRemoveDomain };
+};
+
+const useScriptManager = (integrationId: number) => {
+  const generatedScript = `<script src="${urlFiles}/sofia-chat/CI${integrationId}.js"></script>`;
+
+  const handleCopy = () => {
+    navigator.clipboard
+      .writeText(generatedScript)
+      .then(() => alertConfirm("Script copiado al portapapeles"))
+      .catch(error => console.error("Error al copiar:", error));
+  };
+
+  return { script: generatedScript, handleCopy };
+};
+
+const EditCors = ({ integration, setIntegration }: EditCorsProps) => {
+  const { domain, setDomain, handleAddDomain, handleRemoveDomain } =
+    useDomainManager(integration, setIntegration);
+  const { script, handleCopy } = useScriptManager(integration.id);
 
   return (
     <div className="flex flex-col gap-[10px]">
@@ -126,10 +139,7 @@ const EditCors = ({ integration, setIntegration }: EditCorsProps) => {
         onRemove={handleRemoveDomain}
       />
       <CorsInput value={domain} onChange={setDomain} onAdd={handleAddDomain} />
-      <ScriptViewer
-        script={generatedScript(integration.id)}
-        onCopy={handleCopy}
-      />
+      <ScriptViewer script={script} onCopy={handleCopy} />
     </div>
   );
 };
