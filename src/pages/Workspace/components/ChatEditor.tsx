@@ -192,38 +192,40 @@ const ColorControl = ({
 
   return (
     <ControlItem label={label}>
-      <button
-        ref={buttonRef}
-        className="w-[95px] h-6 rounded flex items-center overflow-hidden"
-        onClick={() => setShowPicker(true)}
-      >
-        <div
-          className="w-6 h-full border border-[#001126]"
+      <div className="w-full flex flex-2 gap-1">
+        <button
+          ref={buttonRef}
+          className="w-[40px] h-[16px] border border-sofia-navyBlue rounded flex items-center"
           style={{ backgroundColor: color }}
+          onClick={() => setShowPicker(true)}
         />
-        <div className="flex-1 text-[10px] text-sofia-superDark font-quicksand px-1 border border-l-0 border-[#001126]">
+
+        <div className="flex-1 text-[10px] text-sofia-superDark px-1">
           {color.toUpperCase()}
         </div>
-      </button>
-      {showPicker && (
-        <div
-          className="fixed z-50"
-          style={{
-            top: buttonRef.current?.getBoundingClientRect().bottom,
-            left: buttonRef.current?.getBoundingClientRect().left,
-          }}
-        >
-          <div className="fixed inset-0" onClick={() => setShowPicker(false)} />
-          <div className="relative bg-white rounded-lg shadow-lg p-2">
-            <Sketch
-              color={color}
-              onChange={color => {
-                onChange(color.hex);
-              }}
+        {showPicker && (
+          <div
+            className="fixed z-50"
+            style={{
+              top: buttonRef.current?.getBoundingClientRect().bottom,
+              left: buttonRef.current?.getBoundingClientRect().left,
+            }}
+          >
+            <div
+              className="fixed inset-0"
+              onClick={() => setShowPicker(false)}
             />
+            <div className="relative bg-white rounded-lg shadow-lg p-2">
+              <Sketch
+                color={color}
+                onChange={color => {
+                  onChange(color.hex);
+                }}
+              />
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </ControlItem>
   );
 };
