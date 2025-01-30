@@ -13,7 +13,7 @@
 html,
 body {
   height: 100vh;
-  font-family: "Quicksand";
+  font-family: "Satoshi Regular";
 }
 
 .roboto-thin {
@@ -86,4 +86,48 @@ body {
   font-family: "Roboto", serif;
   font-weight: 900;
   font-style: italic;
+}
+
+@font-face {
+  font-family: "Satoshi Black";
+  src: url("/fonts/Satoshi-Black.otf");
+}
+
+@font-face {
+  font-family: "Satoshi Bold";
+  src: url("/fonts/Satoshi-Bold.otf");
+}
+
+@font-face {
+  font-family: "Satoshi Light";
+  src: url("/fonts/Satoshi-Light.otf");
+}
+
+@font-face {
+  font-family: "Satoshi Medium";
+  src: url("/fonts/Satoshi-Medium.otf");
+}
+@font-face {
+  font-family: "Satoshi Regular";
+  src: url("/fonts/Satoshi-Regular.otf");
+}
+
+.satoshi-black {
+  font-family: "Satoshi Black";
+}
+
+.satoshi-bold {
+  font-family: "Satoshi Bold";
+}
+
+.satoshi-light {
+  font-family: "Satoshi Light";
+}
+
+.satoshi-medium {
+  font-family: "Satoshi Medium";
+}
+
+.satoshi-regular {
+  font-family: "Satoshi Regular";
 }
