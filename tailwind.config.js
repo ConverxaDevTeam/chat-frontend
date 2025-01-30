@@ -7,7 +7,7 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        quicksand: ["Quicksand", "sans-serif"],
+        quicksand: ["Satoshi Regular", "sans-serif"],
       },
       fontSize: {
         xs: ["12px", { lineHeight: "normal", fontWeight: "600" }],
@@ -78,54 +78,74 @@ export default {
     require("autoprefixer"),
     plugin(function ({ addUtilities }) {
       const newUtilities = {
-        ".roboto-thin": {
+        ".satoshi-light": {
           fontWeight: "100",
           fontStyle: "normal",
         },
-        ".roboto-light": {
+        ".satoshi-medium": {
           fontWeight: "300",
           fontStyle: "normal",
         },
-        ".roboto-regular": {
+        ".satoshi-regular": {
           fontWeight: "400",
           fontStyle: "normal",
         },
-        ".roboto-medium": {
+        ".satoshi-bold": {
           fontWeight: "500",
           fontStyle: "normal",
         },
-        ".roboto-bold": {
+        ".satoshi-black": {
           fontWeight: "700",
           fontStyle: "normal",
         },
-        ".roboto-black": {
-          fontWeight: "900",
-          fontStyle: "normal",
-        },
-        ".roboto-thin-italic": {
-          fontWeight: "100",
-          fontStyle: "italic",
-        },
-        ".roboto-light-italic": {
-          fontWeight: "300",
-          fontStyle: "italic",
-        },
-        ".roboto-regular-italic": {
-          fontWeight: "400",
-          fontStyle: "italic",
-        },
-        ".roboto-medium-italic": {
-          fontWeight: "500",
-          fontStyle: "italic",
-        },
-        ".roboto-bold-italic": {
-          fontWeight: "700",
-          fontStyle: "italic",
-        },
-        ".roboto-black-italic": {
-          fontWeight: "900",
-          fontStyle: "italic",
-        },
+        // ".roboto-thin": {
+        //   fontWeight: "100",
+        //   fontStyle: "normal",
+        // },
+        // ".roboto-light": {
+        //   fontWeight: "300",
+        //   fontStyle: "normal",
+        // },
+        // ".roboto-regular": {
+        //   fontWeight: "400",
+        //   fontStyle: "normal",
+        // },
+        // ".roboto-medium": {
+        //   fontWeight: "500",
+        //   fontStyle: "normal",
+        // },
+        // ".roboto-bold": {
+        //   fontWeight: "700",
+        //   fontStyle: "normal",
+        // },
+        // ".roboto-black": {
+        //   fontWeight: "900",
+        //   fontStyle: "normal",
+        // },
+        // ".roboto-thin-italic": {
+        //   fontWeight: "100",
+        //   fontStyle: "italic",
+        // },
+        // ".roboto-light-italic": {
+        //   fontWeight: "300",
+        //   fontStyle: "italic",
+        // },
+        // ".roboto-regular-italic": {
+        //   fontWeight: "400",
+        //   fontStyle: "italic",
+        // },
+        // ".roboto-medium-italic": {
+        //   fontWeight: "500",
+        //   fontStyle: "italic",
+        // },
+        // ".roboto-bold-italic": {
+        //   fontWeight: "700",
+        //   fontStyle: "italic",
+        // },
+        // ".roboto-black-italic": {
+        //   fontWeight: "900",
+        //   fontStyle: "italic",
+        // },
       };
       addUtilities(newUtilities);
     }),
