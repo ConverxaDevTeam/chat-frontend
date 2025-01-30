@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
-import { Integracion } from "./CustomizeChat";
+import { ConfigWebChat, Integracion } from "./CustomizeChat";
 import ChatPreview from "./ChatPreview";
 import { Chrome } from "@uiw/react-color";
 import LabelColor from "./LabelColor";
@@ -224,8 +224,14 @@ const ChatEditor = ({ integration, setIntegration }: ChatEditorProps) => {
         <div className="col-span-2 px-[10px]">
           <Chrome
             color={
-              selectColor.element
-                ? integration.config[selectColor.element]
+              selectColor.element &&
+              selectColor.element in integration.config &&
+              typeof integration.config[
+                selectColor.element as keyof ConfigWebChat
+              ] === "string"
+                ? (integration.config[
+                    selectColor.element as keyof ConfigWebChat
+                  ] as string)
                 : selectColor.color
             }
             onChange={handleChangeColor}
