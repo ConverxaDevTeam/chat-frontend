@@ -1,15 +1,15 @@
 import Loading from "@components/Loading";
 import { FC, ReactNode } from "react";
-
-interface Tab {
-  id: string;
-  label: string;
-}
+import Tab from "./Tab";
 
 interface ConfigPanelProps {
-  tabs: Tab[];
+  tabs: Array<{
+    id: string;
+    label: string;
+    icon?: ReactNode;
+  }>;
   activeTab: string;
-  onTabChange: (tabId: string) => void;
+  onTabChange: (tab: string) => void;
   children: ReactNode;
   actions?: ReactNode;
   isLoading?: boolean;
@@ -36,76 +36,23 @@ const ConfigPanel: FC<ConfigPanelProps> = ({
           <div className="w-[263px] relative">
             <div className="absolute right-0 top-0 bottom-0 w-[1px] bg-[#DBEAF2]" />
             {tabs.map(tab => (
-              <button
+              <Tab
                 key={tab.id}
-                onClick={() => onTabChange(tab.id)}
-                className={`w-full px-4 py-3 text-left flex items-center gap-2 font-quicksand text-base text-sofia-superDark ${
-                  activeTab === tab.id
-                    ? "h-[35px] flex-shrink-0 bg-sofia-electricGreen font-semibold"
-                    : "font-normal hover:bg-sofia-electricGreen-100"
-                }`}
-              >
-                {tab.id === "cors" && (
-                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none">
-                    <path
-                      d="M13 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V9l-6-6z"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                    <path
-                      d="M13 3v6h6"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                )}
-                {tab.id === "text" && (
-                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none">
-                    <path
-                      d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                    <path
-                      d="M14 2v6h6M8 13h8M8 17h8M8 9h2"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                )}
-                {tab.id === "interface" && (
-                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none">
-                    <path
-                      d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                    <path
-                      d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                )}
-                {tab.label}
-              </button>
+                id={tab.id}
+                label={tab.label}
+                icon={tab.icon}
+                isActive={activeTab === tab.id}
+                onClick={onTabChange}
+              />
             ))}
           </div>
-          <div className="flex-1 p-6">
-            {children}
-            {actions && <div className="p-4">{actions}</div>}
+          <div className="flex-1 px-[38px]">
+            <div className="flex flex-col gap-[38px]">
+              {children}
+              {actions && (
+                <div className="flex justify-end gap-[10px]">{actions}</div>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -113,5 +60,4 @@ const ConfigPanel: FC<ConfigPanelProps> = ({
   </div>
 );
 
-export type { Tab };
 export default ConfigPanel;

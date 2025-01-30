@@ -137,9 +137,21 @@ const useIntegrationData = (
 const useTabNavigation = (initialTab: string) => {
   const [activeTab, setActiveTab] = useState(initialTab);
   const tabs = [
-    { id: "cors", label: "Script" },
-    { id: "text", label: "Textos" },
-    { id: "interface", label: "Interface" },
+    {
+      id: "cors",
+      label: "Scripts",
+      icon: <img src="/mvp/square-code.svg" className="w-5 h-5" />,
+    },
+    {
+      id: "text",
+      label: "Configuración del chat",
+      icon: <img src="/mvp/settings.svg" className="w-5 h-5" />,
+    },
+    {
+      id: "interface",
+      label: "Diseño de interfase",
+      icon: <img src="/mvp/palette.svg" className="w-5 h-5" />,
+    },
   ];
 
   return { activeTab, setActiveTab, tabs };
