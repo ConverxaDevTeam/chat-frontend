@@ -1,7 +1,8 @@
-import { Fragment, useState } from "react";
+import { Fragment } from "react";
 import ConversationCard from "./ConversationCard";
 import { ConfigWebChat } from "../CustomizeChat";
 import { IConversation } from "@utils/interfaces";
+import { Button } from "@components/common/Button";
 
 interface ConversationsProps {
   conversations: IConversation[];
@@ -14,7 +15,6 @@ const Conversations = ({
   config,
   setConversation,
 }: ConversationsProps) => {
-  const [isHovered, setIsHovered] = useState(false);
   return (
     <Fragment>
       <div
@@ -38,25 +38,19 @@ const Conversations = ({
             );
           })}
         </div>
-        <button
-          type="button"
-          className="font-semibold text-[12px] py-[6px] px-[10px] rounded"
-          style={{
-            backgroundColor: isHovered ? config.button_color : "transparent",
-            color: isHovered ? config.button_text : "#000000",
-          }}
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
-        >
-          Nueva conversacion
-        </button>
       </div>
-      <div className="w-full flex justify-center items-center h-[40px]">
-        <img
-          src={`${config.url_assets}/logos/${config.horizontal_logo}`}
-          alt="logo"
-          className="h-[20px]"
-        />
+      <div className="w-full flex flex-col p-[20px] items-center gap-[20px]">
+        <Button variant="primary" className="w-full">
+          Nueva conversacion
+        </Button>
+
+        <div className="w-full flex justify-center items-center h-[40px]">
+          <img
+            src={`${config.url_assets}/logos/${config.horizontal_logo}`}
+            alt="logo"
+            className="h-[30px]"
+          />
+        </div>
       </div>
     </Fragment>
   );
