@@ -28,9 +28,9 @@ const defaultConfig: ConfigWebChat = {
   bg_user: "#FFFFFF",
   bg_assistant: "#d0fbf8",
   text_color: "#000000",
-  text_date: "#666666",
+  text_date: "#a6a8ab",
   button_color: "#007BFF",
-  text_title: "#000000",
+  text_title: "#001126",
   message_radius: 8,
   button_text: "Send",
 };
@@ -104,16 +104,25 @@ const MessageCard = ({
             </div>
             <div className="flex flex-col items-start gap-1">
               <div className="flex justify-center items-center gap-2">
-                <span className="text-[14px] font-bold text-sofia-superDark">
+                <span
+                  className="text-[14px] font-bold"
+                  style={{ color: config.text_color }}
+                >
                   SOF.IA
                 </span>
-                <span className="text-[14px] font-bold text-app-newGray">
+                <span
+                  className="text-[14px] font-bold"
+                  style={{ color: config.text_date }}
+                >
                   {formatDateOrTime(message.created_at)}
                 </span>
               </div>
               <div
                 className="flex justify-center items-center self-stretch p-2 rounded-lg shadow-[2px_2px_4px_0px_rgba(0,0,0,0.10)]"
-                style={{ backgroundColor: config.bg_assistant }}
+                style={{
+                  backgroundColor: config.bg_assistant,
+                  borderRadius: config.message_radius,
+                }}
               >
                 {renderContent(message)}
               </div>
@@ -130,16 +139,25 @@ const MessageCard = ({
         <div className="flex items-start gap-2">
           <div className="flex flex-col items-end gap-1">
             <div className="flex justify-center items-center gap-2">
-              <span className="text-[14px] font-bold text-sofia-superDark">
+              <span
+                className="text-[14px] font-bold"
+                style={{ color: config.text_color }}
+              >
                 {userName}
               </span>
-              <span className="text-[14px] font-bold text-app-newGray">
+              <span
+                className="text-[14px] font-bold"
+                style={{ color: config.text_date }}
+              >
                 {formatDateOrTime(message.created_at)}
               </span>
             </div>
             <div
               className="flex justify-center items-center self-stretch p-2 rounded-lg shadow-[2px_2px_4px_0px_rgba(0,0,0,0.10)]"
-              style={{ backgroundColor: config.bg_user }}
+              style={{
+                backgroundColor: config.bg_user,
+                borderRadius: config.message_radius,
+              }}
             >
               {renderContent(message)}
             </div>
