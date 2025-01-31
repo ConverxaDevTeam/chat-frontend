@@ -2,6 +2,7 @@ import { convertISOToReadableMonthDayYear } from "@utils/format";
 import { useEffect, useState } from "react";
 import { ConfigWebChat } from "../CustomizeChat";
 import { IConversation } from "@utils/interfaces";
+import { getContrastingTextColor } from "@services/chat.service";
 
 interface ConversationCardProps {
   setConversation: (conversation: IConversation) => void;
@@ -35,22 +36,25 @@ const ConversationCard = ({
     };
   }, [status, active, countdown]);
 
+  const textColor = getContrastingTextColor(config.bg_assistant);
+
   return (
     <div
       className="flex flex-col p-[16px] gap-[8px] items-start self-stretch rounded-tr-[8px] rounded-bl-[8px] rounded-tl-[8px] border border-sofia-darkBlue bg-[#FCFCFC] hover:bg-slate-100 cursor-pointer"
       style={{
         backgroundColor: config.bg_assistant,
+        color: textColor,
       }}
       onClick={() => setConversation(conversation)}
     >
-      <span className="text-sofia-superDark text-[14px] font-bold leading-[16px]">
+      <span className="text-[14px] font-bold leading-[16px]">
         {conversation.messages.length > 0
           ? convertISOToReadableMonthDayYear(
               conversation.messages[conversation.messages.length - 1].created_at
             )
           : "..."}
       </span>
-      <span className="text-sofia-superDark text-[14px] font-normal leading-none truncate">
+      <span className="text-[14px] font-normal leading-none truncate">
         {conversation.messages.length > 0
           ? conversation.messages[conversation.messages.length - 1].text
           : "..."}

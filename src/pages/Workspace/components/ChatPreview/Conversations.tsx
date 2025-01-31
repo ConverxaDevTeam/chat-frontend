@@ -38,20 +38,18 @@ const Conversations = ({
             );
           })}
         </div>
-        <div className="flex justify-center items-center h-[50px]">
-          <button
-            type="button"
-            className="font-semibold text-[12px] py-[6px] px-[10px] rounded"
-            style={{
-              backgroundColor: isHovered ? config.button_color : "transparent",
-              color: isHovered ? config.button_text : "#000000",
-            }}
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
-          >
-            Nueva conversacion
-          </button>
-        </div>
+        <button
+          type="button"
+          className="font-semibold text-[12px] py-[6px] px-[10px] rounded"
+          style={{
+            backgroundColor: isHovered ? config.button_color : "transparent",
+            color: isHovered ? config.button_text : "#000000",
+          }}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+        >
+          Nueva conversacion
+        </button>
       </div>
       <div className="w-full flex justify-center items-center h-[40px]">
         <img
