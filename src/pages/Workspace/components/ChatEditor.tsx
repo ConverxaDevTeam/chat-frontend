@@ -1,7 +1,7 @@
 import { Fragment, useState, useRef } from "react";
 import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
-import { ConfigWebChat, Integracion } from "./CustomizeChat";
+import { Integracion } from "./CustomizeChat";
 import ChatPreview from "./ChatPreview";
 import { themeColors } from "@utils/lists";
 import { Sketch } from "@uiw/react-color";

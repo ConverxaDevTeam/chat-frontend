@@ -4,11 +4,36 @@ import { ConversationResponseMessage } from "@interfaces/conversation";
 import { formatDateOrTime } from "@utils/format";
 import { MessageType } from "@utils/interfaces";
 import ReactMarkdown from "react-markdown";
+import { ConfigWebChat } from "@pages/Workspace/components/CustomizeChat";
 
 interface MessageCardProps {
   userName: string;
   message: ConversationResponseMessage;
+  config?: ConfigWebChat;
 }
+
+const defaultConfig: ConfigWebChat = {
+  id: 0,
+  name: "Default",
+  cors: [],
+  url_assets: "",
+  title: "Default Title",
+  sub_title: "Default Subtitle",
+  description: "Default Description",
+  logo: "",
+  horizontal_logo: "",
+  edge_radius: 8,
+  bg_color: "#FFFFFF",
+  bg_chat: "#F5F5F5",
+  bg_user: "#FFFFFF",
+  bg_assistant: "#d0fbf8",
+  text_color: "#000000",
+  text_date: "#666666",
+  button_color: "#007BFF",
+  text_title: "#000000",
+  message_radius: 8,
+  button_text: "Send",
+};
 
 const renderContent = (message: ConversationResponseMessage) => {
   return (
@@ -61,7 +86,11 @@ const renderContent = (message: ConversationResponseMessage) => {
   );
 };
 
-const MessageCard = ({ message, userName }: MessageCardProps) => {
+const MessageCard = ({
+  message,
+  userName,
+  config = defaultConfig,
+}: MessageCardProps) => {
   if (message.type === MessageType.AGENT || message.type === MessageType.HITL) {
     return (
       <div className="inline-flex items-start gap-2 max-w-[546px]">
@@ -82,7 +111,10 @@ const MessageCard = ({ message, userName }: MessageCardProps) => {
                   {formatDateOrTime(message.created_at)}
                 </span>
               </div>
-              <div className="flex justify-center items-center self-stretch p-2 rounded-lg bg-sofia-secundario shadow-[2px_2px_4px_0px_rgba(0,0,0,0.10)]">
+              <div
+                className="flex justify-center items-center self-stretch p-2 rounded-lg shadow-[2px_2px_4px_0px_rgba(0,0,0,0.10)]"
+                style={{ backgroundColor: config.bg_assistant }}
+              >
                 {renderContent(message)}
               </div>
             </div>
@@ -105,7 +137,10 @@ const MessageCard = ({ message, userName }: MessageCardProps) => {
                 {formatDateOrTime(message.created_at)}
               </span>
             </div>
-            <div className="flex justify-center items-center self-stretch p-2 rounded-lg bg-sofia-blancoPuro shadow-[2px_2px_4px_0px_rgba(0,0,0,0.10)]">
+            <div
+              className="flex justify-center items-center self-stretch p-2 rounded-lg shadow-[2px_2px_4px_0px_rgba(0,0,0,0.10)]"
+              style={{ backgroundColor: config.bg_user }}
+            >
               {renderContent(message)}
             </div>
           </div>

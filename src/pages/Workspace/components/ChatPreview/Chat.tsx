@@ -1,13 +1,22 @@
 import { useEffect, useRef, useState } from "react";
-import MessageSofia from "./MessageSofia";
-import MessageUser from "./MessageUser";
+import MessageCard from "@components/ChatWindow/MessageCard";
 import { ConfigWebChat } from "../CustomizeChat";
-import { IConversation } from "@utils/interfaces";
+import { IConversation, IMessage } from "@utils/interfaces";
+import { ConversationResponseMessage } from "@interfaces/conversation";
 
 interface ChatProps {
   config: ConfigWebChat;
   conversation: IConversation;
 }
+
+const transformMessage = (message: IMessage): ConversationResponseMessage => ({
+  id: message.id || Math.random(),
+  created_at: message.created_at || new Date().toISOString(),
+  text: message.text || "",
+  audio: message.audio || null,
+  images: message.images || null,
+  type: message.type,
+});
 
 const Chat = ({ config, conversation }: ChatProps) => {
   const [text, setText] = useState("");
@@ -39,21 +48,14 @@ const Chat = ({ config, conversation }: ChatProps) => {
         }}
       >
         {conversation?.messages &&
-          conversation.messages.map(message => {
-            return message.type === "agent" ? (
-              <MessageSofia
-                key={`chat-msg-${message.id}`}
-                menssage={message}
-                config={config}
-              />
-            ) : (
-              <MessageUser
-                key={`chat-msg-${message.id}`}
-                menssage={message}
-                config={config}
-              />
-            );
-          })}
+          conversation.messages.map(message => (
+            <MessageCard
+              key={`chat-msg-${message.id}`}
+              message={transformMessage(message)}
+              userName={"Demo Usuario"}
+              config={config}
+            />
+          ))}
         <div ref={messagesEndRef}></div>
       </div>
       <form
