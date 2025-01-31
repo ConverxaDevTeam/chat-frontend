@@ -55,7 +55,7 @@ const EditTexts = ({ integration, setIntegration }: EditTextsProps) => {
             <img
               src={integration.config.logo || "/mvp/avatar.svg"}
               alt="avatar"
-              className="w-[80px] h-[80px] rounded"
+              className="w-[80px] h-[80px] rounded-full"
             />
             <input
               type="file"
