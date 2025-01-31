@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import ConversationCard from "./ConversationCard";
 import { ConfigWebChat } from "../CustomizeChat";
 import { IConversation } from "@utils/interfaces";
@@ -16,17 +16,17 @@ const Conversations = ({
 }: ConversationsProps) => {
   const [isHovered, setIsHovered] = useState(false);
   return (
-    <>
+    <Fragment>
       <div
         className="flex flex-1 flex-col p-[20px] overflow-auto"
         style={{
           backgroundColor: config.bg_chat,
         }}
       >
-        <div className="bg-white w-full border-[1px] border-gray-200 shadow-sm rounded">
-          <div className="flex justify-center items-center h-[50px] border-b-[1px] border-b-gray-200">
-            <p className="font-semibold">Conversaciones</p>
-          </div>
+        <p className="text-sofia-superDark text-[14px] font-bold leading-[16px]">
+          Conversaciones
+        </p>
+        <div className="flex flex-col gap-[8px] mt-[8px]">
           {conversations.map(conversation => {
             return (
               <ConversationCard
@@ -37,22 +37,20 @@ const Conversations = ({
               />
             );
           })}
-          <div className="flex justify-center items-center h-[50px]">
-            <button
-              type="button"
-              className="font-semibold text-[12px] py-[6px] px-[10px] rounded"
-              style={{
-                backgroundColor: isHovered
-                  ? config.button_color
-                  : "transparent",
-                color: isHovered ? config.button_text : "#000000",
-              }}
-              onMouseEnter={() => setIsHovered(true)}
-              onMouseLeave={() => setIsHovered(false)}
-            >
-              Nueva conversacion
-            </button>
-          </div>
+        </div>
+        <div className="flex justify-center items-center h-[50px]">
+          <button
+            type="button"
+            className="font-semibold text-[12px] py-[6px] px-[10px] rounded"
+            style={{
+              backgroundColor: isHovered ? config.button_color : "transparent",
+              color: isHovered ? config.button_text : "#000000",
+            }}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+          >
+            Nueva conversacion
+          </button>
         </div>
       </div>
       <div className="w-full flex justify-center items-center h-[40px]">
@@ -62,7 +60,7 @@ const Conversations = ({
           className="h-[20px]"
         />
       </div>
-    </>
+    </Fragment>
   );
 };
 

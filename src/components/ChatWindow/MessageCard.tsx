@@ -184,7 +184,7 @@ const MessageCard = ({
             className="flex justify-center items-center self-stretch p-2 shadow-[2px_2px_4px_0px_rgba(0,0,0,0.10)]"
             style={{
               backgroundColor: config.bg_assistant,
-              borderRadius: config.message_radius,
+              borderRadius: config.message_radius + "px",
             }}
           >
             {renderContent(message, textColor)}
@@ -203,7 +203,7 @@ const MessageCard = ({
           className="flex justify-center items-center self-stretch p-2 shadow-[2px_2px_4px_0px_rgba(0,0,0,0.10)]"
           style={{
             backgroundColor: config.bg_user,
-            borderRadius: config.message_radius,
+            borderRadius: config.message_radius + "px",
           }}
         >
           {renderContent(message, textColor)}
