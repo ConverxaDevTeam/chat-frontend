@@ -78,7 +78,10 @@ const MessageHeader = ({
   );
 };
 
-const renderContent = (message: ConversationResponseMessage) => {
+const renderContent = (
+  message: ConversationResponseMessage,
+  textColor: string
+) => {
   return (
     <div className="flex flex-col gap-2">
       {message.images?.map((imageUrl, index) => (
@@ -102,7 +105,7 @@ const renderContent = (message: ConversationResponseMessage) => {
         />
       )}
       {message.text && (
-        <div className={`text-[14px] font-medium text-app-text`}>
+        <div className={`text-[14px] font-medium`} style={{ color: textColor }}>
           {message.audio && <span className="font-bold">Transcripcion: </span>}
           <ReactMarkdown
             components={{
@@ -129,12 +132,40 @@ const renderContent = (message: ConversationResponseMessage) => {
   );
 };
 
+const hexToRgb = (hex: string) => {
+  // Remove the hash if present
+  const sanitizedHex = hex.replace(/^#/, "");
+
+  // Handle both 3-digit and 6-digit hex
+  const fullHex =
+    sanitizedHex.length === 3
+      ? sanitizedHex
+          .split("")
+          .map(char => char + char)
+          .join("")
+      : sanitizedHex;
+
+  const r = parseInt(fullHex.slice(0, 2), 16);
+  const g = parseInt(fullHex.slice(2, 4), 16);
+  const b = parseInt(fullHex.slice(4, 6), 16);
+
+  return { r, g, b };
+};
+
+const getContrastingTextColor = (backgroundColor: string): string => {
+  const { r, g, b } = hexToRgb(backgroundColor);
+  const luminance = 0.299 * r + 0.587 * g + 0.114 * b;
+  console.log(luminance);
+  return luminance > 186 ? "#000000" : "#FFFFFF";
+};
+
 const MessageCard = ({
   message,
   userName,
   config = defaultConfig,
 }: MessageCardProps) => {
   if (message.type === MessageType.AGENT || message.type === MessageType.HITL) {
+    const textColor = getContrastingTextColor(config.bg_assistant);
     return (
       <MessageContainer align="start">
         <div className="flex flex-col gap-1">
@@ -156,12 +187,13 @@ const MessageCard = ({
               borderRadius: config.message_radius,
             }}
           >
-            {renderContent(message)}
+            {renderContent(message, textColor)}
           </div>
         </div>
       </MessageContainer>
     );
   }
+  const textColor = getContrastingTextColor(config.bg_user);
 
   return (
     <MessageContainer align="end">
@@ -174,7 +206,7 @@ const MessageCard = ({
             borderRadius: config.message_radius,
           }}
         >
-          {renderContent(message)}
+          {renderContent(message, textColor)}
         </div>
       </div>
       <div className="flex flex-col gap-1">

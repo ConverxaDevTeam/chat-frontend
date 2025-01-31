@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import MessageCard from "@components/ChatWindow/MessageCard";
 import { ConfigWebChat } from "../CustomizeChat";
-import { IConversation, IMessage } from "@utils/interfaces";
+import { IConversation, IMessage, MessageType } from "@utils/interfaces";
 import {
   ConversationResponseMessage,
   FormInputs,
@@ -51,7 +51,11 @@ const Chat = ({ config, conversation }: ChatProps) => {
             <MessageCard
               key={`chat-msg-${message.id}`}
               message={transformMessage(message)}
-              userName={"Demo Usuario"}
+              userName={
+                message.type === MessageType.AGENT
+                  ? config.title
+                  : "Demo Usuario"
+              }
               config={config}
             />
           ))}
