@@ -35,6 +35,49 @@ const defaultConfig: ConfigWebChat = {
   button_text: "Send",
 };
 
+const MessageContainer = ({
+  children,
+  align,
+}: {
+  children: React.ReactNode;
+  align: "start" | "end";
+}) => {
+  return (
+    <div className={`flex justify-${align} max-w-[546px]`}>
+      <div className={`flex flex-col items-start gap-2`}>
+        <div className={`flex items-start gap-2`}>{children}</div>
+      </div>
+    </div>
+  );
+};
+
+const MessageHeader = ({
+  message,
+  config,
+  userName,
+}: {
+  message: ConversationResponseMessage;
+  config: ConfigWebChat;
+  userName: string;
+}) => {
+  return (
+    <div className="flex justify-center items-center gap-2">
+      <span
+        className="text-[14px] font-bold"
+        style={{ color: config.text_color }}
+      >
+        {userName}
+      </span>
+      <span
+        className="text-[14px] font-bold"
+        style={{ color: config.text_date }}
+      >
+        {formatDateOrTime(message.created_at)}
+      </span>
+    </div>
+  );
+};
+
 const renderContent = (message: ConversationResponseMessage) => {
   return (
     <div className="flex flex-col gap-2">
@@ -93,85 +136,51 @@ const MessageCard = ({
 }: MessageCardProps) => {
   if (message.type === MessageType.AGENT || message.type === MessageType.HITL) {
     return (
-      <div className="inline-flex items-start gap-2 max-w-[546px]">
-        <div className="flex flex-col items-start gap-2">
-          <div className="flex items-start gap-2">
-            <div className="flex flex-col gap-1">
-              <div className="w-[40px] h-[40px] px-[7px] py-[10px] flex flex-col items-start rounded-full bg-sofia-electricGreen relative">
-                <img src="/icon.svg" alt="sofia" className="w-6 h-6" />
-                <div className="w-3 h-3 bg-green-500 absolute border-2 border-white rounded-full -bottom-0.5 -right-0.5" />
-              </div>
-            </div>
-            <div className="flex flex-col items-start gap-1">
-              <div className="flex justify-center items-center gap-2">
-                <span
-                  className="text-[14px] font-bold"
-                  style={{ color: config.text_color }}
-                >
-                  SOF.IA
-                </span>
-                <span
-                  className="text-[14px] font-bold"
-                  style={{ color: config.text_date }}
-                >
-                  {formatDateOrTime(message.created_at)}
-                </span>
-              </div>
-              <div
-                className="flex justify-center items-center self-stretch p-2 rounded-lg shadow-[2px_2px_4px_0px_rgba(0,0,0,0.10)]"
-                style={{
-                  backgroundColor: config.bg_assistant,
-                  borderRadius: config.message_radius,
-                }}
-              >
-                {renderContent(message)}
-              </div>
-            </div>
+      <MessageContainer align="start">
+        <div className="flex flex-col gap-1">
+          <div className="w-[40px] h-[40px] px-[7px] py-[10px] flex flex-col items-start rounded-full bg-sofia-electricGreen relative">
+            <img src="/icon.svg" alt="sofia" className="w-6 h-6" />
+            <div className="w-3 h-3 bg-green-500 absolute border-2 border-white rounded-full -bottom-0.5 -right-0.5" />
           </div>
         </div>
-      </div>
+        <div className="flex flex-col items-start gap-1">
+          <MessageHeader
+            message={message}
+            config={config}
+            userName={userName}
+          />
+          <div
+            className="flex justify-center items-center self-stretch p-2 shadow-[2px_2px_4px_0px_rgba(0,0,0,0.10)]"
+            style={{
+              backgroundColor: config.bg_assistant,
+              borderRadius: config.message_radius,
+            }}
+          >
+            {renderContent(message)}
+          </div>
+        </div>
+      </MessageContainer>
     );
   }
 
   return (
-    <div className="flex justify-end max-w-[546px] ml-auto">
-      <div className="flex flex-col items-end gap-2">
-        <div className="flex items-start gap-2">
-          <div className="flex flex-col items-end gap-1">
-            <div className="flex justify-center items-center gap-2">
-              <span
-                className="text-[14px] font-bold"
-                style={{ color: config.text_color }}
-              >
-                {userName}
-              </span>
-              <span
-                className="text-[14px] font-bold"
-                style={{ color: config.text_date }}
-              >
-                {formatDateOrTime(message.created_at)}
-              </span>
-            </div>
-            <div
-              className="flex justify-center items-center self-stretch p-2 rounded-lg shadow-[2px_2px_4px_0px_rgba(0,0,0,0.10)]"
-              style={{
-                backgroundColor: config.bg_user,
-                borderRadius: config.message_radius,
-              }}
-            >
-              {renderContent(message)}
-            </div>
-          </div>
-          <div className="flex flex-col gap-1">
-            <Avatar
-              avatar={null}
-              secret={userName}
-              className="w-[40px] h-[40px]"
-            />
-          </div>
+    <MessageContainer align="end">
+      <div className="flex flex-col items-end gap-1">
+        <MessageHeader message={message} config={config} userName={userName} />
+        <div
+          className="flex justify-center items-center self-stretch p-2 shadow-[2px_2px_4px_0px_rgba(0,0,0,0.10)]"
+          style={{
+            backgroundColor: config.bg_user,
+            borderRadius: config.message_radius,
+          }}
+        >
+          {renderContent(message)}
         </div>
       </div>
-    </div>
+      <div className="flex flex-col gap-1">
+        <Avatar avatar={null} secret={userName} className="w-[40px] h-[40px]" />
+      </div>
+    </MessageContainer>
   );
 };
 
