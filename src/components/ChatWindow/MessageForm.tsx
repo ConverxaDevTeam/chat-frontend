@@ -9,6 +9,7 @@ import { useState } from "react";
 import { SendMessageButton } from "../SendMessageButton";
 import { HitlButton } from "../HitlButton";
 import { ImagePreview } from "./ImagePreview";
+import { ConfigWebChat } from "@pages/Workspace/components/CustomizeChat";
 
 interface ImagePreview {
   file: File;
@@ -16,6 +17,7 @@ interface ImagePreview {
 }
 
 interface MessageFormProps {
+  config?: ConfigWebChat;
   showHitl?: boolean;
   showImageButton?: boolean;
   form: {
@@ -36,12 +38,36 @@ interface MessageFormProps {
   buttonText?: string;
 }
 
+const defaultConfig: ConfigWebChat = {
+  id: 0,
+  name: "Default",
+  cors: [],
+  url_assets: "",
+  title: "Default Title",
+  sub_title: "Default Subtitle",
+  description: "Default Description",
+  logo: "",
+  horizontal_logo: "",
+  edge_radius: 8,
+  bg_color: "#FFFFFF",
+  bg_chat: "#F5F5F5",
+  bg_user: "#FFFFFF",
+  bg_assistant: "#d0fbf8",
+  text_color: "#000000",
+  text_date: "#a6a8ab",
+  button_color: "#ededed",
+  text_title: "#001126",
+  message_radius: 8,
+  button_text: "#BAF88F",
+};
+
 export const MessageForm = ({
   form: { register, handleSubmit, isSubmitting },
   onSubmit,
   onUpdateConversation,
   conversation,
   user,
+  config = defaultConfig,
   showHitl = true,
 }: MessageFormProps) => {
   const [selectedImages, setSelectedImages] = useState<ImagePreview[]>([]);
@@ -102,7 +128,10 @@ export const MessageForm = ({
   });
 
   return (
-    <div className="h-[73px] px-5 py-3.5 flex items-center bg-app-lightGray min-w-0 rounded-br-[8px]">
+    <div
+      className="h-[73px] px-5 py-3.5 flex items-center bg-app-lightGray min-w-0 rounded-br-[8px]"
+      style={{ backgroundColor: config.button_color }}
+    >
       <form
         onSubmit={handleSubmit(handleFormSubmit)}
         className="flex items-center gap-[16px] w-full min-w-0"
@@ -111,6 +140,9 @@ export const MessageForm = ({
           type="button"
           onClick={() => setShowEmojiPicker(!showEmojiPicker)}
           className="p-2 hover:bg-gray-100 rounded-full transition-colors shrink-0"
+          style={{
+            backgroundColor: config.button_text,
+          }}
         >
           <img src="/mvp/smile.svg" alt="sofia" className="w-[16px] h-[16px]" />
         </button>
@@ -158,7 +190,10 @@ export const MessageForm = ({
           <SendMessageButton
             type="submit"
             disabled={isSubmitting}
-            className="w-[38px] h-[38px] flex items-center justify-center bg-sofia-electricOlive hover:bg-sofia-electricOlive-700 rounded-full transition-colors disabled:opacity-50"
+            className="w-[38px] h-[38px] flex items-center justify-center hover:bg-sofia-electricOlive-700 rounded-full transition-colors disabled:opacity-50"
+            style={{
+              backgroundColor: config.button_text,
+            }}
           >
             <img
               src="/mvp/send-horizontal.svg"
