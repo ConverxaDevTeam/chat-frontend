@@ -2,6 +2,8 @@ import ChatPreview from "./ChatPreview";
 import { Integracion } from "./CustomizeChat";
 import DeleteButton from "./DeleteButton";
 import EditButton from "./EditButton";
+import React, { useState } from "react";
+import ImageCropModal from "./ImageCropModal";
 
 interface EditTextsProps {
   integration: Integracion;
@@ -9,6 +11,27 @@ interface EditTextsProps {
 }
 
 const EditTexts = ({ integration, setIntegration }: EditTextsProps) => {
+  const [imageSrc, setImageSrc] = useState<string>("/mvp/avatar.svg");
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => setImageSrc(reader.result as string);
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleSaveCroppedImage = (croppedImage: string) => {
+    setIntegration({
+      ...integration,
+      config: {
+        ...integration.config,
+        logo: croppedImage,
+      },
+    });
+  };
+
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -20,6 +43,7 @@ const EditTexts = ({ integration, setIntegration }: EditTextsProps) => {
       },
     });
   };
+
   return (
     <div className="flex gap-[20px] items-start">
       <div className="flex flex-col flex-1 gap-[10px] items-start w-[338px]">
@@ -29,18 +53,44 @@ const EditTexts = ({ integration, setIntegration }: EditTextsProps) => {
           </label>
           <div className="relative">
             <img
-              src="/mvp/avatar.svg"
+              src={integration.config.logo || "/mvp/avatar.svg"}
               alt="avatar"
               className="w-[80px] h-[80px] rounded"
             />
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageUpload}
+              className="hidden"
+              id="avatar-upload"
+            />
             <div className="absolute top-14 left-14 flex">
-              <button>
-                <DeleteButton />
-              </button>
-              <button>
+              <button
+                onClick={() =>
+                  document.getElementById("avatar-upload")?.click()
+                }
+              >
                 <EditButton />
               </button>
+              <button
+                onClick={() =>
+                  setIntegration({
+                    ...integration,
+                    config: {
+                      ...integration.config,
+                      logo: "/mvp/avatar.svg",
+                    },
+                  })
+                }
+              >
+                <DeleteButton />
+              </button>
             </div>
+            <ImageCropModal
+              imageSrc={imageSrc}
+              onSave={handleSaveCroppedImage}
+              onClose={() => setImageSrc("")}
+            />
           </div>
         </div>
         <label className="block text-sm font-medium text-gray-600">
