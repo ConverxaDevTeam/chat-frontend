@@ -2,6 +2,7 @@ import { IConversation } from "@utils/interfaces";
 import { ConfigWebChat } from "../CustomizeChat";
 import IconClose from "./IconClose";
 import { Avatar } from "@components/ChatWindow/Avatar";
+import { ArrowBackIcon } from "@components/Icons/ArrowBack";
 
 interface HeaderProps {
   conversation: IConversation | null;
@@ -20,21 +21,22 @@ const Header = ({ conversation, config, setConversation }: HeaderProps) => {
     >
       <div>
         {conversation ? (
-          <div className="flex gap-[10px] items-center">
-            <img
-              src="/mvp/arrow-back.svg"
-              alt="logo"
-              className="w-[25px] h-[25px] m-[10px]"
+          <div
+            className="flex gap-[10px] items-center"
+            style={{ color: config.text_title }}
+          >
+            <ArrowBackIcon
+              className="w-[25px] h-[25px] m-[10px] cursor-pointer"
               onClick={() => setConversation(null)}
             />
             <Avatar
               avatar={`${config.url_assets}/logos/${config.logo}`}
               secret={""}
               className=" rounded-full"
+              borderColor={config.text_title}
             />
-            <p className="font-semibold text-[20px] text-sofia-superDark">
-              {config.title}
-            </p>
+
+            <p className="font-semibold text-[20px]">{config.title}</p>
           </div>
         ) : (
           <>
@@ -45,7 +47,6 @@ const Header = ({ conversation, config, setConversation }: HeaderProps) => {
               className="text-[12px] text-center font-medium"
               style={{
                 backgroundColor: config.bg_color,
-                color: config.text_title,
               }}
             >
               {config.description}

@@ -232,14 +232,14 @@ const ColorControl = ({
 
 const colorConfigs = [
   { key: "bg_color", label: "Header" },
-  { key: "text_title", label: "Textos de mensajes" },
-  { key: "bg_chat", label: "Nombre la y usuario" },
-  { key: "text_color", label: "Fondo" },
-  { key: "bg_assistant", label: "Botón de enviar" },
-  { key: "bg_user", label: "Hora" },
+  { key: "text_title", label: "Textos de cabecera" },
+  { key: "bg_chat", label: "Fondo" },
+  { key: "text_color", label: "Nombre IA y usuario" },
+  { key: "bg_assistant", label: "Globos mensaje IA" },
+  { key: "bg_user", label: "Globos mensaje usuario" },
   { key: "button_color", label: "Fondo de enviar mensaje" },
-  { key: "button_text", label: "Globos mensaje IA" },
-  { key: "text_date", label: "Globos mensaje usuario" },
+  { key: "button_text", label: "Botón de enviar" },
+  { key: "text_date", label: "Hora" },
 ] as const;
 
 const ColorPicker = ({
