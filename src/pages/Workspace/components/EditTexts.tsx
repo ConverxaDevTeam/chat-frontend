@@ -1,5 +1,7 @@
 import ChatPreview from "./ChatPreview";
 import { Integracion } from "./CustomizeChat";
+import DeleteButton from "./DeleteButton";
+import EditButton from "./EditButton";
 
 interface EditTextsProps {
   integration: Integracion;
@@ -20,7 +22,27 @@ const EditTexts = ({ integration, setIntegration }: EditTextsProps) => {
   };
   return (
     <div className="flex gap-[20px] items-start">
-      <div className="flex flex-col flex-1 gap-[10px] items-start">
+      <div className="flex flex-col flex-1 gap-[10px] items-start w-[338px]">
+        <div className="flex flex-col gap-[8px]">
+          <label className="text-[14px] font-bold leading-[16px] text-[#001126]">
+            Avatar
+          </label>
+          <div className="relative">
+            <img
+              src="/mvp/avatar.svg"
+              alt="avatar"
+              className="w-[80px] h-[80px] rounded"
+            />
+            <div className="absolute top-14 left-14 flex">
+              <button>
+                <DeleteButton />
+              </button>
+              <button>
+                <EditButton />
+              </button>
+            </div>
+          </div>
+        </div>
         <label className="block text-sm font-medium text-gray-600">
           Textos
         </label>

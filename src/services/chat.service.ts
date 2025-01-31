@@ -21,6 +21,5 @@ export const hexToRgb = (hex: string) => {
 export const getContrastingTextColor = (backgroundColor: string): string => {
   const { r, g, b } = hexToRgb(backgroundColor);
   const luminance = 0.299 * r + 0.587 * g + 0.114 * b;
-  console.log(luminance);
   return luminance > 186 ? "#000000" : "#FFFFFF";
 };
