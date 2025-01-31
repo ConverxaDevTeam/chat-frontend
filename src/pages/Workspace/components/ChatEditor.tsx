@@ -200,8 +200,8 @@ const ColorControl = ({
           onClick={() => setShowPicker(true)}
         />
 
-        <div className="flex-1 text-[10px] text-sofia-superDark px-1">
-          {color.toUpperCase()}
+        <div className="flex-1 text-[13px] text-sofia-superDark px-1">
+          {color.replace("#", "").toUpperCase()}
         </div>
         {showPicker && (
           <div
@@ -300,15 +300,11 @@ const ChatConfigurations = ({
   </div>
 );
 
-const ChatPreviewContainer = ({ config }: { config: ConfigWebChat }) => (
-  <ChatPreview config={config} />
-);
-
 const ChatEditor = ({ integration, setIntegration }: ChatEditorProps) => {
   const [themeId, setThemeId] = useState<number>(0);
 
   return (
-    <div className="grid grid-cols-[1fr_auto] gap-5">
+    <div className="grid grid-cols-[1fr_auto] gap-[30px]">
       <ChatConfigurations
         integration={integration}
         setIntegration={setIntegration}
@@ -316,7 +312,7 @@ const ChatEditor = ({ integration, setIntegration }: ChatEditorProps) => {
         setThemeId={setThemeId}
       />
       <div className="w-[375px]">
-        <ChatPreviewContainer config={integration.config} />
+        <ChatPreview config={integration.config} />
       </div>
     </div>
   );

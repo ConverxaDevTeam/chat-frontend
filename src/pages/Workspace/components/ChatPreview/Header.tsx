@@ -1,7 +1,7 @@
 import { IConversation } from "@utils/interfaces";
 import { ConfigWebChat } from "../CustomizeChat";
-import IconArrow from "./IconArrow";
 import IconClose from "./IconClose";
+import { Avatar } from "@components/ChatWindow/Avatar";
 
 interface HeaderProps {
   conversation: IConversation | null;
@@ -12,51 +12,51 @@ interface HeaderProps {
 const Header = ({ conversation, config, setConversation }: HeaderProps) => {
   return (
     <div
-      className="py-[20px] px-[10px] flex flex-col gap-[10px] relative"
+      className="flex items-center justify-between py-[24px] px-0"
       style={{
         backgroundColor: config.bg_color,
         color: config.text_title,
       }}
     >
-      {/* <img
-        src={`${config.url_assets}/assets/${config.icon_close}`}
-        className="select-none w-[18px] h-[18px] absolute top-[10px] right-[10px] cursor-pointer"
-        alt="Chat"
-      /> */}
+      <div>
+        {conversation ? (
+          <div className="flex gap-[10px] items-center">
+            <img
+              src="/mvp/arrow-back.svg"
+              alt="logo"
+              className="w-[25px] h-[25px] m-[10px]"
+              onClick={() => setConversation(null)}
+            />
+            <Avatar
+              avatar={`${config.url_assets}/logos/${config.logo}`}
+              secret={""}
+              className=" rounded-full"
+            />
+            <p className="font-semibold text-[20px] text-sofia-superDark">
+              {config.title}
+            </p>
+          </div>
+        ) : (
+          <>
+            <p className="text-center font-semibold text-[20px]">
+              {config.sub_title}
+            </p>
+            <p
+              className="text-[12px] text-center font-medium"
+              style={{
+                backgroundColor: config.bg_color,
+                color: config.text_title,
+              }}
+            >
+              {config.description}
+            </p>
+          </>
+        )}
+      </div>
       <IconClose
         color={config.text_title}
-        className="select-none w-[18px] h-[18px] absolute top-[10px] right-[10px] cursor-pointer"
+        className="select-none w-[22px] h-[22px] cursor-pointer mr-[10px]"
       />
-      {conversation ? (
-        <div className="flex gap-[10px] items-center">
-          <IconArrow
-            className="select-none w-[32px] h-[32px] cursor-pointer"
-            onClick={() => setConversation(null)}
-            color={config.text_title}
-          />
-          <img
-            src={`${config.url_assets}/logos/${config.logo}`}
-            className="select-none w-[50px] h-[50px] cursor-pointer bg-white rounded-full p-[6px]"
-            alt="Chat"
-          />
-          <p className="font-medium text-[20px]">{config.title}</p>
-        </div>
-      ) : (
-        <>
-          <p className="text-center font-semibold text-[20px]">
-            {config.sub_title}
-          </p>
-          <p
-            className="text-[12px] text-center font-medium"
-            style={{
-              backgroundColor: config.bg_color,
-              color: config.text_title,
-            }}
-          >
-            {config.description}
-          </p>
-        </>
-      )}
     </div>
   );
 };
