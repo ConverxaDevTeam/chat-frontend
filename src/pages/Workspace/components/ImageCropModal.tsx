@@ -8,12 +8,14 @@ interface ImageCropModalProps {
   imageSrc: string;
   onSave: (croppedImage: string) => void;
   onClose: () => void;
+  show: boolean;
 }
 
 const ImageCropModal: React.FC<ImageCropModalProps> = ({
   imageSrc,
   onSave,
   onClose,
+  show,
 }) => {
   const [crop, setCrop] = useState<Crop>();
   const [isCropValid, setIsCropValid] = useState(false);
@@ -64,7 +66,7 @@ const ImageCropModal: React.FC<ImageCropModalProps> = ({
   );
 
   return (
-    <Modal isShown={!!imageSrc} onClose={onClose} header={headerContent}>
+    <Modal isShown={show} onClose={onClose} header={headerContent}>
       <div className="w-[500px] p-6">
         <ReactCrop crop={crop} onChange={handleCropChange} aspect={1}>
           <img

@@ -12,12 +12,16 @@ interface EditTextsProps {
 
 const EditTexts = ({ integration, setIntegration }: EditTextsProps) => {
   const [imageSrc, setImageSrc] = useState<string>("/mvp/avatar.svg");
+  const [showModal, setShowModal] = useState<boolean>(false);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
-      reader.onload = () => setImageSrc(reader.result as string);
+      reader.onload = () => {
+        setImageSrc(reader.result as string);
+        setShowModal(true);
+      };
       reader.readAsDataURL(file);
     }
   };
@@ -89,7 +93,11 @@ const EditTexts = ({ integration, setIntegration }: EditTextsProps) => {
             <ImageCropModal
               imageSrc={imageSrc}
               onSave={handleSaveCroppedImage}
-              onClose={() => setImageSrc("")}
+              onClose={() => {
+                setShowModal(false);
+                setImageSrc("");
+              }}
+              show={showModal}
             />
           </div>
         </div>
