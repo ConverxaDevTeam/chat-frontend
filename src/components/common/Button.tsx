@@ -15,8 +15,10 @@ export const Button: React.FC<ButtonProps> = ({
   const baseStyles =
     "flex justify-center items-center text-base font-bold leading-none text-sofia-superDark";
   const variantStyles = {
-    primary: "flex-1 p-4 bg-sofia-electricGreen rounded-lg",
-    default: "flex-1 p-4 border border-sofia-navyBlue rounded-lg",
+    primary:
+      "flex-1 p-4 bg-sofia-electricGreen rounded-lg disabled:bg-sofia-electricGreen/50 disabled:cursor-not-allowed",
+    default:
+      "flex-1 p-4 border border-sofia-navyBlue rounded-lg disabled:opacity-50 disabled:cursor-not-allowed",
   };
 
   return (
