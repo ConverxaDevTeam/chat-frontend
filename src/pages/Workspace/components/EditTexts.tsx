@@ -9,12 +9,14 @@ interface EditTextsProps {
   integration: Integracion;
   setIntegration: (integration: Integracion) => void;
   handleSaveLogo: (logo: File) => Promise<boolean>;
+  handleDeleteLogo: () => Promise<boolean>;
 }
 
 const EditTexts = ({
   integration,
   setIntegration,
   handleSaveLogo,
+  handleDeleteLogo,
 }: EditTextsProps) => {
   const [imageSrc, setImageSrc] = useState<string>("/mvp/avatar.svg");
   const [showModal, setShowModal] = useState<boolean>(false);
@@ -85,17 +87,7 @@ const EditTexts = ({
               >
                 <EditButton />
               </button>
-              <button
-                onClick={() =>
-                  setIntegration({
-                    ...integration,
-                    config: {
-                      ...integration.config,
-                      logo: "/mvp/avatar.svg",
-                    },
-                  })
-                }
-              >
+              <button onClick={handleDeleteLogo}>
                 <DeleteButton />
               </button>
             </div>

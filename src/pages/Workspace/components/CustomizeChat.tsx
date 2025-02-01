@@ -2,6 +2,7 @@ import {
   getIntegrationWebChat,
   updateIntegrationWebChat,
   updateIntegrationLogo,
+  deleteIntegrationLogo,
 } from "@services/integration";
 import { RootState } from "@store";
 import { FC, useEffect, useState } from "react";
@@ -106,6 +107,29 @@ const useIntegrationData = (
     }
   };
 
+  const handleDeleteLogo = async (): Promise<boolean> => {
+    if (!integration) return false;
+    try {
+      const success = await deleteIntegrationLogo(integration.id);
+      if (success) {
+        setIntegration(prev => {
+          if (!prev) return prev;
+          return {
+            ...prev,
+            config: {
+              ...prev.config,
+              logo: "",
+            },
+          };
+        });
+      }
+      return success;
+    } catch (error) {
+      console.error("Error deleting logo:", error);
+      return false;
+    }
+  };
+
   const handleSaveChat = async () => {
     if (!integration) return;
     const data = {
@@ -154,6 +178,7 @@ const useIntegrationData = (
     loading,
     handleSaveChat,
     handleSaveLogo,
+    handleDeleteLogo,
   };
 };
 
@@ -185,6 +210,7 @@ interface IntegrationContentProps {
   setIntegration: (integration: Integracion) => void;
   activeTab: string;
   handleSaveLogo: (logo: Blob) => Promise<boolean>;
+  handleDeleteLogo: () => Promise<boolean>;
 }
 
 const IntegrationContent: FC<IntegrationContentProps> = ({
@@ -192,6 +218,7 @@ const IntegrationContent: FC<IntegrationContentProps> = ({
   setIntegration,
   activeTab,
   handleSaveLogo,
+  handleDeleteLogo,
 }) => {
   switch (activeTab) {
     case "cors":
@@ -204,6 +231,7 @@ const IntegrationContent: FC<IntegrationContentProps> = ({
           integration={integration}
           setIntegration={setIntegration}
           handleSaveLogo={handleSaveLogo}
+          handleDeleteLogo={handleDeleteLogo}
         />
       );
     case "interface":
@@ -229,6 +257,7 @@ const CustomizeChat: FC<CustomizeChatProps> = ({ onClose }) => {
     loading,
     handleSaveChat,
     handleSaveLogo,
+    handleDeleteLogo,
   } = useIntegrationData(
     selectOrganizationId || null,
     selectedDepartmentId || null
@@ -249,6 +278,7 @@ const CustomizeChat: FC<CustomizeChatProps> = ({ onClose }) => {
           setIntegration={setIntegration}
           activeTab={activeTab}
           handleSaveLogo={handleSaveLogo}
+          handleDeleteLogo={handleDeleteLogo}
         />
       )}
     </ConfigPanel>

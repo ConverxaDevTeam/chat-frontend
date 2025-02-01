@@ -148,3 +148,28 @@ export const updateIntegrationLogo = async (
     return false;
   }
 };
+
+export const deleteIntegrationLogo = async (
+  integrationId: number
+): Promise<boolean> => {
+  try {
+    const response = await axiosInstance.delete(
+      apiUrls.deleteIntegrationLogo(integrationId)
+    );
+    return response.data.ok;
+  } catch (error) {
+    let message = "Error inesperado";
+    if (axios.isAxiosError(error)) {
+      if (error.response) {
+        message =
+          error.response.data?.message || "Error inesperado del servidor";
+      } else if (error.request) {
+        message = "No se pudo conectar con el servidor";
+      } else {
+        message = error.message;
+      }
+    }
+    alertError(message);
+    return false;
+  }
+};
