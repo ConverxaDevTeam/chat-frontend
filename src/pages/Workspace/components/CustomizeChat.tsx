@@ -1,6 +1,7 @@
 import {
   getIntegrationWebChat,
   updateIntegrationWebChat,
+  updateIntegrationLogo,
 } from "@services/integration";
 import { RootState } from "@store";
 import { FC, useEffect, useState } from "react";
@@ -82,6 +83,29 @@ const useIntegrationData = (
   const [integration, setIntegration] = useState<Integracion | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const handleSaveLogo = async (logo: Blob): Promise<boolean> => {
+    if (!integration) return false;
+    try {
+      const success = await updateIntegrationLogo(integration.id, logo);
+      if (success) {
+        setIntegration(prev => {
+          if (!prev) return prev;
+          return {
+            ...prev,
+            config: {
+              ...prev.config,
+              logo: URL.createObjectURL(logo),
+            },
+          };
+        });
+      }
+      return !!success;
+    } catch (error) {
+      console.error("Error saving logo:", error);
+      return false;
+    }
+  };
+
   const handleSaveChat = async () => {
     if (!integration) return;
     const data = {
@@ -124,7 +148,13 @@ const useIntegrationData = (
     fetchData();
   }, [organizationId, departmentId]);
 
-  return { integration, setIntegration, loading, handleSaveChat };
+  return {
+    integration,
+    setIntegration,
+    loading,
+    handleSaveChat,
+    handleSaveLogo,
+  };
 };
 
 const useTabNavigation = (initialTab: string) => {
@@ -154,12 +184,14 @@ interface IntegrationContentProps {
   integration: Integracion;
   setIntegration: (integration: Integracion) => void;
   activeTab: string;
+  handleSaveLogo: (logo: Blob) => Promise<boolean>;
 }
 
 const IntegrationContent: FC<IntegrationContentProps> = ({
   integration,
   setIntegration,
   activeTab,
+  handleSaveLogo,
 }) => {
   switch (activeTab) {
     case "cors":
@@ -168,7 +200,11 @@ const IntegrationContent: FC<IntegrationContentProps> = ({
       );
     case "text":
       return (
-        <EditTexts integration={integration} setIntegration={setIntegration} />
+        <EditTexts
+          integration={integration}
+          setIntegration={setIntegration}
+          handleSaveLogo={handleSaveLogo}
+        />
       );
     case "interface":
       return (
@@ -187,11 +223,16 @@ const CustomizeChat: FC<CustomizeChatProps> = ({ onClose }) => {
     (state: RootState) => state.department.selectedDepartmentId
   );
 
-  const { integration, setIntegration, loading, handleSaveChat } =
-    useIntegrationData(
-      selectOrganizationId || null,
-      selectedDepartmentId || null
-    );
+  const {
+    integration,
+    setIntegration,
+    loading,
+    handleSaveChat,
+    handleSaveLogo,
+  } = useIntegrationData(
+    selectOrganizationId || null,
+    selectedDepartmentId || null
+  );
   const { activeTab, setActiveTab, tabs } = useTabNavigation("cors");
 
   return (
@@ -207,6 +248,7 @@ const CustomizeChat: FC<CustomizeChatProps> = ({ onClose }) => {
           integration={integration}
           setIntegration={setIntegration}
           activeTab={activeTab}
+          handleSaveLogo={handleSaveLogo}
         />
       )}
     </ConfigPanel>

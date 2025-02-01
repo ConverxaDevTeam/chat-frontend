@@ -6,7 +6,7 @@ import { Button } from "@components/common/Button";
 
 interface ImageCropModalProps {
   imageSrc: string;
-  onSave: (croppedImage: string) => void;
+  onSave: (croppedImage: Blob) => void;
   onClose: () => void;
   show: boolean;
 }
@@ -28,13 +28,17 @@ const ImageCropModal: React.FC<ImageCropModalProps> = ({
 
   const handleSave = () => {
     if (imgRef.current && crop?.width && crop?.height) {
-      const croppedImage = getCroppedImg(imgRef.current, crop);
-      onSave(croppedImage);
-      onClose();
+      getCroppedImg(imgRef.current, crop).then(croppedImage => {
+        onSave(croppedImage);
+        onClose();
+      });
     }
   };
 
-  const getCroppedImg = (image: HTMLImageElement, crop: Crop): string => {
+  const getCroppedImg = async (
+    image: HTMLImageElement,
+    crop: Crop
+  ): Promise<Blob> => {
     const canvas = document.createElement("canvas");
     const scaleX = image.naturalWidth / image.width;
     const scaleY = image.naturalHeight / image.height;
@@ -56,7 +60,11 @@ const ImageCropModal: React.FC<ImageCropModalProps> = ({
       );
     }
 
-    return canvas.toDataURL("image/png");
+    return new Promise(resolve => {
+      canvas.toBlob(blob => {
+        resolve(blob as Blob);
+      }, "image/png");
+    });
   };
 
   const headerContent: ReactElement = (

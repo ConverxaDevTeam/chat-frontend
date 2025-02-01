@@ -8,9 +8,14 @@ import ImageCropModal from "./ImageCropModal";
 interface EditTextsProps {
   integration: Integracion;
   setIntegration: (integration: Integracion) => void;
+  handleSaveLogo: (logo: File) => Promise<boolean>;
 }
 
-const EditTexts = ({ integration, setIntegration }: EditTextsProps) => {
+const EditTexts = ({
+  integration,
+  setIntegration,
+  handleSaveLogo,
+}: EditTextsProps) => {
   const [imageSrc, setImageSrc] = useState<string>("/mvp/avatar.svg");
   const [showModal, setShowModal] = useState<boolean>(false);
 
@@ -26,14 +31,18 @@ const EditTexts = ({ integration, setIntegration }: EditTextsProps) => {
     }
   };
 
-  const handleSaveCroppedImage = (croppedImage: string) => {
+  const handleSaveCroppedImage = async (croppedImage: Blob) => {
+    const imageUrl = URL.createObjectURL(croppedImage);
     setIntegration({
       ...integration,
       config: {
         ...integration.config,
-        logo: croppedImage,
+        logo: imageUrl,
       },
     });
+    await handleSaveLogo(
+      new File([croppedImage], "logo", { type: "image/jpeg" })
+    );
   };
 
   const handleInputChange = (
