@@ -30,7 +30,7 @@ const Header = ({ conversation, config, setConversation }: HeaderProps) => {
               onClick={() => setConversation(null)}
             />
             <Avatar
-              avatar={`${config.url_assets}/logos/${config.logo}`}
+              avatar={config.logo}
               secret={""}
               className=" rounded-full"
               borderColor={config.text_title}
