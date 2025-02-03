@@ -144,7 +144,7 @@ const EditTexts = ({
 }: EditTextsProps) => {
   const {
     register,
-    handleSubmit,
+    watch,
     formState: { errors },
     reset,
   } = useForm<IntegrationConfig>();
@@ -153,16 +153,27 @@ const EditTexts = ({
     reset(integration.config);
   }, [integration, reset]);
 
-  const handleInputChange = handleSubmit((data: IntegrationConfig) => {
-    const updatedIntegration: Integracion = {
-      ...integration,
-      config: {
-        ...integration.config,
-        ...data,
-      },
+  useEffect(() => {
+    let timeoutId: ReturnType<typeof setTimeout>;
+
+    const subscription = watch(data => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        setIntegration(prev => ({
+          ...prev,
+          config: {
+            ...prev.config,
+            ...data,
+          },
+        }));
+      }, 500);
+    });
+
+    return () => {
+      subscription.unsubscribe();
+      clearTimeout(timeoutId);
     };
-    setIntegration(updatedIntegration);
-  });
+  }, [watch]);
 
   return (
     <div className="grid grid-cols-[1fr_auto] gap-[20px] items-start">
@@ -176,10 +187,7 @@ const EditTexts = ({
         <label className="block text-[12px] font-medium text-[#A6A8AB] leading-[10px]">
           Formatos admitidos: png, jpg, jpeg.
         </label>
-        <form
-          onSubmit={handleInputChange}
-          className="w-full mt-[30px] grid grid-cols-1 gap-[30px]"
-        >
+        <form className="w-full mt-[30px] grid grid-cols-1 gap-[30px]">
           <TextInput
             label="Nombre del chat"
             name="title"
@@ -203,7 +211,6 @@ const EditTexts = ({
             register={register}
             error={errors.description}
           />
-          <button type="submit" className="hidden" />
         </form>
       </div>
       <ChatPreview config={integration.config} />
