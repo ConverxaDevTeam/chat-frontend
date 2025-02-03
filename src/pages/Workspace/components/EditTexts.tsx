@@ -159,13 +159,14 @@ const EditTexts = ({
     const subscription = watch(data => {
       clearTimeout(timeoutId);
       timeoutId = setTimeout(() => {
-        setIntegration(prev => ({
-          ...prev,
+        const updatedIntegration: Integracion = {
+          ...integration,
           config: {
-            ...prev.config,
+            ...integration.config,
             ...data,
           },
-        }));
+        };
+        setIntegration(updatedIntegration);
       }, 500);
     });
 
