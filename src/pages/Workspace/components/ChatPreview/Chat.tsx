@@ -53,7 +53,7 @@ const Chat = ({ config, conversation }: ChatProps) => {
               message={transformMessage(message)}
               userName={
                 message.type === MessageType.AGENT
-                  ? config.title
+                  ? config.name
                   : "Demo Usuario"
               }
               config={config}

@@ -2,7 +2,7 @@ import ChatPreview from "./ChatPreview";
 import { Integracion } from "./CustomizeChat";
 import DeleteButton from "./DeleteButton";
 import EditButton from "./EditButton";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ImageCropModal from "./ImageCropModal";
 import { InputGroup } from "@components/forms/inputGroup";
 import { Input } from "@components/forms/input";
@@ -146,7 +146,12 @@ const EditTexts = ({
     register,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm<IntegrationConfig>();
+
+  useEffect(() => {
+    reset(integration.config);
+  }, [integration, reset]);
 
   const handleInputChange = handleSubmit((data: IntegrationConfig) => {
     const updatedIntegration: Integracion = {
