@@ -143,10 +143,11 @@ const MessageCard = ({
     return (
       <MessageContainer align="start">
         <div className="flex flex-col gap-1">
-          <div className="w-[40px] h-[40px] px-[7px] py-[10px] flex flex-col items-start rounded-full bg-sofia-electricGreen relative">
-            <img src="/icon.svg" alt="sofia" className="w-6 h-6" />
-            <div className="w-3 h-3 bg-green-500 absolute border-2 border-white rounded-full -bottom-0.5 -right-0.5" />
-          </div>
+          <Avatar
+            avatar={config.logo || "/mvp/sofia-chat-logo.svg"}
+            secret={userName}
+            className="w-[40px] h-[40px]"
+          />
         </div>
         <div className="flex flex-col items-start gap-1">
           <MessageHeader

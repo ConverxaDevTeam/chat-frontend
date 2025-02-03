@@ -4,6 +4,10 @@ import DeleteButton from "./DeleteButton";
 import EditButton from "./EditButton";
 import React, { useState } from "react";
 import ImageCropModal from "./ImageCropModal";
+import { InputGroup } from "@components/forms/inputGroup";
+import { Input } from "@components/forms/input";
+import { TextArea } from "@components/forms/textArea";
+import { useForm, UseFormRegisterReturn, FieldError } from "react-hook-form";
 
 interface EditTextsProps {
   integration: Integracion;
@@ -112,45 +116,41 @@ const TextInput = ({
   onChange,
 }: TextInputProps) => {
   return (
-    <div className="flex flex-col gap-2">
-      <label className="text-sm font-medium text-gray-600">{label}</label>
-      <input
-        type="text"
+    <InputGroup label={label}>
+      <Input
         name={name}
         onChange={onChange}
-        className="w-full border border-gray-200 rounded-md p-2"
         placeholder={placeholder}
         value={value}
       />
-    </div>
+    </InputGroup>
   );
 };
 
 interface TextAreaInputProps {
   label: string;
-  name: string;
-  value: string;
-  onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+  register: UseFormRegisterReturn;
+  error?: FieldError;
 }
 
-const TextAreaInput = ({
-  label,
-  name,
-  value,
-  onChange,
-}: TextAreaInputProps) => {
+const TextAreaInput = ({ label, register, error }: TextAreaInputProps) => {
   return (
-    <div className="flex flex-col gap-2">
-      <label className="text-sm font-medium text-gray-600">{label}</label>
-      <textarea
-        name={name}
-        onChange={onChange}
-        className="w-full border border-gray-200 rounded-md p-2"
-        value={value}
+    <InputGroup label={label}>
+      <TextArea
+        placeholder={label}
+        register={register}
+        error={error?.message}
       />
-    </div>
+    </InputGroup>
   );
 };
+
+interface IntegrationConfig {
+  title: string;
+  name: string;
+  sub_title: string;
+  description: string;
+}
 
 const EditTexts = ({
   integration,
@@ -158,16 +158,25 @@ const EditTexts = ({
   handleSaveLogo,
   handleDeleteLogo,
 }: EditTextsProps) => {
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    setIntegration({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<IntegrationConfig>();
+
+  const handleInputChange = handleSubmit((data: IntegrationConfig) => {
+    const updatedIntegration = {
       ...integration,
       config: {
         ...integration.config,
-        [e.target.name]: e.target.value,
+        ...data,
       },
-    });
+    };
+    setIntegration(updatedIntegration);
+  });
+
+  const registerField = (name: keyof IntegrationConfig) => {
+    return register(name);
   };
 
   return (
@@ -179,35 +188,37 @@ const EditTexts = ({
           handleDeleteLogo={handleDeleteLogo}
           setIntegration={setIntegration}
         />
-        <label className="block text-sm font-medium text-gray-600">
-          Textos
+        <label className="block text-[12px] font-medium text-[#A6A8AB] leading-[10px]">
+          Formatos admitidos: png, jpg, jpeg.
         </label>
-        <TextInput
-          label="Título"
-          name="title"
-          value={integration.config.title}
-          placeholder="Título del chat"
-          onChange={handleInputChange}
-        />
-        <TextInput
-          label="Nombre de chat"
-          name="name"
-          value={integration.config.name}
-          placeholder="Chat"
-          onChange={handleInputChange}
-        />
-        <TextInput
-          label="Subtítulo"
-          name="sub_title"
-          value={integration.config.sub_title}
-          onChange={handleInputChange}
-        />
-        <TextAreaInput
-          label="Descripción"
-          name="description"
-          value={integration.config.description}
-          onChange={handleInputChange}
-        />
+        <form onSubmit={handleInputChange}>
+          <TextInput
+            label="Título"
+            name="title"
+            value={integration.config.title}
+            placeholder="Título del chat"
+            onChange={e => registerField("title").onChange(e)}
+          />
+          <TextInput
+            label="Nombre de chat"
+            name="name"
+            value={integration.config.name}
+            placeholder="Chat"
+            onChange={e => registerField("name").onChange(e)}
+          />
+          <TextInput
+            label="Subtítulo"
+            name="sub_title"
+            value={integration.config.sub_title}
+            onChange={e => registerField("sub_title").onChange(e)}
+          />
+          <TextAreaInput
+            label="Descripción"
+            register={registerField("description")}
+            error={errors.description}
+          />
+          <button type="submit" className="hidden" />
+        </form>
       </div>
       <ChatPreview config={integration.config} />
     </div>
