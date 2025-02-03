@@ -7,7 +7,7 @@ import ImageCropModal from "./ImageCropModal";
 import { InputGroup } from "@components/forms/inputGroup";
 import { Input } from "@components/forms/input";
 import { TextArea } from "@components/forms/textArea";
-import { useForm, UseFormRegisterReturn, FieldError } from "react-hook-form";
+import { useForm, UseFormRegister, FieldError } from "react-hook-form";
 
 interface EditTextsProps {
   integration: Integracion;
@@ -102,45 +102,29 @@ const AvatarUploader = ({
 
 interface TextInputProps {
   label: string;
-  name: string;
-  value: string;
+  name: keyof IntegrationConfig;
   placeholder?: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  register: UseFormRegister<IntegrationConfig>;
 }
 
-const TextInput = ({
-  label,
-  name,
-  value,
-  placeholder,
-  onChange,
-}: TextInputProps) => {
+const TextInput = ({ label, name, placeholder, register }: TextInputProps) => {
   return (
     <InputGroup label={label}>
-      <Input
-        name={name}
-        onChange={onChange}
-        placeholder={placeholder}
-        value={value}
-      />
+      <Input placeholder={placeholder} {...register(name)} />
     </InputGroup>
   );
 };
 
 interface TextAreaInputProps {
   label: string;
-  register: UseFormRegisterReturn;
+  register: UseFormRegister<IntegrationConfig>;
   error?: FieldError;
 }
 
 const TextAreaInput = ({ label, register, error }: TextAreaInputProps) => {
   return (
-    <InputGroup label={label}>
-      <TextArea
-        placeholder={label}
-        register={register}
-        error={error?.message}
-      />
+    <InputGroup label={label} errors={error}>
+      <TextArea register={register("description")} />
     </InputGroup>
   );
 };
@@ -165,7 +149,7 @@ const EditTexts = ({
   } = useForm<IntegrationConfig>();
 
   const handleInputChange = handleSubmit((data: IntegrationConfig) => {
-    const updatedIntegration = {
+    const updatedIntegration: Integracion = {
       ...integration,
       config: {
         ...integration.config,
@@ -175,12 +159,8 @@ const EditTexts = ({
     setIntegration(updatedIntegration);
   });
 
-  const registerField = (name: keyof IntegrationConfig) => {
-    return register(name);
-  };
-
   return (
-    <div className="flex gap-[20px] items-start">
+    <div className="grid grid-cols-[1fr_auto] gap-[20px] items-start">
       <div className="flex flex-col flex-1 gap-[10px] items-start w-[338px]">
         <AvatarUploader
           integration={integration}
@@ -191,30 +171,31 @@ const EditTexts = ({
         <label className="block text-[12px] font-medium text-[#A6A8AB] leading-[10px]">
           Formatos admitidos: png, jpg, jpeg.
         </label>
-        <form onSubmit={handleInputChange}>
+        <form
+          onSubmit={handleInputChange}
+          className="w-full mt-[30px] grid grid-cols-1 gap-[30px]"
+        >
           <TextInput
-            label="Título"
+            label="Nombre del chat"
             name="title"
-            value={integration.config.title}
-            placeholder="Título del chat"
-            onChange={e => registerField("title").onChange(e)}
+            placeholder="Nombre del chat"
+            register={register}
           />
           <TextInput
-            label="Nombre de chat"
+            label="Nombre del agente"
             name="name"
-            value={integration.config.name}
-            placeholder="Chat"
-            onChange={e => registerField("name").onChange(e)}
+            placeholder="Nombre del agente"
+            register={register}
           />
           <TextInput
-            label="Subtítulo"
+            label="CTA"
             name="sub_title"
-            value={integration.config.sub_title}
-            onChange={e => registerField("sub_title").onChange(e)}
+            placeholder="CTA"
+            register={register}
           />
           <TextAreaInput
             label="Descripción"
-            register={registerField("description")}
+            register={register}
             error={errors.description}
           />
           <button type="submit" className="hidden" />
