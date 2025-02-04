@@ -44,7 +44,7 @@ const MessageContainer = ({
   align: "start" | "end";
 }) => {
   return (
-    <div className={`flex justify-${align} max-w-[546px]`}>
+    <div className={`flex justify-${align}`}>
       <div className={`flex flex-col items-start gap-2`}>
         <div className={`flex items-start gap-2`}>{children}</div>
       </div>
