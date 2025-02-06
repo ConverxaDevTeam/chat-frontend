@@ -81,7 +81,7 @@ const DashboardOrganization = () => {
         layouts={layouts}
         breakpoints={BREAKPOINTS}
         cols={COLS}
-        rowHeight={30}
+        rowHeight={35}
         margin={[10, 10]}
         containerPadding={[10, 10]}
         isResizable

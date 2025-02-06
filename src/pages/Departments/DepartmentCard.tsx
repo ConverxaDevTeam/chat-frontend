@@ -1,10 +1,9 @@
 import { FC } from "react";
 import { IDepartment } from "../../interfaces/departments";
-import { FiEdit2, FiTrash2 } from "react-icons/fi";
 import { toast } from "react-toastify";
 import { useSweetAlert } from "../../hooks/useSweetAlert";
-import TableCell from "../../components/Table/TableCell";
-import { convertISOToReadable } from "../../utils/format";
+import CardItem from "../../components/Card/CardItem";
+// import { convertISOToReadable } from "../../utils/format";
 import { deleteDepartment } from "@services/department";
 
 interface DepartmentCardProps {
@@ -22,9 +21,9 @@ const DepartmentCard: FC<DepartmentCardProps> = ({
 
   const handleDelete = async () => {
     const confirmed = await showConfirmation({
-      title: "Eliminar Departamento",
-      text: "¿Estás seguro de eliminar este departamento?",
-      confirmButtonText: "Sí, eliminar",
+      title: "¿Estás seguro de querer eliminar este departamento?",
+      text: "Esta acción no se podrá deshacer",
+      confirmButtonText: "Eliminar",
       cancelButtonText: "Cancelar",
     });
 
@@ -40,29 +39,36 @@ const DepartmentCard: FC<DepartmentCardProps> = ({
   };
 
   return (
-    <tr className="h-[60px] text-[14px] border-b-[1px] hover:bg-gray-50">
-      <TableCell width="w-[calc(100%/24*6)]">{department.id}</TableCell>
-      <TableCell width="w-[calc(100%/24*10)]">{department.name}</TableCell>
-      <TableCell width="w-[calc(100%/24*6)]">
-        {convertISOToReadable(department.created_at)}
-      </TableCell>
-      <TableCell width="w-[calc(100%/24*2)]">
-        <div className="flex gap-2 justify-end">
-          <button
-            onClick={onUpdate}
-            className="p-1 text-blue-500 hover:bg-blue-50 rounded"
-          >
-            <FiEdit2 />
-          </button>
-          <button
-            onClick={handleDelete}
-            className="p-1 text-red-500 hover:bg-red-50 rounded"
-          >
-            <FiTrash2 />
-          </button>
-        </div>
-      </TableCell>
-    </tr>
+
+    <div className="bg-[#f5faff] rounded-xl p-6 flex flex-col justify-between border-2 border-[#d3eafa] w-full min-h-[250px]">
+      <div className="text-center">
+        <CardItem label="">
+          <h3 className="text-xl font-bold text-gray-900">{department.name}</h3>
+        </CardItem>
+        <CardItem label="">
+          <p className="text-gray-500 font-bold">ID: {department.id}</p>
+        </CardItem>
+        <p className="text-gray-600  text-center mt-3">
+          Responde preguntas de clientes de un marketplace de productos variados
+          (electrónica, moda, hogar, y más) de forma clara.
+        </p>
+      </div>
+
+      <div className="flex justify-center gap-4 mt-4">
+        <button
+          onClick={handleDelete}
+          className="w-full px-4 py-1 text-gray-500 border-2 rounded-md text-sm font-semibold"
+        >
+          <span className="hidden sm:block">Eliminar</span>
+        </button>
+        <button
+          onClick={onUpdate}
+          className="w-full px-4 py-1 bg-sofia-electricGreen text-gray-900 rounded-md text-sm font-semibold hover:bg-opacity-50 transition-all"
+        >
+          <span className="hidden sm:block">Editar</span>
+        </button>
+      </div>
+    </div>
   );
 };
 

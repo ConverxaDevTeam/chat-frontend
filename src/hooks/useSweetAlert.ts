@@ -95,13 +95,17 @@ export const useSweetAlert = () => {
   }) => {
     const result = await Swal.fire({
       title: options.title,
-      text: options.text,
+      html: `<p class="text-gray-600 text-sm">${options.text}</p>`,
       icon: "warning",
       showCancelButton: true,
-      confirmButtonText: options.confirmButtonText || "Sí",
+      confirmButtonText: options.confirmButtonText || "Si",
       cancelButtonText: options.cancelButtonText || "Cancelar",
-      confirmButtonColor: "#d33",
-      cancelButtonColor: "#3085d6",
+      customClass: {
+        popup: "bg-white border-2 border-gray-300 rounded-xl shadow-lg p-4 w-[400px]",
+        title: "text-gray-900 text-lg font-semibold",
+        confirmButton: "bg-gray-600 text-white border border-black px-4 py-2 rounded-md hover:bg-gray-800",
+        cancelButton: "bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 ",
+      },
     });
 
     return result.isConfirmed;
