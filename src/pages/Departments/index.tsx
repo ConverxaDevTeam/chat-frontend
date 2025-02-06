@@ -2,20 +2,13 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "@store";
 import DepartmentCard from "./DepartmentCard";
-import Table from "@components/Table/Table";
-import TableHeader from "@components/Table/TableHeader";
+// import Table from "@components/Table/Table";
+// import TableHeader from "@components/Table/TableHeader";
 import DepartmentModal from "./DepartmentModal";
 import { getDepartments } from "@services/department";
 import PageContainer from "@components/PageContainer";
 import { IDepartment } from "@interfaces/departments";
 import { toast } from "react-toastify";
-
-const columns = [
-  { key: "id", label: "ID", width: "w-[calc(100%/24*6)]" },
-  { key: "name", label: "Nombre", width: "w-[calc(100%/24*6)]" },
-  { key: "description", label: "Descripción", width: "w-[calc(100%/24*6)]" },
-  { key: "actions", label: "Acciones", width: "w-[calc(100%/24*6)]" },
-];
 
 const Departments = () => {
   const { selectOrganizationId } = useSelector(
@@ -65,8 +58,7 @@ const Departments = () => {
 
   return (
     <PageContainer
-      title="Departamentos"
-      buttonText="Nuevo Departamento"
+      buttonText="Crear Departamento"
       onButtonClick={() => handleOpenModal()}
       loading={loading}
       appends={
@@ -81,9 +73,7 @@ const Departments = () => {
         ) : undefined
       }
     >
-      <Table>
-        <TableHeader columns={columns} />
-        <tbody>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {departments.map(department => (
             <DepartmentCard
               key={department.id}
@@ -92,8 +82,7 @@ const Departments = () => {
               onDelete={handleDelete}
             />
           ))}
-        </tbody>
-      </Table>
+          </div>
     </PageContainer>
   );
 };
