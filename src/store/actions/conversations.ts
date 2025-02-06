@@ -1,5 +1,5 @@
 import { createAction } from "@reduxjs/toolkit";
-import { IConversation, IMessage } from "@utils/interfaces";
+import { IConversation, ImessageSocket } from "@utils/interfaces";
 import { alertError } from "@utils/alerts";
 import axios from "axios";
 import { apiUrls } from "@config/config";
@@ -11,7 +11,7 @@ import { axiosInstance } from "./auth";
 
 export const newMessageChat = createAction(
   "conversations/newMessageChat",
-  (payload: { message: IMessage; conversationId: number }) => {
+  (payload: { message: ImessageSocket; conversationId: number }) => {
     return { payload };
   }
 );

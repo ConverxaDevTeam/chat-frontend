@@ -16,6 +16,7 @@ import {
   FunctionData,
   FunctionNodeTypes,
 } from "@interfaces/functions.interface";
+import { Button } from "@components/common/Button";
 
 // Tipos y constantes
 interface FunctionFormValues {
@@ -93,6 +94,7 @@ interface FormFieldProps {
   register: UseFormRegister<FunctionFormValues>;
   control: Control<FunctionFormValues>;
   name: keyof FunctionFormValues;
+  label: string;
   placeholder: string;
   validation?: Record<string, unknown>;
   type?: FieldType;
@@ -137,6 +139,7 @@ const FormField = ({
   control,
   errors,
   name,
+  label,
   placeholder,
   validation = {},
   type = "input",
@@ -144,11 +147,12 @@ const FormField = ({
   rows = 2,
 }: FormFieldProps & { errors: FieldErrors<FunctionFormValues> }) => {
   return (
-    <InputGroup label={name} errors={errors[name]}>
+    <InputGroup label={label} errors={errors[name]}>
       <RenderField
         register={register}
         control={control}
         name={name}
+        label={label}
         placeholder={placeholder}
         validation={validation}
         type={type}
@@ -166,17 +170,18 @@ interface SubmitButtonProps {
 }
 
 const SubmitButton = ({ isLoading, isCreating }: SubmitButtonProps) => (
-  <button
+  <Button
     type="submit"
+    variant="primary"
+    className="w-full"
     disabled={isLoading}
-    className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 disabled:opacity-50"
   >
     {isLoading
       ? "Guardando..."
       : isCreating
         ? "Crear función"
         : "Actualizar función"}
-  </button>
+  </Button>
 );
 
 // Componente principal
@@ -195,12 +200,14 @@ export const FunctionForm = (props: FunctionFormProps) => {
   const formFields = [
     {
       name: "name",
+      label: "Nombre",
       placeholder: "Nombre de la función",
       validation: { required: "El nombre es obligatorio" },
       type: "input",
     },
     {
       name: "description",
+      label: "Descripción",
       placeholder: "Descripción de la función",
       validation: { required: "La descripción es obligatoria" },
       type: "textarea",
@@ -208,12 +215,14 @@ export const FunctionForm = (props: FunctionFormProps) => {
     },
     {
       name: "url",
+      label: "URL",
       placeholder: "URL del endpoint",
       validation: { required: "La URL es obligatoria" },
       type: "input",
     },
     {
       name: "method",
+      label: "Método",
       placeholder: "",
       validation: { required: "El tipo de operación es obligatorio" },
       type: "select",
@@ -221,6 +230,7 @@ export const FunctionForm = (props: FunctionFormProps) => {
     },
   ] as const satisfies Array<{
     name: keyof FunctionFormValues;
+    label: string;
     placeholder: string;
     validation: { required: string; pattern?: string };
     type: string;
@@ -229,8 +239,8 @@ export const FunctionForm = (props: FunctionFormProps) => {
   }>;
 
   return (
-    <form onSubmit={onSubmit} className="grid gap-4">
-      <div className="max-h-[75vh] overflow-y-auto">
+    <form onSubmit={onSubmit} className="grid gap-[42px]">
+      <div className="max-h-[75vh] w-[470px] overflow-y-auto grid gap-[24px]">
         {formFields.map(field => (
           <FormField
             key={field.name}

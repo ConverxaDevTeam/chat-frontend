@@ -52,6 +52,9 @@ const useConversationDetail = (
   const [conversation, setConversation] =
     useState<ConversationDetailResponse | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const lastMessage = useSelector(
+    (state: RootState) => state.conversations.lastMessage
+  );
 
   const getConversationDetailById = async () => {
     try {
@@ -77,6 +80,26 @@ const useConversationDetail = (
   useEffect(() => {
     getConversationDetailById();
   }, [id]);
+
+  useEffect(() => {
+    if (
+      lastMessage &&
+      conversation &&
+      lastMessage.conversation.id === conversation.id
+    ) {
+      const normalizedLastMessage = {
+        ...lastMessage,
+        images: lastMessage.images || null, // Asegurar que images sea null si es undefined
+      };
+      setConversation(prev => {
+        if (!prev) return null;
+        return {
+          ...prev,
+          messages: [...prev.messages, normalizedLastMessage],
+        };
+      });
+    }
+  }, [lastMessage]);
 
   return {
     conversation,
@@ -199,6 +222,7 @@ const ConversationDetail = () => {
     id,
     getConversationDetailById
   );
+
   const { showContextMenu, setShowContextMenu, handleDeleteConversation } =
     useContextMenu(conversation, conversationsList);
   const { searchTerm, setSearchTerm, filteredMessages } =

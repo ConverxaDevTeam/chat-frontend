@@ -81,6 +81,13 @@ export interface IMessage {
   images?: string[];
 }
 
+export interface ImessageSocket extends IMessage {
+  conversation: {
+    id: number;
+  };
+}
+
 export interface ConversationsState {
   conversations: IConversation[];
+  lastMessage: ImessageSocket | null;
 }

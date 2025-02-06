@@ -71,7 +71,7 @@ export const TimeRangeSelector = ({
           onMouseDown={handleMouseDown}
           className="inline-flex w-[126px] items-center justify-between px-2 py-1 text-sofia-superDark rounded-lg hover:bg-white/50 bg-sofia-secundario border border-sofia-superDark"
         >
-          <span className="font-quicksand text-xs font-medium truncate">
+          <span className="text-xs font-medium truncate">
             {timeRangeLabels[timeRange]}
           </span>
           <img
@@ -100,7 +100,7 @@ export const TimeRangeSelector = ({
           {Object.entries(timeRangeLabels).map(([value, label]) => (
             <button
               key={value}
-              className="w-[87px] text-left text-xs font-medium font-quicksand text-sofia-superDark leading-none self-stretch [font-feature-settings:'liga'_off,'clig'_off]"
+              className="w-[87px] text-left text-xs font-medium text-sofia-superDark leading-none self-stretch [font-feature-settings:'liga'_off,'clig'_off]"
               onClick={() => handleOptionClick(value as TimeRange)}
               onMouseDown={handleMouseDown}
             >

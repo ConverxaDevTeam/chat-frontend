@@ -161,6 +161,7 @@ const FuncionNode = memo((props: FunctionNodeProps) => {
         {...props}
         allowedConnections={["source", "target"]}
         icon={<img src="/mvp/square-code.svg" className="w-8 h-8" />}
+        contextMenuVersion="v2"
         contextMenuOptions={contextMenuOptions({
           params,
           onEdit: () => setShowEditModal(true),

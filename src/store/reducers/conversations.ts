@@ -7,6 +7,7 @@ import { ConversationsState } from "@utils/interfaces";
 
 const initialState: ConversationsState = {
   conversations: [],
+  lastMessage: null,
 };
 
 const conversationsSlice = createSlice({
@@ -16,6 +17,7 @@ const conversationsSlice = createSlice({
   extraReducers: builder => {
     builder
       .addCase(newMessageChat, (state, action) => {
+        state.lastMessage = action.payload.message;
         const conversationIndex = state.conversations.findIndex(
           conversation => conversation.id === action.payload.conversationId
         );

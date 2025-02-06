@@ -4,15 +4,20 @@ interface ChatHeaderProps {
 
 export const ChatHeader = ({ onClose }: ChatHeaderProps) => {
   return (
-    <div className="p-4 bg-[#15ECDA] text-white font-semibold flex justify-between items-center">
-      <span className="text-left">Chat</span>
+    <div className="flex flex-col justify-center items-center w-full h-[89px] px-6 py-4 gap-2 flex-shrink-0 rounded-t-lg bg-sofia-electricOlive">
+      <span className="text-left text-sofia-superDark text-xl font-semibold">
+        Web Chat
+      </span>
+      <span className="text-left text-sofia-superDark text-xs font-normal">
+        Prueba la funcionalidad de tu Web Chat
+      </span>
       {onClose && (
         <button
           onClick={onClose}
-          className="text-white hover:text-gray-300 focus:outline-none"
+          className="absolute top-4 right-4 text-gray-700 hover:text-gray-900 focus:outline-none"
           aria-label="Cerrar chat"
         >
-          ✕
+          <img src="/mvp/arrow-right.svg" alt="Menu" className="w-6 h-6" />
         </button>
       )}
     </div>

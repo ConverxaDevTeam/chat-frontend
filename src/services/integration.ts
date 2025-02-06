@@ -51,6 +51,7 @@ export const updateIntegrationWebChat = async (
     button_color: string;
     button_text: string;
     text_date: string;
+    logo?: string;
   }
 ) => {
   try {
@@ -106,5 +107,69 @@ export const getIntegrations = async (departmentId: number) => {
     }
     alertError(message);
     return [];
+  }
+};
+
+export const updateIntegrationLogo = async (
+  integrationId: number,
+  logo: Blob
+) => {
+  try {
+    const formData = new FormData();
+    formData.append("logo", logo, "logo.png");
+
+    const response = await axiosInstance.post(
+      apiUrls.updateIntegrationLogo(integrationId),
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+
+    if (response.data.ok) {
+      return true;
+    }
+    return false;
+  } catch (error) {
+    let message = "Error inesperado";
+    if (axios.isAxiosError(error)) {
+      if (error.response) {
+        message =
+          error.response.data?.message || "Error inesperado del servidor";
+      } else if (error.request) {
+        message = "No se pudo conectar con el servidor";
+      } else {
+        message = error.message;
+      }
+    }
+    alertError(message);
+    return false;
+  }
+};
+
+export const deleteIntegrationLogo = async (
+  integrationId: number
+): Promise<boolean> => {
+  try {
+    const response = await axiosInstance.delete(
+      apiUrls.deleteIntegrationLogo(integrationId)
+    );
+    return response.data.ok;
+  } catch (error) {
+    let message = "Error inesperado";
+    if (axios.isAxiosError(error)) {
+      if (error.response) {
+        message =
+          error.response.data?.message || "Error inesperado del servidor";
+      } else if (error.request) {
+        message = "No se pudo conectar con el servidor";
+      } else {
+        message = error.message;
+      }
+    }
+    alertError(message);
+    return false;
   }
 };

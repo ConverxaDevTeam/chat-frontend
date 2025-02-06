@@ -2,7 +2,6 @@ import Interface from "@components/Interface";
 import Loading from "@components/Loading";
 import NotificationHandler from "@components/NotificationHandler";
 import ProtectedAuth from "@components/ProtectedAuth";
-import ProtectedSuperAdmin from "@components/ProtectedSuperAdmin";
 import ConversationDetail from "@pages/ConversationDetail";
 import Conversations from "@pages/Conversations";
 import Dashboard from "@pages/Home";
@@ -18,6 +17,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Navigate, Route, Routes } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { OrganizationRoleType } from "@utils/interfaces";
 
 const App = (): JSX.Element => {
   const dispatch = useDispatch<AppDispatch>();
@@ -51,9 +51,9 @@ const App = (): JSX.Element => {
           <Route
             path="organizations"
             element={
-              <ProtectedSuperAdmin>
+              <ProtectedAuth roles={[OrganizationRoleType.ING_PREVENTA]}>
                 <Organizations />
-              </ProtectedSuperAdmin>
+              </ProtectedAuth>
             }
           />
           <Route path="conversations" element={<Conversations />} />

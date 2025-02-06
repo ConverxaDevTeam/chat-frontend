@@ -1,4 +1,5 @@
-import { FC, useState } from "react";
+import { FC } from "react";
+// select for header page
 
 interface Option {
   id: unknown;
@@ -12,6 +13,9 @@ interface SelectProps {
   placeholder?: string;
   mobileResolution?: boolean;
   customOptions?: React.ReactNode;
+  isOpen?: boolean;
+  onOpen?: () => void;
+  onClose?: () => void;
 }
 
 const Select: FC<SelectProps> = ({
@@ -21,10 +25,18 @@ const Select: FC<SelectProps> = ({
   placeholder = "Seleccionar",
   mobileResolution,
   customOptions,
+  isOpen = false,
+  onOpen,
+  onClose,
 }) => {
-  const [open, setOpen] = useState(false);
-
   const selectedOption = options.find(opt => opt.id === value);
+  const handleToggle = () => {
+    if (isOpen) {
+      onClose?.();
+    } else {
+      onOpen?.();
+    }
+  };
 
   return (
     <div className="relative">
@@ -32,31 +44,33 @@ const Select: FC<SelectProps> = ({
         className={`bg-custom-gradient border-[2px] border-[#B8CCE0] border-inherit h-[36px] relative rounded-lg flex justify-between items-center p-[6px] cursor-pointer ${
           mobileResolution ? "w-full" : "w-[200px]"
         }`}
-        onClick={() => setOpen(!open)}
+        onClick={handleToggle}
       >
         <p className="truncate">
           {selectedOption ? selectedOption.name : placeholder}
         </p>
         <img
-          className="w-6 h-6 fill-current ml-2 flex-shrink-0"
+          className={`w-6 h-6 fill-current ml-2 flex-shrink-0 transition-transform ${
+            isOpen ? "rotate-180" : ""
+          }`}
           src="/mvp/chevron-down.svg"
           alt="arrow"
         />
       </div>
 
-      {open && (
+      {isOpen && (
         <div className="absolute w-full bg-app-c2 top-[36px] left-0 rounded-lg border-[1px] border-app-c3 z-50 max-h-[300px] overflow-y-auto">
           {customOptions}
           {options.map(option => (
             <div
               key={String(option.id)}
+              className={`p-[6px] cursor-pointer hover:bg-app-c1 ${
+                option.id === value ? "bg-app-c1" : ""
+              }`}
               onClick={() => {
                 onChange(option.id);
-                setOpen(false);
+                onClose?.();
               }}
-              className={`p-[6px] cursor-pointer hover:bg-app-c1 ${
-                value === option.id ? "bg-app-c1" : ""
-              }`}
             >
               {option.name}
             </div>
