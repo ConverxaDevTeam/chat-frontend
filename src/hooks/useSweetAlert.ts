@@ -1,4 +1,5 @@
 import Swal from "sweetalert2";
+import { useState } from "react";
 
 interface ApiError {
   ok: boolean;
@@ -87,28 +88,54 @@ const formatError = (error: unknown): string => {
 };
 
 export const useSweetAlert = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [modalOptions, setModalOptions] = useState<{
+    title: string;
+    text: string;
+    confirmButtonText?: string;
+    cancelButtonText?: string;
+    resolve: (value: boolean) => void;
+  } | null>(null);
+
   const showConfirmation = async (options: {
     title: string;
     text: string;
     confirmButtonText?: string;
     cancelButtonText?: string;
-  }) => {
-    const result = await Swal.fire({
-      title: options.title,
-      html: `<p class="text-gray-600 text-sm">${options.text}</p>`,
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: options.confirmButtonText || "Si",
-      cancelButtonText: options.cancelButtonText || "Cancelar",
-      customClass: {
-        popup: "bg-white border-2 border-gray-300 rounded-xl shadow-lg p-4 w-[400px]",
-        title: "text-gray-900 text-lg font-semibold",
-        confirmButton: "bg-gray-600 text-white border border-black px-4 py-2 rounded-md hover:bg-gray-800",
-        cancelButton: "bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 ",
-      },
-    });
-
+    // Para decidir si se usará el modal custom o sweetAlert
+    type?: "department" | "default";
+  }): Promise<boolean> =>{
+    if (options.type === "department") {
+      return new Promise<boolean>((resolve) => {
+        setModalOptions({ ...options, resolve });
+        setIsOpen(true);
+      });
+    } else {
+      const result = await Swal.fire({
+        title: options.title,
+        html: `<p class="text-gray-600 text-sm">${options.text}</p>`,
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: options.confirmButtonText || "Si",
+        cancelButtonText: options.cancelButtonText || "Cancelar",
+      });
     return result.isConfirmed;
+    }
+  };
+  const handleConfirm = () => {
+    if (modalOptions?.resolve) {
+      modalOptions.resolve(true);
+    }
+    setIsOpen(false);
+    setModalOptions(null);
+  };
+
+  const handleCancel = () => {
+    if (modalOptions?.resolve) {
+      modalOptions.resolve(false);
+    }
+    setIsOpen(false);
+    setModalOptions(null);
   };
 
   const handleOperation = async <T>(
@@ -161,5 +188,9 @@ export const useSweetAlert = () => {
   return {
     showConfirmation,
     handleOperation,
+    isOpen,
+    modalOptions,
+    handleConfirm,
+    handleCancel,
   };
 };

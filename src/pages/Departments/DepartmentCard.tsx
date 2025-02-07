@@ -3,8 +3,8 @@ import { IDepartment } from "../../interfaces/departments";
 import { toast } from "react-toastify";
 import { useSweetAlert } from "../../hooks/useSweetAlert";
 import CardItem from "../../components/Card/CardItem";
-// import { convertISOToReadable } from "../../utils/format";
 import { deleteDepartment } from "@services/department";
+import DepartmentConfirmationModal from "./DepartmentConfirmationModal";
 
 interface DepartmentCardProps {
   department: IDepartment;
@@ -17,7 +17,7 @@ const DepartmentCard: FC<DepartmentCardProps> = ({
   onUpdate,
   onDelete,
 }) => {
-  const { showConfirmation } = useSweetAlert();
+  const { showConfirmation, isOpen, modalOptions, handleConfirm, handleCancel } = useSweetAlert();
 
   const handleDelete = async () => {
     const confirmed = await showConfirmation({
@@ -25,6 +25,7 @@ const DepartmentCard: FC<DepartmentCardProps> = ({
       text: "Esta acción no se podrá deshacer",
       confirmButtonText: "Eliminar",
       cancelButtonText: "Cancelar",
+      type: "department",
     });
 
     if (confirmed) {
@@ -32,8 +33,13 @@ const DepartmentCard: FC<DepartmentCardProps> = ({
         await deleteDepartment(department.id);
         onDelete(department.id);
         toast.success("Departamento eliminado exitosamente");
-      } catch (error) {
+      } catch (error: any) {
+        // const errorMessage = error?.response?.data?.message || error.message || "";
+      if (error.response?.status === 500) {
+        toast.error("Este departamento no se puede eliminar debido a que tiene agente asignado");
+      } else {
         toast.error("Error al eliminar departamento");
+      }
       }
     }
   };
@@ -68,6 +74,17 @@ const DepartmentCard: FC<DepartmentCardProps> = ({
           <span className="hidden sm:block">Editar</span>
         </button>
       </div>
+      {modalOptions && (
+        <DepartmentConfirmationModal
+          isOpen={isOpen}
+          title={modalOptions.title}
+          text={modalOptions.text}
+          confirmText={modalOptions.confirmButtonText}
+          cancelText={modalOptions.cancelButtonText}
+          onConfirm={handleConfirm}
+          onClose={handleCancel}
+        />
+      )}
     </div>
   );
 };

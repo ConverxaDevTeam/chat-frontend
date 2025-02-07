@@ -46,7 +46,7 @@ const Navbar = ({ mobileResolution}: NavbarProps) => {
         }}
         className={`flex ${mobileResolution ? "flex-col  h-[100px] p-[10px]" : "h-[36px]"}  justify-between items-center `}
       >
-        <div className="flex md:flex-row flex-col items-start md:items-center gap-2 w-full">
+        <div className="flex md:flex-row flex-col items-start md:items-center gap-7 w-full">
             <div className="text-[14px] text-gray">
             {breadcrumbItems.map((item, index) => (
               <span key={index}>
@@ -69,9 +69,9 @@ const Navbar = ({ mobileResolution}: NavbarProps) => {
           </div>
         </div>
         <div
-          className={`flex gap-[10px] items-center ${mobileResolution ? "ml-auto" : ""}`}
+          className={`flex gap-3 items-center ${mobileResolution ? "ml-auto" : ""}`}
         >
-          <p className="text-sofia-superDark font-normal text-[14px] mr-[57px]">
+          <p className="text-sofia-superDark font-normal text-[14px] mr-3">
             {user?.email}
           </p>
           <div className="bg-[#F1F5F9] rounded-lg border-[#B8CCE0] border-[2px] h-[36px] w-[150px] flex items-center justify-center gap-3 px-2">

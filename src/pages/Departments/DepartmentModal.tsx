@@ -66,15 +66,35 @@ const DepartmentModal: FC<DepartmentModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-6 w-full max-w-md">
+      <div className="bg-white rounded-xl p-6 w-full max-w-md relative">
+        <button
+          type="button"
+          onClick={handleClose}
+          className="absolute top-7 right-7 text-gray-900 hover:text-gray-600 font-semibold"
+        >
+          ✕
+        </button>
         <h2 className="text-xl font-bold mb-4">
-          {department ? "Editar" : "Nuevo"} Departamento
+          {department ? "Editar" : "Nuevo"} departamento
         </h2>
+        <hr className="border-t border-gray-300 mb-4" />
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          {department && (
+            <div>
+              <label className="block text-gray-700 font-semibold mb-2">ID</label>
+              <input
+                type="text"
+                value={department.id}
+                disabled
+                className="w-full p-3 border text-gray-400 rounded-lg cursor-not-allowed"
+              />
+            </div>
+          )}
           <div>
+            <label className="block text-gray-700 font-semibold mb-2">Nombre</label>
             <input
               {...register("name", { required: "Nombre es requerido" })}
-              className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full p-3 border rounded-lg focus:outline-none  focus:ring-2 focus:ring-blue-500 mb-2"
               placeholder="Nombre del departamento"
             />
             {errors.name && (
@@ -83,18 +103,17 @@ const DepartmentModal: FC<DepartmentModalProps> = ({
               </span>
             )}
           </div>
-
+          <div>
+            <label className="block text-gray-700 font-semibold mb-2">Descripción</label>
+            <input className="w-full p-3 border text-gray-400 rounded-lg cursor-not-allowed mb-2" 
+            placeholder="Descripción"
+            disabled
+            />
+          </div>
           <div className="flex justify-end gap-2">
             <button
-              type="button"
-              onClick={handleClose}
-              className="px-4 py-2 text-gray-600 hover:text-gray-800"
-            >
-              Cancelar
-            </button>
-            <button
               type="submit"
-              className="px-4 py-2 bg-sofia-electricGreen text-black rounded hover:bg-opacity-50 transition-all"
+              className="w-full px-4 py-3 mt-5 bg-sofia-electricGreen text-gray-900 rounded-md text-sm font-semibold hover:bg-opacity-50 transition-all"
             >
               {department ? "Actualizar" : "Crear"}
             </button>

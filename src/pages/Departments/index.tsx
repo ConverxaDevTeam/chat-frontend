@@ -2,8 +2,6 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "@store";
 import DepartmentCard from "./DepartmentCard";
-// import Table from "@components/Table/Table";
-// import TableHeader from "@components/Table/TableHeader";
 import DepartmentModal from "./DepartmentModal";
 import { getDepartments } from "@services/department";
 import PageContainer from "@components/PageContainer";
