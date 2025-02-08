@@ -8,7 +8,14 @@ import { useCallback, useMemo, useEffect } from "react";
 import { InputGroup } from "@components/forms/inputGroup";
 import { Input } from "@components/forms/input";
 import { TextArea } from "@components/forms/textArea";
-import { useForm, UseFormRegister, FieldErrors } from "react-hook-form";
+import { Select } from "@components/forms/select";
+import {
+  useForm,
+  UseFormRegister,
+  FieldErrors,
+  Control,
+} from "react-hook-form";
+import { Button } from "@components/common/Button";
 
 // Types
 interface ParamFormModalProps {
@@ -20,6 +27,7 @@ interface ParamFormModalProps {
 
 interface ParamFormFieldsProps {
   register: UseFormRegister<CreateFunctionParamDto>;
+  control: Control<CreateFunctionParamDto>;
   errors: FieldErrors<CreateFunctionParamDto>;
 }
 
@@ -39,6 +47,7 @@ const useParamForm = (initialParam?: FunctionParam | null) => {
     register,
     handleSubmit,
     reset,
+    control,
     formState: { errors },
   } = useForm<CreateFunctionParamDto>({
     defaultValues,
@@ -64,14 +73,19 @@ const useParamForm = (initialParam?: FunctionParam | null) => {
   return {
     register,
     handleSubmit,
+    control,
     errors,
     resetForm,
   };
 };
 
 // Form Fields Component
-const ParamFormFields = ({ register, errors }: ParamFormFieldsProps) => (
-  <>
+const ParamFormFields = ({
+  register,
+  control,
+  errors,
+}: ParamFormFieldsProps) => (
+  <div className="flex flex-col gap-[24px]">
     <InputGroup label="Nombre" errors={errors.name}>
       <Input
         placeholder="Nombre del parámetro"
@@ -81,16 +95,15 @@ const ParamFormFields = ({ register, errors }: ParamFormFieldsProps) => (
     </InputGroup>
 
     <InputGroup label="Tipo" errors={errors.type}>
-      <select
-        {...register("type")}
-        className="w-full rounded-md bg-gray-100 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-3 py-2 sm:text-sm"
-      >
-        {Object.values(ParamType).map(type => (
-          <option key={type} value={type}>
-            {type}
-          </option>
-        ))}
-      </select>
+      <Select
+        name="type"
+        control={control}
+        options={Object.values(ParamType).map(type => ({
+          value: type,
+          label: type,
+        }))}
+        placeholder="Seleccionar tipo"
+      />
     </InputGroup>
 
     <InputGroup label="Descripción" errors={errors.description}>
@@ -106,40 +119,31 @@ const ParamFormFields = ({ register, errors }: ParamFormFieldsProps) => (
       <input
         type="checkbox"
         {...register("required")}
-        className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+        className="h-4 w-4 rounded border-gray-300 accent-sofia-electricOlive"
       />
-      <label className="ml-2 block text-sm text-gray-900">Requerido</label>
+      <label className="ml-2 text-sofia-superDark text-[14px] font-semibold leading-[16px]">
+        Requerido
+      </label>
     </div>
-  </>
+  </div>
 );
 
 // Form Actions Component
 const ParamFormActions = ({
-  onClose,
   isEdit,
   disabled = false,
 }: {
-  onClose: () => void;
   isEdit: boolean;
   disabled?: boolean;
 }) => (
-  <div className="flex justify-end space-x-2">
-    <button
-      type="button"
-      onClick={onClose}
-      className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
-      disabled={disabled}
-    >
-      Cancelar
-    </button>
-    <button
-      type="submit"
-      className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700"
-      disabled={disabled}
-    >
-      {isEdit ? "Actualizar" : "Crear"}
-    </button>
-  </div>
+  <Button
+    type="submit"
+    variant="primary"
+    className="w-full"
+    disabled={disabled}
+  >
+    {isEdit ? "Actualizar parámetro" : "Crear parámetro"}
+  </Button>
 );
 
 // Main Component
@@ -149,7 +153,8 @@ export const ParamFormModal = ({
   param,
   onSubmit,
 }: ParamFormModalProps) => {
-  const { register, handleSubmit, errors, resetForm } = useParamForm(param);
+  const { register, handleSubmit, control, errors, resetForm } =
+    useParamForm(param);
 
   const onFormSubmit = useCallback(
     handleSubmit(data => {
@@ -182,9 +187,13 @@ export const ParamFormModal = ({
 
   return (
     <Modal isShown={isShown} onClose={handleClose} header={modalHeader}>
-      <form onSubmit={onFormSubmit} className="space-y-4">
-        <ParamFormFields register={register} errors={errors} />
-        <ParamFormActions onClose={handleClose} isEdit={!!param} />
+      <form onSubmit={onFormSubmit} className="space-y-4 w-[475px]">
+        <ParamFormFields
+          register={register}
+          control={control}
+          errors={errors}
+        />
+        <ParamFormActions isEdit={!!param} />
       </form>
     </Modal>
   );

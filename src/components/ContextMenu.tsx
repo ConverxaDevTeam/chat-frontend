@@ -196,7 +196,7 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
     <div
       ref={menuRef}
       data-menu-id={menuId.current}
-      className="context-menu absolute inline-flex flex-col items-start p-3.5 gap-2 rounded-lg border border-sofia-navyBlue bg-sofia-blancoPuro z-50"
+      className="context-menu absolute inline-flex flex-col items-start p-[16px] gap-2 rounded-lg border border-sofia-navyBlue bg-sofia-blancoPuro z-50"
       style={{ left: x, top: y }}
     >
       {React.Children.map(children, child => {

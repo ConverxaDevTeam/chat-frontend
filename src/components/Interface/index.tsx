@@ -52,7 +52,10 @@ const Interface = () => {
     return <Loading />;
   }
 
-  if (myOrganizations?.length === 0 && user && !user?.is_super_admin) {
+  const isGlobalUser =
+    user?.is_super_admin || myOrganizations.some(org => !org.organization);
+
+  if (myOrganizations?.length === 0 && user && !isGlobalUser) {
     return <BlockingPage />;
   }
 

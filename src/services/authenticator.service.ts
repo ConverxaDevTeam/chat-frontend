@@ -1,6 +1,5 @@
 import { apiUrls } from "@config/config";
 import { AuthenticatorType } from "@interfaces/autenticators.interface";
-
 import { axiosInstance } from "@store/actions/auth";
 
 type FormData = AuthenticatorType;

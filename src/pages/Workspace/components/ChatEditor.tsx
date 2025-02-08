@@ -1,246 +1,319 @@
-import { themeColors } from "@utils/lists";
-import { useState } from "react";
+import { Fragment, useState, useRef } from "react";
 import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
 import { Integracion } from "./CustomizeChat";
 import ChatPreview from "./ChatPreview";
-import { ColorResult, ChromePicker } from "react-color";
-import LabelColor from "./LabelColor";
+import { themeColors } from "@utils/lists";
+import { Sketch } from "@uiw/react-color";
 
 interface ChatEditorProps {
   integration: Integracion;
   setIntegration: (integration: Integracion) => void;
 }
 
-const ChatEditor = ({ integration, setIntegration }: ChatEditorProps) => {
-  const [themeId, setThemeId] = useState<number>(0);
-  const [selectColor, setSelectColor] = useState<{
-    color: string;
-    element: string | null;
-  }>({
-    element: "bg_color",
-    color: integration.config.bg_color,
-  });
+const ThemeSelector = ({
+  integration,
+  setIntegration,
+  themeId,
+  setThemeId,
+}: {
+  integration: Integracion;
+  setIntegration: (integration: Integracion) => void;
+  themeId: number;
+  setThemeId: (id: number) => void;
+}) => (
+  <div className="flex flex-col items-start gap-[10px] flex-1 col-span-1.5 w-full">
+    <h3 className="my-2 text-sofia-superDark text-[14px] font-semibold leading-[16px]">
+      Temas predeterminados
+    </h3>
+    <div className="grid grid-cols-5 auto-rows-auto gap-2 w-full">
+      {themeColors.map(theme => (
+        <button
+          key={theme.id}
+          type="button"
+          className={`h-[10px] w-[60px] rounded transition overflow-hidden ${
+            themeId === theme.id
+              ? "ring-2 ring-app-gray"
+              : "hover:ring-1 hover:ring-app-gray/50"
+          }`}
+          title={theme.name}
+          onClick={() => {
+            setThemeId(theme.id);
+            setIntegration({
+              ...integration,
+              config: {
+                ...integration.config,
+                bg_color: theme.bg_color,
+                text_title: theme.text_title,
+                bg_chat: theme.bg_chat,
+                text_color: theme.text_color,
+                bg_assistant: theme.bg_assistant,
+                bg_user: theme.bg_user,
+                button_color: theme.button_color,
+                button_text: theme.button_text,
+                text_date: theme.text_date,
+              },
+            });
+          }}
+        >
+          <div className="flex h-full w-full">
+            <div
+              className="flex-1"
+              style={{ backgroundColor: theme.bg_color }}
+            />
+            <div
+              className="flex-1"
+              style={{ backgroundColor: theme.bg_chat }}
+            />
+            <div
+              className="flex-1"
+              style={{ backgroundColor: theme.bg_assistant }}
+            />
+            <div
+              className="flex-1"
+              style={{ backgroundColor: theme.bg_user }}
+            />
+          </div>
+        </button>
+      ))}
+    </div>
+    <div className="w-full h-[1px] bg-[#2C2C2C] mt-4" />
+  </div>
+);
 
-  const handleChangeColor = (colorSelect: ColorResult) => {
-    setSelectColor({ ...selectColor, color: colorSelect.hex });
-    if (selectColor.element) {
+const ControlItem = ({
+  label,
+  children,
+}: {
+  label: string;
+  children: React.ReactNode;
+}) => (
+  <div className="col-span-2 flex flex-col gap-4">
+    <div className="w-full h-[1px] bg-[#DBEAF2]" />
+    <div className="flex items-center justify-between w-full gap-4">
+      <span className="text-[12px] text-sofia-superDark font-normal">
+        {label}
+      </span>
+      <div className="w-[95px]">{children}</div>
+    </div>
+  </div>
+);
+
+const RadiusControls = ({
+  integration,
+  setIntegration,
+}: {
+  integration: Integracion;
+  setIntegration: (integration: Integracion) => void;
+}) => {
+  const handleChangeRadius = (value: number | number[]) => {
+    if (typeof value === "number") {
       setIntegration({
         ...integration,
         config: {
           ...integration.config,
-          [selectColor.element]: colorSelect.hex,
+          edge_radius: value,
+        },
+      });
+    }
+  };
+
+  const handleChangeMessageRadius = (value: number | number[]) => {
+    if (typeof value === "number") {
+      setIntegration({
+        ...integration,
+        config: {
+          ...integration.config,
+          message_radius: value,
         },
       });
     }
   };
 
   return (
-    <div className="flex gap-[20px] items-start">
-      <div className="grid grid-cols-2 gap-[10px] items-start flex-1">
-        <div className="flex flex-col items-start gap-[10px] flex-1 col-span-2">
-          <p className="text-[12px] font-poppinsSemiBold bg-app-c3 px-[6px] rounded-t-lg pt-[4px]">
-            Tema predeterminado
-          </p>
-          <div className="flex gap-1 p-[2px] select-none">
-            {themeColors.map(theme => {
-              return (
-                <button
-                  key={theme.id}
-                  type="button"
-                  className={`w-7 h-7 bg-white rounded-full transition border-[4px] flex justify-center items-center ${
-                    themeId === theme.id
-                      ? "border-app-gray"
-                      : "border-white cursor-pointer"
-                  }`}
-                  title={theme.name}
-                  onClick={() => {
-                    setThemeId(theme.id);
-                    setIntegration({
-                      ...integration,
-                      config: {
-                        ...integration.config,
-                        bg_color: theme.bg_color,
-                        text_title: theme.text_title,
-                        bg_chat: theme.bg_chat,
-                        text_color: theme.text_color,
-                        bg_assistant: theme.bg_assistant,
-                        bg_user: theme.bg_user,
-                        button_color: theme.button_color,
-                        button_text: theme.button_text,
-                        text_date: theme.text_date,
-                      },
-                    });
-                  }}
-                >
-                  <div
-                    className="w-full h-full rounded-full"
-                    style={{
-                      backgroundColor: theme.bg_color,
-                    }}
-                  />
-                </button>
-              );
-            })}
+    <Fragment>
+      <ControlItem label="Radio de ventana">
+        <Slider
+          min={0}
+          max={20}
+          value={integration.config.edge_radius}
+          onChange={handleChangeRadius}
+          styles={{
+            rail: { backgroundColor: "#001126", height: 1, width: 95 },
+            track: { backgroundColor: "#001126", height: 1, width: 95 },
+            handle: {
+              width: 12,
+              height: 12,
+              backgroundColor: "#15ECDA",
+              border: "1px solid #001126",
+              opacity: 1,
+              boxShadow: "none",
+              marginTop: -6,
+            },
+          }}
+        />
+      </ControlItem>
+      <ControlItem label="Radio de mensajes">
+        <Slider
+          min={0}
+          max={20}
+          value={integration.config.message_radius}
+          onChange={handleChangeMessageRadius}
+          styles={{
+            rail: { backgroundColor: "#001126", height: 1, width: 95 },
+            track: { backgroundColor: "#001126", height: 1, width: 95 },
+            handle: {
+              width: 12,
+              height: 12,
+              backgroundColor: "#15ECDA",
+              border: "1px solid #001126",
+              opacity: 1,
+              boxShadow: "none",
+              marginTop: -6,
+            },
+          }}
+        />
+      </ControlItem>
+    </Fragment>
+  );
+};
+
+const ColorControl = ({
+  label,
+  color,
+  onChange,
+}: {
+  label: string;
+  color: string;
+  onChange: (color: string) => void;
+}) => {
+  const [showPicker, setShowPicker] = useState(false);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+
+  return (
+    <ControlItem label={label}>
+      <div className="w-full flex flex-2 gap-1">
+        <button
+          ref={buttonRef}
+          className="w-[40px] h-[16px] border border-sofia-navyBlue rounded flex items-center"
+          style={{ backgroundColor: color }}
+          onClick={() => setShowPicker(true)}
+        />
+
+        <div className="flex-1 text-[13px] text-sofia-superDark px-1">
+          {color.replace("#", "").toUpperCase()}
+        </div>
+        {showPicker && (
+          <div
+            className="fixed z-50"
+            style={{
+              top: buttonRef.current?.getBoundingClientRect().bottom,
+              left: buttonRef.current?.getBoundingClientRect().left,
+            }}
+          >
+            <div
+              className="fixed inset-0"
+              onClick={() => setShowPicker(false)}
+            />
+            <div className="relative bg-white rounded-lg shadow-lg p-2">
+              <Sketch
+                color={color}
+                onChange={color => {
+                  onChange(color.hex);
+                }}
+              />
+            </div>
           </div>
-        </div>
-
-        <div className="flex flex-col items-start gap-[10px]">
-          <p className="text-[12px] mx-auto font-poppinsSemiBold bg-app-c3 px-[6px] rounded-t-lg pt-[4px]">
-            Radio de ventana
-          </p>
-          <Slider
-            min={0}
-            max={16}
-            step={1}
-            value={integration.config.edge_radius}
-            onChange={newValue => {
-              if (typeof newValue === "number") {
-                setIntegration({
-                  ...integration,
-                  config: {
-                    ...integration.config,
-                    edge_radius: newValue,
-                  },
-                });
-              }
-            }}
-            trackStyle={{ backgroundColor: "#ebebeb", height: 10 }}
-            handleStyle={{
-              borderColor: "#ebebeb",
-              height: 20,
-              width: 20,
-              marginTop: -5,
-              backgroundColor: "#fff",
-            }}
-            railStyle={{ backgroundColor: "#ccc", height: 10 }}
-          />
-        </div>
-
-        <div className="flex flex-col items-start gap-[10px]">
-          <p className="text-[12px] mx-auto font-poppinsSemiBold bg-app-c3 px-[6px] rounded-t-lg pt-[4px]">
-            Radio de mensajes
-          </p>
-          <Slider
-            min={0}
-            max={30}
-            step={1}
-            value={integration.config.message_radius}
-            onChange={newValue => {
-              if (typeof newValue === "number") {
-                setIntegration({
-                  ...integration,
-                  config: {
-                    ...integration.config,
-                    message_radius: newValue,
-                  },
-                });
-              }
-            }}
-            trackStyle={{ backgroundColor: "#ebebeb", height: 10 }}
-            handleStyle={{
-              borderColor: "#ebebeb",
-              height: 20,
-              width: 20,
-              marginTop: -5,
-              backgroundColor: "#fff",
-            }}
-            railStyle={{ backgroundColor: "#ccc", height: 10 }}
-          />
-        </div>
-
-        <LabelColor
-          label="bg_color"
-          title="Color de header"
-          integration={integration}
-          selectColor={selectColor}
-          setSelectColor={setSelectColor}
-        />
-
-        <LabelColor
-          label="text_title"
-          title="Texto de header"
-          integration={integration}
-          selectColor={selectColor}
-          setSelectColor={setSelectColor}
-        />
-
-        <LabelColor
-          label="bg_chat"
-          title="Fondo del chat"
-          integration={integration}
-          selectColor={selectColor}
-          setSelectColor={setSelectColor}
-        />
-
-        <LabelColor
-          label="text_color"
-          title="Color de Textos"
-          integration={integration}
-          selectColor={selectColor}
-          setSelectColor={setSelectColor}
-        />
-
-        <LabelColor
-          label="bg_assistant"
-          title="Mensaje sofia"
-          integration={integration}
-          selectColor={selectColor}
-          setSelectColor={setSelectColor}
-        />
-
-        <LabelColor
-          label="bg_user"
-          title="Mensaje usuario"
-          integration={integration}
-          selectColor={selectColor}
-          setSelectColor={setSelectColor}
-        />
-
-        <LabelColor
-          label="button_color"
-          title="Color de Enviar"
-          integration={integration}
-          selectColor={selectColor}
-          setSelectColor={setSelectColor}
-        />
-
-        <LabelColor
-          label="button_text"
-          title="Color de Enviar"
-          integration={integration}
-          selectColor={selectColor}
-          setSelectColor={setSelectColor}
-        />
-
-        <LabelColor
-          label="text_date"
-          title="Fecha de mensajes"
-          integration={integration}
-          selectColor={selectColor}
-          setSelectColor={setSelectColor}
-        />
-
-        <div className="col-span-2 px-[10px]">
-          <ChromePicker
-            onChange={handleChangeColor}
-            color={selectColor.color}
-            disableAlpha
-            styles={{
-              default: {
-                picker: {
-                  boxShadow: "none",
-                  border: "none",
-                  padding: "0px",
-                  width: "100%",
-                },
-              },
-            }}
-          />
-        </div>
+        )}
       </div>
+    </ControlItem>
+  );
+};
 
-      <ChatPreview config={integration.config} />
+const colorConfigs = [
+  { key: "bg_color", label: "Header" },
+  { key: "text_title", label: "Textos de cabecera" },
+  { key: "bg_chat", label: "Fondo" },
+  { key: "text_color", label: "Nombre IA y usuario" },
+  { key: "bg_assistant", label: "Globos mensaje IA" },
+  { key: "bg_user", label: "Globos mensaje usuario" },
+  { key: "button_color", label: "Fondo de enviar mensaje" },
+  { key: "button_text", label: "Botón de enviar" },
+  { key: "text_date", label: "Hora" },
+] as const;
+
+const ColorPicker = ({
+  integration,
+  setIntegration,
+}: {
+  integration: Integracion;
+  setIntegration: (integration: Integracion) => void;
+}) => {
+  return (
+    <Fragment>
+      {colorConfigs.map(config => (
+        <ColorControl
+          key={config.key}
+          label={config.label}
+          color={integration.config[config.key]}
+          onChange={color => {
+            setIntegration({
+              ...integration,
+              config: {
+                ...integration.config,
+                [config.key]: color,
+              },
+            });
+          }}
+        />
+      ))}
+    </Fragment>
+  );
+};
+
+const ChatConfigurations = ({
+  integration,
+  setIntegration,
+  themeId,
+  setThemeId,
+}: {
+  integration: Integracion;
+  setIntegration: (integration: Integracion) => void;
+  themeId: number;
+  setThemeId: (id: number) => void;
+}) => (
+  <div className="flex flex-col gap-[10px]">
+    <h3 className="text-sofia-superDark text-[14px] font-semibold leading-[16px] mb-2">
+      Colores y estilo
+    </h3>
+    <ThemeSelector
+      integration={integration}
+      setIntegration={setIntegration}
+      themeId={themeId}
+      setThemeId={setThemeId}
+    />
+    <p className="text-[14px] text-[#2C2C2C] font-bold mt-4">
+      Colores personalizados
+    </p>
+    <RadiusControls integration={integration} setIntegration={setIntegration} />
+    <ColorPicker integration={integration} setIntegration={setIntegration} />
+  </div>
+);
+
+const ChatEditor = ({ integration, setIntegration }: ChatEditorProps) => {
+  const [themeId, setThemeId] = useState<number>(0);
+
+  return (
+    <div className="grid grid-cols-[1fr_auto] gap-[30px]">
+      <ChatConfigurations
+        integration={integration}
+        setIntegration={setIntegration}
+        themeId={themeId}
+        setThemeId={setThemeId}
+      />
+      <div className="w-[375px]">
+        <ChatPreview config={integration.config} />
+      </div>
     </div>
   );
 };

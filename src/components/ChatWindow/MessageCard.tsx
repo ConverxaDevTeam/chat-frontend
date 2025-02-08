@@ -4,13 +4,85 @@ import { ConversationResponseMessage } from "@interfaces/conversation";
 import { formatDateOrTime } from "@utils/format";
 import { MessageType } from "@utils/interfaces";
 import ReactMarkdown from "react-markdown";
+import { ConfigWebChat } from "@pages/Workspace/components/CustomizeChat";
+import { getContrastingTextColor } from "@services/chat.service";
 
 interface MessageCardProps {
   userName: string;
   message: ConversationResponseMessage;
+  config?: ConfigWebChat;
 }
 
-const renderContent = (message: ConversationResponseMessage) => {
+const defaultConfig: ConfigWebChat = {
+  id: 0,
+  name: "Default",
+  cors: [],
+  url_assets: "",
+  title: "Default Title",
+  sub_title: "Default Subtitle",
+  description: "Default Description",
+  logo: "",
+  horizontal_logo: "",
+  edge_radius: 8,
+  bg_color: "#FFFFFF",
+  bg_chat: "#F5F5F5",
+  bg_user: "#FFFFFF",
+  bg_assistant: "#d0fbf8",
+  text_color: "#000000",
+  text_date: "#a6a8ab",
+  button_color: "#007BFF",
+  text_title: "#001126",
+  message_radius: 8,
+  button_text: "Send",
+};
+
+const MessageContainer = ({
+  children,
+  align,
+}: {
+  children: React.ReactNode;
+  align: "start" | "end";
+}) => {
+  return (
+    <div className={`flex justify-${align}`}>
+      <div className={`flex flex-col items-start gap-2`}>
+        <div className={`flex items-start gap-2`}>{children}</div>
+      </div>
+    </div>
+  );
+};
+
+const MessageHeader = ({
+  message,
+  config,
+  userName,
+}: {
+  message: ConversationResponseMessage;
+  config: ConfigWebChat;
+  userName: string;
+}) => {
+  return (
+    <div className="flex justify-center items-center gap-2">
+      <span
+        className="text-[14px] font-bold"
+        style={{ color: config.text_color }}
+      >
+        {userName}
+      </span>
+      <span
+        className="text-[14px] font-bold"
+        style={{ color: config.text_date }}
+      >
+        {formatDateOrTime(message.created_at)}
+      </span>
+    </div>
+  );
+};
+
+const renderContent = (
+  message: ConversationResponseMessage,
+  textColor: string
+) => {
   return (
     <div className="flex flex-col gap-2">
       {message.images?.map((imageUrl, index) => (
@@ -34,7 +106,7 @@ const renderContent = (message: ConversationResponseMessage) => {
         />
       )}
       {message.text && (
-        <div className={`text-[14px] font-quicksand font-medium text-app-text`}>
+        <div className={`text-[14px] font-medium`} style={{ color: textColor }}>
           {message.audio && <span className="font-bold">Transcripcion: </span>}
           <ReactMarkdown
             components={{
@@ -61,64 +133,61 @@ const renderContent = (message: ConversationResponseMessage) => {
   );
 };
 
-const MessageCard = ({ message, userName }: MessageCardProps) => {
+const MessageCard = ({
+  message,
+  userName,
+  config = defaultConfig,
+}: MessageCardProps) => {
   if (message.type === MessageType.AGENT || message.type === MessageType.HITL) {
+    const textColor = getContrastingTextColor(config.bg_assistant);
     return (
-      <div className="inline-flex items-start gap-2 max-w-[546px]">
-        <div className="flex flex-col items-start gap-2">
-          <div className="flex items-start gap-2">
-            <div className="flex flex-col gap-1">
-              <div className="w-[40px] h-[40px] px-[7px] py-[10px] flex flex-col items-start rounded-full bg-sofia-electricGreen relative">
-                <img src="/icon.svg" alt="sofia" className="w-6 h-6" />
-                <div className="w-3 h-3 bg-green-500 absolute border-2 border-white rounded-full -bottom-0.5 -right-0.5" />
-              </div>
-            </div>
-            <div className="flex flex-col items-start gap-1">
-              <div className="flex justify-center items-center gap-2">
-                <span className="text-[14px] font-quicksand font-bold text-sofia-superDark">
-                  SOF.IA
-                </span>
-                <span className="text-[14px] font-quicksand font-bold text-app-newGray">
-                  {formatDateOrTime(message.created_at)}
-                </span>
-              </div>
-              <div className="flex justify-center items-center self-stretch p-2 rounded-lg bg-sofia-secundario shadow-[2px_2px_4px_0px_rgba(0,0,0,0.10)]">
-                {renderContent(message)}
-              </div>
-            </div>
+      <MessageContainer align="start">
+        <div className="flex flex-col gap-1">
+          <Avatar
+            avatar={config.logo || "/mvp/sofia-chat-logo.svg"}
+            secret={userName}
+            className="w-[40px] h-[40px]"
+          />
+        </div>
+        <div className="flex flex-col items-start gap-1">
+          <MessageHeader
+            message={message}
+            config={config}
+            userName={userName}
+          />
+          <div
+            className="flex justify-center items-center self-stretch p-2 shadow-[2px_2px_4px_0px_rgba(0,0,0,0.10)]"
+            style={{
+              backgroundColor: config.bg_assistant,
+              borderRadius: config.message_radius + "px",
+            }}
+          >
+            {renderContent(message, textColor)}
           </div>
         </div>
-      </div>
+      </MessageContainer>
     );
   }
+  const textColor = getContrastingTextColor(config.bg_user);
 
   return (
-    <div className="flex justify-end max-w-[546px] ml-auto">
-      <div className="flex flex-col items-end gap-2">
-        <div className="flex items-start gap-2">
-          <div className="flex flex-col items-end gap-1">
-            <div className="flex justify-center items-center gap-2">
-              <span className="text-[14px] font-quicksand font-bold text-sofia-superDark">
-                {userName}
-              </span>
-              <span className="text-[14px] font-quicksand font-bold text-app-newGray">
-                {formatDateOrTime(message.created_at)}
-              </span>
-            </div>
-            <div className="flex justify-center items-center self-stretch p-2 rounded-lg bg-sofia-blancoPuro shadow-[2px_2px_4px_0px_rgba(0,0,0,0.10)]">
-              {renderContent(message)}
-            </div>
-          </div>
-          <div className="flex flex-col gap-1">
-            <Avatar
-              avatar={null}
-              secret={userName}
-              className="w-[40px] h-[40px]"
-            />
-          </div>
+    <MessageContainer align="end">
+      <div className="flex flex-col items-end gap-1">
+        <MessageHeader message={message} config={config} userName={userName} />
+        <div
+          className="flex justify-center items-center self-stretch p-2 shadow-[2px_2px_4px_0px_rgba(0,0,0,0.10)]"
+          style={{
+            backgroundColor: config.bg_user,
+            borderRadius: config.message_radius + "px",
+          }}
+        >
+          {renderContent(message, textColor)}
         </div>
       </div>
-    </div>
+      <div className="flex flex-col gap-1">
+        <Avatar avatar={null} secret={userName} className="w-[40px] h-[40px]" />
+      </div>
+    </MessageContainer>
   );
 };
 

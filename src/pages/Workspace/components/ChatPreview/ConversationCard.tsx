@@ -2,6 +2,7 @@ import { convertISOToReadableMonthDayYear } from "@utils/format";
 import { useEffect, useState } from "react";
 import { ConfigWebChat } from "../CustomizeChat";
 import { IConversation } from "@utils/interfaces";
+import { getContrastingTextColor } from "@services/chat.service";
 
 interface ConversationCardProps {
   setConversation: (conversation: IConversation) => void;
@@ -35,79 +36,29 @@ const ConversationCard = ({
     };
   }, [status, active, countdown]);
 
+  const textColor = getContrastingTextColor(config.bg_assistant);
+
   return (
-    <div className=" relative">
-      {status && !active ? (
-        <button
-          className="absolute top-[5px] right-[5px] py-[1px] w-[80px] font-semibold text-[12px] text-green-500 border-green-700 border-[1px] bg-green-100 rounded-lg"
-          disabled={active}
-          onClick={() => {
-            setActive(true);
-          }}
-        >
-          Confirmar({countdown})
-        </button>
-      ) : (
-        <button
-          className="absolute top-[5px] right-[5px] py-[1px] w-[80px] font-semibold text-[12px] text-red-500 border-red-700 bg-red-100 border-[1px] rounded-lg"
-          type="button"
-          title="Eliminar conversación"
-          onClick={() => {
-            setStatus(true);
-          }}
-          disabled={active}
-        >
-          {!active ? "Eliminar" : "Elimimando..."}
-        </button>
-      )}
-      <div
-        onClick={() => setConversation(conversation)}
-        className="flex items-center gap-[10px] p-[10px] hover:bg-slate-100 cursor-pointer"
-      >
-        <div
-          className="rounded-full w-[40px] h-[40px]"
-          style={{
-            backgroundColor: config.bg_color,
-          }}
-        ></div>
-        <div className="flex flex-1 flex-col">
-          <div className="flex items-center gap-[10px]">
-            <p className="font-semibold text-[14px]">
-              {conversation.messages.length > 0 ? (
-                <span>
-                  {conversation.messages[conversation.messages.length - 1]
-                    .type === "agent"
-                    ? config.name
-                    : "Usuario"}
-                </span>
-              ) : (
-                <span>...</span>
-              )}
-            </p>
-            <p className="text-[14px]">
-              {conversation.messages.length > 0 ? (
-                <span>
-                  {convertISOToReadableMonthDayYear(
-                    conversation.messages[conversation.messages.length - 1]
-                      .created_at
-                  )}
-                </span>
-              ) : (
-                <span>...</span>
-              )}
-            </p>
-          </div>
-          <p className="text-[13px]">
-            {conversation.messages.length > 0 ? (
-              <span>
-                {conversation.messages[conversation.messages.length - 1].text}
-              </span>
-            ) : (
-              <span>...</span>
-            )}
-          </p>
-        </div>
-      </div>
+    <div
+      className="flex flex-col p-[16px] gap-[8px] items-start self-stretch rounded-tr-[8px] rounded-bl-[8px] rounded-tl-[8px] border border-sofia-darkBlue bg-[#FCFCFC] hover:bg-slate-100 cursor-pointer"
+      style={{
+        backgroundColor: config.bg_assistant,
+        color: textColor,
+      }}
+      onClick={() => setConversation(conversation)}
+    >
+      <span className="text-[14px] font-bold leading-[16px]">
+        {conversation.messages.length > 0
+          ? convertISOToReadableMonthDayYear(
+              conversation.messages[conversation.messages.length - 1].created_at
+            )
+          : "..."}
+      </span>
+      <span className="text-[14px] font-normal leading-none truncate">
+        {conversation.messages.length > 0
+          ? conversation.messages[conversation.messages.length - 1].text
+          : "..."}
+      </span>
     </div>
   );
 };

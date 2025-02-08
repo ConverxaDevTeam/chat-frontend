@@ -8,7 +8,7 @@ interface ChatHistoryProps {
   messages: Message[];
 }
 
-const transformMessageToConversationMessage = (
+export const transformMessageToConversationMessage = (
   message: Message
 ): ConversationResponseMessage => ({
   id: Math.random(),

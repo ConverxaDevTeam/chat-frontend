@@ -57,10 +57,10 @@ export const UserInfoPanel = ({ conversation }: UserInfoPanelProps) => {
             className="w-[80px] h-[80px]"
           />
           <div className="text-center">
-            <div className="text-[16px] font-quicksand font-semibold text-center text-sofia-superDark">
+            <div className="text-[16px] font-semibold text-center text-sofia-superDark">
               {conversation?.chat_user?.secret}
             </div>
-            <div className="text-[14px] font-quicksand font-normal text-center text-sofia-superDark">
+            <div className="text-[14px] font-normal text-center text-sofia-superDark">
               +502 56 78 90 12
             </div>
           </div>
@@ -70,18 +70,18 @@ export const UserInfoPanel = ({ conversation }: UserInfoPanelProps) => {
       {/* Contadores */}
       <div className="flex justify-between mb-4">
         <div className="text-center">
-          <div className="text-[32px] font-quicksand font-bold text-sofia-superDark">
+          <div className="text-[32px] font-bold text-sofia-superDark">
             325
           </div>
-          <div className="text-[14px] font-quicksand font-normal text-sofia-superDark">
+          <div className="text-[14px] font-normal text-sofia-superDark">
             Mensajes Totales
           </div>
         </div>
         <div className="text-center">
-          <div className="text-[32px] font-quicksand font-bold text-sofia-superDark">
+          <div className="text-[32px] font-bold text-sofia-superDark">
             5:46
           </div>
-          <div className="text-[14px] font-quicksand font-normal text-sofia-superDark">
+          <div className="text-[14px] font-normal text-sofia-superDark">
             Minutos de audio
           </div>
         </div>
@@ -95,10 +95,10 @@ export const UserInfoPanel = ({ conversation }: UserInfoPanelProps) => {
               <item.icon className="w-5 h-5 text-sofia-superDark" />
             </div>
             <div className="flex-1">
-              <div className="self-stretch text-[10px] font-quicksand font-bold text-app-newGray">
+              <div className="self-stretch text-[10px] font-bold text-app-newGray">
                 {item.label}
               </div>
-              <div className="self-stretch text-[14px] font-quicksand font-normal text-sofia-superDark">
+              <div className="self-stretch text-[14px] font-normal text-sofia-superDark">
                 {item.value}
               </div>
             </div>
@@ -113,10 +113,10 @@ export const UserInfoPanel = ({ conversation }: UserInfoPanelProps) => {
             className="w-[32px] h-[32px] rounded-[24px]"
           />
           <div className="flex-1">
-            <div className="self-stretch text-[10px] font-quicksand font-bold text-app-newGray">
+            <div className="self-stretch text-[10px] font-bold text-app-newGray">
               Canal
             </div>
-            <div className="self-stretch text-[14px] font-quicksand font-normal text-sofia-superDark">
+            <div className="self-stretch text-[14px] font-normal text-sofia-superDark">
               jesus_mtz
             </div>
           </div>

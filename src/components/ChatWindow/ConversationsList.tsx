@@ -113,7 +113,7 @@ interface ConversationsListProps {
 }
 
 const tabBaseStyles =
-  "flex flex-col justify-center font-quicksand text-xs font-semibold self-stretch whitespace-nowrap px-1";
+  "flex flex-col justify-center text-xs font-semibold self-stretch whitespace-nowrap px-1";
 const tabSelectedStyles =
   "bg-sofia-darkBlue text-sofia-superDark rounded flex items-center gap-2.5";
 const tabNormalStyles = "text-app-newGray";
@@ -154,7 +154,7 @@ export const ConversationsList = ({
                 return () => clearTimeout(timer);
               },
             })}
-            className="w-full h-full px-4 rounded-lg border border-app-newGray bg-sofia-blancoPuro flex items-center font-quicksand text-xs font-medium placeholder:text-app-newGray"
+            className="w-full h-full px-4 rounded-lg border border-app-newGray bg-sofia-blancoPuro flex items-center text-xs font-medium placeholder:text-app-newGray"
             placeholder="Búsqueda por ID o nombre"
           />
         </div>

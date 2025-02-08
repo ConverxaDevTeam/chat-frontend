@@ -10,7 +10,7 @@ import {
   onWebSocketEvent,
 } from "@services/websocket.service";
 import { newMessageChat } from "./conversations";
-import { IMessage } from "@utils/interfaces";
+import { ImessageSocket } from "@utils/interfaces";
 
 export const axiosInstance = axios.create({
   baseURL: baseUrl,
@@ -392,7 +392,7 @@ export const connectSocketAsync = createAsyncThunk(
 
     onWebSocketEvent<{
       action: string;
-      data?: IMessage | null;
+      data?: ImessageSocket | null;
       conversation_id?: number;
     }>("message", message => {
       if (message.action === "update-user") {

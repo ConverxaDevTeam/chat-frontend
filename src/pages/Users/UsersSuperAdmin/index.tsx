@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { deleteGlobalUser, getGlobalUsers } from "@services/user";
-import Table from "@components/Table/Table";
-import TableHeader from "@components/Table/TableHeader";
-import TableCell from "@components/Table/TableCell";
+import Table from "@components/Card/Table";
+import TableHeader from "@components/Card/TableHeader";
+import CardItem from "@components/Card/CardItem";
 import { IUserApi } from "../UsersOrganization";
 import PageContainer from "@components/PageContainer";
 import CreateUserModal from "./CreateUserModal";
@@ -34,13 +34,13 @@ const UserRow = ({
   onEdit: (userId: number) => void;
 }) => (
   <tr className="h-[60px] text-[14px] border-b-[1px] hover:bg-gray-50">
-    <TableCell>{user.email}</TableCell>
-    <TableCell>{user.first_name || "-"}</TableCell>
-    <TableCell>{user.last_name || "-"}</TableCell>
-    <TableCell>
+    <CardItem>{user.email}</CardItem>
+    <CardItem>{user.first_name || "-"}</CardItem>
+    <CardItem>{user.last_name || "-"}</CardItem>
+    <CardItem>
       {user.userOrganizations.map(org => org.role).join(", ")}
-    </TableCell>
-    <TableCell>
+    </CardItem>
+    <CardItem>
       <span
         className={`px-2 py-1 rounded-full text-xs ${
           user.email_verified
@@ -50,13 +50,13 @@ const UserRow = ({
       >
         {user.email_verified ? "Verificado" : "No Verificado"}
       </span>
-    </TableCell>
-    <TableCell>
+    </CardItem>
+    <CardItem>
       {user.last_login
         ? new Date(user.last_login).toLocaleDateString()
         : "Nunca"}
-    </TableCell>
-    <TableCell>
+    </CardItem>
+    <CardItem>
       <div className="flex gap-2">
         <button
           className="text-blue-600 hover:text-blue-800"
@@ -71,7 +71,7 @@ const UserRow = ({
           Eliminar
         </button>
       </div>
-    </TableCell>
+    </CardItem>
   </tr>
 );
 

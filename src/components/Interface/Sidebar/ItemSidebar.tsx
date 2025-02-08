@@ -28,7 +28,7 @@ const ItemSidebar = ({
     (state: RootState) => state.auth
   );
   const actualRoles = myOrganizations
-    .filter(org => org.organization.id === selectOrganizationId)
+    .filter(org => org.organization?.id === selectOrganizationId)
     .map(org => org.role);
 
   const active = currentPath === link.to || link.active.includes(currentPath);

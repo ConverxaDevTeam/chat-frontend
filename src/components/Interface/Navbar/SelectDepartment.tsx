@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "@store";
 import Select from "@components/Select";
@@ -26,6 +26,8 @@ const SelectDepartment: FC<SelectDepartmentProps> = ({ mobileResolution }) => {
     (state: RootState) => state.department
   );
   const [departments, setDepartments] = useState<IDepartment[]>([]);
+  const [isOpen, setIsOpen] = useState(false);
+  const selectRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const fetchDepartments = async () => {
@@ -66,23 +68,50 @@ const SelectDepartment: FC<SelectDepartmentProps> = ({ mobileResolution }) => {
     dispatch(clearSelectedDepartment());
   }, [selectOrganizationId, dispatch]);
 
-  const handleChange = async (id: unknown) => {
-    dispatch(setSelectedDepartmentId(Number(id)));
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        selectRef.current &&
+        !selectRef.current.contains(event.target as Node)
+      ) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  const handleSelectDepartment = (departmentId: unknown) => {
+    if (departmentId === selectedDepartmentId) {
+      return;
+    }
+    dispatch(setSelectedDepartmentId(Number(departmentId)));
   };
 
   const options = departments.map(dept => ({
     id: dept.id,
     name: dept.name,
   }));
+  if (options.length === 0) {
+    return null;
+  }
 
   return (
-    <Select
-      value={selectedDepartmentId || undefined}
-      options={options}
-      onChange={handleChange}
-      placeholder="Seleccionar Departamento"
-      mobileResolution={mobileResolution}
-    />
+    <div ref={selectRef} className="w-[200px]">
+      <Select
+        value={selectedDepartmentId || undefined}
+        onChange={handleSelectDepartment}
+        options={options}
+        placeholder="Seleccionar Departamento"
+        mobileResolution={mobileResolution}
+        isOpen={isOpen}
+        onOpen={() => setIsOpen(true)}
+        onClose={() => setIsOpen(false)}
+      />
+    </div>
   );
 };
 

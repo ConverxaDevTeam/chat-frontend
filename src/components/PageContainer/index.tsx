@@ -3,7 +3,7 @@ import { ReactNode } from "react";
 import Loading from "@components/Loading";
 
 interface PageContainerProps {
-  title: string;
+  title?: string;
   buttonText?: string;
   onButtonClick?: () => void;
   loading?: boolean;
@@ -12,7 +12,6 @@ interface PageContainerProps {
 }
 
 const PageContainer = ({
-  title,
   buttonText,
   onButtonClick,
   loading,
@@ -23,18 +22,17 @@ const PageContainer = ({
     <>
       <div className="p-6">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold">{title}</h1>
           {buttonText && onButtonClick && (
             <button
               onClick={onButtonClick}
-              className="flex items-center gap-1 px-4 py-2 bg-app-dark text-white rounded hover:bg-opacity-90"
+              className="flex items-center gap-1 px-4 py-2 bg-app-dark text-white rounded-lg hover:bg-opacity-90"
             >
               <FiPlus /> {buttonText}
             </button>
           )}
         </div>
 
-        <div className="bg-white rounded-lg shadow overflow-hidden">
+        <div className="rounded-lg overflow-hidden">
           {loading ? (
             <div className="flex justify-center items-center p-4">
               <Loading />

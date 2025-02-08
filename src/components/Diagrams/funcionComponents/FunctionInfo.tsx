@@ -46,22 +46,38 @@ export const contextMenuOptions = ({
   onTestEndpoint,
 }: ActionButtonsProps) => [
   {
-    child: <img src="/mvp/pencil.svg" alt="Editar función" />,
+    child: (
+      <img className="w-4 h-4" src="/mvp/square-pen.svg" alt="Editar función" />
+    ),
     onClick: onEdit,
-    tooltip: "Editar función",
+    tooltip: "Editar",
   },
   {
-    child: <img src="/mvp/variable.svg" alt="Ver parámetros" />,
+    child: (
+      <img
+        className="w-4 h-4"
+        src="/mvp/sliders-vertical.svg"
+        alt="Ver parámetros"
+      />
+    ),
     onClick: onParamsClick,
     tooltip: `Ver Parámetros (${params.length})`,
   },
   {
-    child: <img src="/mvp/play.svg" alt="Probar endpoint" />,
+    child: (
+      <img
+        className="w-4 h-4"
+        src="/mvp/search-check.svg"
+        alt="Probar endpoint"
+      />
+    ),
     onClick: onTestEndpoint,
     tooltip: "Probar endpoint",
   },
   {
-    child: <img src="/mvp/trash.svg" alt="Eliminar función" />,
+    child: (
+      <img className="w-4 h-4" src="/mvp/trash.svg" alt="Eliminar función" />
+    ),
     onClick: onDelete,
     tooltip: "Eliminar función",
   },

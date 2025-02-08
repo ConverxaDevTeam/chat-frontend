@@ -26,7 +26,7 @@ export const TitleInput = ({
     onBlur={onFinishEdit}
     onClick={handleInteraction}
     onMouseDown={handleInteraction}
-    className="text-[#001126] font-quicksand text-base font-semibold bg-transparent border-b border-gray-300 focus:outline-none focus:border-blue-500 px-1 w-full"
+    className="text-[#001126] text-base font-semibold bg-transparent border-b border-gray-300 focus:outline-none focus:border-blue-500 px-1 w-full"
     autoFocus
   />
 );

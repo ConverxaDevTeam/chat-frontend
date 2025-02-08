@@ -32,6 +32,8 @@ export const apiUrls = {
   getIntegrationWebChat: (departmentId: number, organizationId: number) =>
     `/api/integration/web-chat/${organizationId}/${departmentId}`,
   updateIntegrationWebChat: (id: number) => `/api/integration/web-chat/${id}`,
+  updateIntegrationLogo: (id: number) => `/api/integration/${id}/logo`,
+  deleteIntegrationLogo: (id: number) => `/api/integration/${id}/logo`,
   //conversations
   getConversationsByOrganizationId: (organizationId: number) =>
     `/api/conversation/organization/${organizationId}`,
