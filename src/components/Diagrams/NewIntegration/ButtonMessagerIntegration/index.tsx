@@ -39,7 +39,7 @@ const ButtonMessagerIntegration = ({
         }
       },
       {
-        config_id: "27899170796396553",
+        config_id: "607946111770437",
         response_type: "code",
         override_default_response_type: true,
         extras: {
