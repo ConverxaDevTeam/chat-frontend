@@ -6,6 +6,8 @@ export const apiUrls = {
   refreshToken: () => `${baseUrl}/api/auth/refresh-token`,
   logOut: () => `${baseUrl}/api/auth/log-out`,
   logIn: () => `${baseUrl}/api/auth/log-in`,
+  requestResetPassword: () => `${baseUrl}/api/auth/request-reset-password`,
+  resetPassword: () => `${baseUrl}/api/auth/reset-password`,
   getSessions: () => `/api/auth/session`,
   deleteSession: (id: number) => `/api/auth/session/${id}`,
   //user
