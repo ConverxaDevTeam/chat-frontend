@@ -43,6 +43,7 @@ export const updateLayout = async (
   breakpoint: string,
   relationId: number
 ): Promise<DashboardCard[]> => {
+  console.log(layouts, breakpoint, relationId);
   const response = await axiosInstance.put<DashboardCard>(
     apiUrls.dashboardCards.layout(relationId),
     {
