@@ -13,7 +13,10 @@ export const formatDateFullString = (timestamp: Date) => {
   return formattedDate.replace(",", "");
 };
 
-export const convertISOToReadable = (dateISO: string) => {
+export const convertISOToReadable = (
+  dateISO: string,
+  timeType: boolean = true
+) => {
   const date = new Date(dateISO);
 
   const day = date.getDate();
@@ -26,7 +29,7 @@ export const convertISOToReadable = (dateISO: string) => {
   const ampm = hours >= 12 ? "PM" : "AM";
 
   const formattedMinutes = minutes.toString().padStart(2, "0");
-  const readableDate = `${month}/${day}/${year} (${hours12}:${formattedMinutes} ${ampm})`;
+  const readableDate = `${month}/${day}/${year} ${hours12}:${formattedMinutes}${timeType ? ` ${ampm}` : ""}`;
 
   return readableDate;
 };

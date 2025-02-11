@@ -1,86 +1,13 @@
 import { convertISOToReadable } from "@utils/format";
-import { BsEye, BsHeadset, BsPersonDash } from "react-icons/bs";
 import { assignConversationToHitl } from "@services/conversations";
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
 import { RootState } from "@store";
 import { AxiosError } from "axios";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { MessageType, ConversationListItem } from "@interfaces/conversation";
 import { IntegrationType } from "@interfaces/integrations";
-import { ReactNode } from "react";
-
-interface StatusBadgeProps {
-  isActive: boolean;
-  activeText?: string;
-  inactiveText?: string;
-  activeClass?: string;
-  inactiveClass?: string;
-}
-
-const StatusBadge = ({
-  isActive,
-  activeText = "Yes",
-  inactiveText = "No",
-  activeClass = "bg-yellow-50 text-yellow-600",
-  inactiveClass = "bg-gray-50 text-gray-600",
-}: StatusBadgeProps) => (
-  <span
-    className={`px-2 py-1 rounded-full text-sm font-medium ${isActive ? activeClass : inactiveClass}`}
-  >
-    {isActive ? activeText : inactiveText}
-  </span>
-);
-
-interface ActionButtonProps {
-  onClick?: () => void;
-  icon: ReactNode;
-  label: string;
-  colorClass: string;
-  title: string;
-  showLabel?: boolean;
-  to?: string;
-}
-
-const ActionButton = ({
-  onClick,
-  icon,
-  label,
-  colorClass,
-  title,
-  showLabel = false,
-  to,
-}: ActionButtonProps) => {
-  const ButtonContent = () => (
-    <>
-      {icon}
-      {showLabel && <span className="hidden md:inline">{label}</span>}
-    </>
-  );
-
-  if (to) {
-    return (
-      <Link
-        to={to}
-        className={`flex items-center gap-1 px-1 py-2 rounded-full transition-colors ${colorClass}`}
-        title={title}
-      >
-        <ButtonContent />
-      </Link>
-    );
-  }
-
-  return (
-    <button
-      onClick={onClick}
-      className={`flex items-center gap-1 px-1 py-2 rounded-full transition-colors ${colorClass}`}
-      title={title}
-    >
-      <ButtonContent />
-    </button>
-  );
-};
 
 interface MessagePreviewProps {
   type: MessageType;
@@ -88,14 +15,14 @@ interface MessagePreviewProps {
 }
 
 const MessagePreview = ({ type, text }: MessagePreviewProps) => (
-  <div className="flex items-center gap-2 p-4">
+  <p className="font-poppinsRegular text-[#212121] py-[8px]">
     <span
       className={`font-medium ${type === MessageType.AGENT ? "text-blue-600" : "text-gray-600"}`}
     >
       {type === MessageType.AGENT ? "Agente" : "Usuario"}:
-    </span>
-    <p className="font-poppinsRegular text-[#212121] truncate">{text}</p>
-  </div>
+    </span>{" "}
+    {text}
+  </p>
 );
 
 interface HitlButtonProps {
@@ -157,28 +84,22 @@ const HitlButton = ({
   };
 
   return (
-    <ActionButton
+    <button
+      type="button"
       onClick={handleHitlAction}
-      icon={
-        conversation.user_id === user?.id ? (
-          <BsPersonDash className="w-5 h-5" />
-        ) : (
-          <BsHeadset className="w-5 h-5" />
-        )
-      }
-      label={conversation.user_id === user?.id ? "Unassign" : "HITL"}
-      colorClass={
-        conversation.user_id === user?.id
-          ? "text-red-600 hover:bg-red-50"
-          : "text-purple-600 hover:bg-purple-50"
-      }
       title={
-        conversation.user_id === user?.id
-          ? "Unassign from HITL"
-          : "Assign to HITL"
+        conversation.user_id === null ? "Unassign from HITL" : "Assign to HITL"
       }
-      showLabel={true}
-    />
+      className={`${conversation.user_id === null ? "bg-sofia-electricGreen" : `${conversation.need_human ? "bg-[#FF616D]" : "bg-[#FFBB93]"}`} rounded-[4px] px-[6px] h-[24px]`}
+    >
+      <p className="text-[12px] text-sofia-superDark font-semibold">
+        {conversation.user_id === null
+          ? "AI"
+          : conversation.user_id === user?.id
+            ? "Unassign"
+            : "HITL"}
+      </p>
+    </button>
   );
 };
 
@@ -191,56 +112,69 @@ const ConversationCard = ({
   conversation,
   onUpdateConversation,
 }: ConversationCardProps) => {
+  const navigate = useNavigate();
   const lastMessage = conversation.message_text
     ? { type: conversation.message_type, text: conversation.message_text }
     : { type: MessageType.USER, text: "Sin mensajes" };
 
   return (
-    <tr className="h-[60px] text-[14px] border-b-[1px] hover:bg-gray-50">
-      <td className="w-[calc(100%/24*2)]">
-        <p className="font-poppinsRegular text-[#212121]">{conversation.id}</p>
-      </td>
-      <td className="w-[calc(100%/24*2)]">
-        <p className="font-poppinsRegular text-[#212121]">
+    <div className="min-h-[60px] text-[14px] border-b-[1px] border-b-[#DBEAF2] hover:bg-gray-50 flex items-center">
+      <div className="pl-[16px] w-[calc(100%/19*2)]">
+        <p className="text-sofia-superDark font-semibold text-[14px]">
+          Usuario
+        </p>
+      </div>
+      <div className="w-[calc(100%/19*2)]">
+        <p className="text-sofia-superDark text-[14px]">
+          ID: {conversation.id}
+        </p>
+      </div>
+      <div className="w-[calc(100%/19*2)]">
+        <p className="text-sofia-superDark text-[14px]">
           {lastMessage.type === MessageType.AGENT ? "Respondido" : "Pendiente"}
         </p>
-      </td>
-      <td className="hidden md:table-cell w-[calc(100%/24*2)]">
-        <p className="font-poppinsRegular text-[#212121]">
-          {convertISOToReadable(conversation.created_at)}
+      </div>
+      <div className="w-[calc(100%/19*2)]">
+        <p className="text-sofia-superDark text-[14px]">
+          {convertISOToReadable(conversation.created_at, false)}
         </p>
-      </td>
-      <td className="max-w-2 w-2">
+      </div>
+      <div className="w-[calc(100%/19*5)] py-[8px] pr-[16px]">
         <MessagePreview type={lastMessage.type} text={lastMessage.text} />
-      </td>
-      <td className="w-[calc(100%/24*2)]">
-        <p className="font-poppinsRegular text-[#212121]">
-          {conversation.type === IntegrationType.CHAT_WEB && "Web Chat"}
-          {conversation.type === IntegrationType.MESSENGER && "Messenger"}
-          {conversation.type === IntegrationType.WHATSAPP && "WhatsApp"}
-        </p>
-      </td>
-      <td className="w-[calc(100%/24*2)]">
-        <div className="flex justify-center">
-          <StatusBadge isActive={conversation.need_human} />
+      </div>
+      <div className="w-[calc(100%/19*2)]">
+        {conversation.type === IntegrationType.CHAT_WEB && (
+          <img className="select-none" src="/img/icon-web.png" alt="Web" />
+        )}
+        {conversation.type === IntegrationType.MESSENGER && (
+          <img className="select-none" src="/img/icon-fb.png" alt="Facebook" />
+        )}
+        {conversation.type === IntegrationType.WHATSAPP && (
+          <img className="select-none" src="/img/icon-wa.png" alt="WhatsApp" />
+        )}
+      </div>
+      <div className="w-[calc(100%/19*4)] flex items-center justify-between pr-[16px]">
+        <HitlButton
+          conversation={conversation}
+          onUpdateConversation={onUpdateConversation}
+        />
+        <div className="flex items-center gap-[18px]">
+          <button
+            type="button"
+            onClick={() => navigate(`/conversation/detail/${conversation.id}`)}
+            className="bg-sofia-electricOlive rounded-[4px] w-[64px] h-[24px]"
+          >
+            <p className="text-[12px] text-sofia-superDark">Ver Chat</p>
+          </button>
+          <button
+            type="button"
+            className="bg-sofia-superDark rounded-[4px] w-[63px] h-[24px]"
+          >
+            <p className="text-[12px] text-white">Exportar</p>
+          </button>
         </div>
-      </td>
-      <td className="w-[calc(100%/24*4)]">
-        <div className="flex items-center">
-          <HitlButton
-            conversation={conversation}
-            onUpdateConversation={onUpdateConversation}
-          />
-          <ActionButton
-            icon={<BsEye className="w-5 h-5" />}
-            label="View"
-            colorClass="text-gray-600 hover:bg-gray-50"
-            title="View Conversation"
-            to={`/conversation/detail/${conversation.id}`}
-          />
-        </div>
-      </td>
-    </tr>
+      </div>
+    </div>
   );
 };
 
