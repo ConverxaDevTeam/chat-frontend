@@ -71,6 +71,7 @@ const DashboardOrganization = () => {
     console.log(roles, organizationId);
     const roleId = roles.find(org => org.id === organizationId)?.id;
     if (!roleId) return;
+    console.log(layout);
     updateLayouts(layout, currentBreakpoint, roleId);
   };
 
