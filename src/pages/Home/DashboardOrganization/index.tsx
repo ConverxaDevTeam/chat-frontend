@@ -68,11 +68,10 @@ const DashboardOrganization = () => {
   }, [state]);
 
   const handleItemChange = (layout: Layout[]) => {
-    console.log(roles, organizationId);
-    const roleId = roles.find(org => org.id === organizationId)?.id;
-    console.log(roleId);
+    const roleId = roles.find(
+      org => org.organization?.id === organizationId
+    )?.id;
     if (!roleId) return;
-    console.log(layout);
     updateLayouts(layout, currentBreakpoint, roleId);
   };
 
