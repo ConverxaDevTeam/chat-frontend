@@ -4,7 +4,7 @@ import { toast } from "react-toastify";
 import { useSweetAlert } from "../../hooks/useSweetAlert";
 import CardItem from "../../components/Card/CardItem";
 import { deleteDepartment } from "@services/department";
-import DepartmentConfirmationModal from "./DepartmentConfirmationModal";
+import ConfirmationModal from "@components/ConfirmationModal";
 
 interface DepartmentCardProps {
   department: IDepartment;
@@ -25,7 +25,6 @@ const DepartmentCard: FC<DepartmentCardProps> = ({
       text: "Esta acción no se podrá deshacer",
       confirmButtonText: "Eliminar",
       cancelButtonText: "Cancelar",
-      type: "department",
     });
 
     if (confirmed) {
@@ -35,11 +34,11 @@ const DepartmentCard: FC<DepartmentCardProps> = ({
         toast.success("Departamento eliminado exitosamente");
       } catch (error: any) {
         // const errorMessage = error?.response?.data?.message || error.message || "";
-      if (error.response?.status === 500) {
-        toast.error("Este departamento no se puede eliminar debido a que tiene agente asignado");
-      } else {
-        toast.error("Error al eliminar departamento");
-      }
+        if (error.response?.status === 500) {
+          toast.error("Este departamento no se puede eliminar debido a que tiene agente asignado");
+        } else {
+          toast.error("Error al eliminar departamento");
+        }
       }
     }
   };
@@ -75,8 +74,8 @@ const DepartmentCard: FC<DepartmentCardProps> = ({
         </button>
       </div>
       {modalOptions && (
-        <DepartmentConfirmationModal
-          isOpen={isOpen}
+        <ConfirmationModal
+          isShown={isOpen}
           title={modalOptions.title}
           text={modalOptions.text}
           confirmText={modalOptions.confirmButtonText}

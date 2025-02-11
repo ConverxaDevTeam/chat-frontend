@@ -1,4 +1,3 @@
-import Swal from "sweetalert2";
 import { useState } from "react";
 
 interface ApiError {
@@ -13,14 +12,6 @@ interface ApiError {
       error?: string;
     };
   };
-}
-
-interface SweetAlertOptions {
-  title: string;
-  successTitle: string;
-  successText: string;
-  errorTitle: string;
-  loadingTitle?: string;
 }
 
 interface OperationResult<T> {
@@ -102,25 +93,11 @@ export const useSweetAlert = () => {
     text: string;
     confirmButtonText?: string;
     cancelButtonText?: string;
-    // Para decidir si se usará el modal custom o sweetAlert
-    type?: "department" | "default";
   }): Promise<boolean> =>{
-    if (options.type === "department") {
       return new Promise<boolean>((resolve) => {
         setModalOptions({ ...options, resolve });
         setIsOpen(true);
       });
-    } else {
-      const result = await Swal.fire({
-        title: options.title,
-        html: `<p class="text-gray-600 text-sm">${options.text}</p>`,
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonText: options.confirmButtonText || "Si",
-        cancelButtonText: options.cancelButtonText || "Cancelar",
-      });
-    return result.isConfirmed;
-    }
   };
   const handleConfirm = () => {
     if (modalOptions?.resolve) {
@@ -138,49 +115,85 @@ export const useSweetAlert = () => {
     setModalOptions(null);
   };
 
+  // --- NUEVA PARTE PARA LAS OPERACIONES ---
+  // modal de operación (loading, success, error)
+  const [isOperationModalOpen, setIsOperationModalOpen] = useState(false);
+  const [operationModalOptions, setOperationModalOptions] = useState<{
+    title: string;
+    text: string;
+    type: "loading" | "success" | "error";
+    autoCloseDelay?: number;
+  } | null>(null);
+
+
+  const showOperationModal = (options: {
+    title: string;
+    text: string;
+    type: "loading" | "success" | "error";
+    autoCloseDelay?: number;
+  }): Promise<void> => {
+    return new Promise<void>((resolve) => {
+      setOperationModalOptions(options);
+      setIsOperationModalOpen(true);
+
+      if (options.type !== "loading" && options.autoCloseDelay) {
+        setTimeout(() => {
+          hideOperationModal();
+          resolve();
+        }, options.autoCloseDelay);
+      } else if (options.type === "loading") {
+        resolve();
+      }
+    });
+  };
+
+  const hideOperationModal = () => {
+    setIsOperationModalOpen(false);
+    setOperationModalOptions(null);
+  };
+
+
   const handleOperation = async <T>(
     operation: () => Promise<T>,
-    options: SweetAlertOptions
+    options: {
+      title: string;
+      successTitle: string;
+      successText: string;
+      errorTitle: string;
+      loadingTitle?: string;
+    }
   ): Promise<OperationResult<T>> => {
     let result: T;
 
     try {
-      await Swal.fire({
+      await showOperationModal({
         title: options.loadingTitle || options.title,
-        html: "Procesando... Espere un momento",
-        allowOutsideClick: false,
-        allowEscapeKey: false,
-        showConfirmButton: false,
-        didOpen: async () => {
-          Swal.showLoading();
-          try {
-            result = await operation();
-            Swal.close();
-            await Swal.fire({
-              icon: "success",
-              title: options.successTitle,
-              text: options.successText,
-              timer: 1500,
-              timerProgressBar: true,
-              showConfirmButton: false,
-            });
-          } catch (err) {
-            console.error("Operation error:", err);
-            const errorMessage = formatError(err);
-            Swal.close();
-            await Swal.fire({
-              icon: "error",
-              title: options.errorTitle,
-              html: errorMessage.replace(/\\n/g, "<br>"),
-              confirmButtonColor: "#d33",
-            });
-            throw err;
-          }
-        },
+        text: "Procesando... Espere un momento",
+        type: "loading",
       });
 
-      return { success: true, data: result! };
+      result = await operation();
+
+      hideOperationModal();
+
+      await showOperationModal({
+        title: options.successTitle,
+        text: options.successText,
+        type: "success",
+        autoCloseDelay: 1000,
+      });
+
+      return { success: true, data: result };
     } catch (error) {
+      hideOperationModal();
+
+      const errorMessage = formatError(error);
+      await showOperationModal({
+        title: options.errorTitle,
+        text: errorMessage,
+        type: "error",
+        autoCloseDelay: 3000,
+      });
       return { success: false, error };
     }
   };
@@ -192,5 +205,8 @@ export const useSweetAlert = () => {
     modalOptions,
     handleConfirm,
     handleCancel,
+    isOperationModalOpen,
+    operationModalOptions,
+    hideOperationModal,
   };
 };

@@ -5,7 +5,7 @@ const ModalHeader: React.FC<{
   children: React.ReactNode;
   handleClose: () => void;
 }> = ({ children, handleClose }) => (
-  <header className="flex justify-between items-center p-6 self-stretch rounded-t-2xl border-b border-sofia-darkBlue bg-white">
+  <header className="flex justify-between items-center p-5 self-stretch rounded-t-2xl border-b border-sofia-darkBlue bg-white">
     <span className="text-sofia-superDark text-2xl font-bold leading-6">
       {children}
     </span>
@@ -49,14 +49,14 @@ const Modal: React.FC<ModalProps> = ({
     ? ReactDOM.createPortal(
         <div
           ref={modalRef} // Ref agregado aquí
-          className="fixed z-[100] w-full h-full flex justify-center items-center top-0 left-0 bg-[#212121] bg-opacity-75"
+          className="fixed z-[50] w-full h-full flex justify-center items-center top-0 left-0 bg-[#212121] bg-opacity-75"
           onClick={handleBackgroundClick}
         >
           <div className="bg-white rounded-2xl shadow-lg flex flex-col items-start border-3 border-sofia-darkBlue overflow-hidden">
             {header && (
               <ModalHeader handleClose={onClose}>{header}</ModalHeader>
             )}
-            <div className="p-[24px]">{children}</div>
+            <div className="w-full p-[24px]">{children}</div>
             {footer && <footer className="mt-4">{footer}</footer>}
           </div>
         </div>,

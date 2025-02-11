@@ -62,10 +62,19 @@ const DepartmentModal: FC<DepartmentModalProps> = ({
     }
   };
 
+  const modalRoot = document.getElementById("modal");
+  if (!modalRoot) return null;
+
+  const handleBackgroundClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+      onClick={handleBackgroundClick}>
       <div className="bg-white rounded-xl p-6 w-full max-w-md relative">
         <button
           type="button"
@@ -105,9 +114,9 @@ const DepartmentModal: FC<DepartmentModalProps> = ({
           </div>
           <div>
             <label className="block text-gray-700 font-semibold mb-2">Descripción</label>
-            <input className="w-full p-3 border text-gray-400 rounded-lg cursor-not-allowed mb-2" 
-            placeholder="Descripción"
-            disabled
+            <input className="w-full p-3 border text-gray-400 rounded-lg cursor-not-allowed mb-2"
+              placeholder="Descripción"
+              disabled
             />
           </div>
           <div className="flex justify-end gap-2">

@@ -32,22 +32,34 @@ const ModalCreateOrganization = ({
   return (
     <form
       onSubmit={handleSubmit}
-      className="flex bg-sofiaCall-white flex-col rounded-[24px] pt-[36px] pl-[29px] pr-[44px] pb-[52px]  w-[760px]"
+      className="bg-white rounded-xl p-2 w-[550px]"
     >
-      <p className="text-[24px] font-poppinsSemiBold text-sofiaCall-dark">
-        Crear Organización
-      </p>
-
-      <div className="grid grid-cols-2 gap-[30px] mt-[27px]">
-        <div className="h-[109px] flex flex-col justify-between">
+      <h2 className="text-2xl font-bold text-gray-800 mb-6">Crear organización</h2>
+      <hr className="mb-6 border-gray-300" />
+      <div className="flex flex-col mb-6">
+        <label className="text-gray-700 font-semibold mb-2">Imagen de organización</label>
+        <div className="relative w-20 h-20 flex items-center justify-center bg-yellow-400 rounded-full text-white font-bold text-lg uppercase">
+        </div>
+        <input
+          type="file"
+          accept="image/png, image/jpg, image/jpeg"
+          className="hidden"
+        />
+        <label htmlFor="imageUpload" className="mt-3 text-sm text-blue-600 cursor-pointer">
+          Subir imagen
+        </label>
+        <p className="text-gray-400 text-xs mt-1">Formatos admitidos: png, jpg, jpeg.</p>
+      </div>
+      <div>
+        <div className="mb-4">
           <label
-            className="text-[#515151] font-poppinsMedium text-[16px]"
+            className="text-gray-700 font-semibold"
             htmlFor="name"
           >
             Nombre
           </label>
           <input
-            className="w-full border-b-[1px] pt-[10px] pb-[19px] border-sofiaCall-gray text-sofiaCall-dark font-poppinsMedium text-[18px]"
+            className="w-full mt-2 p-3 border rounded-lg focus:outline-none text-[15px]"
             id="name"
             type="text"
             name="name"
@@ -57,15 +69,15 @@ const ModalCreateOrganization = ({
             onChange={handleChange}
           />
         </div>
-        <div className="h-[109px] flex flex-col justify-between">
+        <div className="mb-4">
           <label
-            className="text-[#515151] font-poppinsMedium text-[16px]"
+            className="text-gray-700 font-semibold mb-3"
             htmlFor="description"
           >
             Descripción
           </label>
           <input
-            className="w-full border-b-[1px] pt-[10px] pb-[19px] border-sofiaCall-gray text-sofiaCall-dark font-poppinsMedium text-[18px]"
+            className="w-full mt-2 p-3 border rounded-lg focus:outline-none text-[15px]"
             id="description"
             type="text"
             name="description"
@@ -73,17 +85,21 @@ const ModalCreateOrganization = ({
             value={data.description}
             required
             onChange={handleChange}
+            maxLength={255}
           />
+          <p className="text-gray-400 text-xs mt-1">
+            {data.description.length}/255 caracteres
+          </p>
         </div>
-        <div className="h-[109px] flex flex-col justify-between">
+        <div className="mb-4">
           <label
-            className="text-[#515151] font-poppinsMedium text-[16px]"
+            className="text-gray-700 font-semibold mb-2"
             htmlFor="email"
           >
             Correo electrónico
           </label>
           <input
-            className="w-full border-b-[1px] pt-[10px] pb-[19px] border-sofiaCall-gray text-sofiaCall-dark font-poppinsMedium text-[18px]"
+            className="w-full mt-2 p-3 border rounded-lg focus:outline-none text-[15px]"
             id="email"
             type="email"
             name="email"
@@ -94,23 +110,20 @@ const ModalCreateOrganization = ({
           />
         </div>
       </div>
-      <div className="flex gap-[16px] justify-end mt-[56px]">
+      <div className="flex justify-center gap-4 mt-10">
         <button
           type="button"
           onClick={() => close(false)}
-          className="w-[149px] h-[57px] rounded-full border-[1px] border-[#F4F4F4] bg-[#F4F4F4]"
+          className="w-full px-3 py-1 text-gray-500 border-2 rounded-md text-sm font-semibold"
         >
-          <p className="font-poppinsSemiBold text-[18px] text-[#9F9F9F]">
-            Cancelar
-          </p>
+          Cancelar
+
         </button>
         <button
           type="submit"
-          className="w-[217px] h-[57px] rounded-full bg-sofiaCall-dark border-[1px] border-sofiaCall-dark"
+          className="w-full px-3 py-3 bg-sofia-electricGreen text-gray-900 rounded-md text-sm font-semibold hover:bg-opacity-50 transition-all"
         >
-          <p className="font-poppinsSemiBold text-[18px] text-[#FFFDFD]">
-            Crear Usuario
-          </p>
+          <span className="hidden sm:block">Crear organización</span>
         </button>
       </div>
     </form>
