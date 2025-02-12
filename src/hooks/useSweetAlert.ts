@@ -93,11 +93,11 @@ export const useSweetAlert = () => {
     text: string;
     confirmButtonText?: string;
     cancelButtonText?: string;
-  }): Promise<boolean> =>{
-      return new Promise<boolean>((resolve) => {
-        setModalOptions({ ...options, resolve });
-        setIsOpen(true);
-      });
+  }): Promise<boolean> => {
+    return new Promise<boolean>(resolve => {
+      setModalOptions({ ...options, resolve });
+      setIsOpen(true);
+    });
   };
   const handleConfirm = () => {
     if (modalOptions?.resolve) {
@@ -125,14 +125,13 @@ export const useSweetAlert = () => {
     autoCloseDelay?: number;
   } | null>(null);
 
-
   const showOperationModal = (options: {
     title: string;
     text: string;
     type: "loading" | "success" | "error";
     autoCloseDelay?: number;
   }): Promise<void> => {
-    return new Promise<void>((resolve) => {
+    return new Promise<void>(resolve => {
       setOperationModalOptions(options);
       setIsOperationModalOpen(true);
 
@@ -151,7 +150,6 @@ export const useSweetAlert = () => {
     setIsOperationModalOpen(false);
     setOperationModalOptions(null);
   };
-
 
   const handleOperation = async <T>(
     operation: () => Promise<T>,
