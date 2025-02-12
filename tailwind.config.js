@@ -61,6 +61,7 @@ export default {
       backgroundImage: {
         "custom-gradient":
           "linear-gradient(130deg, #f6f9fb 0%, #f0f4f9 40%, #edf2f7 100%)",
+        "sofia-gradient1": "linear-gradient(180deg, #BAF88F 0%, #DDFBC7 100%)",
         "diagram-gradient":
           "radial-gradient(circle at center, transparent 0%, #F6F6F6 80%)",
         "node-gradient":

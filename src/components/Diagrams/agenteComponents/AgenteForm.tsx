@@ -4,6 +4,7 @@ import { Input } from "@components/forms/input";
 import { TextArea } from "@components/forms/textArea";
 import { useState } from "react";
 import { agentService } from "@services/agent";
+import GuideConfig from "@components/GuideConfig";
 
 interface AgentFormValues {
   name: string;
@@ -58,31 +59,67 @@ export const AgenteForm = ({
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4">
-      <InputGroup label="Nombre" errors={errors.name}>
-        <Input
-          placeholder="Nombre del agente"
-          register={register("name", { required: "El nombre es obligatorio" })}
-          error={errors.name?.message}
-        />
-      </InputGroup>
-      <InputGroup label="Descripción" errors={errors.description}>
-        <TextArea
-          placeholder="Descripción del agente"
-          register={register("description", {
-            required: "La descripción es obligatoria",
-          })}
-          error={errors.description?.message}
-          rows={4}
-        />
-      </InputGroup>
-      <button
-        type="submit"
-        className="px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 disabled:bg-blue-300"
-        disabled={isLoading}
-      >
-        {isLoading ? "Guardando..." : "Guardar"}
-      </button>
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="flex gap-[24px] w-[587px]"
+    >
+      <GuideConfig />
+      <div className="flex-1 flex flex-col gap-[16px]">
+        <InputGroup label="Escribe el nombre del agente" errors={errors.name}>
+          <Input
+            placeholder="Nombre del agente"
+            register={register("name", {
+              required: "El nombre es obligatorio",
+            })}
+            error={errors.name?.message}
+          />
+        </InputGroup>
+        <InputGroup label="Instrucción" errors={errors.description}>
+          <TextArea
+            placeholder="Descripción del agente"
+            register={register("description", {
+              required: "La descripción es obligatoria",
+            })}
+            error={errors.description?.message}
+            rows={8}
+          />
+        </InputGroup>
+        <div className="flex gap-[16px] justify-end">
+          <button
+            type="button"
+            className="w-[64px] h-[24px] text-sofia-superDark font-medium text-[12px] bg-sofia-electricGreen rounded-[4px]"
+          >
+            Ejemplo 1
+          </button>
+          <button
+            type="button"
+            className="w-[64px] h-[24px] text-sofia-superDark font-medium text-[12px] bg-sofia-electricGreen rounded-[4px]"
+          >
+            Ejemplo 2
+          </button>
+          <button
+            type="button"
+            className="w-[64px] h-[24px] text-sofia-superDark font-medium text-[12px] bg-sofia-electricGreen rounded-[4px]"
+          >
+            Ejemplo 3
+          </button>
+        </div>
+        <div className="flex gap-[16px] mt-auto">
+          <button
+            type="button"
+            className="flex-1 h-[48px] text-sofia-navyBlue border-sofia-navyBlue border-[1px] font-semibold rounded-[8px]"
+          >
+            Cancelar
+          </button>
+          <button
+            type="submit"
+            className="w-[259px] h-[48px] text-sofia-superDark font-semibold bg-sofia-electricGreen rounded-[8px] hover:bg-opacity-70 disabled:bg-opacity-75"
+            disabled={isLoading}
+          >
+            {isLoading ? "Guardando..." : "Guardar"}
+          </button>
+        </div>
+      </div>
     </form>
   );
 };
