@@ -146,7 +146,7 @@ export const useSweetAlert = () => {
     type: "loading" | "success" | "error";
     autoCloseDelay?: number;
   }): Promise<void> => {
-    return new Promise<void>((resolve) => {
+    return new Promise<void>(resolve => {
       setOperationModalOptions(options);
       setIsOperationModalOpen(true);
 
