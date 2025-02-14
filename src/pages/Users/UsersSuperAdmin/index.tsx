@@ -7,7 +7,7 @@ import { IUserApi } from "../UsersOrganization";
 import PageContainer from "@components/PageContainer";
 import CreateUserModal from "./CreateUserModal";
 import EditUserModal from "./EditUserModal"; // Modal de edición importado
-import { useSweetAlert } from "@hooks/useSweetAlert";
+import { useAlertContext } from "@components/Diagrams/components/AlertContext";
 
 interface Column {
   key: keyof IUserApi | "actions";
@@ -82,7 +82,7 @@ const UsersSuperAdmin = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false); // Estado para el modal de edición
   const [userToEdit, setUserToEdit] = useState<IUserApi | null>(null); // Estado para el usuario que se va a editar
 
-  const { handleOperation, showConfirmation } = useSweetAlert();
+  const { handleOperation, showConfirmation } = useAlertContext();
 
   const getAllUsers = async () => {
     try {

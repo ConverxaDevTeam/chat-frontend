@@ -7,7 +7,7 @@ interface ConfirmationModalProps {
     text: string;
     confirmText?: string;
     cancelText?: string;
-    onConfirm: () => void;
+    onConfirm?: () => Promise<boolean | void>;
     onClose: () => void;
 }
 
@@ -48,7 +48,20 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
                 <p className="text-center text-gray-600 mb-6">{text}</p>
                 <div className="flex justify-between gap-4">
                     <button
-                        onClick={onConfirm}
+                        onClick={async () => {
+                            try {
+                                if (onConfirm) {
+                                    const result = await onConfirm();
+                                    if (typeof result === 'boolean' && result === false) {
+                                        return;
+                                    }
+                                }
+                                onClose();
+                            } catch (error) {
+                                console.error('Error in confirmation:', error);
+                                onClose();
+                            }
+                        }}
                         className="w-full font-semibold px-5 py-2 border border-gray-500 rounded-lg text-gray-700 hover:bg-gray-100 transition duration-300"
                     >
                         {confirmText}

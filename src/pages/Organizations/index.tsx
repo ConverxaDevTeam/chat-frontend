@@ -5,18 +5,17 @@ import {
   deleteOrganization,
   editOrganization,
 } from "@services/organizations";
-// import OrganizationConfirmationModal from "./OrganizationConfirmationModal";
-import ConfirmationModal from "@components/ConfirmationModal";
+// import ConfirmationModal from "@components/ConfirmationModal";
 import { useEffect, useState } from "react";
 import OrganizationCard from "./OrganizationCard";
 import ModalCreateOrganization from "./ModalCreateUser";
-import { useSweetAlert } from "@hooks/useSweetAlert";
 import { useForm } from "react-hook-form";
 import { getUserMyOrganization } from "@services/user";
 import { IUserApi } from "../Users/UsersOrganization";
 import { OrganizationRoleType } from "@utils/interfaces";
 import { FiPlus } from "react-icons/fi";
-import OperationModal from "@components/OperationModal";
+// import OperationModal from "@components/OperationModal";
+import { useAlertContext } from "@components/Diagrams/components/AlertContext";
 
 export type IOrganizarion = {
   id: number;
@@ -48,9 +47,7 @@ const Organizations = () => {
   const [isModalCreateOrganizationOpen, setIsModalCreateOrganizationOpen] =
     useState(false);
   const [isModalEditOpen, setIsModalEditOpen] = useState(false);
-  const { handleOperation, showConfirmation, isOpen, modalOptions, handleConfirm, handleCancel, isOperationModalOpen,
-    operationModalOptions,
-    hideOperationModal, } = useSweetAlert();
+  const { handleOperation, showConfirmation } = useAlertContext();
   const { register, handleSubmit, reset } = useForm<EditFormData>();
 
   const getAllOrganizations = async () => {
@@ -162,27 +159,6 @@ const Organizations = () => {
 
   return (
     <>
-      {modalOptions && (
-        <ConfirmationModal
-          isShown={isOpen}
-          title={modalOptions.title}
-          text={modalOptions.text}
-          confirmText={modalOptions.confirmButtonText || "Confirmar"}
-          cancelText={modalOptions.cancelButtonText || "Cancelar"}
-          onConfirm={handleConfirm}
-          onClose={handleCancel}
-        />
-      )}
-
-      {isOperationModalOpen && operationModalOptions && (
-        <OperationModal
-          isShown={isOperationModalOpen}
-          title={operationModalOptions.title}
-          text={operationModalOptions.text}
-          type={operationModalOptions.type}
-          onClose={operationModalOptions.type !== "loading" ? hideOperationModal : undefined}
-        />
-      )}
       <Modal
         isShown={isModalCreateOrganizationOpen}
         // children={<p></p>}

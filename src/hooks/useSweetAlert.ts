@@ -86,6 +86,7 @@ export const useSweetAlert = () => {
     confirmButtonText?: string;
     cancelButtonText?: string;
     resolve: (value: boolean) => void;
+    onConfirm?: () => Promise<boolean | void>;
   } | null>(null);
 
   const showConfirmation = async (options: {
@@ -93,18 +94,34 @@ export const useSweetAlert = () => {
     text: string;
     confirmButtonText?: string;
     cancelButtonText?: string;
-  }): Promise<boolean> =>{
-      return new Promise<boolean>((resolve) => {
-        setModalOptions({ ...options, resolve });
-        setIsOpen(true);
-      });
+    onConfirm?: () => Promise<boolean | void>;
+  }): Promise<boolean> => {
+    return new Promise<boolean>((resolve) => {
+      setModalOptions({ ...options, resolve });
+      setIsOpen(true);
+    });
   };
-  const handleConfirm = () => {
-    if (modalOptions?.resolve) {
-      modalOptions.resolve(true);
+
+  const handleConfirm = async () => {
+    if (modalOptions) {
+      try {
+        if (modalOptions.onConfirm) {
+          const result = await modalOptions.onConfirm();
+          if (typeof result === 'boolean' && result === false) {
+            modalOptions.resolve(false);
+            return;
+          }
+        }
+        modalOptions.resolve(true);
+        setIsOpen(false);
+        setModalOptions(null);
+      } catch (error) {
+        console.error('Error in confirmation:', error);
+        modalOptions.resolve(false);
+        setIsOpen(false);
+        setModalOptions(null);
+      }
     }
-    setIsOpen(false);
-    setModalOptions(null);
   };
 
   const handleCancel = () => {
@@ -115,8 +132,6 @@ export const useSweetAlert = () => {
     setModalOptions(null);
   };
 
-  // --- NUEVA PARTE PARA LAS OPERACIONES ---
-  // modal de operación (loading, success, error)
   const [isOperationModalOpen, setIsOperationModalOpen] = useState(false);
   const [operationModalOptions, setOperationModalOptions] = useState<{
     title: string;
@@ -124,7 +139,6 @@ export const useSweetAlert = () => {
     type: "loading" | "success" | "error";
     autoCloseDelay?: number;
   } | null>(null);
-
 
   const showOperationModal = (options: {
     title: string;
@@ -152,7 +166,6 @@ export const useSweetAlert = () => {
     setOperationModalOptions(null);
   };
 
-
   const handleOperation = async <T>(
     operation: () => Promise<T>,
     options: {
@@ -168,19 +181,22 @@ export const useSweetAlert = () => {
     try {
       await showOperationModal({
         title: options.loadingTitle || options.title,
-        text: "Procesando... Espere un momento",
+        text: "Espere un momento",
         type: "loading",
       });
 
       result = await operation();
 
       hideOperationModal();
-
-      await showOperationModal({
-        title: options.successTitle,
-        text: options.successText,
-        type: "success",
-        autoCloseDelay: 1000,
+      await new Promise<void>((resolve) => {
+        showOperationModal({
+          title: options.successTitle,
+          text: options.successText,
+          type: "success",
+          autoCloseDelay: 1500,
+        }).then(() => {
+          resolve();
+        });
       });
 
       return { success: true, data: result };
@@ -188,19 +204,25 @@ export const useSweetAlert = () => {
       hideOperationModal();
 
       const errorMessage = formatError(error);
-      await showOperationModal({
-        title: options.errorTitle,
-        text: errorMessage,
-        type: "error",
-        autoCloseDelay: 3000,
+      
+      await new Promise<void>((resolve) => {
+        showOperationModal({
+          title: options.errorTitle,
+          text: errorMessage,
+          type: "error",
+          autoCloseDelay: 3000,
+        }).then(() => {
+          resolve();
+        });
       });
+
       return { success: false, error };
     }
   };
 
   return {
-    showConfirmation,
     handleOperation,
+    showConfirmation,
     isOpen,
     modalOptions,
     handleConfirm,

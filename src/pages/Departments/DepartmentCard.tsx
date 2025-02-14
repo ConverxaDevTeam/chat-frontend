@@ -1,10 +1,9 @@
 import { FC } from "react";
 import { IDepartment } from "../../interfaces/departments";
 import { toast } from "react-toastify";
-import { useSweetAlert } from "../../hooks/useSweetAlert";
 import CardItem from "../../components/Card/CardItem";
 import { deleteDepartment } from "@services/department";
-import ConfirmationModal from "@components/ConfirmationModal";
+import { useAlertContext } from "@components/Diagrams/components/AlertContext";
 
 interface DepartmentCardProps {
   department: IDepartment;
@@ -17,7 +16,7 @@ const DepartmentCard: FC<DepartmentCardProps> = ({
   onUpdate,
   onDelete,
 }) => {
-  const { showConfirmation, isOpen, modalOptions, handleConfirm, handleCancel } = useSweetAlert();
+  const { showConfirmation } = useAlertContext();
 
   const handleDelete = async () => {
     const confirmed = await showConfirmation({
@@ -33,7 +32,6 @@ const DepartmentCard: FC<DepartmentCardProps> = ({
         onDelete(department.id);
         toast.success("Departamento eliminado exitosamente");
       } catch (error: any) {
-        // const errorMessage = error?.response?.data?.message || error.message || "";
         if (error.response?.status === 500) {
           toast.error("Este departamento no se puede eliminar debido a que tiene agente asignado");
         } else {
@@ -73,17 +71,7 @@ const DepartmentCard: FC<DepartmentCardProps> = ({
           <span className="hidden sm:block">Editar</span>
         </button>
       </div>
-      {modalOptions && (
-        <ConfirmationModal
-          isShown={isOpen}
-          title={modalOptions.title}
-          text={modalOptions.text}
-          confirmText={modalOptions.confirmButtonText}
-          cancelText={modalOptions.cancelButtonText}
-          onConfirm={handleConfirm}
-          onClose={handleCancel}
-        />
-      )}
+      
     </div>
   );
 };
