@@ -36,6 +36,8 @@ export const apiUrls = {
   updateIntegrationWebChat: (id: number) => `/api/integration/web-chat/${id}`,
   updateIntegrationLogo: (id: number) => `/api/integration/${id}/logo`,
   deleteIntegrationLogo: (id: number) => `/api/integration/${id}/logo`,
+  getPagesFacebook: (departmentId: number, organizationId: number) =>
+    `/api/facebook/get-pages/${organizationId}/${departmentId}`,
   //conversations
   getConversationsByOrganizationId: (organizationId: number) =>
     `/api/conversation/organization/${organizationId}`,
