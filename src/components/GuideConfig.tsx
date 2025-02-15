@@ -1,5 +1,3 @@
-import React from "react";
-
 const GuideConfig = () => {
   return (
     <div className="flex flex-col gap-[16px] w-[166px] h-[427px]">

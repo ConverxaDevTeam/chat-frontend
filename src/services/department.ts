@@ -58,11 +58,15 @@ export const getDepartments = async (organization: number) => {
   }
 };
 
-export const createDepartment = async (organization: number, name: string) => {
+export const createDepartment = async (
+  organization: number,
+  name: string,
+  description: string
+) => {
   try {
     const response = await axiosInstance.post<IDepartment>(
       apiUrls.departments.base(),
-      { name, organizacion_id: organization }
+      { name, description, organizacion_id: organization }
     );
     return response.data;
   } catch (error) {
@@ -71,11 +75,15 @@ export const createDepartment = async (organization: number, name: string) => {
   }
 };
 
-export const updateDepartment = async (id: number, name: string) => {
+export const updateDepartment = async (
+  id: number,
+  name: string,
+  description: string
+) => {
   try {
     const response = await axiosInstance.patch<IDepartment>(
       apiUrls.departments.byId(id),
-      { name }
+      { name, description }
     );
     return response.data;
   } catch (error) {
