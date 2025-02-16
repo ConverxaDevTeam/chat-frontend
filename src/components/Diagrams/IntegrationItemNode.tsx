@@ -88,6 +88,7 @@ const IntegrationItemNode = memo((props: IntegrationItemProps) => {
       <RemoveIntegration
         isOpen={isRemoveModalOpen}
         onClose={() => setIsRemoveModalOpen(false)}
+        data={data}
       />
     </Fragment>
   );

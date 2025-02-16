@@ -1,15 +1,27 @@
 import React from "react";
 
 import RawModal from "@components/RawModal";
+import { NodeData } from "@interfaces/workflow";
+import { deleteIntegrationbyId } from "@services/integration";
 
 interface AddWebchatProps {
   isOpen: boolean;
   onClose: () => void;
+  data: NodeData;
 }
 
-const RemoveIntegration: React.FC<AddWebchatProps> = ({ isOpen, onClose }) => {
-  const handleRemoveIntegration = () => {
-    console.log("Integration removed");
+const RemoveIntegration: React.FC<AddWebchatProps> = ({
+  isOpen,
+  onClose,
+  data,
+}) => {
+  const handleRemoveIntegration = async () => {
+    if (!data.id) return;
+    const respone = await deleteIntegrationbyId(data.id);
+    if (respone) {
+      onClose();
+      window.location.reload();
+    }
   };
   return (
     <RawModal isShown={isOpen} onClose={onClose}>
