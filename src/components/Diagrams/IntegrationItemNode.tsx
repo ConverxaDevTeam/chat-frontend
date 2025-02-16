@@ -4,6 +4,7 @@ import { CustomTypeNodeProps, NodeStyle } from "@interfaces/workflow";
 import { NodeData } from "@interfaces/workflow";
 import { IntegrationType } from "@interfaces/integrations";
 import AddWebchat from "@pages/Workspace/components/AddWebChat";
+import RemoveIntegration from "@pages/Workspace/components/RemoveIntegration";
 
 interface IntegrationItemProps extends CustomTypeNodeProps<NodeData> {
   data: NodeData & {
@@ -32,15 +33,22 @@ const getIntegrationName = (type: IntegrationType) => {
 export const contextMenuOptions = ({
   setIsModalOpen,
   itemType,
+  setIsRemoveModalOpen,
 }: {
   setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
   itemType: IntegrationType;
+  setIsRemoveModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
   const choices = [];
   if (itemType === IntegrationType.CHAT_WEB) {
     choices.push({
       child: <img src="/mvp/globe.svg" alt="Webchat" />,
       onClick: () => setIsModalOpen(true),
+    });
+  } else if (itemType === IntegrationType.MESSENGER) {
+    choices.push({
+      child: <img src="/mvp/trash.svg" alt="Remove" />,
+      onClick: () => setIsRemoveModalOpen(true),
     });
   }
   return choices;
@@ -51,6 +59,7 @@ const IntegrationItemNode = memo((props: IntegrationItemProps) => {
   const type = data.type || IntegrationType.CHAT_WEB;
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
   return (
     <Fragment>
       <DefaultNode
@@ -72,9 +81,14 @@ const IntegrationItemNode = memo((props: IntegrationItemProps) => {
         contextMenuOptions={contextMenuOptions({
           setIsModalOpen,
           itemType: type,
+          setIsRemoveModalOpen,
         })}
       />
       <AddWebchat isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      <RemoveIntegration
+        isOpen={isRemoveModalOpen}
+        onClose={() => setIsRemoveModalOpen(false)}
+      />
     </Fragment>
   );
 });
