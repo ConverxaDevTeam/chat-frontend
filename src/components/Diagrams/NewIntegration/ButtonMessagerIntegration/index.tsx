@@ -83,34 +83,41 @@ const ButtonMessagerIntegration = ({
             <>
               <h1>Conectar Página de Facebook</h1>
               <div className="flex flex-col gap-[16px]">
-                {pages.map(page => {
-                  const handleConnect = async () => {
-                    if (!departmentId || !selectOrganizationId) return;
-                    const response = await createIntegrationMessager(
-                      departmentId,
-                      selectOrganizationId,
-                      {
-                        access_token: page.access_token,
-                        id: page.id,
+                {pages.length > 0 ? (
+                  pages.map(page => {
+                    const handleConnect = async () => {
+                      if (!departmentId || !selectOrganizationId) return;
+                      const response = await createIntegrationMessager(
+                        departmentId,
+                        selectOrganizationId,
+                        {
+                          access_token: page.access_token,
+                          id: page.id,
+                        }
+                      );
+                      if (response) {
+                        getDataIntegrations();
+                        close();
                       }
+                    };
+                    return (
+                      <div key={page.id} className="flex flex-col gap-[8px]">
+                        <span>{page.name}</span>
+                        <button
+                          onClick={handleConnect}
+                          className="bg-sofia-electricGreen text-sofia-superDark p-[8px] rounded-md"
+                        >
+                          Conectar
+                        </button>
+                      </div>
                     );
-                    if (response) {
-                      getDataIntegrations();
-                      close();
-                    }
-                  };
-                  return (
-                    <div key={page.id} className="flex flex-col gap-[8px]">
-                      <span>{page.name}</span>
-                      <button
-                        onClick={handleConnect}
-                        className="bg-sofia-electricGreen text-sofia-superDark p-[8px] rounded-md"
-                      >
-                        Conectar
-                      </button>
-                    </div>
-                  );
-                })}
+                  })
+                ) : (
+                  <p>
+                    No se encontraron páginas de Facebook para conectar o se
+                    requieren permiso <strong>pages_show_list</strong>.
+                  </p>
+                )}
               </div>
             </>
           )}
