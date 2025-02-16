@@ -11,6 +11,7 @@ import {
 import { useSweetAlert } from "@hooks/useSweetAlert";
 import Modal from "@components/Modal";
 import { useRef } from "react";
+import GuideConfig from "@components/GuideConfig";
 
 interface KnowledgeBaseModalProps {
   isShown: boolean;
@@ -46,15 +47,15 @@ const FileList = ({
 
   return (
     <div className="space-y-4">
-      <div className="space-y-2">
+      <div className="space-y-[24px]">
         {files.map(file => (
           <div
             key={file.id}
-            className="flex items-center justify-between p-3 bg-white rounded-lg border"
+            className="flex items-center justify-between h-[48px] px-[16px] bg-[#FCFCFC] rounded-lg border border-[#DBEAF2]"
           >
-            <div>
+            <div className="flex items-center gap-[8px]">
               <p className="font-medium">{file.filename}</p>
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-[#A6A8AB]">
                 {file.updated_at &&
                   new Date(file.updated_at).toLocaleDateString()}
               </p>
@@ -264,8 +265,8 @@ const UploadForm = ({
       <div className="flex flex-col items-center">
         <FaUpload className="text-4xl text-gray-400 mb-2" />
         <p className="text-gray-600 mb-2">Arrastra y suelta archivos aquí o</p>
-        <label className="cursor-pointer bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-          Seleccionar Archivos
+        <label className="cursor-pointer bg-[#D0FBF8] text-sofia-superDark px-4 py-2 rounded hover:bg-opacity-70">
+          + Subir archivo
           <input
             type="file"
             className="hidden"
@@ -336,61 +337,74 @@ const KnowledgeBaseModal = ({
   };
 
   return (
-    <Modal
-      isShown={isShown}
-      onClose={onClose}
-      header={
-        <h2 className="text-xl font-semibold">
-          {showUploadForm ? "Subir Archivos" : "Base de Conocimientos"}
-        </h2>
-      }
-    >
-      {showUploadForm ? (
-        <div>
-          <div className="mb-4">
-            <button
-              onClick={() => setShowUploadForm(false)}
-              className="flex items-center justify-center px-4 py-2 text-sm text-blue-600 bg-blue-100 rounded-lg hover:bg-blue-200 transition-colors duration-200"
-            >
-              Volver al listado
-            </button>
-          </div>
-          <UploadForm
-            onClose={() => setShowUploadForm(false)}
-            agentId={agentId}
-            onSuccess={fetchFiles}
-          />
-        </div>
-      ) : (
-        <>
-          <div className="grid grid-cols-1 gap-4 mb-4">
-            <div className="w-full text-sm text-amber-600 bg-amber-50 px-4 py-3 rounded-lg">
-              <p>
-                ⚠️ Los archivos que no se utilicen en una conversación se
-                eliminarán automáticamente después de 7 días.
-              </p>
+    <Modal isShown={isShown} onClose={onClose}>
+      <div className="flex gap-[24px] w-[587px]">
+        <GuideConfig />
+        <div className="flex-1 flex flex-col gap-[16px]">
+          {showUploadForm ? (
+            <div>
+              <div className="mb-4">
+                <button
+                  onClick={() => setShowUploadForm(false)}
+                  className="flex items-center justify-center px-4 py-2 text-sm text-sofia-superDark bg-[#D0FBF8] rounded-lg hover:bg-opacity-70 transition-colors duration-200"
+                >
+                  Volver al listado
+                </button>
+              </div>
+              <UploadForm
+                onClose={() => setShowUploadForm(false)}
+                agentId={agentId}
+                onSuccess={fetchFiles}
+              />
             </div>
-            <button
-              onClick={() => setShowUploadForm(true)}
-              className="w-full flex items-center justify-center px-4 py-2 text-sm text-blue-600 bg-blue-100 rounded-lg hover:bg-blue-200 transition-colors duration-200"
-            >
-              <FaPlus className="mr-2" /> Agregar Archivos
-            </button>
-          </div>
-          <FileList
-            files={files.slice(
-              (currentPage - 1) * itemsPerPage,
-              currentPage * itemsPerPage
-            )}
-            onDelete={handleDelete}
-            currentPage={currentPage}
-            itemsPerPage={itemsPerPage}
-            totalPages={totalPages}
-            onPageChange={setCurrentPage}
-            isLoading={isLoading}
-          />
-        </>
-      )}
+          ) : (
+            <>
+              <div className="grid grid-cols-1 gap-2 mb-4">
+                <div className="w-full text-sm text-amber-600 bg-amber-50 px-4 py-3 rounded-lg">
+                  <p>
+                    ⚠️ Los archivos que no se utilicen en una conversación se
+                    eliminarán automáticamente después de 7 días.
+                  </p>
+                </div>
+                <p className="text-sofia-superDark text-[14px] font-bold">
+                  Base de conocimientos
+                </p>
+                <p className="text-sofia-navyBlue text-[10px]">
+                  Añade archivos con información que el agente utilizará para
+                  responder preguntas. Puedes subir guías, documentos de soporte
+                  u otros recursos relevantes
+                </p>
+                <button
+                  onClick={() => setShowUploadForm(true)}
+                  className="w-full flex items-center justify-center px-4 py-2 text-sm text-sofia-superDark bg-[#D0FBF8] rounded-lg hover:bg-opacity-70 transition-colors duration-200"
+                >
+                  <FaPlus className="mr-2" /> Agregar Archivos
+                </button>
+              </div>
+              <FileList
+                files={files.slice(
+                  (currentPage - 1) * itemsPerPage,
+                  currentPage * itemsPerPage
+                )}
+                onDelete={handleDelete}
+                currentPage={currentPage}
+                itemsPerPage={itemsPerPage}
+                totalPages={totalPages}
+                onPageChange={setCurrentPage}
+                isLoading={isLoading}
+              />
+              <div className="flex gap-[16px] mt-auto justify-end">
+                <button
+                  type="button"
+                  className="w-[115px] h-[48px] text-sofia-navyBlue border-sofia-navyBlue border-[1px] font-semibold rounded-[8px]"
+                >
+                  Cancelar
+                </button>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
     </Modal>
   );
 };

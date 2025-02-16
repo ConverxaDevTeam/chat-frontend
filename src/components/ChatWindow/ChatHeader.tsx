@@ -21,7 +21,7 @@ export const ChatHeader = ({
         <Avatar avatar={avatar} secret={secret} className="flex-none" />
         <div className="max-w-[calc(50%-3rem)] flex flex-col items-start">
           <h3 className="self-stretch text-sofia-superDark text-xl font-semibold truncate">
-            {secret}
+            Usuario
           </h3>
           <span className="text-sofia-superDark text-xs font-medium">
             En línea
