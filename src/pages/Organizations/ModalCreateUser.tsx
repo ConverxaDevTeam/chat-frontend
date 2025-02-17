@@ -28,6 +28,7 @@ interface User {
   id: number;
   first_name: string;
   last_name: string;
+  email: string;
 }
 
 interface CreateOrganizationData {
@@ -135,12 +136,19 @@ const ModalCreateOrganization = ({
     if (isEditMode) {
       getUsers();
     }
-  }, [isEditMode]);
+  }, [isEditMode, organization?.id]);
 
   const getUserOptions = () => {
+    if (loadingUsers) {
+      return <option>Cargando usuarios...</option>;
+    }
+    console.log(users);
+
     const options = users.map(user => (
       <option key={user.id} value={user.id}>
-        {user.first_name} {user.last_name}
+        {user.first_name || user.last_name
+          ? `${user.first_name || ""} ${user.last_name || ""}`.trim()
+          : user.email}
       </option>
     ));
 

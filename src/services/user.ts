@@ -5,6 +5,13 @@ import { alertError } from "@utils/alerts";
 import { OrganizationRoleType } from "@utils/interfaces";
 import axios from "axios";
 
+interface User {
+  id: number;
+  first_name: string;
+  last_name: string;
+  email: string;
+}
+
 const handleAxiosError = (error: unknown): string => {
   let message = "Error inesperado";
   if (axios.isAxiosError(error)) {
@@ -26,7 +33,12 @@ export const getUserMyOrganization = async (organizationId: number) => {
       apiUrls.getUserMyOrganization(organizationId)
     );
     if (response.data.ok) {
-      return response.data.users;
+      return response.data.users.map((user: User) => ({
+        id: user.id,
+        first_name: user.first_name,
+        last_name: user.last_name,
+        email: user.email,
+      }));
     } else {
       alertError(response.data.message);
       return [];
