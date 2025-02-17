@@ -13,8 +13,9 @@ import { IOrganization } from "@interfaces/organization.interface";
 
 interface ModalCreateOrganizationProps {
   close: (value: boolean) => void;
-  getAllOrganizations: () => void;
+  getAllOrganizations: () => Promise<void>;
   organization?: IOrganization | null;
+  updateOrganization: (org: IOrganization) => void;
 }
 
 interface OrganizationFormData {
@@ -42,6 +43,7 @@ const ModalCreateOrganization = ({
   close,
   getAllOrganizations,
   organization,
+  updateOrganization,
 }: ModalCreateOrganizationProps) => {
   const isEditMode = !!organization;
   const { register, handleSubmit } = useForm<{ owner_id: number }>();
@@ -93,16 +95,21 @@ const ModalCreateOrganization = ({
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (isEditMode) {
+      if (isEditMode && organization) {
         await uploadOrganizationLogo(organization.id, file);
+        window.location.reload();
       }
       setData(prev => ({ ...prev, logoFile: file }));
     }
   };
 
   const handleDeleteLogo = async () => {
-    if (isEditMode) {
-      await uploadOrganizationLogo(organization.id, null as unknown as File);
+    if (isEditMode && organization) {
+      const updatedOrg = await uploadOrganizationLogo(
+        organization.id,
+        null as unknown as File
+      );
+      updateOrganization(updatedOrg);
     }
     setData({ ...data, logoFile: null });
   };
@@ -110,7 +117,7 @@ const ModalCreateOrganization = ({
   const handleEditOwner = async (data: { owner_id: number }) => {
     if (!organization) return;
     await editOrganization(organization.id, data);
-    getAllOrganizations();
+    await getAllOrganizations();
     close(false);
   };
 
@@ -127,7 +134,7 @@ const ModalCreateOrganization = ({
     };
     const response = await createOrganization(createData);
     if (response) {
-      getAllOrganizations();
+      await getAllOrganizations();
       close(false);
     }
   };

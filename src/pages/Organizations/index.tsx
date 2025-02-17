@@ -47,6 +47,7 @@ interface CreateModalProps {
   onClose: () => void;
   getAllOrganizations: () => Promise<void>;
   organization?: IOrganization | null;
+  updateOrganization: (org: IOrganization) => void;
 }
 
 const CreateModal = ({
@@ -54,6 +55,7 @@ const CreateModal = ({
   onClose,
   getAllOrganizations,
   organization,
+  updateOrganization,
 }: CreateModalProps) => (
   <Modal
     isShown={isShown}
@@ -63,6 +65,7 @@ const CreateModal = ({
         getAllOrganizations={getAllOrganizations}
         close={onClose}
         organization={organization}
+        updateOrganization={updateOrganization}
       />
     }
   />
@@ -76,14 +79,20 @@ const useOrganizations = () => {
     try {
       const response = await getOrganizations();
       if (response) {
-        setOrganizations(response);
+        setOrganizations(prev => {
+          // Si no hay cambios, mantener el estado anterior
+          if (JSON.stringify(prev) === JSON.stringify(response)) {
+            return prev;
+          }
+          return response;
+        });
       }
     } finally {
       setLoading(false);
     }
   };
 
-  return { organizations, loading, getAllOrganizations };
+  return { organizations, loading, getAllOrganizations, setOrganizations };
 };
 
 const useUsers = () => {
@@ -175,6 +184,11 @@ const useHandles = (
     }
   };
 
+  const updateOrganization = (updatedOrg: IOrganization) => {
+    console.log(updatedOrg);
+    getAllOrganizations();
+  };
+
   const getUserOptions = () => {
     const options = users.map(user => (
       <option key={user.id} value={user.id}>
@@ -205,6 +219,7 @@ const useHandles = (
     reset,
     selectedOrg,
     setSelectedOrg,
+    updateOrganization,
   };
 };
 
@@ -212,11 +227,13 @@ const Organizations = () => {
   const { organizations, loading, getAllOrganizations } = useOrganizations();
   const { users, getUsers } = useUsers();
   const { isModalOpen, setIsModalOpen } = useModals();
-  const { handleDelete, reset, selectedOrg, setSelectedOrg } = useHandles(
-    users,
-    getAllOrganizations,
-    setIsModalOpen
-  );
+  const {
+    handleDelete,
+    reset,
+    selectedOrg,
+    setSelectedOrg,
+    updateOrganization,
+  } = useHandles(users, getAllOrganizations, setIsModalOpen);
 
   useEffect(() => {
     getAllOrganizations();
@@ -239,6 +256,7 @@ const Organizations = () => {
         }}
         getAllOrganizations={getAllOrganizations}
         organization={selectedOrg}
+        updateOrganization={updateOrganization}
       />
 
       <div className="flex flex-1 flex-col gap-[20px] overflow-auto w-full">
