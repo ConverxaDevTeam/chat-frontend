@@ -44,8 +44,8 @@ export const createIntegrationMessager = async (
   departmentId: number,
   selectOrganizationId: number,
   data: {
-    code: string | null;
-    data: string | null;
+    access_token: string;
+    id: string;
   }
 ) => {
   try {
@@ -105,6 +105,39 @@ export const updateIntegrationWebChat = async (
       return true;
     } else {
       return false;
+    }
+  } catch (error) {
+    let message = "Error inesperado";
+    if (axios.isAxiosError(error)) {
+      if (error.response) {
+        message =
+          error.response.data?.message || "Error inesperado del servidor";
+      } else if (error.request) {
+        message = "No se pudo conectar con el servidor";
+      } else {
+        message = error.message;
+      }
+    }
+    alertError(message);
+    return [];
+  }
+};
+
+export const getPagesFacebook = async (
+  departmentId: number,
+  selectOrganizationId: number,
+  code: string
+) => {
+  try {
+    const response = await axiosInstance.post(
+      apiUrls.getPagesFacebook(departmentId, selectOrganizationId),
+      { code }
+    );
+    if (response.data.ok) {
+      return response.data.pages;
+    } else {
+      alertError(response.data.message);
+      return [];
     }
   } catch (error) {
     let message = "Error inesperado";

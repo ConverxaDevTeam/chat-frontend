@@ -20,11 +20,7 @@ export const AgentEditModal = ({
   onSuccess,
 }: AgentEditModalProps) => {
   return (
-    <Modal
-      isShown={isOpen}
-      onClose={onClose}
-      header={<h2 className="text-xl font-bold">Editar Agente</h2>}
-    >
+    <Modal isShown={isOpen} onClose={onClose}>
       <AgenteForm
         agentId={agentId}
         initialData={initialData}

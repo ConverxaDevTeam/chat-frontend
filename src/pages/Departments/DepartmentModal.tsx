@@ -14,6 +14,7 @@ interface DepartmentModalProps {
 
 interface FormInputs {
   name: string;
+  description: string;
 }
 
 const DepartmentModal: FC<DepartmentModalProps> = ({
@@ -34,21 +35,22 @@ const DepartmentModal: FC<DepartmentModalProps> = ({
   useEffect(() => {
     if (isOpen && department) {
       setValue("name", department.name);
+      setValue("description", department.description || "");
     } else {
-      reset({ name: "" });
+      reset({ name: "", description: "" });
     }
   }, [isOpen, department, setValue, reset]);
 
   const handleClose = () => {
-    reset({ name: "" });
+    reset({ name: "", description: "" });
     onClose();
   };
 
   const onSubmit = async (data: FormInputs) => {
     try {
       const result = department
-        ? await updateDepartment(department.id, data.name)
-        : await createDepartment(organizationId, data.name);
+        ? await updateDepartment(department.id, data.name, data.description)
+        : await createDepartment(organizationId, data.name, data.description);
 
       onSuccess(result);
       toast.success(

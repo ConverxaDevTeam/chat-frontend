@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@store/index";
 import { logInAsync } from "@store/actions/auth";
 import { Navigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const LogIn = () => {
   const [data, setData] = useState({
@@ -87,9 +88,12 @@ const LogIn = () => {
                   Recordar contraseña
                 </p>
               </div>
-              <p className="text-[14px] font-medium text-sofia-superDark">
+              <Link
+                to="/reset-password"
+                className="text-[14px] font-medium text-sofia-superDark hover:text-sofia-electricGreen"
+              >
                 Olvidé mi contraseña
-              </p>
+              </Link>
             </div>
             <button
               className="w-full rounded-[8px] py-[10px] bg-sofia-electricGreen text-sofia-superDark text-[16px] font-semibold mb-[24px] disabled:bg-app-lightGray"

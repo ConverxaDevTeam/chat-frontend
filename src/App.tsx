@@ -19,6 +19,8 @@ import { ToastContainer } from "react-toastify";
 
 import "react-toastify/dist/ReactToastify.css";
 import { OrganizationRoleType } from "@utils/interfaces";
+import { RequestResetPassword } from "@pages/auth/RequestResetPassword";
+import { ChangePassword } from "@pages/auth/ChangePassword";
 import { AlertProvider } from "@components/Diagrams/components/AlertContext";
 
 const App = (): JSX.Element => {
@@ -40,6 +42,8 @@ const App = (): JSX.Element => {
       <AlertProvider>
         <Routes>
         <Route index element={<LogIn />} />
+        <Route path="/reset-password" element={<RequestResetPassword />} />
+        <Route path="/reset-password/change" element={<ChangePassword />} />
         <Route
           path="/*"
           element={
