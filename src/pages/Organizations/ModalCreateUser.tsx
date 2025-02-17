@@ -1,3 +1,5 @@
+import DeleteButton from "@pages/Workspace/components/DeleteButton";
+import EditButton from "@pages/Workspace/components/EditButton";
 import { createOrganization } from "@services/organizations";
 import { useState } from "react";
 
@@ -14,10 +16,22 @@ const ModalCreateOrganization = ({
     name: "",
     description: "",
     email: "",
+    logo: null as File | null,
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setData({ ...data, [e.target.name]: e.target.value });
+  };
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setData({ ...data, logo: file });
+    }
+  };
+
+  const handleDeleteLogo = () => {
+    setData({ ...data, logo: null });
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -30,32 +44,46 @@ const ModalCreateOrganization = ({
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="bg-white rounded-xl p-2 w-[550px]"
-    >
-      <h2 className="text-2xl font-bold text-gray-800 mb-6">Crear organización</h2>
+    <form onSubmit={handleSubmit} className="bg-white rounded-xl p-2 w-[550px]">
+      <h2 className="text-2xl font-bold text-gray-800 mb-6">
+        Crear organización
+      </h2>
       <hr className="mb-6 border-gray-300" />
       <div className="flex flex-col mb-6">
-        <label className="text-gray-700 font-semibold mb-2">Imagen de organización</label>
-        <div className="relative w-20 h-20 flex items-center justify-center bg-yellow-400 rounded-full text-white font-bold text-lg uppercase">
-        </div>
-        <input
-          type="file"
-          accept="image/png, image/jpg, image/jpeg"
-          className="hidden"
-        />
-        <label htmlFor="imageUpload" className="mt-3 text-sm text-blue-600 cursor-pointer">
-          Subir imagen
+        <label className="text-gray-700 font-semibold mb-2">
+          Imagen de organización
         </label>
-        <p className="text-gray-400 text-xs mt-1">Formatos admitidos: png, jpg, jpeg.</p>
+        <div className="relative w-20 h-20">
+          <img
+            src={data.logo ? URL.createObjectURL(data.logo) : "/mvp/avatar.svg"}
+            alt="Organization logo"
+            className="w-full h-full rounded-full object-cover"
+          />
+          <input
+            type="file"
+            accept="image/png, image/jpg, image/jpeg"
+            className="hidden"
+            id="imageUpload"
+            onChange={handleImageUpload}
+          />
+          <div className="absolute top-14 left-14 flex">
+            <button
+              onClick={() => document.getElementById("imageUpload")?.click()}
+            >
+              <EditButton />
+            </button>
+            <button onClick={handleDeleteLogo}>
+              <DeleteButton />
+            </button>
+          </div>
+        </div>
+        <p className="text-gray-400 text-xs mt-1">
+          Formatos admitidos: png, jpg, jpeg.
+        </p>
       </div>
       <div>
         <div className="mb-4">
-          <label
-            className="text-gray-700 font-semibold"
-            htmlFor="name"
-          >
+          <label className="text-gray-700 font-semibold" htmlFor="name">
             Nombre
           </label>
           <input
@@ -92,10 +120,7 @@ const ModalCreateOrganization = ({
           </p>
         </div>
         <div className="mb-4">
-          <label
-            className="text-gray-700 font-semibold mb-2"
-            htmlFor="email"
-          >
+          <label className="text-gray-700 font-semibold mb-2" htmlFor="email">
             Correo electrónico
           </label>
           <input
@@ -117,7 +142,6 @@ const ModalCreateOrganization = ({
           className="w-full px-3 py-1 text-gray-500 border-2 rounded-md text-sm font-semibold"
         >
           Cancelar
-
         </button>
         <button
           type="submit"

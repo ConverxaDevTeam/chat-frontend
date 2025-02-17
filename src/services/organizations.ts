@@ -33,11 +33,25 @@ export const createOrganization = async (data: {
   name: string;
   description: string;
   email: string;
+  logo: File | null;
 }) => {
   try {
+    const formData = new FormData();
+    formData.append("name", data.name);
+    formData.append("description", data.description);
+    formData.append("email", data.email);
+    if (data.logo) {
+      formData.append("logo", data.logo);
+    }
+
     const response = await axiosInstance.post(
       apiUrls.createOrganization(),
-      data
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
     );
     if (response.data.ok) {
       return true;
