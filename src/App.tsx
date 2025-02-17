@@ -38,7 +38,17 @@ const App = (): JSX.Element => {
   return (
     <Fragment>
       <NotificationHandler />
-      <ToastContainer />
+      <ToastContainer
+        position="top-right"
+        autoClose={2000}
+        hideProgressBar
+        closeButton={false}
+        className="!p-4 !mr-4"
+        bodyClassName="!p-4"
+        toastClassName={() =>
+          "relative flex !bg-[#EEFDE3] !text-[#1E4620] !text-[16px] !font-medium !rounded-[4px] shadow-lg w-full max-w-[434px] !mb-3"
+        }
+      />
       <AlertProvider>
         <Routes>
         <Route index element={<LogIn />} />

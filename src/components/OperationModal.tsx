@@ -23,13 +23,14 @@ const OperationModal: React.FC<OperationModalProps> = ({ isShown, title, text, t
                 }
             }}
         >
-            <div className="bg-white rounded-xl p-6 w-[500px] shadow-xl text-center">
+            <div className="bg-white rounded-xl p-6 w-[500px] shadow-lg text-center">
                 <h2 className="text-xl font-bold mb-4">{title}</h2>
                 <p className="mb-4">{text}</p>
                 {type !== "loading" && onClose && (
                     <button
                         onClick={onClose}
-                        className="px-4 py-2 bg-sofia-electricGreen text-gray-700 rounded"
+                        className="px-4 py-2 bg-sofia-electricGreen font-semibold text-gray-900 rounded-md"
+                        aria-label="Cerrar modal"
                     >
                         Cerrar
                     </button>
