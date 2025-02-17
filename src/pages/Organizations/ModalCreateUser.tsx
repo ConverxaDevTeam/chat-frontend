@@ -6,7 +6,7 @@ import {
   uploadOrganizationLogo,
 } from "@services/organizations";
 import { useState, useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, UseFormRegister } from "react-hook-form";
 import { getUserMyOrganization } from "@services/user";
 import Loading from "@components/Loading";
 import { IOrganization } from "@interfaces/organization.interface";
@@ -38,6 +38,158 @@ interface CreateOrganizationData {
   email: string;
   logo: File | null;
 }
+
+const LogoUpload = ({
+  logoUrl,
+  handleImageUpload,
+  handleDeleteLogo,
+}: {
+  logoUrl: string;
+  handleImageUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleDeleteLogo: () => void;
+}) => (
+  <div className="flex flex-col mb-6">
+    <label className="text-gray-700 font-semibold mb-2">
+      Imagen de organización
+    </label>
+    <div className="relative w-20 h-20">
+      <img
+        src={logoUrl}
+        alt="Organization logo"
+        className="w-full h-full rounded-full object-cover"
+      />
+      <input
+        type="file"
+        accept="image/png, image/jpg, image/jpeg"
+        className="hidden"
+        id="imageUpload"
+        onChange={handleImageUpload}
+      />
+      <div className="absolute top-14 left-14 flex">
+        <button
+          type="button"
+          onClick={() => document.getElementById("imageUpload")?.click()}
+        >
+          <EditButton />
+        </button>
+        <button onClick={handleDeleteLogo}>
+          <DeleteButton />
+        </button>
+      </div>
+    </div>
+    <p className="text-gray-400 text-xs mt-1">
+      Formatos admitidos: png, jpg, jpeg.
+    </p>
+  </div>
+);
+
+const FormInputs = ({
+  data,
+  handleChange,
+  isEditMode,
+  register,
+  getUserOptions,
+}: {
+  data: OrganizationFormData;
+  handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  isEditMode: boolean;
+  register: UseFormRegister<OrganizationFormData>;
+  getUserOptions: () => JSX.Element[];
+}) => (
+  <div>
+    <div className="mb-4">
+      <label className="text-gray-700 font-semibold" htmlFor="name">
+        Nombre
+      </label>
+      <input
+        className="w-full mt-2 p-3 border rounded-lg focus:outline-none text-[15px]"
+        id="name"
+        type="text"
+        name="name"
+        placeholder="Nombre"
+        value={data.name}
+        required
+        onChange={handleChange}
+      />
+    </div>
+    <div className="mb-4">
+      <label className="text-gray-700 font-semibold mb-3" htmlFor="description">
+        Descripción
+      </label>
+      <input
+        className="w-full mt-2 p-3 border rounded-lg focus:outline-none text-[15px]"
+        id="description"
+        type="text"
+        name="description"
+        placeholder="Descripción"
+        value={data.description}
+        required
+        onChange={handleChange}
+        maxLength={255}
+      />
+      <p className="text-gray-400 text-xs mt-1">
+        {data.description.length}/255 caracteres
+      </p>
+    </div>
+    {!isEditMode && (
+      <div className="mb-4">
+        <label className="text-gray-700 font-semibold" htmlFor="email">
+          Email
+        </label>
+        <input
+          className="w-full mt-2 p-3 border rounded-lg focus:outline-none text-[15px]"
+          id="email"
+          type="email"
+          name="email"
+          placeholder="Email"
+          value={data.email}
+          required
+          onChange={handleChange}
+        />
+      </div>
+    )}
+    {isEditMode && (
+      <div className="mb-4">
+        <label className="text-gray-700 font-semibold mb-3" htmlFor="owner_id">
+          Propietario
+        </label>
+        <select
+          className="w-full mt-2 p-3 border rounded-lg focus:outline-none text-[15px]"
+          id="owner_id"
+          {...register("owner_id")}
+        >
+          {getUserOptions()}
+        </select>
+      </div>
+    )}
+  </div>
+);
+
+const FormActions = ({
+  close,
+  isEditMode,
+}: {
+  close: (value: boolean) => void;
+  isEditMode: boolean;
+}) => (
+  <div className="flex justify-center gap-4 mt-10">
+    <button
+      type="button"
+      onClick={() => close(false)}
+      className="w-full px-3 py-1 text-gray-500 border-2 rounded-md text-sm font-semibold"
+    >
+      Cancelar
+    </button>
+    <button
+      type="submit"
+      className="w-full px-3 py-3 bg-sofia-electricGreen text-gray-900 rounded-md text-sm font-semibold hover:bg-opacity-50 transition-all"
+    >
+      <span className="hidden sm:block">
+        {isEditMode ? "Editar organización" : "Crear organización"}
+      </span>
+    </button>
+  </div>
+);
 
 const ModalCreateOrganization = ({
   close,
@@ -143,11 +295,10 @@ const ModalCreateOrganization = ({
     }
   }, [isEditMode, organization?.id]);
 
-  const getUserOptions = () => {
+  const getUserOptions = (): JSX.Element[] => {
     if (loadingUsers) {
-      return <option>Cargando usuarios...</option>;
+      return [<option key="loading">Cargando usuarios...</option>];
     }
-    console.log(users);
 
     const options = users.map(user => (
       <option key={user.id} value={user.id}>
@@ -181,129 +332,19 @@ const ModalCreateOrganization = ({
         {isEditMode ? "Editar organización" : "Crear organización"}
       </h2>
       <hr className="mb-6 border-gray-300" />
-      <div className="flex flex-col mb-6">
-        <label className="text-gray-700 font-semibold mb-2">
-          Imagen de organización
-        </label>
-        <div className="relative w-20 h-20">
-          <img
-            src={logoUrl}
-            alt="Organization logo"
-            className="w-full h-full rounded-full object-cover"
-          />
-          <input
-            type="file"
-            accept="image/png, image/jpg, image/jpeg"
-            className="hidden"
-            id="imageUpload"
-            onChange={handleImageUpload}
-          />
-          <div className="absolute top-14 left-14 flex">
-            <button
-              type="button"
-              onClick={() => document.getElementById("imageUpload")?.click()}
-            >
-              <EditButton />
-            </button>
-            <button onClick={handleDeleteLogo}>
-              <DeleteButton />
-            </button>
-          </div>
-        </div>
-        <p className="text-gray-400 text-xs mt-1">
-          Formatos admitidos: png, jpg, jpeg.
-        </p>
-      </div>
-      <div>
-        <div className="mb-4">
-          <label className="text-gray-700 font-semibold" htmlFor="name">
-            Nombre
-          </label>
-          <input
-            className="w-full mt-2 p-3 border rounded-lg focus:outline-none text-[15px]"
-            id="name"
-            type="text"
-            name="name"
-            placeholder="Nombre"
-            value={data.name}
-            required
-            onChange={handleChange}
-          />
-        </div>
-        <div className="mb-4">
-          <label
-            className="text-gray-700 font-semibold mb-3"
-            htmlFor="description"
-          >
-            Descripción
-          </label>
-          <input
-            className="w-full mt-2 p-3 border rounded-lg focus:outline-none text-[15px]"
-            id="description"
-            type="text"
-            name="description"
-            placeholder="Descripción"
-            value={data.description}
-            required
-            onChange={handleChange}
-            maxLength={255}
-          />
-          <p className="text-gray-400 text-xs mt-1">
-            {data.description.length}/255 caracteres
-          </p>
-        </div>
-        {!isEditMode && (
-          <div className="mb-4">
-            <label className="text-gray-700 font-semibold" htmlFor="email">
-              Email
-            </label>
-            <input
-              className="w-full mt-2 p-3 border rounded-lg focus:outline-none text-[15px]"
-              id="email"
-              type="email"
-              name="email"
-              placeholder="Email"
-              value={data.email}
-              required
-              onChange={handleChange}
-            />
-          </div>
-        )}
-        {isEditMode && (
-          <div className="mb-4">
-            <label
-              className="text-gray-700 font-semibold mb-3"
-              htmlFor="owner_id"
-            >
-              Propietario
-            </label>
-            <select
-              className="w-full mt-2 p-3 border rounded-lg focus:outline-none text-[15px]"
-              id="owner_id"
-              {...register("owner_id")}
-            >
-              {getUserOptions()}
-            </select>
-          </div>
-        )}
-      </div>
-      <div className="flex justify-center gap-4 mt-10">
-        <button
-          type="button"
-          onClick={() => close(false)}
-          className="w-full px-3 py-1 text-gray-500 border-2 rounded-md text-sm font-semibold"
-        >
-          Cancelar
-        </button>
-        <button
-          type="submit"
-          className="w-full px-3 py-3 bg-sofia-electricGreen text-gray-900 rounded-md text-sm font-semibold hover:bg-opacity-50 transition-all"
-        >
-          <span className="hidden sm:block">
-            {isEditMode ? "Editar organización" : "Crear organización"}
-          </span>
-        </button>
-      </div>
+      <LogoUpload
+        logoUrl={logoUrl}
+        handleImageUpload={handleImageUpload}
+        handleDeleteLogo={handleDeleteLogo}
+      />
+      <FormInputs
+        data={data}
+        handleChange={handleChange}
+        isEditMode={isEditMode}
+        register={register}
+        getUserOptions={getUserOptions}
+      />
+      <FormActions close={close} isEditMode={isEditMode} />
       {loadingUsers && <Loading />}
     </form>
   );
