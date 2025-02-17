@@ -5,7 +5,6 @@ import {
   deleteOrganization,
   editOrganization,
 } from "@services/organizations";
-// import ConfirmationModal from "@components/ConfirmationModal";
 import { useEffect, useState } from "react";
 import OrganizationCard from "./OrganizationCard";
 import ModalCreateOrganization from "./ModalCreateUser";
@@ -14,7 +13,6 @@ import { getUserMyOrganization } from "@services/user";
 import { IUserApi } from "../Users/UsersOrganization";
 import { OrganizationRoleType } from "@utils/interfaces";
 import { FiPlus } from "react-icons/fi";
-// import OperationModal from "@components/OperationModal";
 import { useAlertContext } from "@components/Diagrams/components/AlertContext";
 
 export type IOrganizarion = {
