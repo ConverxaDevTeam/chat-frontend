@@ -32,12 +32,26 @@ export const getOrganizations = async () => {
 export const createOrganization = async (data: {
   name: string;
   description: string;
+  logo: File | null;
   email: string;
 }) => {
   try {
+    const formData = new FormData();
+    formData.append("name", data.name);
+    formData.append("description", data.description);
+    if (data.logo) {
+      formData.append("logo", data.logo);
+    }
+    formData.append("email", data.email);
+
     const response = await axiosInstance.post(
       apiUrls.createOrganization(),
-      data
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
     );
     if (response.data.ok) {
       return true;
@@ -84,7 +98,12 @@ export const deleteOrganization = async (id: number) => {
 
 export const editOrganization = async (
   id: number,
-  data: { owner_id: number }
+  data: {
+    owner_id: number;
+    name?: string;
+    description?: string;
+    logo?: File | null;
+  }
 ) => {
   try {
     const response = await axiosInstance.patch(
@@ -107,5 +126,37 @@ export const editOrganization = async (
       throw error;
     }
     throw new Error(message);
+  }
+};
+
+export const uploadOrganizationLogo = async (id: number, file: File) => {
+  try {
+    const formData = new FormData();
+    formData.append("logo", file);
+    const response = await axiosInstance.post(
+      apiUrls.uploadOrganizationLogo(id),
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+    return response.data.ok;
+  } catch (error) {
+    alertError("Error al subir el logo");
+    return false;
+  }
+};
+
+export const deleteOrganizationLogo = async (id: number) => {
+  try {
+    const response = await axiosInstance.delete(
+      apiUrls.deleteOrganizationLogo(id)
+    );
+    return response.data.ok;
+  } catch (error) {
+    alertError("Error al eliminar el logo");
+    return false;
   }
 };
