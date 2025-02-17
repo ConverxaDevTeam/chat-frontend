@@ -75,7 +75,7 @@ export const ConversationCard: FC<ConversationCardProps> = ({
         {/* Frame Superior */}
         <div className="flex justify-between items-center w-full">
           <h3 className="text-sm font-bold text-sofia-superDark truncate flex-1 min-w-0 text-left">
-            {conversation.secret}
+            Usuario
           </h3>
           <span className="text-sm font-semibold text-app-newGray ml-2 flex-shrink-0">
             {conversation.message_created_at

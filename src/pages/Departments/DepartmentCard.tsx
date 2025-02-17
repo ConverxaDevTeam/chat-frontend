@@ -51,9 +51,8 @@ const DepartmentCard: FC<DepartmentCardProps> = ({
         <CardItem label="">
           <p className="text-gray-500 font-bold">ID: {department.id}</p>
         </CardItem>
-        <p className="text-gray-600  text-center mt-3">
-          Responde preguntas de clientes de un marketplace de productos variados
-          (electrónica, moda, hogar, y más) de forma clara.
+        <p className="text-gray-600 text-center mt-3 line-clamp-3">
+          {department.description || "Sin descripción"}
         </p>
       </div>
 

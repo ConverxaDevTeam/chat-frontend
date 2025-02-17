@@ -4,6 +4,7 @@ import {
   FunctionData,
   HttpRequestFunction,
 } from "@interfaces/functions.interface";
+import GuideConfig from "@components/GuideConfig";
 
 interface FunctionEditModalProps {
   isShown: boolean;
@@ -33,22 +34,19 @@ export const FunctionEditModal = ({
   };
 
   return (
-    <Modal
-      isShown={isShown}
-      onClose={onClose}
-      header={
-        <h2 className="text-xl font-semibold">
-          {functionId ? "Editar Función" : "Nueva Función"}
-        </h2>
-      }
-    >
-      <FunctionForm
-        functionId={functionId}
-        initialData={initialData}
-        onSuccess={handleSuccess}
-        isLoading={isLoading}
-        agentId={agentId}
-      />
+    <Modal isShown={isShown} onClose={onClose}>
+      <div className="flex gap-[24px] w-[587px]">
+        <GuideConfig />
+        <div className="flex-1 flex flex-col gap-[16px]">
+          <FunctionForm
+            functionId={functionId}
+            initialData={initialData}
+            onSuccess={handleSuccess}
+            isLoading={isLoading}
+            agentId={agentId}
+          />
+        </div>
+      </div>
     </Modal>
   );
 };

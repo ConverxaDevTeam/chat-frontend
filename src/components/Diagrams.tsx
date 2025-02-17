@@ -158,6 +158,7 @@ const nodeFactory = {
         name: type.toString(),
         description: "Integration",
         type,
+        id: id,
       } as NodeData,
       "integration-item"
     ),
