@@ -200,6 +200,7 @@ const ModalCreateOrganization = ({
           />
           <div className="absolute top-14 left-14 flex">
             <button
+              type="button"
               onClick={() => document.getElementById("imageUpload")?.click()}
             >
               <EditButton />
