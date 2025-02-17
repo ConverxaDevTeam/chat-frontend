@@ -191,22 +191,12 @@ const FormActions = ({
   </div>
 );
 
-const ModalCreateOrganization = ({
-  close,
-  getAllOrganizations,
-  organization,
-}: ModalCreateOrganizationProps) => {
-  const isEditMode = !!organization;
-  const { register } = useForm<OrganizationFormData>();
-  const [data, setData] = useState<OrganizationFormData>({
-    name: organization?.name || "",
-    description: organization?.description || "",
-    email: organization?.owner?.user.email || "",
-    logoFile: null,
-    owner_id: organization?.owner?.user.id || 0,
-  });
-  const [users, setUsers] = useState<User[]>([]);
-  const [loadingUsers, setLoadingUsers] = useState(false);
+const useLogoUpload = (
+  organization: IOrganization | null | undefined,
+  data: OrganizationFormData,
+  setData: React.Dispatch<React.SetStateAction<OrganizationFormData>>,
+  isEditMode: boolean
+) => {
   const [logoUrl, setLogoUrl] = useState<string>("/mvp/avatar.svg");
 
   useEffect(() => {
@@ -227,23 +217,6 @@ const ModalCreateOrganization = ({
     }
   }, [organization?.logo, data.logoFile]);
 
-  const getUsers = async () => {
-    if (!organization) return;
-    setLoadingUsers(true);
-    try {
-      const response = await getUserMyOrganization(organization.id);
-      if (response) {
-        setUsers(response);
-      }
-    } finally {
-      setLoadingUsers(false);
-    }
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setData({ ...data, [e.target.name]: e.target.value });
-  };
-
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -263,37 +236,47 @@ const ModalCreateOrganization = ({
     setData({ ...data, logoFile: null });
   };
 
-  const handleSubmitForm = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (isEditMode) {
-      const editData = {
-        owner_id: Number(data.owner_id),
-        name: data.name,
-        description: data.description,
-      };
-      await editOrganization(organization.id, editData);
-      await getAllOrganizations();
-      close(false);
-    } else {
-      const createData: CreateOrganizationData = {
-        name: data.name,
-        description: data.description,
-        logo: data.logoFile,
-        email: data.email,
-      };
-      const response = await createOrganization(createData);
+  return { logoUrl, handleImageUpload, handleDeleteLogo };
+};
+
+const useFormData = (organization: IOrganization | null | undefined) => {
+  const [data, setData] = useState<OrganizationFormData>({
+    name: organization?.name || "",
+    description: organization?.description || "",
+    email: organization?.owner?.user.email || "",
+    logoFile: null,
+    owner_id: organization?.owner?.user.id || 0,
+  });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setData({ ...data, [e.target.name]: e.target.value });
+  };
+
+  return { data, handleChange, setData };
+};
+
+const useUsers = (organization: IOrganization | null | undefined) => {
+  const [users, setUsers] = useState<User[]>([]);
+  const [loadingUsers, setLoadingUsers] = useState(false);
+
+  const getUsers = async () => {
+    if (!organization) return;
+    setLoadingUsers(true);
+    try {
+      const response = await getUserMyOrganization(organization.id);
       if (response) {
-        await getAllOrganizations();
-        close(false);
+        setUsers(response);
       }
+    } finally {
+      setLoadingUsers(false);
     }
   };
 
   useEffect(() => {
-    if (isEditMode) {
+    if (organization) {
       getUsers();
     }
-  }, [isEditMode, organization?.id]);
+  }, [organization?.id]);
 
   const getUserOptions = (): JSX.Element[] => {
     if (loadingUsers) {
@@ -321,6 +304,51 @@ const ModalCreateOrganization = ({
     }
 
     return options;
+  };
+
+  return { loadingUsers, getUserOptions };
+};
+
+const ModalCreateOrganization = ({
+  close,
+  getAllOrganizations,
+  organization,
+}: ModalCreateOrganizationProps) => {
+  const isEditMode = !!organization;
+  const { register } = useForm<OrganizationFormData>();
+  const { data, handleChange, setData } = useFormData(organization);
+  const { loadingUsers, getUserOptions } = useUsers(organization);
+  const { logoUrl, handleImageUpload, handleDeleteLogo } = useLogoUpload(
+    organization,
+    data,
+    setData,
+    isEditMode
+  );
+
+  const handleSubmitForm = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (isEditMode) {
+      const editData = {
+        owner_id: Number(data.owner_id),
+        name: data.name,
+        description: data.description,
+      };
+      await editOrganization(organization.id, editData);
+      await getAllOrganizations();
+      close(false);
+    } else {
+      const createData: CreateOrganizationData = {
+        name: data.name,
+        description: data.description,
+        logo: data.logoFile,
+        email: data.email,
+      };
+      const response = await createOrganization(createData);
+      if (response) {
+        await getAllOrganizations();
+        close(false);
+      }
+    }
   };
 
   return (
