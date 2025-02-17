@@ -1,9 +1,9 @@
-import { IOrganizarion } from ".";
 import { getInitials } from "@utils/format";
 import { useRoleAuth } from "@hooks/useRoleAuth";
+import { IOrganization } from "@interfaces/organization.interface";
 
 interface OrganizationCardProps {
-  organization: IOrganizarion;
+  organization: IOrganization;
   onEdit: () => void;
   onDelete: () => void;
 }

@@ -32,17 +32,17 @@ export const getOrganizations = async () => {
 export const createOrganization = async (data: {
   name: string;
   description: string;
-  email: string;
   logo: File | null;
+  email: string;
 }) => {
   try {
     const formData = new FormData();
     formData.append("name", data.name);
     formData.append("description", data.description);
-    formData.append("email", data.email);
     if (data.logo) {
       formData.append("logo", data.logo);
     }
+    formData.append("email", data.email);
 
     const response = await axiosInstance.post(
       apiUrls.createOrganization(),

@@ -8,97 +8,21 @@ import {
 import { useEffect, useState } from "react";
 import OrganizationCard from "./OrganizationCard";
 import ModalCreateOrganization from "./ModalCreateUser";
-import { useForm, UseFormRegister, UseFormHandleSubmit } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { getUserMyOrganization } from "@services/user";
 import { IUserApi } from "../Users/UsersOrganization";
-import { OrganizationRoleType } from "@utils/interfaces";
 import { FiPlus } from "react-icons/fi";
 import { useAlertContext } from "@components/Diagrams/components/AlertContext";
-
-export type IOrganizarion = {
-  id: number;
-  logo?: string;
-  created_at: string;
-  updated_at: string;
-  name: string;
-  description: string;
-  users: number;
-  owner?: {
-    id: number;
-    role: OrganizationRoleType;
-    user: {
-      id: number;
-      email: string;
-    };
-  };
-};
+import { IOrganization } from "@interfaces/organization.interface";
 
 type EditFormData = {
   owner_id: number;
 };
 
-interface OrganizationFormProps {
-  selectedOrg: IOrganizarion | null;
-  loadingUsers: boolean;
-  getUserOptions: () => JSX.Element[];
-  register: UseFormRegister<EditFormData>;
-  handleSubmit: UseFormHandleSubmit<EditFormData>;
-  handleEdit: (data: EditFormData) => Promise<void>;
-}
-
-const OrganizationForm = ({
-  selectedOrg,
-  loadingUsers,
-  getUserOptions,
-  register,
-  handleSubmit,
-  handleEdit,
-}: OrganizationFormProps) => (
-  <form onSubmit={handleSubmit(handleEdit)} className="space-y-5">
-    <div>
-      <label className="block text-gray-700 font-semibold mb-2">Nombre</label>
-      <input
-        type="text"
-        value={selectedOrg?.name}
-        disabled
-        className="w-full p-3 border text-gray-400 rounded-lg cursor-not-allowed"
-      />
-    </div>
-
-    <div>
-      <label className="block text-gray-700 font-semibold mb-2">
-        Seleccionar owner
-      </label>
-      {loadingUsers ? (
-        <Loading />
-      ) : (
-        <select
-          {...register("owner_id")}
-          className="w-full p-3 border text-gray-800 rounded-lg border-gray-300"
-        >
-          <option value="">Seleccionar owner</option>
-          {getUserOptions()}
-        </select>
-      )}
-    </div>
-    <div>
-      <label className="block text-gray-700 font-semibold mb-2">
-        Descripción
-      </label>
-      <input
-        type="text"
-        value={selectedOrg?.description}
-        disabled
-        className="w-full p-3 border text-gray-400 rounded-lg cursor-not-allowed"
-      />
-    </div>
-  </form>
-);
-
 interface OrganizationListProps {
-  organizations: IOrganizarion[];
-  onEdit: (organization: IOrganizarion) => void;
-  onDelete: (organization: IOrganizarion) => void;
+  organizations: IOrganization[];
+  onEdit: (organization: IOrganization) => void;
+  onDelete: (organization: IOrganization) => void;
 }
 
 const OrganizationList = ({
@@ -118,64 +42,18 @@ const OrganizationList = ({
   </div>
 );
 
-interface EditModalProps {
-  isShown: boolean;
-  onClose: () => void;
-  selectedOrg: IOrganizarion | null;
-  loadingUsers: boolean;
-  getUserOptions: () => JSX.Element[];
-  register: UseFormRegister<EditFormData>;
-  handleSubmit: UseFormHandleSubmit<EditFormData>;
-  handleEdit: (data: EditFormData) => Promise<void>;
-}
-
-const EditModal = ({
-  isShown,
-  onClose,
-  selectedOrg,
-  loadingUsers,
-  getUserOptions,
-  register,
-  handleSubmit,
-  handleEdit,
-}: EditModalProps) => (
-  <Modal
-    isShown={isShown}
-    onClose={onClose}
-    header={<h2 className="text-xl font-bold p-2">Editar Owner</h2>}
-    footer={
-      <div className="flex justify-center gap-2 p-[20px] w-[400px]">
-        <button
-          onClick={handleSubmit(handleEdit)}
-          className="w-full px-4 py-3 bg-sofia-electricGreen text-gray-900 rounded-md text-sm font-semibold hover:bg-opacity-50 transition-all"
-        >
-          Actualizar
-        </button>
-      </div>
-    }
-    children={
-      <OrganizationForm
-        selectedOrg={selectedOrg}
-        loadingUsers={loadingUsers}
-        getUserOptions={getUserOptions}
-        register={register}
-        handleSubmit={handleSubmit}
-        handleEdit={handleEdit}
-      />
-    }
-  />
-);
-
 interface CreateModalProps {
   isShown: boolean;
   onClose: () => void;
   getAllOrganizations: () => Promise<void>;
+  organization?: IOrganization | null;
 }
 
 const CreateModal = ({
   isShown,
   onClose,
   getAllOrganizations,
+  organization,
 }: CreateModalProps) => (
   <Modal
     isShown={isShown}
@@ -184,13 +62,14 @@ const CreateModal = ({
       <ModalCreateOrganization
         getAllOrganizations={getAllOrganizations}
         close={onClose}
+        organization={organization}
       />
     }
   />
 );
 
 const useOrganizations = () => {
-  const [organizations, setOrganizations] = useState<IOrganizarion[]>([]);
+  const [organizations, setOrganizations] = useState<IOrganization[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
   const getAllOrganizations = async () => {
@@ -227,26 +106,22 @@ const useUsers = () => {
 };
 
 const useModals = () => {
-  const [isModalCreateOrganizationOpen, setIsModalCreateOrganizationOpen] =
-    useState(false);
-  const [isModalEditOpen, setIsModalEditOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   return {
-    isModalCreateOrganizationOpen,
-    setIsModalCreateOrganizationOpen,
-    isModalEditOpen,
-    setIsModalEditOpen,
+    isModalOpen,
+    setIsModalOpen,
   };
 };
 
 const useHandles = (
   users: IUserApi[],
   getAllOrganizations: () => Promise<void>,
-  setIsModalEditOpen: (value: boolean) => void
+  setIsModalOpen: (value: boolean) => void
 ) => {
   const { handleOperation, showConfirmation } = useAlertContext();
   const { register, handleSubmit, reset } = useForm<EditFormData>();
-  const [selectedOrg, setSelectedOrg] = useState<IOrganizarion | null>(null);
+  const [selectedOrg, setSelectedOrg] = useState<IOrganization | null>(null);
 
   const handleEdit = async (data: EditFormData) => {
     if (!selectedOrg) return;
@@ -273,12 +148,12 @@ const useHandles = (
     );
 
     if (result.success) {
-      setIsModalEditOpen(false);
+      setIsModalOpen(false);
       getAllOrganizations();
     }
   };
 
-  const handleDelete = async (organization: IOrganizarion) => {
+  const handleDelete = async (organization: IOrganization) => {
     const confirmed = await showConfirmation({
       title: "¿Eliminar organización?",
       text: "Esta acción no se puede deshacer",
@@ -335,58 +210,44 @@ const useHandles = (
 
 const Organizations = () => {
   const { organizations, loading, getAllOrganizations } = useOrganizations();
-  const { users, loadingUsers, getUsers } = useUsers();
-  const {
-    isModalCreateOrganizationOpen,
-    setIsModalCreateOrganizationOpen,
-    isModalEditOpen,
-    setIsModalEditOpen,
-  } = useModals();
-  const {
-    handleEdit,
-    handleDelete,
-    getUserOptions,
-    register,
-    handleSubmit,
-    reset,
-    selectedOrg,
-    setSelectedOrg,
-  } = useHandles(users, getAllOrganizations, setIsModalEditOpen);
+  const { users, getUsers } = useUsers();
+  const { isModalOpen, setIsModalOpen } = useModals();
+  const { handleDelete, reset, selectedOrg, setSelectedOrg } = useHandles(
+    users,
+    getAllOrganizations,
+    setIsModalOpen
+  );
 
   useEffect(() => {
     getAllOrganizations();
   }, []);
 
   useEffect(() => {
-    if (selectedOrg && isModalEditOpen) {
+    if (selectedOrg && isModalOpen) {
       getUsers(selectedOrg.id);
       reset({ owner_id: selectedOrg.owner?.user.id || 0 });
     }
-  }, [selectedOrg, isModalEditOpen, reset]);
+  }, [selectedOrg, isModalOpen, reset]);
 
   return (
     <>
       <CreateModal
-        isShown={isModalCreateOrganizationOpen}
-        onClose={() => setIsModalCreateOrganizationOpen(false)}
+        isShown={isModalOpen}
+        onClose={() => {
+          setIsModalOpen(false);
+          setSelectedOrg(null);
+        }}
         getAllOrganizations={getAllOrganizations}
-      />
-
-      <EditModal
-        isShown={isModalEditOpen}
-        onClose={() => setIsModalEditOpen(false)}
-        selectedOrg={selectedOrg}
-        loadingUsers={loadingUsers}
-        getUserOptions={getUserOptions}
-        register={register}
-        handleSubmit={handleSubmit}
-        handleEdit={handleEdit}
+        organization={selectedOrg}
       />
 
       <div className="flex flex-1 flex-col gap-[20px] overflow-auto w-full">
         <button
           type="button"
-          onClick={() => setIsModalCreateOrganizationOpen(true)}
+          onClick={() => {
+            setSelectedOrg(null);
+            setIsModalOpen(true);
+          }}
           className="flex items-center gap-1 px-4 w-[190px] h-[40px] text-white rounded-lg leading-[24px] bg-app-dark hover:bg-opacity-90"
         >
           <FiPlus /> Crear organización
@@ -398,7 +259,7 @@ const Organizations = () => {
             organizations={organizations}
             onEdit={organization => {
               setSelectedOrg(organization);
-              setIsModalEditOpen(true);
+              setIsModalOpen(true);
             }}
             onDelete={handleDelete}
           />
