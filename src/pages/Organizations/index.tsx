@@ -161,7 +161,6 @@ const Organizations = () => {
     <>
       <Modal
         isShown={isModalCreateOrganizationOpen}
-        // children={<p></p>}
         onClose={() => setIsModalCreateOrganizationOpen(false)}
         children={
           <ModalCreateOrganization
