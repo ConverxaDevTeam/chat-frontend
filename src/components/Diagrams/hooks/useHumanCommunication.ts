@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { agentService } from "@services/agent";
-import { useSweetAlert } from "@hooks/useSweetAlert";
+import { useAlertContext } from "../components/AlertContext";
 
 export const useHumanCommunication = (agentId: number) => {
   const [humanCommunication, setHumanCommunication] = useState(true);
-  const { handleOperation } = useSweetAlert();
+  const { handleOperation } = useAlertContext();
 
   useEffect(() => {
     if (agentId) {

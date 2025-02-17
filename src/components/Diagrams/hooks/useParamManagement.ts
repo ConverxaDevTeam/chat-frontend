@@ -4,7 +4,7 @@ import {
   CreateFunctionParamDto,
 } from "@interfaces/function-params.interface";
 import { paramsService } from "@services/params.service";
-import { useSweetAlert } from "@hooks/useSweetAlert";
+import { useAlertContext } from "../components/AlertContext";
 import { toast } from "react-toastify";
 
 interface UseParamManagementProps {
@@ -19,7 +19,7 @@ export const useParamManagement = ({
   setParams,
 }: UseParamManagementProps) => {
   const [isLoading, setIsLoading] = useState(false);
-  const { showConfirmation, handleOperation } = useSweetAlert();
+  const { showConfirmation, handleOperation } = useAlertContext();
 
   const createParam = async (param: CreateFunctionParamDto) => {
     try {
@@ -70,7 +70,7 @@ export const useParamManagement = ({
         () => paramsService.delete(functionId, index.toString()),
         {
           title: "Eliminando parámetro",
-          successTitle: "¡Parámetro eliminado!",
+          successTitle: "Parámetro eliminado",
           successText: "El parámetro se ha eliminado exitosamente",
           errorTitle: "Error al eliminar el parámetro",
         }

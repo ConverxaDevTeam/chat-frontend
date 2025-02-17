@@ -8,11 +8,12 @@ import {
 import { useEffect, useState } from "react";
 import OrganizationCard from "./OrganizationCard";
 import ModalCreateOrganization from "./ModalCreateUser";
-import { useSweetAlert } from "@hooks/useSweetAlert";
 import { useForm } from "react-hook-form";
 import { getUserMyOrganization } from "@services/user";
 import { IUserApi } from "../Users/UsersOrganization";
 import { OrganizationRoleType } from "@utils/interfaces";
+import { FiPlus } from "react-icons/fi";
+import { useAlertContext } from "@components/Diagrams/components/AlertContext";
 
 export type IOrganizarion = {
   id: number;
@@ -44,7 +45,7 @@ const Organizations = () => {
   const [isModalCreateOrganizationOpen, setIsModalCreateOrganizationOpen] =
     useState(false);
   const [isModalEditOpen, setIsModalEditOpen] = useState(false);
-  const { handleOperation, showConfirmation } = useSweetAlert();
+  const { handleOperation, showConfirmation } = useAlertContext();
   const { register, handleSubmit, reset } = useForm<EditFormData>();
 
   const getAllOrganizations = async () => {
@@ -105,7 +106,6 @@ const Organizations = () => {
       title: "¿Eliminar organización?",
       text: "Esta acción no se puede deshacer",
     });
-
     if (confirmed) {
       const result = await handleOperation(
         async () => deleteOrganization(organization.id),
@@ -159,72 +159,72 @@ const Organizations = () => {
     <>
       <Modal
         isShown={isModalCreateOrganizationOpen}
-        children={<p></p>}
         onClose={() => setIsModalCreateOrganizationOpen(false)}
-        header={
+        children={
           <ModalCreateOrganization
             getAllOrganizations={getAllOrganizations}
             close={() => setIsModalCreateOrganizationOpen(false)}
           />
         }
-        footer={<button type="button">Crear</button>}
       />
 
       <Modal
         isShown={isModalEditOpen}
         onClose={() => setIsModalEditOpen(false)}
-        header={<h2 className="text-xl font-bold">Editar Owner</h2>}
+        header={<h2 className="text-xl font-bold p-2">Editar Owner</h2>}
+        footer={
+          <div className="flex justify-center gap-2 p-[20px] w-[400px]">
+            <button
+              onClick={handleSubmit(handleEdit)}
+              className="w-full px-4 py-3 bg-sofia-electricGreen text-gray-900 rounded-md text-sm font-semibold hover:bg-opacity-50 transition-all"
+            >
+              Actualizar
+            </button>
+          </div>
+        }
         children={
-          <form onSubmit={handleSubmit(handleEdit)} className="space-y-4">
+          <form onSubmit={handleSubmit(handleEdit)} className="space-y-5">
             <div>
-              <label className="block text-sm font-medium">Nombre</label>
-              <p className="mt-1 text-gray-600">{selectedOrg?.name}</p>
+              <label className="block text-gray-700 font-semibold mb-2">Nombre</label>
+              <input type="text"
+                value={selectedOrg?.name}
+                disabled
+                className="w-full p-3 border text-gray-400 rounded-lg cursor-not-allowed" />
             </div>
+
             <div>
-              <label className="block text-sm font-medium">Descripción</label>
-              <p className="mt-1 text-gray-600">{selectedOrg?.description}</p>
-            </div>
-            <div>
-              <label className="block text-sm font-medium">Owner</label>
+              <label className="block text-gray-700 font-semibold mb-2">Seleccionar owner</label>
               {loadingUsers ? (
                 <Loading />
               ) : (
                 <select
                   {...register("owner_id")}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                  className="w-full p-3 border text-gray-800 rounded-lg border-gray-300"
                 >
                   <option value="">Seleccionar owner</option>
                   {getUserOptions()}
                 </select>
               )}
             </div>
+            <div>
+              <label className="block text-gray-700 font-semibold mb-2">Descripción</label>
+              <input type="text"
+                value={selectedOrg?.description}
+                disabled
+                className="w-full p-3 border text-gray-400 rounded-lg cursor-not-allowed" />
+            </div>
           </form>
         }
-        footer={
-          <div className="flex justify-end gap-2">
-            <button
-              onClick={() => setIsModalEditOpen(false)}
-              className="px-4 py-2 border rounded-md"
-            >
-              Cancelar
-            </button>
-            <button
-              onClick={handleSubmit(handleEdit)}
-              className="px-4 py-2 bg-app-dark text-white rounded-md"
-            >
-              Guardar
-            </button>
-          </div>
-        }
+
       />
 
       <div className="flex flex-1 flex-col gap-[20px] overflow-auto w-full">
         <button
           type="button"
           onClick={() => setIsModalCreateOrganizationOpen(true)}
-          className="w-[190px] h-[40px] border-[1px] rounded-full text-[16px] ml-auto leading-[24px] font-poppinsMedium bg-app-dark text-white"
+          className="flex items-center gap-1 px-4 w-[190px] h-[40px] text-white rounded-lg leading-[24px] bg-app-dark hover:bg-opacity-90"
         >
-          Crear Organización
+          <FiPlus /> Crear organización
         </button>
         {loading ? (
           <Loading />

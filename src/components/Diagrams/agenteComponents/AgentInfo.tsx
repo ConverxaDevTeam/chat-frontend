@@ -4,6 +4,7 @@ import { useFunctionSuccess } from "../hooks/useFunctionActions";
 import KnowledgeBaseModal from "./KnowledgeBaseModal";
 import { AgentEditModal } from "./AgentEditModal";
 import { useAgentData } from "../hooks/useAgentData";
+import { useAlertContext } from "../components/AlertContext";
 
 export enum ActionType {
   EDIT_AGENT = "EDIT_AGENT",
@@ -38,12 +39,14 @@ export const ActionButtons = ({
     onClose();
     refreshAgentData();
   };
+  const { handleOperation } = useAlertContext();
 
   const handleFunctionSuccess = useFunctionSuccess(
     createWithSpacing,
     nodeId,
     agentId || -1,
-    () => onClose()
+    () => onClose(), 
+    handleOperation
   );
 
   return (

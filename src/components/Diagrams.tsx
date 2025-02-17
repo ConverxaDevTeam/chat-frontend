@@ -48,6 +48,7 @@ import { IntegrationType } from "@interfaces/integrations";
 import { useSelector } from "react-redux";
 import { RootState } from "@store";
 import { getWorkspaceData } from "@services/department";
+import { useAlertContext } from "./Diagrams/components/AlertContext";
 
 // Tipos y interfaces
 interface ContextMenuState {
@@ -398,6 +399,7 @@ const ZoomTransition = ({
 
   const [nodesState, setNodesState] = useNodesState<Node>([]);
   const [edges, setEdges] = useEdgesState<Edge>([]);
+  const { handleOperation } = useAlertContext();
 
   useEffect(() => {
     if (!departmentId) return;
@@ -464,7 +466,8 @@ const ZoomTransition = ({
     () => {
       setShowFunctionModal(false);
       setSelectedNodeId(null);
-    }
+    },
+    handleOperation
   );
 
   const handleCreateFunction = useCallback(

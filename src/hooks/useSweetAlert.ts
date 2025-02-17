@@ -1,4 +1,4 @@
-import Swal from "sweetalert2";
+import { useState } from "react";
 
 interface ApiError {
   ok: boolean;
@@ -12,14 +12,6 @@ interface ApiError {
       error?: string;
     };
   };
-}
-
-interface SweetAlertOptions {
-  title: string;
-  successTitle: string;
-  successText: string;
-  errorTitle: string;
-  loadingTitle?: string;
 }
 
 interface OperationResult<T> {
@@ -87,79 +79,156 @@ const formatError = (error: unknown): string => {
 };
 
 export const useSweetAlert = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [modalOptions, setModalOptions] = useState<{
+    title: string;
+    text: string;
+    confirmButtonText?: string;
+    cancelButtonText?: string;
+    resolve: (value: boolean) => void;
+    onConfirm?: () => Promise<boolean | void>;
+  } | null>(null);
+
   const showConfirmation = async (options: {
     title: string;
     text: string;
     confirmButtonText?: string;
     cancelButtonText?: string;
-  }) => {
-    const result = await Swal.fire({
-      title: options.title,
-      html: `<p class="text-gray-600 text-sm">${options.text}</p>`,
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: options.confirmButtonText || "Si",
-      cancelButtonText: options.cancelButtonText || "Cancelar",
-      customClass: {
-        popup: "bg-white border-2 border-gray-300 rounded-xl shadow-lg p-4 w-[400px]",
-        title: "text-gray-900 text-lg font-semibold",
-        confirmButton: "bg-gray-600 text-white border border-black px-4 py-2 rounded-md hover:bg-gray-800",
-        cancelButton: "bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 ",
-      },
+    onConfirm?: () => Promise<boolean | void>;
+  }): Promise<boolean> => {
+    return new Promise<boolean>((resolve) => {
+      setModalOptions({ ...options, resolve });
+      setIsOpen(true);
     });
+  };
 
-    return result.isConfirmed;
+  const handleConfirm = async () => {
+    if (modalOptions) {
+      try {
+        if (modalOptions.onConfirm) {
+          const result = await modalOptions.onConfirm();
+          if (typeof result === 'boolean' && result === false) {
+            modalOptions.resolve(false);
+            return;
+          }
+        }
+        modalOptions.resolve(true);
+        setIsOpen(false);
+        setModalOptions(null);
+      } catch (error) {
+        console.error('Error in confirmation:', error);
+        modalOptions.resolve(false);
+        setIsOpen(false);
+        setModalOptions(null);
+      }
+    }
+  };
+
+  const handleCancel = () => {
+    if (modalOptions?.resolve) {
+      modalOptions.resolve(false);
+    }
+    setIsOpen(false);
+    setModalOptions(null);
+  };
+
+  const [isOperationModalOpen, setIsOperationModalOpen] = useState(false);
+  const [operationModalOptions, setOperationModalOptions] = useState<{
+    title: string;
+    text: string;
+    type: "loading" | "success" | "error";
+    autoCloseDelay?: number;
+  } | null>(null);
+
+  const showOperationModal = (options: {
+    title: string;
+    text: string;
+    type: "loading" | "success" | "error";
+    autoCloseDelay?: number;
+  }): Promise<void> => {
+    return new Promise<void>(resolve => {
+      setOperationModalOptions(options);
+      setIsOperationModalOpen(true);
+
+      if (options.type !== "loading" && options.autoCloseDelay) {
+        setTimeout(() => {
+          hideOperationModal();
+          resolve();
+        }, options.autoCloseDelay);
+      } else if (options.type === "loading") {
+        resolve();
+      }
+    });
+  };
+
+  const hideOperationModal = () => {
+    setIsOperationModalOpen(false);
+    setOperationModalOptions(null);
   };
 
   const handleOperation = async <T>(
     operation: () => Promise<T>,
-    options: SweetAlertOptions
+    options: {
+      title: string;
+      successTitle: string;
+      successText: string;
+      errorTitle: string;
+      loadingTitle?: string;
+    }
   ): Promise<OperationResult<T>> => {
     let result: T;
 
     try {
-      await Swal.fire({
+      await showOperationModal({
         title: options.loadingTitle || options.title,
-        html: "Procesando... Espere un momento",
-        allowOutsideClick: false,
-        allowEscapeKey: false,
-        showConfirmButton: false,
-        didOpen: async () => {
-          Swal.showLoading();
-          try {
-            result = await operation();
-            Swal.close();
-            await Swal.fire({
-              icon: "success",
-              title: options.successTitle,
-              text: options.successText,
-              timer: 1500,
-              timerProgressBar: true,
-              showConfirmButton: false,
-            });
-          } catch (err) {
-            console.error("Operation error:", err);
-            const errorMessage = formatError(err);
-            Swal.close();
-            await Swal.fire({
-              icon: "error",
-              title: options.errorTitle,
-              html: errorMessage.replace(/\\n/g, "<br>"),
-              confirmButtonColor: "#d33",
-            });
-            throw err;
-          }
-        },
+        text: "Espere un momento",
+        type: "loading",
       });
 
-      return { success: true, data: result! };
+      result = await operation();
+
+      hideOperationModal();
+      await new Promise<void>((resolve) => {
+        showOperationModal({
+          title: options.successTitle,
+          text: options.successText,
+          type: "success",
+          autoCloseDelay: 1500,
+        }).then(() => {
+          resolve();
+        });
+      });
+
+      return { success: true, data: result };
     } catch (error) {
+      hideOperationModal();
+
+      const errorMessage = formatError(error);
+      
+      await new Promise<void>((resolve) => {
+        showOperationModal({
+          title: options.errorTitle,
+          text: errorMessage,
+          type: "error",
+          autoCloseDelay: 3000,
+        }).then(() => {
+          resolve();
+        });
+      });
+
       return { success: false, error };
     }
   };
 
   return {
-    showConfirmation,
     handleOperation,
+    showConfirmation,
+    isOpen,
+    modalOptions,
+    handleConfirm,
+    handleCancel,
+    isOperationModalOpen,
+    operationModalOptions,
+    hideOperationModal,
   };
 };

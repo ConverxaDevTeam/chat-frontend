@@ -16,10 +16,12 @@ import { Fragment, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Navigate, Route, Routes } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
+
 import "react-toastify/dist/ReactToastify.css";
 import { OrganizationRoleType } from "@utils/interfaces";
 import { RequestResetPassword } from "@pages/auth/RequestResetPassword";
 import { ChangePassword } from "@pages/auth/ChangePassword";
+import { AlertProvider } from "@components/Diagrams/components/AlertContext";
 
 const App = (): JSX.Element => {
   const dispatch = useDispatch<AppDispatch>();
@@ -37,7 +39,8 @@ const App = (): JSX.Element => {
     <Fragment>
       <NotificationHandler />
       <ToastContainer />
-      <Routes>
+      <AlertProvider>
+        <Routes>
         <Route index element={<LogIn />} />
         <Route path="/reset-password" element={<RequestResetPassword />} />
         <Route path="/reset-password/change" element={<ChangePassword />} />
@@ -74,6 +77,7 @@ const App = (): JSX.Element => {
         </Route>
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
+      </AlertProvider>
     </Fragment>
   );
 };

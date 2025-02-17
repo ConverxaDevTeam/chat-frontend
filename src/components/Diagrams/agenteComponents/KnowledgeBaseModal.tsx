@@ -8,7 +8,7 @@ import {
   getKnowledgeBaseByAgent,
   ALLOWED_FILE_EXTENSIONS,
 } from "@services/knowledgeBase.service";
-import { useSweetAlert } from "@hooks/useSweetAlert";
+import { useAlertContext } from "../components/AlertContext";
 import Modal from "@components/Modal";
 import { useRef } from "react";
 import GuideConfig from "@components/GuideConfig";
@@ -75,11 +75,10 @@ const FileList = ({
             <button
               key={page}
               onClick={() => onPageChange(page)}
-              className={`px-3 py-1 rounded ${
-                currentPage === page
-                  ? "bg-blue-500 text-white"
-                  : "bg-gray-200 hover:bg-gray-300"
-              }`}
+              className={`px-3 py-1 rounded ${currentPage === page
+                ? "bg-blue-500 text-white"
+                : "bg-gray-200 hover:bg-gray-300"
+                }`}
             >
               {page}
             </button>
@@ -100,7 +99,7 @@ const UploadForm = ({
   onSuccess: () => void;
 }) => {
   const [isDragging, setIsDragging] = useState(false);
-  const { handleOperation } = useSweetAlert();
+  const { handleOperation } = useAlertContext();
   const dropRef = useRef<HTMLDivElement>(null);
 
   const acceptedFileTypes = ALLOWED_FILE_EXTENSIONS.map(ext => `.${ext}`).join(
@@ -258,9 +257,8 @@ const UploadForm = ({
   return (
     <div
       ref={dropRef}
-      className={`relative border-2 border-dashed rounded-lg p-8 text-center ${
-        isDragging ? "border-blue-500 bg-blue-50" : "border-gray-300"
-      }`}
+      className={`relative border-2 border-dashed rounded-lg p-8 text-center ${isDragging ? "border-blue-500 bg-blue-50" : "border-gray-300"
+        }`}
     >
       <div className="flex flex-col items-center">
         <FaUpload className="text-4xl text-gray-400 mb-2" />
@@ -294,7 +292,8 @@ const KnowledgeBaseModal = ({
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
   const totalPages = Math.ceil(files.length / itemsPerPage);
-  const { handleOperation } = useSweetAlert();
+  const { handleOperation
+  } = useAlertContext();
 
   const fetchFiles = async () => {
     setIsLoading(true);
@@ -318,9 +317,12 @@ const KnowledgeBaseModal = ({
   const handleDelete = async (fileId: number) => {
     const result = await handleOperation(
       async () => {
-        await deleteKnowledgeBase(fileId);
+        const response = await deleteKnowledgeBase(fileId);
+        if (response.status >= 200 && response.status < 300) {
         await fetchFiles();
         return true;
+        }
+        throw new Error(`Error al eliminar archivo: ${response.status}`);
       },
       {
         title: "Eliminando archivo",
@@ -336,7 +338,7 @@ const KnowledgeBaseModal = ({
     }
   };
 
-  return (
+  return (<>
     <Modal isShown={isShown} onClose={onClose}>
       <div className="flex gap-[24px] w-[587px]">
         <GuideConfig />
@@ -405,7 +407,9 @@ const KnowledgeBaseModal = ({
           )}
         </div>
       </div>
+
     </Modal>
+  </>
   );
 };
 

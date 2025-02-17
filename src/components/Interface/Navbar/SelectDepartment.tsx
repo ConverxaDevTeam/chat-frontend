@@ -8,9 +8,9 @@ import {
   setSelectedDepartmentId,
   clearSelectedDepartment,
 } from "@store/reducers/department";
-import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch } from "@store/hooks";
+import { useAlertContext } from "@components/Diagrams/components/AlertContext";
 
 interface SelectDepartmentProps {
   mobileResolution?: boolean;
@@ -28,6 +28,7 @@ const SelectDepartment: FC<SelectDepartmentProps> = ({ mobileResolution }) => {
   const [departments, setDepartments] = useState<IDepartment[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const selectRef = useRef<HTMLDivElement>(null);
+  const { showConfirmation } = useAlertContext();
 
   useEffect(() => {
     const fetchDepartments = async () => {
@@ -40,19 +41,16 @@ const SelectDepartment: FC<SelectDepartmentProps> = ({ mobileResolution }) => {
         if (data.length > 0 && !selectedDepartmentId) {
           dispatch(setSelectedDepartmentId(data[0].id));
         }
-        // Si no hay departamentos, mostrar Swal
         else if (data.length === 0) {
-          Swal.fire({
+          showConfirmation({
             title: "No hay departamentos",
             text: "Es necesario crear un departamento para continuar",
-            icon: "info",
-            showCancelButton: true,
-            confirmButtonText: "Ir a Departamentos",
+            confirmButtonText: "Ir a departamentos",
             cancelButtonText: "Cancelar",
-          }).then(result => {
-            if (result.isConfirmed) {
+            onConfirm: async () => {
               navigate("/departments");
-            }
+              return true;
+            },
           });
         }
       } catch (error) {
@@ -61,7 +59,7 @@ const SelectDepartment: FC<SelectDepartmentProps> = ({ mobileResolution }) => {
     };
 
     fetchDepartments();
-  }, [selectOrganizationId]);
+  }, [selectOrganizationId, navigate]);
 
   // Clear selected department when organization changes
   useEffect(() => {

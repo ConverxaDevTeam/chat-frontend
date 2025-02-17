@@ -2,7 +2,7 @@ import Modal from "@components/Modal";
 import { useState, useEffect, useCallback, Fragment } from "react";
 import { FaPlus } from "react-icons/fa";
 import { toast } from "react-toastify";
-import { useSweetAlert } from "@/hooks/useSweetAlert";
+import { useAlertContext } from "../components/AlertContext";
 import { authenticatorService } from "@/services/authenticator.service";
 import { functionsService } from "@/services/functions.service";
 import AuthenticatorFormModal from "./AuthenticatorFormModal";
@@ -77,16 +77,16 @@ const useAuthenticatorSubmit = (
         const authenticatorData = data;
         const result = authenticatorData.id
           ? await authenticatorService.update(
-              authenticatorData.id,
-              authenticatorData
-            )
+            authenticatorData.id,
+            authenticatorData
+          )
           : await authenticatorService.create(authenticatorData);
 
         setAuthenticators(prev =>
           authenticatorData.id
             ? prev.map(auth =>
-                auth.id === authenticatorData.id ? result : auth
-              )
+              auth.id === authenticatorData.id ? result : auth
+            )
             : [...prev, result]
         );
 
@@ -103,10 +103,16 @@ const useAuthenticatorSubmit = (
 };
 
 const useAuthenticatorDelete = (
-  setAuthenticators: React.Dispatch<React.SetStateAction<AuthenticatorType[]>>
+  setAuthenticators: React.Dispatch<React.SetStateAction<AuthenticatorType[]>>,
+  showConfirmation: (options: {
+    title: string;
+    text: string;
+    confirmButtonText?: string;
+    cancelButtonText?: string;
+  }) => Promise<boolean>
 ) => {
   return useCallback(async (id: number) => {
-    const confirmed = await useSweetAlert().showConfirmation({
+    const confirmed = await showConfirmation({
       title: "Eliminar Autenticador",
       text: "¿Estás seguro que deseas eliminar este autenticador?",
     });
@@ -120,14 +126,20 @@ const useAuthenticatorDelete = (
     } catch {
       toast.error("Error al eliminar el autenticador");
     }
-  }, []);
+  }, [setAuthenticators, showConfirmation]);
 };
 
 const useAuthenticatorActions = (
   organizationId: number,
   setAuthenticators: React.Dispatch<React.SetStateAction<AuthenticatorType[]>>,
   onClose: () => void,
-  onSelect: (id: number) => void
+  onSelect: (id: number) => void,
+  showConfirmation: (options: {
+    title: string;
+    text: string;
+    confirmButtonText?: string;
+    cancelButtonText?: string;
+  }) => Promise<boolean>
 ) => {
   const fetchAuthenticators = useFetchAuthenticators(
     organizationId,
@@ -137,7 +149,7 @@ const useAuthenticatorActions = (
     setAuthenticators,
     onClose
   );
-  const handleDelete = useAuthenticatorDelete(setAuthenticators);
+  const handleDelete = useAuthenticatorDelete(setAuthenticators, showConfirmation);
 
   const handleSelect = useCallback(
     async (authenticatorId: number) => {
@@ -184,11 +196,10 @@ const AuthenticatorTable = ({
             e.stopPropagation();
             onSelect(auth.id!);
           }}
-          className={`flex w-5 h-5 p-[2px] justify-center items-center gap-[10px] rounded-[24px] ${
-            auth.id === selectedAuthenticatorId
-              ? "bg-sofia-electricOlive"
-              : "bg-sofia-error"
-          }`}
+          className={`flex w-5 h-5 p-[2px] justify-center items-center gap-[10px] rounded-[24px] ${auth.id === selectedAuthenticatorId
+            ? "bg-sofia-electricOlive"
+            : "bg-sofia-error"
+            }`}
         >
           <img
             src={
@@ -259,6 +270,10 @@ export function AuthenticatorModal({
     handleEdit,
   } = useAuthenticatorState();
 
+  const {
+    showConfirmation,
+  } = useAlertContext();
+
   const { fetchAuthenticators, handleSubmit, handleDelete, handleSelect } =
     useAuthenticatorActions(
       organizationId,
@@ -289,7 +304,7 @@ export function AuthenticatorModal({
           }
           onClose();
         }
-      }
+      }, showConfirmation  
     );
 
   useEffect(() => {
