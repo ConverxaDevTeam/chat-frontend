@@ -16,7 +16,7 @@ import { Fragment, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Navigate, Route, Routes } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
-
+import { toastConfig } from "@config/toast";
 import "react-toastify/dist/ReactToastify.css";
 import { OrganizationRoleType } from "@utils/interfaces";
 import { RequestResetPassword } from "@pages/auth/RequestResetPassword";
@@ -38,55 +38,45 @@ const App = (): JSX.Element => {
   return (
     <Fragment>
       <NotificationHandler />
-      <ToastContainer
-        position="top-right"
-        autoClose={2000}
-        hideProgressBar
-        closeButton={false}
-        className="!p-4 !mr-4"
-        bodyClassName="!p-4"
-        toastClassName={() =>
-          "relative flex !bg-[#EEFDE3] !text-[#1E4620] !text-[16px] !font-medium !rounded-[4px] shadow-lg w-full max-w-[434px] !mb-3"
-        }
-      />
+      <ToastContainer {...toastConfig} />
       <AlertProvider>
         <Routes>
-        <Route index element={<LogIn />} />
-        <Route path="/reset-password" element={<RequestResetPassword />} />
-        <Route path="/reset-password/change" element={<ChangePassword />} />
-        <Route
-          path="/*"
-          element={
-            <ProtectedAuth>
-              <Interface />
-            </ProtectedAuth>
-          }
-        >
-          <Route index element={<Dashboard />} />
-          <Route path="dashboard" element={<Dashboard />} />
-          <Route path="users" element={<Users />} />
+          <Route index element={<LogIn />} />
+          <Route path="/reset-password" element={<RequestResetPassword />} />
+          <Route path="/reset-password/change" element={<ChangePassword />} />
           <Route
-            path="organizations"
+            path="/*"
             element={
-              <ProtectedAuth roles={[OrganizationRoleType.ING_PREVENTA]}>
-                <Organizations />
+              <ProtectedAuth>
+                <Interface />
               </ProtectedAuth>
             }
-          />
-          <Route path="conversations" element={<Conversations />} />
-          <Route path="workspace" element={<Workspace />} />
-          <Route path="departments" element={<Departments />} />
-          <Route
-            path="conversation/detail/:id"
-            element={<ConversationDetail />}
-          />
-          <Route
-            path="conversation/detail/:id/user/:userId"
-            element={<ConversationDetail />}
-          />
-        </Route>
-        <Route path="*" element={<Navigate to="/" />} />
-      </Routes>
+          >
+            <Route index element={<Dashboard />} />
+            <Route path="dashboard" element={<Dashboard />} />
+            <Route path="users" element={<Users />} />
+            <Route
+              path="organizations"
+              element={
+                <ProtectedAuth roles={[OrganizationRoleType.ING_PREVENTA]}>
+                  <Organizations />
+                </ProtectedAuth>
+              }
+            />
+            <Route path="conversations" element={<Conversations />} />
+            <Route path="workspace" element={<Workspace />} />
+            <Route path="departments" element={<Departments />} />
+            <Route
+              path="conversation/detail/:id"
+              element={<ConversationDetail />}
+            />
+            <Route
+              path="conversation/detail/:id/user/:userId"
+              element={<ConversationDetail />}
+            />
+          </Route>
+          <Route path="*" element={<Navigate to="/" />} />
+        </Routes>
       </AlertProvider>
     </Fragment>
   );
