@@ -15,7 +15,6 @@ interface ModalCreateOrganizationProps {
   close: (value: boolean) => void;
   getAllOrganizations: () => Promise<void>;
   organization?: IOrganization | null;
-  updateOrganization: (org: IOrganization) => void;
 }
 
 interface OrganizationFormData {
@@ -23,6 +22,7 @@ interface OrganizationFormData {
   description: string;
   email: string;
   logoFile: File | null;
+  owner_id?: number;
 }
 
 interface User {
@@ -43,15 +43,15 @@ const ModalCreateOrganization = ({
   close,
   getAllOrganizations,
   organization,
-  updateOrganization,
 }: ModalCreateOrganizationProps) => {
   const isEditMode = !!organization;
-  const { register, handleSubmit } = useForm<{ owner_id: number }>();
+  const { register } = useForm<OrganizationFormData>();
   const [data, setData] = useState<OrganizationFormData>({
     name: organization?.name || "",
     description: organization?.description || "",
     email: organization?.owner?.user.email || "",
     logoFile: null,
+    owner_id: organization?.owner?.user.id || 0,
   });
   const [users, setUsers] = useState<User[]>([]);
   const [loadingUsers, setLoadingUsers] = useState(false);
@@ -111,28 +111,29 @@ const ModalCreateOrganization = ({
     setData({ ...data, logoFile: null });
   };
 
-  const handleEditOwner = async (data: { owner_id: number }) => {
-    if (!organization) return;
-    await editOrganization(organization.id, data);
-    await getAllOrganizations();
-    close(false);
-  };
-
   const handleSubmitForm = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (isEditMode) {
-      return handleSubmit(handleEditOwner)(e);
-    }
-    const createData: CreateOrganizationData = {
-      name: data.name,
-      description: data.description,
-      logo: data.logoFile,
-      email: data.email,
-    };
-    const response = await createOrganization(createData);
-    if (response) {
+      const editData = {
+        owner_id: Number(data.owner_id),
+        name: data.name,
+        description: data.description,
+      };
+      await editOrganization(organization.id, editData);
       await getAllOrganizations();
       close(false);
+    } else {
+      const createData: CreateOrganizationData = {
+        name: data.name,
+        description: data.description,
+        logo: data.logoFile,
+        email: data.email,
+      };
+      const response = await createOrganization(createData);
+      if (response) {
+        await getAllOrganizations();
+        close(false);
+      }
     }
   };
 

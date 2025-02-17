@@ -98,7 +98,12 @@ export const deleteOrganization = async (id: number) => {
 
 export const editOrganization = async (
   id: number,
-  data: { owner_id: number }
+  data: {
+    owner_id: number;
+    name?: string;
+    description?: string;
+    logo?: File | null;
+  }
 ) => {
   try {
     const response = await axiosInstance.patch(

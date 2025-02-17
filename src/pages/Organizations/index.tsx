@@ -1,10 +1,6 @@
 import Loading from "@components/Loading";
 import Modal from "@components/Modal";
-import {
-  getOrganizations,
-  deleteOrganization,
-  editOrganization,
-} from "@services/organizations";
+import { getOrganizations, deleteOrganization } from "@services/organizations";
 import { useEffect, useState } from "react";
 import OrganizationCard from "./OrganizationCard";
 import ModalCreateOrganization from "./ModalCreateUser";
@@ -55,7 +51,6 @@ const CreateModal = ({
   onClose,
   getAllOrganizations,
   organization,
-  updateOrganization,
 }: CreateModalProps) => (
   <Modal
     isShown={isShown}
@@ -65,7 +60,6 @@ const CreateModal = ({
         getAllOrganizations={getAllOrganizations}
         close={onClose}
         organization={organization}
-        updateOrganization={updateOrganization}
       />
     }
   />
@@ -125,42 +119,11 @@ const useModals = () => {
 
 const useHandles = (
   users: IUserApi[],
-  getAllOrganizations: () => Promise<void>,
-  setIsModalOpen: (value: boolean) => void
+  getAllOrganizations: () => Promise<void>
 ) => {
   const { handleOperation, showConfirmation } = useAlertContext();
   const { register, handleSubmit, reset } = useForm<EditFormData>();
   const [selectedOrg, setSelectedOrg] = useState<IOrganization | null>(null);
-
-  const handleEdit = async (data: EditFormData) => {
-    if (!selectedOrg) return;
-
-    const result = await handleOperation(
-      async () => {
-        try {
-          const success = await editOrganization(selectedOrg.id, data);
-          if (!success) throw new Error("No se pudo editar la organización");
-          return success;
-        } catch (error) {
-          if (error instanceof Error) {
-            throw new Error(error.message);
-          }
-          throw new Error("Error inesperado al editar");
-        }
-      },
-      {
-        title: "Editando Owner",
-        successTitle: "¡Éxito!",
-        successText: "Owner actualizado correctamente",
-        errorTitle: "Error al editar",
-      }
-    );
-
-    if (result.success) {
-      setIsModalOpen(false);
-      getAllOrganizations();
-    }
-  };
 
   const handleDelete = async (organization: IOrganization) => {
     const confirmed = await showConfirmation({
@@ -211,7 +174,6 @@ const useHandles = (
   };
 
   return {
-    handleEdit,
     handleDelete,
     getUserOptions,
     register,
@@ -233,7 +195,7 @@ const Organizations = () => {
     selectedOrg,
     setSelectedOrg,
     updateOrganization,
-  } = useHandles(users, getAllOrganizations, setIsModalOpen);
+  } = useHandles(users, getAllOrganizations);
 
   useEffect(() => {
     getAllOrganizations();
