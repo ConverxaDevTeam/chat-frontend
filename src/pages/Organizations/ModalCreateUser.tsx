@@ -48,7 +48,7 @@ const ModalCreateOrganization = ({
     name: organization?.name || "",
     description: organization?.description || "",
     email: organization?.owner?.user.email || "",
-    logoFile: organization?.logo || null,
+    logoFile: null,
   });
   const [users, setUsers] = useState<User[]>([]);
   const [loadingUsers, setLoadingUsers] = useState(false);
@@ -68,9 +68,9 @@ const ModalCreateOrganization = ({
       setLogoUrl(url);
       return () => URL.revokeObjectURL(url);
     } else {
-      setLogoUrl("/mvp/avatar.svg");
+      setLogoUrl(organization?.logo || "/mvp/avatar.svg");
     }
-  }, [data.logoFile]);
+  }, [organization?.logo, data.logoFile]);
 
   const getUsers = async () => {
     if (!organization) return;
@@ -95,7 +95,7 @@ const ModalCreateOrganization = ({
       if (isEditMode) {
         await uploadOrganizationLogo(organization.id, file);
       }
-      setData({ ...data, logoFile: file });
+      setData(prev => ({ ...prev, logoFile: file }));
     }
   };
 
