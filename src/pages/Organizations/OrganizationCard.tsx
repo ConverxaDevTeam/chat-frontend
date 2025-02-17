@@ -1,6 +1,5 @@
 import { IOrganizarion } from ".";
 import { getInitials } from "@utils/format";
-// import { FiEdit2, FiTrash2 } from "react-icons/fi";
 import { useRoleAuth } from "@hooks/useRoleAuth";
 
 interface OrganizationCardProps {
