@@ -18,10 +18,18 @@ const OrganizationCard = ({
   return (
     <div className="bg-[#f5faff] rounded-xl p-5 flex flex-col border-2 border-[#d3eafa] w-full min-h-[250px]">
       <div className="flex flex-col items-center gap-[16px] flex-1">
-        <div className="flex justify-center items-center border-sofiaCall-electricGreen border-[1px] w-[58px] h-[60px] rounded-full bg-sofiaCall-light">
-          <p className="text-sofiaCall-dark font-poppinsSemiBold text-[24px]">
-            {getInitials(organization.name)}
-          </p>
+        <div className="flex justify-center items-center border-sofiaCall-electricGreen border-[1px] w-[58px] h-[60px] rounded-full bg-sofiaCall-light overflow-hidden">
+          {organization.logo ? (
+            <img
+              src={organization.logo}
+              alt={`${organization.name} logo`}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <p className="text-sofiaCall-dark font-poppinsSemiBold text-[24px]">
+              {getInitials(organization.name)}
+            </p>
+          )}
         </div>
         <div className="flex flex-col items-center h-full justify-between flex-1">
           <p className="text-[10px] font-bold text-gray-500 ">
@@ -30,7 +38,7 @@ const OrganizationCard = ({
           <p className="text-[20px] font-bold text-sofiaCall-dark">
             {organization.name}
           </p>
-          
+
           <p className="text-center text-[15px] font-poppinsRegular text-sofiaCall-gray line-clamp-3">
             {organization.description}
           </p>
