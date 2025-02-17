@@ -105,11 +105,8 @@ const ModalCreateOrganization = ({
 
   const handleDeleteLogo = async () => {
     if (isEditMode && organization) {
-      const updatedOrg = await uploadOrganizationLogo(
-        organization.id,
-        null as unknown as File
-      );
-      updateOrganization(updatedOrg);
+      await uploadOrganizationLogo(organization.id, null as unknown as File);
+      window.location.reload();
     }
     setData({ ...data, logoFile: null });
   };
