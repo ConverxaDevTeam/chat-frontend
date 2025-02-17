@@ -17,6 +17,7 @@ import { useAlertContext } from "@components/Diagrams/components/AlertContext";
 
 export type IOrganizarion = {
   id: number;
+  logo?: string;
   created_at: string;
   updated_at: string;
   name: string;
@@ -185,15 +186,21 @@ const Organizations = () => {
         children={
           <form onSubmit={handleSubmit(handleEdit)} className="space-y-5">
             <div>
-              <label className="block text-gray-700 font-semibold mb-2">Nombre</label>
-              <input type="text"
+              <label className="block text-gray-700 font-semibold mb-2">
+                Nombre
+              </label>
+              <input
+                type="text"
                 value={selectedOrg?.name}
                 disabled
-                className="w-full p-3 border text-gray-400 rounded-lg cursor-not-allowed" />
+                className="w-full p-3 border text-gray-400 rounded-lg cursor-not-allowed"
+              />
             </div>
 
             <div>
-              <label className="block text-gray-700 font-semibold mb-2">Seleccionar owner</label>
+              <label className="block text-gray-700 font-semibold mb-2">
+                Seleccionar owner
+              </label>
               {loadingUsers ? (
                 <Loading />
               ) : (
@@ -207,15 +214,18 @@ const Organizations = () => {
               )}
             </div>
             <div>
-              <label className="block text-gray-700 font-semibold mb-2">Descripción</label>
-              <input type="text"
+              <label className="block text-gray-700 font-semibold mb-2">
+                Descripción
+              </label>
+              <input
+                type="text"
                 value={selectedOrg?.description}
                 disabled
-                className="w-full p-3 border text-gray-400 rounded-lg cursor-not-allowed" />
+                className="w-full p-3 border text-gray-400 rounded-lg cursor-not-allowed"
+              />
             </div>
           </form>
         }
-
       />
 
       <div className="flex flex-1 flex-col gap-[20px] overflow-auto w-full">

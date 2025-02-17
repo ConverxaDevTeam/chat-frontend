@@ -109,3 +109,35 @@ export const editOrganization = async (
     throw new Error(message);
   }
 };
+
+export const uploadOrganizationLogo = async (id: number, file: File) => {
+  try {
+    const formData = new FormData();
+    formData.append("logo", file);
+    const response = await axiosInstance.post(
+      apiUrls.uploadOrganizationLogo(id),
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+    return response.data.ok;
+  } catch (error) {
+    alertError("Error al subir el logo");
+    return false;
+  }
+};
+
+export const deleteOrganizationLogo = async (id: number) => {
+  try {
+    const response = await axiosInstance.delete(
+      apiUrls.deleteOrganizationLogo(id)
+    );
+    return response.data.ok;
+  } catch (error) {
+    alertError("Error al eliminar el logo");
+    return false;
+  }
+};
