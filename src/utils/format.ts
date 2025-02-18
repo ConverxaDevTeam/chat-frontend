@@ -46,6 +46,18 @@ export const convertISOToReadableMonthDayYear = (dateISO: string) => {
   return readableDate;
 };
 
+export const getPdfMonthDayYear = () => {
+  const date = new Date();
+
+  const day = date.getDate();
+  const month = date.getMonth() + 1;
+  const year = date.getFullYear();
+
+  const readableDate = `${month}-${day}-${year}`;
+
+  return readableDate;
+};
+
 export const formatTime = (seconds: number) => {
   const hours = Math.floor(seconds / 3600);
   const minutes = Math.floor((seconds % 3600) / 60);
