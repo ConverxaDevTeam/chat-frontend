@@ -179,7 +179,11 @@ const DefaultNode: React.FC<CustomNodeProps> = ({
       const { left, top, width } = ref.current.getBoundingClientRect();
       setMenuPosition({ x: left + width + 25, y: top });
     }
-  }, [selected]);
+  }, [
+    selected,
+    ref.current?.getBoundingClientRect().left,
+    ref.current?.getBoundingClientRect().top,
+  ]);
 
   useEffect(() => {
     if (timeoutRef.current) {
