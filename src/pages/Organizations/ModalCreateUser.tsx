@@ -9,7 +9,10 @@ import { useState, useEffect } from "react";
 import { useForm, UseFormRegister } from "react-hook-form";
 import { getUserMyOrganization } from "@services/user";
 import Loading from "@components/Loading";
-import { IOrganization } from "@interfaces/organization.interface";
+import {
+  IOrganization,
+  OrganizationType,
+} from "@interfaces/organization.interface";
 
 interface ModalCreateOrganizationProps {
   close: (value: boolean) => void;
@@ -23,6 +26,7 @@ interface OrganizationFormData {
   email: string;
   logoFile: File | null;
   owner_id?: number;
+  type: OrganizationType;
 }
 
 interface User {
@@ -35,8 +39,9 @@ interface User {
 interface CreateOrganizationData {
   name: string;
   description: string;
-  email: string;
   logo: File | null;
+  email: string;
+  type: OrganizationType;
 }
 
 const LogoUpload = ({
@@ -91,7 +96,9 @@ const FormInputs = ({
   getUserOptions,
 }: {
   data: OrganizationFormData;
-  handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleChange: (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => void;
   isEditMode: boolean;
   register: UseFormRegister<OrganizationFormData>;
   getUserOptions: () => JSX.Element[];
@@ -130,6 +137,21 @@ const FormInputs = ({
       <p className="text-gray-400 text-xs mt-1">
         {data.description.length}/255 caracteres
       </p>
+    </div>
+    <div className="mb-4">
+      <label className="text-gray-700 font-semibold" htmlFor="type">
+        Tipo
+      </label>
+      <select
+        className="w-full mt-2 p-3 border rounded-lg focus:outline-none text-[15px]"
+        id="type"
+        name="type"
+        value={data.type}
+        onChange={handleChange}
+      >
+        <option value={OrganizationType.MVP}>MVP</option>
+        <option value={OrganizationType.PRODUCTION}>Producción</option>
+      </select>
     </div>
     {!isEditMode && (
       <div className="mb-4">
@@ -246,9 +268,12 @@ const useFormData = (organization: IOrganization | null | undefined) => {
     email: organization?.owner?.user.email || "",
     logoFile: null,
     owner_id: organization?.owner?.user.id || 0,
+    type: organization?.type || OrganizationType.MVP,
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     setData({ ...data, [e.target.name]: e.target.value });
   };
 
@@ -332,6 +357,7 @@ const ModalCreateOrganization = ({
         owner_id: Number(data.owner_id),
         name: data.name,
         description: data.description,
+        type: data.type,
       };
       await editOrganization(organization.id, editData);
       await getAllOrganizations();
@@ -342,6 +368,7 @@ const ModalCreateOrganization = ({
         description: data.description,
         logo: data.logoFile,
         email: data.email,
+        type: data.type,
       };
       const response = await createOrganization(createData);
       if (response) {
