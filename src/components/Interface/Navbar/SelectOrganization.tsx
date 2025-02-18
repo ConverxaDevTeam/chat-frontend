@@ -32,7 +32,18 @@ const SelectOrganization = ({ mobileResolution }: SelectOrganizationProps) => {
         leaveRoom(`organization-${organization.organization.id}`);
       });
     };
-  }, []);
+  }, [user?.is_super_admin]);
+
+  useEffect(() => {
+    if (
+      !user?.is_super_admin &&
+      realOrganizations.length > 0 &&
+      !selectOrganizationId
+    ) {
+      console.log(realOrganizations);
+      dispatch(setOrganizationId(realOrganizations[0].organization.id));
+    }
+  }, [realOrganizations, selectOrganizationId]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -51,7 +62,7 @@ const SelectOrganization = ({ mobileResolution }: SelectOrganizationProps) => {
   }, []);
 
   const handleSelectOrganization = (organizationId: unknown) => {
-    if (organizationId === selectOrganizationId) {
+    if (!organizationId || organizationId === selectOrganizationId) {
       return;
     }
     navigate("/dashboard");

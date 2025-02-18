@@ -40,11 +40,10 @@ const SelectDepartment: FC<SelectDepartmentProps> = ({ mobileResolution }) => {
         // Si hay departamentos y ninguno está seleccionado, seleccionar el primero
         if (data.length > 0 && !selectedDepartmentId) {
           dispatch(setSelectedDepartmentId(data[0].id));
-        }
-        else if (data.length === 0) {
+        } else if (data.length === 0) {
           showConfirmation({
             title: "No hay departamentos",
-            text: "Es necesario crear un departamento para continuar",
+            text: "Es necesario crear un departamento para crear agentes",
             confirmButtonText: "Ir a departamentos",
             cancelButtonText: "Cancelar",
             onConfirm: async () => {
@@ -59,7 +58,7 @@ const SelectDepartment: FC<SelectDepartmentProps> = ({ mobileResolution }) => {
     };
 
     fetchDepartments();
-  }, [selectOrganizationId, navigate]);
+  }, [selectOrganizationId]);
 
   // Clear selected department when organization changes
   useEffect(() => {

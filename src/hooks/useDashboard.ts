@@ -18,6 +18,7 @@ export const useDashboard = (organizationId: number | null) => {
   useEffect(() => {
     const loadCards = async () => {
       try {
+        if (!organizationId) return;
         setLoading(true);
         const initialState = await getCards(organizationId);
         setState(initialState);
