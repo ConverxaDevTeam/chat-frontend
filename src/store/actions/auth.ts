@@ -416,7 +416,6 @@ export const connectSocketAsync = createAsyncThunk(
 export const setOrganizationId = createAction(
   "auth/setOrganizationId",
   (payload: number | null) => {
-    console.log(payload);
     if (payload === null) {
       localStorage.removeItem("organizationSelect");
     } else {

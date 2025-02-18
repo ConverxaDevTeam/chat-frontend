@@ -40,7 +40,6 @@ const SelectOrganization = ({ mobileResolution }: SelectOrganizationProps) => {
       realOrganizations.length > 0 &&
       !selectOrganizationId
     ) {
-      console.log(realOrganizations);
       dispatch(setOrganizationId(realOrganizations[0].organization.id));
     }
   }, [realOrganizations, selectOrganizationId]);
