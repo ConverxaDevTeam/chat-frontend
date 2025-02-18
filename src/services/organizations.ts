@@ -1,4 +1,5 @@
 import { apiUrls } from "@config/config";
+import { OrganizationType } from "@interfaces/organization.interface";
 import { axiosInstance } from "@store/actions/auth";
 import { alertError } from "@utils/alerts";
 import axios from "axios";
@@ -34,6 +35,7 @@ export const createOrganization = async (data: {
   description: string;
   logo: File | null;
   email: string;
+  type: OrganizationType;
 }) => {
   try {
     const formData = new FormData();
@@ -43,6 +45,7 @@ export const createOrganization = async (data: {
       formData.append("logo", data.logo);
     }
     formData.append("email", data.email);
+    formData.append("type", data.type);
 
     const response = await axiosInstance.post(
       apiUrls.createOrganization(),
