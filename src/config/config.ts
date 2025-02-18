@@ -24,6 +24,8 @@ export const apiUrls = {
   deleteOrganization: (id: number) => `/api/organization/${id}`,
   editOrganization: (id: number) => `/api/organization/${id}`,
   myOrganizations: () => `/api/organization/my-organizations`,
+  uploadOrganizationLogo: (id: number) => `/api/organization/${id}/logo`,
+  deleteOrganizationLogo: (id: number) => `/api/organization/${id}/logo`,
   //socket
   socket: () => `${baseUrl}/api/socket`,
   //integrations
