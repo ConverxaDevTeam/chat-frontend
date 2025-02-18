@@ -62,19 +62,21 @@ const Navbar = ({ mobileResolution}: NavbarProps) => {
             ))}
             </div>
           <div
-            className={`flex gap-[10px] items-center ${mobileResolution ? "w-full" : ""}`}
+            className={`flex gap-[24px] items-center ${mobileResolution ? "w-full" : ""}`}
           >
             <SelectOrganization mobileResolution={mobileResolution} />
             <SelectDepartment mobileResolution={mobileResolution} />
           </div>
         </div>
         <div
-          className={`flex gap-3 items-center ${mobileResolution ? "ml-auto" : ""}`}
+          className={`flex gap-[8px] items-center ${mobileResolution ? "ml-auto" : ""}`}
         >
           <p className="text-sofia-superDark font-normal text-[14px] mr-3">
             {user?.email}
           </p>
-          <div className="bg-[#F1F5F9] rounded-lg border-[#B8CCE0] border-[2px] h-[36px] w-[150px] flex items-center justify-center gap-3 px-2">
+          <div className={`bg-white  border border-gray-300 shadow-sm border-inherit max-w-[148px] h-[36px] relative rounded-lg flex justify-between items-center gap- p-3 cursor-pointer ${
+          mobileResolution ? "w-full" : "w-[200px]"
+        }`}>
             <img src="/mvp/bell.svg" alt="Bell" className="w-5 h-5" />
             <img src="/mvp/settings.svg" alt="Settings" className="w-5 h-5" />
             <img src="/mvp/spanish.svg" alt="Language" className="w-5 h-5" />
