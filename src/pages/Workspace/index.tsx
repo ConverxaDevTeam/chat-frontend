@@ -27,9 +27,9 @@ const ChatWrapper = ({ agentId }: ChatWrapperProps) => {
       ) : (
         <button
           onClick={toggleChat}
-          className="absolute top-24 right-0 z-50 px-4 py-2 bg-[#15ECDA] text-white rounded-l-full shadow-lg hover:bg-[#15ECDA] focus:outline-none transition-transform"
+          className="absolute w-[56px] h-[40px] top-19 right-5 px-4 py-2 border border-black bg-sofia-electricOlive rounded-lg shadow-lg hover:bg-[#d2f3ac] focus:outline-none transition-transform"
         >
-          <span className="text-sm font-medium">Chat</span>
+          <img src="/mvp/messages-square.svg" alt="Chat-icon"/>
         </button>
       )}
     </Fragment>
