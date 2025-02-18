@@ -61,11 +61,13 @@ const SelectOrganization = ({ mobileResolution }: SelectOrganizationProps) => {
   }, []);
 
   const handleSelectOrganization = (organizationId: unknown) => {
-    if (!organizationId || organizationId === selectOrganizationId) {
+    if (organizationId === selectOrganizationId) {
       return;
     }
     navigate("/dashboard");
-    dispatch(setOrganizationId(Number(organizationId)));
+    dispatch(
+      setOrganizationId(organizationId === 0 ? null : Number(organizationId))
+    );
   };
 
   const options = realOrganizations.map(org => ({
@@ -77,7 +79,10 @@ const SelectOrganization = ({ mobileResolution }: SelectOrganizationProps) => {
     user?.is_super_admin || myOrganizations.some(org => !org.organization);
   const customOptions = isGlobalUser ? (
     <div
-      onClick={() => handleSelectOrganization(0)}
+      onClick={() => {
+        handleSelectOrganization(0);
+        setIsOpen(false);
+      }}
       className={`p-[6px] cursor-pointer hover:bg-app-c1 ${
         selectOrganizationId === 0 || selectOrganizationId === null
           ? "bg-app-c1"
