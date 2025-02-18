@@ -270,7 +270,7 @@ export const verifySessionAsync = createAsyncThunk(
     { rejectWithValue }
   ) => {
     const selectOrganizationId = localStorage.getItem("organizationSelect")
-      ? Number(localStorage.getItem("organizationSelect"))
+      ? Number(localStorage.getItem("organizationSelect")) || null
       : null;
     dispatch(setOrganizationId(selectOrganizationId));
     if (!(await validateToken())) {
@@ -416,6 +416,7 @@ export const connectSocketAsync = createAsyncThunk(
 export const setOrganizationId = createAction(
   "auth/setOrganizationId",
   (payload: number | null) => {
+    console.log(payload);
     if (payload === null) {
       localStorage.removeItem("organizationSelect");
     } else {

@@ -33,7 +33,9 @@ const DepartmentCard: FC<DepartmentCardProps> = ({
         toast.success("Departamento eliminado exitosamente");
       } catch (error: any) {
         if (error.response?.status === 500) {
-          toast.error("Este departamento no se puede eliminar debido a que tiene agente asignado");
+          toast.error(
+            "Este departamento no se puede eliminar debido a que tiene agente asignado"
+          );
         } else {
           toast.error("Error al eliminar departamento");
         }
@@ -42,7 +44,6 @@ const DepartmentCard: FC<DepartmentCardProps> = ({
   };
 
   return (
-
     <div className="bg-[#f5faff] rounded-xl p-6 flex flex-col justify-between border-2 border-[#d3eafa] w-full min-h-[250px]">
       <div className="text-center">
         <CardItem label="">
@@ -70,7 +71,6 @@ const DepartmentCard: FC<DepartmentCardProps> = ({
           <span className="hidden sm:block">Editar</span>
         </button>
       </div>
-      
     </div>
   );
 };
