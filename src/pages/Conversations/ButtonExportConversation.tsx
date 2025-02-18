@@ -52,10 +52,10 @@ const ButtonExportConversation = ({
 
           switch (conversation.type) {
             case IntegrationType.MESSENGER:
-              channel = "WhatsApp";
+              channel = "Messenger";
               break;
             case IntegrationType.WHATSAPP:
-              channel = "Facebook";
+              channel = "WhatsApp";
               break;
             default:
               channel = "Web";
