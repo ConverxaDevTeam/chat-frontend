@@ -2,15 +2,36 @@ import { Fragment, useState } from "react";
 import { ReactFlowProvider } from "@xyflow/react";
 import Diagram from "@components/Diagrams";
 import Chat from "@components/workspace/components/chat/Chat";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { RootState } from "@store";
+import { useAlertContext } from "@components/Diagrams/components/AlertContext";
 
 interface ChatWrapperProps {
-  agentId: number | null;
+  agentId: number;
 }
 
 const ChatWrapper = ({ agentId }: ChatWrapperProps) => {
   const [isChatVisible, setIsChatVisible] = useState(false);
+  const { selectedDepartmentId } = useSelector(
+    (state: RootState) => state.department
+  );
+  const navigate = useNavigate();
+  const { showConfirmation } = useAlertContext();
 
-  const toggleChat = () => {
+  const toggleChat = async () => {
+    if (!selectedDepartmentId) {
+      const confirmed = await showConfirmation({
+        title: "Seleccionar Departamento",
+        text: "Es necesario seleccionar un departamento para usar el chat. Si no existe uno, puedes crearlo en la sección de departamentos.",
+        confirmButtonText: "Ir a departamentos",
+        cancelButtonText: "Permanecer aquí",
+      });
+      if (confirmed) {
+        navigate("/departments");
+      }
+      return;
+    }
     setIsChatVisible(!isChatVisible);
   };
 
@@ -49,7 +70,7 @@ const Workspace = () => {
           <Diagram onAgentIdChange={setAgentId} />
         </ReactFlowProvider>
       </div>
-      <ChatWrapper agentId={agentId} />
+      {agentId !== null && <ChatWrapper agentId={agentId} />}
     </div>
   );
 };
