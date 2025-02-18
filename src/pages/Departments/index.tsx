@@ -72,15 +72,15 @@ const Departments = () => {
       }
     >
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {departments.map(department => (
-            <DepartmentCard
-              key={department.id}
-              department={department}
-              onUpdate={() => handleOpenModal(department)}
-              onDelete={handleDelete}
-            />
-          ))}
-          </div>
+        {departments.map(department => (
+          <DepartmentCard
+            key={department.id}
+            department={department}
+            onUpdate={() => handleOpenModal(department)}
+            onDelete={handleDelete}
+          />
+        ))}
+      </div>
     </PageContainer>
   );
 };

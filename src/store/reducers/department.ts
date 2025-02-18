@@ -1,12 +1,30 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
+import { IDepartment } from "@interfaces/departments";
+import { getDepartments } from "@services/department";
+import { logOutAsync, setOrganizationId } from "../actions/auth";
 
 interface DepartmentState {
   selectedDepartmentId: number | null;
+  departments: IDepartment[];
+  loadingDepartments: boolean;
 }
 
 const initialState: DepartmentState = {
   selectedDepartmentId: null,
+  departments: [],
+  loadingDepartments: true,
 };
+
+export const fetchDepartments = createAsyncThunk(
+  "department/fetchDepartments",
+  async (organizationId: number | null) => {
+    if (!organizationId) {
+      return [];
+    }
+    const response = await getDepartments(organizationId);
+    return response;
+  }
+);
 
 const departmentSlice = createSlice({
   name: "department",
@@ -17,7 +35,33 @@ const departmentSlice = createSlice({
     },
     clearSelectedDepartment: state => {
       state.selectedDepartmentId = null;
+      state.departments = [];
     },
+  },
+  extraReducers: builder => {
+    builder
+      .addCase(fetchDepartments.pending, state => {
+        state.loadingDepartments = true;
+      })
+      .addCase(fetchDepartments.fulfilled, (state, action) => {
+        state.departments = action.payload;
+        state.loadingDepartments = false;
+        if (action.payload.length > 0 && !state.selectedDepartmentId) {
+          state.selectedDepartmentId = action.payload[0].id;
+        } else {
+          state.selectedDepartmentId = null;
+        }
+      })
+      .addCase(fetchDepartments.rejected, state => {
+        state.loadingDepartments = false;
+        state.departments = [];
+        state.selectedDepartmentId = null;
+      })
+      .addCase(logOutAsync.fulfilled, () => initialState)
+      .addCase(logOutAsync.rejected, () => initialState)
+      .addCase(setOrganizationId, state => {
+        state.loadingDepartments = true;
+      });
   },
 });
 
