@@ -2,8 +2,6 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "@store";
 import DepartmentCard from "./DepartmentCard";
-// import Table from "@components/Table/Table";
-// import TableHeader from "@components/Table/TableHeader";
 import DepartmentModal from "./DepartmentModal";
 import { getDepartments } from "@services/department";
 import PageContainer from "@components/PageContainer";
@@ -74,15 +72,15 @@ const Departments = () => {
       }
     >
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {departments.map(department => (
-            <DepartmentCard
-              key={department.id}
-              department={department}
-              onUpdate={() => handleOpenModal(department)}
-              onDelete={handleDelete}
-            />
-          ))}
-          </div>
+        {departments.map(department => (
+          <DepartmentCard
+            key={department.id}
+            department={department}
+            onUpdate={() => handleOpenModal(department)}
+            onDelete={handleDelete}
+          />
+        ))}
+      </div>
     </PageContainer>
   );
 };

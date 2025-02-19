@@ -18,12 +18,13 @@ export const useDashboard = (organizationId: number | null) => {
   useEffect(() => {
     const loadCards = async () => {
       try {
+        if (!organizationId) return;
         setLoading(true);
         const initialState = await getCards(organizationId);
         setState(initialState);
       } catch (error) {
         console.error("Error loading cards:", error);
-        toast.error("Error al cargar las tarjetas");
+        toast.error("No perteneces a esta organización. Por favor, verifica tus permisos o contacta al administrador.");
       } finally {
         setLoading(false);
       }

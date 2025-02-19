@@ -6,6 +6,8 @@ import { toast } from "react-toastify";
 import { InputGroup } from "@components/forms/inputGroup";
 import CreateUserModal from "./CreateUserModal"; // Importamos el modal existente
 import { FiTrash } from "react-icons/fi"; // Ícono para eliminar
+import { Input } from "@components/forms/input";
+import { Button } from "@components/common/Button";
 
 interface EditUserModalProps {
   isOpen: boolean;
@@ -17,10 +19,7 @@ interface EditUserModalProps {
 interface RoleData {
   id?: number; // ID opcional en caso de que exista
   role: OrganizationRoleType;
-  organization: {
-    id: number;
-    name: string;
-  } | null;
+  organization: { id: number; name: string } | null;
 }
 
 const EditUserModal = ({
@@ -80,15 +79,23 @@ const EditUserModal = ({
       <Fragment>
         <div className="space-y-4">
           <InputGroup label="Email">
-            <input
+            <Input
               type="email"
               value={email}
               onChange={e => setEmail(e.target.value)}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
             />
           </InputGroup>
 
-          <h3 className="text-lg font-medium">Roles</h3>
+          <div className="flex justify-between items-center">
+            <h3 className="text-lg font-medium">Roles</h3>
+            <button
+              type="button"
+              onClick={() => setIsAddingRole(true)}
+              className="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700"
+            >
+              Agregar Rol
+            </button>
+          </div>
           <table className="w-full border-collapse border border-gray-200 text-left">
             <thead>
               <tr>
@@ -124,31 +131,10 @@ const EditUserModal = ({
             </tbody>
           </table>
 
-          <div className="flex justify-end">
-            <button
-              type="button"
-              onClick={() => setIsAddingRole(true)}
-              className="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700"
-            >
-              Agregar Rol
-            </button>
-          </div>
-
           <div className="flex justify-end gap-2">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
-            >
-              Cancelar
-            </button>
-            <button
-              type="button"
-              onClick={handleSave}
-              className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
-            >
+            <Button type="button" onClick={handleSave} variant="primary">
               Guardar Cambios
-            </button>
+            </Button>
           </div>
         </div>
 

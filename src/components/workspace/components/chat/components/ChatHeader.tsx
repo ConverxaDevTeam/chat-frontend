@@ -4,7 +4,7 @@ interface ChatHeaderProps {
 
 export const ChatHeader = ({ onClose }: ChatHeaderProps) => {
   return (
-    <div className="flex flex-col justify-center items-center w-full h-[89px] px-6 py-4 gap-2 flex-shrink-0 rounded-t-lg bg-sofia-electricOlive">
+    <div className="flex flex-col justify-center items-start w-full h-[89px] px-6 py-4 gap-2 flex-shrink-0 rounded-t-lg bg-sofia-electricOlive">
       <span className="text-left text-sofia-superDark text-xl font-semibold">
         Web Chat
       </span>

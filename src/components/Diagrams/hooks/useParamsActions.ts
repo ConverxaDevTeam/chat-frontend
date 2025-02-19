@@ -3,7 +3,7 @@ import { toast } from "react-toastify";
 import { AxiosError } from "axios";
 import { CreateFunctionParamDto } from "@interfaces/function-params.interface";
 import { paramsService } from "@services/params.service";
-import { useSweetAlert } from "@hooks/useSweetAlert";
+import { useAlertContext } from "../components/AlertContext";
 
 interface ApiErrorResponse {
   message: string;
@@ -13,7 +13,7 @@ interface ApiErrorResponse {
 // Hook para manejar la lógica común de las operaciones
 const useParamOperation = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const { handleOperation } = useSweetAlert();
+  const { handleOperation } = useAlertContext();
 
   const executeOperation = async <T>(
     operation: () => Promise<T>,
@@ -74,7 +74,7 @@ export const useParamsActions = (functionId: number) => {
         successMessage: "Parámetro creado exitosamente",
         errorMessage: "Error al crear el parámetro",
         loadingTitle: "Creando parámetro",
-        successTitle: "¡Parámetro creado!",
+        successTitle: "Parámetro creado",
         successText: "El parámetro se ha creado exitosamente",
         errorTitle: "Error al crear el parámetro",
       }
@@ -96,7 +96,7 @@ export const useParamsActions = (functionId: number) => {
         successMessage: "Parámetro actualizado exitosamente",
         errorMessage: "Error al actualizar el parámetro",
         loadingTitle: "Actualizando parámetro",
-        successTitle: "¡Parámetro actualizado!",
+        successTitle: "Parámetro actualizado",
         successText: "El parámetro se ha actualizado exitosamente",
         errorTitle: "Error al actualizar el parámetro",
       }
@@ -112,7 +112,7 @@ export const useParamsActions = (functionId: number) => {
         successMessage: "Parámetro eliminado exitosamente",
         errorMessage: "Error al eliminar el parámetro",
         loadingTitle: "Eliminando parámetro",
-        successTitle: "¡Parámetro eliminado!",
+        successTitle: "Parámetro eliminado",
         successText: "El parámetro se ha eliminado exitosamente",
         errorTitle: "Error al eliminar el parámetro",
       }

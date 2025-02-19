@@ -2,15 +2,14 @@ import { FC, useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "@store";
 import Select from "@components/Select";
-import { getDepartments } from "@services/department";
-import { IDepartment } from "@interfaces/departments";
 import {
   setSelectedDepartmentId,
+  fetchDepartments,
   clearSelectedDepartment,
 } from "@store/reducers/department";
-import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch } from "@store/hooks";
+import { useAlertContext } from "@components/Diagrams/components/AlertContext";
 
 interface SelectDepartmentProps {
   mobileResolution?: boolean;
@@ -22,51 +21,39 @@ const SelectDepartment: FC<SelectDepartmentProps> = ({ mobileResolution }) => {
   const { selectOrganizationId } = useSelector(
     (state: RootState) => state.auth
   );
-  const { selectedDepartmentId } = useSelector(
+  const { selectedDepartmentId, departments, loadingDepartments } = useSelector(
     (state: RootState) => state.department
   );
-  const [departments, setDepartments] = useState<IDepartment[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const selectRef = useRef<HTMLDivElement>(null);
+  const { showConfirmation } = useAlertContext();
 
   useEffect(() => {
-    const fetchDepartments = async () => {
-      if (!selectOrganizationId) return;
-      try {
-        const data = await getDepartments(selectOrganizationId);
-        setDepartments(data);
-
-        // Si hay departamentos y ninguno está seleccionado, seleccionar el primero
-        if (data.length > 0 && !selectedDepartmentId) {
-          dispatch(setSelectedDepartmentId(data[0].id));
-        }
-        // Si no hay departamentos, mostrar Swal
-        else if (data.length === 0) {
-          Swal.fire({
-            title: "No hay departamentos",
-            text: "Es necesario crear un departamento para continuar",
-            icon: "info",
-            showCancelButton: true,
-            confirmButtonText: "Ir a Departamentos",
-            cancelButtonText: "Cancelar",
-          }).then(result => {
-            if (result.isConfirmed) {
-              navigate("/departments");
-            }
-          });
-        }
-      } catch (error) {
-        console.error("Error fetching departments:", error);
-      }
-    };
-
-    fetchDepartments();
+    if (selectOrganizationId) {
+      dispatch(fetchDepartments(selectOrganizationId));
+    } else {
+      dispatch(clearSelectedDepartment());
+    }
   }, [selectOrganizationId]);
 
-  // Clear selected department when organization changes
   useEffect(() => {
-    dispatch(clearSelectedDepartment());
-  }, [selectOrganizationId, dispatch]);
+    if (
+      !loadingDepartments &&
+      departments.length === 0 &&
+      selectOrganizationId
+    ) {
+      showConfirmation({
+        title: "No hay departamentos",
+        text: "Es necesario crear un departamento para crear agentes",
+        confirmButtonText: "Ir a departamentos",
+        cancelButtonText: "Cancelar",
+        onConfirm: async () => {
+          navigate("/departments");
+          return true;
+        },
+      });
+    }
+  }, [departments, loadingDepartments]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -95,7 +82,8 @@ const SelectDepartment: FC<SelectDepartmentProps> = ({ mobileResolution }) => {
     id: dept.id,
     name: dept.name,
   }));
-  if (options.length === 0) {
+
+  if (loadingDepartments || (!loadingDepartments && options.length === 0)) {
     return null;
   }
 

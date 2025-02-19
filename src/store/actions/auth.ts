@@ -270,7 +270,7 @@ export const verifySessionAsync = createAsyncThunk(
     { rejectWithValue }
   ) => {
     const selectOrganizationId = localStorage.getItem("organizationSelect")
-      ? Number(localStorage.getItem("organizationSelect"))
+      ? Number(localStorage.getItem("organizationSelect")) || null
       : null;
     dispatch(setOrganizationId(selectOrganizationId));
     if (!(await validateToken())) {

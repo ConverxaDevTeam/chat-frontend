@@ -129,7 +129,7 @@ export const MessageForm = ({
 
   return (
     <div
-      className="h-[73px] px-5 py-3.5 flex items-center bg-app-lightGray min-w-0 rounded-br-[8px]"
+      className="h-[73px] px-3 py-3.5 flex items-center bg-app-lightGray min-w-0 rounded-br-[8px]"
       style={{ backgroundColor: config.button_color }}
     >
       <form
@@ -139,12 +139,9 @@ export const MessageForm = ({
         <button
           type="button"
           onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-          className="p-2 hover:bg-gray-100 rounded-full transition-colors shrink-0"
-          style={{
-            backgroundColor: config.button_text,
-          }}
+          className="hover:bg-gray-100 rounded-full transition-colors shrink-0"
         >
-          <img src="/mvp/smile.svg" alt="sofia" className="w-[16px] h-[16px]" />
+          <img src="/mvp/smile.svg" alt="sofia" className="w-[22px] h-[22px]" />
         </button>
 
         <div className="flex-1 relative min-w-0">
@@ -160,7 +157,7 @@ export const MessageForm = ({
             />
             <label
               htmlFor="image-upload"
-              className="p-2 hover:bg-gray-100 rounded-full transition-colors cursor-pointer"
+              className="hover:bg-gray-100 rounded-full transition-colors cursor-pointer"
             >
               <input
                 type="file"

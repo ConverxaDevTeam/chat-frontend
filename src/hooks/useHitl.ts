@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { toast } from "react-toastify";
-import { useSweetAlert } from "./useSweetAlert";
 import { AxiosError } from "axios";
 import { assignConversationToHitl } from "@services/conversations";
+import { useAlertContext } from "@components/Diagrams/components/AlertContext";
 
 interface UseHitlProps {
   conversationId: number;
@@ -18,7 +18,7 @@ export const useHitl = ({
   onUpdateConversation,
 }: UseHitlProps) => {
   const [isLoading, setIsLoading] = useState(false);
-  const { showConfirmation } = useSweetAlert();
+  const { showConfirmation } = useAlertContext();
 
   const handleHitlAction = async () => {
     setIsLoading(true);

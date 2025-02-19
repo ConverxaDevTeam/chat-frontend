@@ -45,9 +45,12 @@ const handleNodeDelete = async (
       setEdges(edges =>
         edges.filter(edge => edge.source !== id && edge.target !== id)
       );
+      return true;
     }
+    return false;
   } catch (error) {
     console.error("Error al eliminar la función:", error);
+    return false;
   }
 };
 

@@ -4,7 +4,7 @@ import {
   HttpRequestFunction,
 } from "@interfaces/functions.interface";
 import { functionsService } from "@services/functions.service";
-import { useSweetAlert } from "../../../hooks/useSweetAlert";
+import { useAlertContext } from "../components/AlertContext";
 
 // Hook para manejar el estado de la función
 const useFunctionState = (initialData: FunctionData<HttpRequestFunction>) => {
@@ -35,9 +35,18 @@ const useFunctionState = (initialData: FunctionData<HttpRequestFunction>) => {
 // Hook para crear una función
 const useCreateFunction = (
   agentId: number,
-  state: ReturnType<typeof useFunctionState>
+  state: ReturnType<typeof useFunctionState>,
+  handleOperation: <T>(
+    operation: () => Promise<T>,
+    options: {
+      title: string;
+      successTitle: string;
+      successText: string;
+      errorTitle: string;
+      loadingTitle?: string;
+    }
+  ) => Promise<{ success: boolean; data?: T; error?: unknown }>
 ) => {
-  const { handleOperation } = useSweetAlert();
   const { setLoadingState, resetError, updateData } = state;
 
   return useCallback(
@@ -55,7 +64,7 @@ const useCreateFunction = (
           () => functionsService.create(dataToSend),
           {
             title: "Creando función",
-            successTitle: "¡Función creada!",
+            successTitle: "Función creada",
             successText: "La función se ha creado exitosamente",
             errorTitle: "Error al crear la función",
           }
@@ -77,9 +86,18 @@ const useCreateFunction = (
 // Hook para actualizar una función
 const useUpdateFunction = (
   functionId: number | undefined,
-  state: ReturnType<typeof useFunctionState>
+  state: ReturnType<typeof useFunctionState>,
+  handleOperation: <T>(
+    operation: () => Promise<T>,
+    options: {
+      title: string;
+      successTitle: string;
+      successText: string;
+      errorTitle: string;
+      loadingTitle?: string;
+    }
+  ) => Promise<{ success: boolean; data?: T; error?: unknown }>
 ) => {
-  const { handleOperation } = useSweetAlert();
   const { setLoadingState, resetError, updateData } = state;
 
   return useCallback(
@@ -94,7 +112,7 @@ const useUpdateFunction = (
           () => functionsService.update(functionId, functionData),
           {
             title: "Actualizando función",
-            successTitle: "¡Función actualizada!",
+            successTitle: "Función actualizada",
             successText: "La función se ha actualizado exitosamente",
             errorTitle: "Error al actualizar la función",
           }
@@ -116,9 +134,24 @@ const useUpdateFunction = (
 // Hook para eliminar una función
 const useDeleteFunction = (
   functionId: number | undefined,
-  state: ReturnType<typeof useFunctionState>
+  state: ReturnType<typeof useFunctionState>,
+  showConfirmation: (options: {
+    title: string;
+    text: string;
+    confirmButtonText?: string;
+    cancelButtonText?: string;
+  }) => Promise<boolean>,
+  handleOperation: <T>(
+    operation: () => Promise<T>,
+    options: {
+      title: string;
+      successTitle: string;
+      successText: string;
+      errorTitle: string;
+      loadingTitle?: string;
+    }
+  ) => Promise<{ success: boolean; data?: T; error?: unknown }>
 ) => {
-  const { handleOperation, showConfirmation } = useSweetAlert();
   const { setLoadingState, resetError } = state;
 
   return useCallback(async () => {
@@ -139,17 +172,28 @@ const useDeleteFunction = (
       setLoadingState(true);
       resetError();
 
-      const result = await handleOperation(
-        () => functionsService.delete(functionId),
+      const { success, error } = await handleOperation(
+        async () => {
+          const response = await functionsService.delete(functionId);
+          if (response?.error) {
+            throw new Error(response.error);
+          }
+          return response;
+        },
         {
           title: "Eliminando función",
-          successTitle: "¡Función eliminada!",
+          successTitle: "Función eliminada",
           successText: "La función se ha eliminado exitosamente",
           errorTitle: "Error al eliminar la función",
+          loadingTitle: "Eliminando función...",
         }
       );
 
-      return result.success;
+      if (!success && error) {
+        console.error("Error deleting function:", error);
+      }
+
+      return success;
     } finally {
       setLoadingState(false);
     }
@@ -171,10 +215,20 @@ export const useFunctionSuccess = (
   ) => void,
   selectedNodeId: string | null,
   selectedAgentId: number | null,
-  onSuccess?: () => void
+  onSuccess: (() => void) | undefined,
+  handleOperation: <T>(
+    operation: () => Promise<T>,
+    options: {
+      title: string;
+      successTitle: string;
+      successText: string;
+      errorTitle: string;
+      loadingTitle?: string;
+    }
+  ) => Promise<{ success: boolean; data?: T; error?: unknown }>
 ) => {
   const state = useFunctionState({} as FunctionData<HttpRequestFunction>);
-  const createFunction = useCreateFunction(selectedAgentId || -1, state);
+  const createFunction = useCreateFunction(selectedAgentId || -1, state, handleOperation);
 
   return useCallback(
     async (data: FunctionData<HttpRequestFunction>) => {
@@ -200,6 +254,7 @@ export const useFunctionSuccess = (
       onSuccess,
       selectedNodeId,
       selectedAgentId,
+      handleOperation 
     ]
   );
 };
@@ -213,9 +268,12 @@ export const useFunctionActions = (
     initialData.agentId = initialData.id;
   }
   const state = useFunctionState(initialData);
-  const createFunction = useCreateFunction(initialData.agentId, state);
-  const updateFunction = useUpdateFunction(state.data.functionId, state);
-  const deleteFunction = useDeleteFunction(state.data.functionId, state);
+
+  const { handleOperation, showConfirmation } = useAlertContext();
+
+  const createFunction = useCreateFunction(initialData.agentId, state, handleOperation);
+  const updateFunction = useUpdateFunction(state.data.functionId, state, handleOperation);
+  const deleteFunction = useDeleteFunction(state.data.functionId, state, showConfirmation, handleOperation);
 
   return {
     data: state.data,

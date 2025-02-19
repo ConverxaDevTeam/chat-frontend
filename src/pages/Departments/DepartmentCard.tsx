@@ -1,10 +1,9 @@
 import { FC } from "react";
 import { IDepartment } from "../../interfaces/departments";
 import { toast } from "react-toastify";
-import { useSweetAlert } from "../../hooks/useSweetAlert";
 import CardItem from "../../components/Card/CardItem";
-// import { convertISOToReadable } from "../../utils/format";
 import { deleteDepartment } from "@services/department";
+import { useAlertContext } from "@components/Diagrams/components/AlertContext";
 
 interface DepartmentCardProps {
   department: IDepartment;
@@ -17,7 +16,7 @@ const DepartmentCard: FC<DepartmentCardProps> = ({
   onUpdate,
   onDelete,
 }) => {
-  const { showConfirmation } = useSweetAlert();
+  const { showConfirmation } = useAlertContext();
 
   const handleDelete = async () => {
     const confirmed = await showConfirmation({
@@ -32,14 +31,21 @@ const DepartmentCard: FC<DepartmentCardProps> = ({
         await deleteDepartment(department.id);
         onDelete(department.id);
         toast.success("Departamento eliminado exitosamente");
-      } catch (error) {
-        toast.error("Error al eliminar departamento");
+      } catch (error: unknown) {
+        if (
+          (error as { response?: { status: number } })?.response?.status === 500
+        ) {
+          toast.error(
+            "Este departamento no se puede eliminar debido a que tiene agente asignado"
+          );
+        } else {
+          toast.error("Error al eliminar departamento");
+        }
       }
     }
   };
 
   return (
-
     <div className="bg-[#f5faff] rounded-xl p-6 flex flex-col justify-between border-2 border-[#d3eafa] w-full min-h-[250px]">
       <div className="text-center">
         <CardItem label="">

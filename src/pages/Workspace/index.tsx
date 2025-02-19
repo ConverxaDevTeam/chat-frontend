@@ -2,15 +2,36 @@ import { Fragment, useState } from "react";
 import { ReactFlowProvider } from "@xyflow/react";
 import Diagram from "@components/Diagrams";
 import Chat from "@components/workspace/components/chat/Chat";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { RootState } from "@store";
+import { useAlertContext } from "@components/Diagrams/components/AlertContext";
 
 interface ChatWrapperProps {
-  agentId: number | null;
+  agentId: number;
 }
 
 const ChatWrapper = ({ agentId }: ChatWrapperProps) => {
   const [isChatVisible, setIsChatVisible] = useState(false);
+  const { selectedDepartmentId } = useSelector(
+    (state: RootState) => state.department
+  );
+  const navigate = useNavigate();
+  const { showConfirmation } = useAlertContext();
 
-  const toggleChat = () => {
+  const toggleChat = async () => {
+    if (!selectedDepartmentId) {
+      const confirmed = await showConfirmation({
+        title: "Seleccionar Departamento",
+        text: "Es necesario seleccionar un departamento para usar el chat. Si no existe uno, puedes crearlo en la sección de departamentos.",
+        confirmButtonText: "Ir a departamentos",
+        cancelButtonText: "Permanecer aquí",
+      });
+      if (confirmed) {
+        navigate("/departments");
+      }
+      return;
+    }
     setIsChatVisible(!isChatVisible);
   };
 
@@ -27,9 +48,9 @@ const ChatWrapper = ({ agentId }: ChatWrapperProps) => {
       ) : (
         <button
           onClick={toggleChat}
-          className="absolute top-24 right-0 z-50 px-4 py-2 bg-[#15ECDA] text-white rounded-l-full shadow-lg hover:bg-[#15ECDA] focus:outline-none transition-transform"
+          className="absolute w-[56px] h-[40px] top-19 right-5 px-4 py-2 border border-black bg-sofia-electricOlive rounded-lg shadow-lg hover:bg-[#d2f3ac] focus:outline-none transition-transform"
         >
-          <span className="text-sm font-medium">Chat</span>
+          <img src="/mvp/messages-square.svg" alt="Chat-icon" />
         </button>
       )}
     </Fragment>
@@ -49,7 +70,7 @@ const Workspace = () => {
           <Diagram onAgentIdChange={setAgentId} />
         </ReactFlowProvider>
       </div>
-      <ChatWrapper agentId={agentId} />
+      {agentId !== null && <ChatWrapper agentId={agentId} />}
     </div>
   );
 };

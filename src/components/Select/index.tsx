@@ -41,7 +41,7 @@ const Select: FC<SelectProps> = ({
   return (
     <div className="relative">
       <div
-        className={`bg-custom-gradient border-[2px] border-[#B8CCE0] border-inherit h-[36px] relative rounded-lg flex justify-between items-center p-[6px] cursor-pointer ${
+        className={`bg-white border border-gray-200 shadow-sm border-inherit h-[36px] relative rounded-lg flex justify-between items-center p-[6px] cursor-pointer text-gray-700 ${
           mobileResolution ? "w-full" : "w-[200px]"
         }`}
         onClick={handleToggle}
