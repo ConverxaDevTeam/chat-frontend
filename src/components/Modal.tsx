@@ -50,14 +50,16 @@ const Modal: React.FC<ModalProps> = ({
           className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
           onClick={handleBackgroundClick}
         >
-          <div className="bg-white rounded-xl p-6 w-full max-w-md relative">
+          <div className="bg-white rounded-xl p-6 w-auto max-w-full relative">
             {header && (
               <Fragment>
                 <ModalHeader handleClose={onClose}>{header}</ModalHeader>
                 <hr className="border-t border-gray-300 mb-4" />
               </Fragment>
             )}
-            <div className="w-full space-y-4 mt-7">{children}</div>
+            <div className="w-full space-y-4 mt-7 flex flex-col">
+              {children}
+            </div>
             {footer && <footer className="mt-4">{footer}</footer>}
           </div>
         </div>,
