@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { deleteGlobalUser, getGlobalUsers } from "@services/user";
 import Table from "@components/Card/Table";
 import TableHeader from "@components/Card/TableHeader";
-import CardItem from "@components/Card/CardItem";
 import { IUserApi } from "../UsersOrganization";
 import PageContainer from "@components/PageContainer";
 import CreateUserModal from "./CreateUserModal";
