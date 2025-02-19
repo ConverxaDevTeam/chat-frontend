@@ -1,5 +1,5 @@
 import ReactDOM from "react-dom";
-import React from "react";
+import React, { Fragment } from "react";
 
 interface ModalProps {
   isShown: boolean;
@@ -15,7 +15,7 @@ const ModalHeader: React.FC<{
   handleClose: () => void;
 }> = ({ children, handleClose }) => (
   <div className="flex justify-between items-center mb-4">
-    <h2 className="text-xl font-bold">{children}</h2>
+    <div className="text-xl font-bold">{children}</div>
     <button
       onClick={handleClose}
       className="absolute top-7 right-7 text-gray-900 hover:text-gray-600 font-semibold"
@@ -52,12 +52,12 @@ const Modal: React.FC<ModalProps> = ({
         >
           <div className="bg-white rounded-xl p-6 w-full max-w-md relative">
             {header && (
-              <>
+              <Fragment>
                 <ModalHeader handleClose={onClose}>{header}</ModalHeader>
                 <hr className="border-t border-gray-300 mb-4" />
-              </>
+              </Fragment>
             )}
-            <div className="w-full space-y-4">{children}</div>
+            <div className="w-full space-y-4 mt-7">{children}</div>
             {footer && <footer className="mt-4">{footer}</footer>}
           </div>
         </div>,
