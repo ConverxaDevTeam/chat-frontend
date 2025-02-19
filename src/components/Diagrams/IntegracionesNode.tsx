@@ -67,7 +67,16 @@ const IntegracionesNode = ({
 
   const contextMenuOptions: ContextMenuOption[] = [
     {
-      child: <img src="/mvp/circle-plus.svg" alt="Nueva Integración" />,
+      child: (
+      <div className="group relative">
+        <img src="/mvp/circle-plus.svg" alt="Nueva Integración" />
+        <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-5 hidden group-hover:block bg-gray-800 text-white text-lm px-2 py-1 rounded whitespace-nowrap">
+            Agregar integración
+          </div>
+      </div>
+      
+    )
+      ,
       onClick: () => setIsMenuVisible(true),
     },
     // Add more options here if needed
@@ -91,7 +100,7 @@ const IntegracionesNode = ({
         selected={selected}
         data={{
           ...data,
-          name: "Integraciones",
+          name: "Canales",
           description: "Conecta la plataforma con otras herramientas.",
         }}
         allowedConnections={["source", "target"]}
