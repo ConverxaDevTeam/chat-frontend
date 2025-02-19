@@ -31,8 +31,10 @@ const DepartmentCard: FC<DepartmentCardProps> = ({
         await deleteDepartment(department.id);
         onDelete(department.id);
         toast.success("Departamento eliminado exitosamente");
-      } catch (error: any) {
-        if (error.response?.status === 500) {
+      } catch (error: unknown) {
+        if (
+          (error as { response?: { status: number } })?.response?.status === 500
+        ) {
           toast.error(
             "Este departamento no se puede eliminar debido a que tiene agente asignado"
           );

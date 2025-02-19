@@ -9,6 +9,7 @@ import { Select } from "@components/forms/select";
 import { InputGroup } from "@components/forms/inputGroup";
 import { Input } from "@components/forms/input";
 import { ISelectOrganization } from "@interfaces/organization.interface";
+import { Button } from "@components/common/Button";
 
 interface CreateUserModalProps {
   isOpen: boolean;
@@ -90,7 +91,6 @@ const CreateUserModal = ({
               { value: OrganizationRoleType.ING_PREVENTA, label: "Preventa" },
               { value: OrganizationRoleType.USR_TECNICO, label: "Técnico" },
             ]}
-            placeholder="Selecciona un rol"
           />
         </InputGroup>
         {role === OrganizationRoleType.USR_TECNICO && (
@@ -101,24 +101,13 @@ const CreateUserModal = ({
           />
         )}
         <div className="flex justify-end gap-2">
-          <button
-            type="button"
-            onClick={onClose}
-            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
-          >
-            Cancelar
-          </button>
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 disabled:opacity-50"
-          >
+          <Button type="submit" disabled={isSubmitting} variant="primary">
             {isSubmitting
               ? "Creando..."
               : email
                 ? "Actualizar Usuario"
                 : "Crear Usuario"}
-          </button>
+          </Button>
         </div>
       </form>
     </Modal>
