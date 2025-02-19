@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { deleteGlobalUser, getGlobalUsers } from "@services/user";
 import Table from "@components/Card/Table";
 import TableHeader from "@components/Card/TableHeader";
+import TableBody from "@components/Card/TableBody";
 import { IUserApi } from "../UsersOrganization";
 import PageContainer from "@components/PageContainer";
 import CreateUserModal from "./CreateUserModal";
@@ -152,7 +153,7 @@ const UsersSuperAdmin = () => {
     >
       <Table>
         <TableHeader columns={columns} />
-        <tbody>
+        <TableBody>
           {users.map(user => (
             <UserRow
               key={user.id}
@@ -161,7 +162,7 @@ const UsersSuperAdmin = () => {
               onEdit={handleEdit} // Pasa la función de edición
             />
           ))}
-        </tbody>
+        </TableBody>
       </Table>
     </PageContainer>
   );
