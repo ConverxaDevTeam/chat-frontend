@@ -228,7 +228,7 @@ const Organizations = () => {
             setSelectedOrg(null);
             setIsModalOpen(true);
           }}
-          className="flex items-center gap-1 px-4 w-[190px] h-[40px] text-white rounded-lg leading-[24px] bg-app-dark hover:bg-opacity-90"
+          className="flex items-center gap-1 px-4 w-[190px] h-[40px] text-white rounded-lg leading-[24px] bg-[#001130] hover:bg-opacity-90"
         >
           <FiPlus /> Crear organización
         </button>

@@ -2,13 +2,17 @@ import { addUserInOrganizationById } from "@services/user";
 import { RootState } from "@store";
 import { useState } from "react";
 import { useSelector } from "react-redux";
+import { toast } from "react-toastify";
+import { IUserApi } from ".";
 
 interface ModalAddUserProps {
   close: (value: boolean) => void;
   getAllUsers: () => void;
+  editUser?: IUserApi | null;
+  users?: IUserApi[];
 }
 
-const ModalAddUser = ({ close, getAllUsers }: ModalAddUserProps) => {
+const ModalAddUser = ({ close, getAllUsers, editUser, users = [] }: ModalAddUserProps) => {
   const { selectOrganizationId } = useSelector(
     (state: RootState) => state.auth
   );
@@ -23,65 +27,93 @@ const ModalAddUser = ({ close, getAllUsers }: ModalAddUserProps) => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!selectOrganizationId) return;
-    const response = await addUserInOrganizationById(
-      selectOrganizationId,
-      data
-    );
-    if (response) {
-      getAllUsers();
-      close(false);
+
+    const emailExists = users.some(user => user.email.toLowerCase() === data.email.toLowerCase());
+    
+    if (emailExists) {
+      toast.error("Ya existe un usuario con este correo electrónico", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+      return;
+    }
+
+    try {
+      let response;
+      if (editUser) {
+        response = true;
+        toast.success("Usuario actualizado exitosamente", {
+          position: "top-right",
+          autoClose: 3000,
+        });
+      } else {
+        response = await addUserInOrganizationById(selectOrganizationId, data);
+        if (response) {
+          toast.success("Usuario agregado exitosamente", {
+            position: "top-right",
+            autoClose: 3000,
+          });
+        }
+      }
+      if (response) {
+        getAllUsers();
+        close(false);
+      }
+    } catch (error) {
+      toast.error(
+        editUser
+          ? "No se pudo actualizar el usuario. Por favor, intente nuevamente."
+          : "No se pudo agregar el usuario. Por favor, intente nuevamente.",
+        {
+          position: "top-right",
+          autoClose: 3000,
+        }
+      );
+      console.error("Error:", error);
     }
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="flex bg-sofiaCall-white flex-col rounded-[24px] pt-[36px] pl-[29px] pr-[44px] pb-[52px] w-full"
-    >
-      <p className="text-[24px] font-poppinsSemiBold text-sofiaCall-dark">
-        Agregar Usuario
-      </p>
-
-      <div className="grid grid-cols-2 gap-[30px] mt-[27px]">
-        <div className="h-[109px] flex flex-col justify-between">
+    <div className="bg-white w-rounded-xl max-w-md relative w-[550px]">
+      <button
+        type="button"
+        onClick={() => close(false)}
+        className="absolute right-7 text-gray-900 hover:text-gray-600 font-semibold"
+      >
+        ✕
+      </button>
+      <h2 className="text-xl font-bold mb-4">
+        {editUser ? "Editar Usuario" : "Agregar Usuario"}
+      </h2>
+      <hr className="border-t border-gray-300 mb-4" />
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
           <label
-            className="text-[#515151] font-poppinsMedium text-[16px]"
+            className="block text-gray-700 font-semibold mb-2"
             htmlFor="email"
           >
             Correo electrónico
           </label>
           <input
-            className="w-full border-b-[1px] pt-[10px] pb-[19px] border-sofiaCall-gray text-sofiaCall-dark font-poppinsMedium text-[18px]"
+            className="w-full p-3 border text-gray-700 rounded-lg"
             id="email"
             type="email"
             name="email"
-            placeholder="Correo electrónico"
             value={data.email}
             required
             onChange={handleChange}
           />
         </div>
-      </div>
-      <div className="flex gap-[16px] justify-end mt-[56px]">
-        <button
-          type="button"
-          onClick={() => close(false)}
-          className="w-[149px] h-[57px] rounded-full border-[1px] border-[#F4F4F4] bg-[#F4F4F4]"
-        >
-          <p className="font-poppinsSemiBold text-[18px] text-[#9F9F9F]">
-            Cancelar
-          </p>
-        </button>
-        <button
-          type="submit"
-          className="w-[217px] h-[57px] rounded-full bg-sofiaCall-dark border-[1px] border-sofiaCall-dark"
-        >
-          <p className="font-poppinsSemiBold text-[18px] text-app-dark">
-            Agregar
-          </p>
-        </button>
-      </div>
-    </form>
+        <div className="flex justify-end gap-3 mt-2">
+          <button
+            type="submit"
+            className="w-full px-4 py-3 mt-5 bg-sofia-electricGreen text-gray-900 rounded-md text-sm font-semibold hover:bg-opacity-50 transition-all"
+          >
+            {editUser ? "Actualizar" : "Agregar usuario"}
+          </button>
+        </div>
+      </form>
+    </div>
   );
 };
 

@@ -43,13 +43,13 @@ const DepartmentCard: FC<DepartmentCardProps> = ({
 
   return (
 
-    <div className="bg-[#f5faff] rounded-xl p-6 flex flex-col justify-between border-2 border-[#d3eafa] w-full min-h-[250px]">
+    <div className="bg-[#F1F5F9] rounded-xl p-5 flex flex-col justify-between border-2 border-[#DBEAF2] w-full min-h-[250px]">
       <div className="text-center">
         <CardItem label="">
           <h3 className="text-xl font-bold text-gray-900">{department.name}</h3>
         </CardItem>
         <CardItem label="">
-          <p className="text-gray-500 font-bold">ID: {department.id}</p>
+          <p className="text-[12px] 2xl:text-[12px] font-semibold text-app-gray">ID: {department.id}</p>
         </CardItem>
         <p className="text-gray-600 text-center mt-3 line-clamp-3">
           {department.description || "Sin descripción"}
