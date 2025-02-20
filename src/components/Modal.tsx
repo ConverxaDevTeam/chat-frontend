@@ -1,23 +1,5 @@
 import ReactDOM from "react-dom";
-import React from "react";
-
-const ModalHeader: React.FC<{
-  children: React.ReactNode;
-  handleClose: () => void;
-}> = ({ children, handleClose }) => (
-  <header className="flex justify-between items-center p-5 self-stretch rounded-t-2xl border-b border-sofia-darkBlue bg-white">
-    <span className="text-sofia-superDark text-2xl font-bold leading-6">
-      {children}
-    </span>
-    <button
-      onClick={() => handleClose()}
-      className="text-sofia-superDark hover:opacity-80"
-      aria-label="Cerrar modal"
-    >
-      <img src="/mvp/XIcon.svg" alt="Cerrar" className="w-6 h-6" />
-    </button>
-  </header>
-);
+import React, { Fragment } from "react";
 
 interface ModalProps {
   isShown: boolean;
@@ -27,6 +9,22 @@ interface ModalProps {
   footer?: JSX.Element;
   modalRef?: React.RefObject<HTMLDivElement>;
 }
+
+const ModalHeader: React.FC<{
+  children: React.ReactNode;
+  handleClose: () => void;
+}> = ({ children, handleClose }) => (
+  <div className="flex justify-between items-center mb-4">
+    <div className="text-xl font-bold">{children}</div>
+    <button
+      onClick={handleClose}
+      className="absolute top-7 right-7 text-gray-900 hover:text-gray-600 font-semibold"
+      aria-label="Cerrar modal"
+    >
+      ✕
+    </button>
+  </div>
+);
 
 const Modal: React.FC<ModalProps> = ({
   isShown,
@@ -48,15 +46,18 @@ const Modal: React.FC<ModalProps> = ({
   return isShown
     ? ReactDOM.createPortal(
         <div
-          ref={modalRef} // Ref agregado aquí
-          className="fixed z-[50] w-full h-full flex justify-center items-center top-0 left-0 bg-[#212121] bg-opacity-75"
+          ref={modalRef}
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
           onClick={handleBackgroundClick}
         >
-          <div className="bg-white rounded-2xl shadow-lg flex flex-col items-start border-3 border-sofia-darkBlue overflow-hidden">
+          <div className="bg-white rounded-xl p-6 w-full max-w-md relative">
             {header && (
-              <ModalHeader handleClose={onClose}>{header}</ModalHeader>
+              <Fragment>
+                <ModalHeader handleClose={onClose}>{header}</ModalHeader>
+                <hr className="border-t border-gray-300 mb-4" />
+              </Fragment>
             )}
-            <div className="w-full p-[24px]">{children}</div>
+            <div className="w-full space-y-4 mt-7">{children}</div>
             {footer && <footer className="mt-4">{footer}</footer>}
           </div>
         </div>,

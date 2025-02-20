@@ -45,7 +45,10 @@ export const contextMenuOptions = ({
       child: <img src="/mvp/globe.svg" alt="Webchat" />,
       onClick: () => setIsModalOpen(true),
     });
-  } else if (itemType === IntegrationType.MESSENGER) {
+  } else if (
+    itemType === IntegrationType.MESSENGER ||
+    itemType === IntegrationType.WHATSAPP
+  ) {
     choices.push({
       child: <img src="/mvp/trash.svg" alt="Remove" />,
       onClick: () => setIsRemoveModalOpen(true),
