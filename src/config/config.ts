@@ -119,6 +119,11 @@ export const apiUrls = {
   analytics: {
     base: () => `/api/analytics`,
   },
+  notifications: {
+    base: () => `/api/notifications`,
+    byId: (id: number) => `/api/notifications/${id}`,
+    read: (id: number) => `/api/notifications/${id}/read`,
+  },
 } as const;
 
 export const tokenAccess = {

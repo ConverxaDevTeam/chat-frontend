@@ -1,0 +1,24 @@
+import { apiUrls } from "@config/config";
+import { axiosInstance } from "@store/actions/auth";
+import { Notification } from "@interfaces/notification.interface";
+
+export const getNotifications = async () => {
+  const { data } = await axiosInstance.get<Notification[]>(
+    apiUrls.notifications.base()
+  );
+  return data;
+};
+
+export const getNotificationById = async (id: number) => {
+  const { data } = await axiosInstance.get<Notification>(
+    apiUrls.notifications.byId(id)
+  );
+  return data;
+};
+
+export const markNotificationAsRead = async (id: number) => {
+  const { data } = await axiosInstance.put<Notification>(
+    apiUrls.notifications.read(id)
+  );
+  return data;
+};
