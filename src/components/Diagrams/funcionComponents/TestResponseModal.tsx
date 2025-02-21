@@ -11,6 +11,9 @@ interface TestResponseModalProps {
   };
 }
 
+const isPlainObject = (value: unknown): value is Record<string, unknown> =>
+  typeof value === "object" && value !== null && !Array.isArray(value);
+
 const getStatusInfo = (status: number) => {
   if (status >= 200 && status < 300) {
     return {
@@ -24,6 +27,13 @@ const getStatusInfo = (status: number) => {
       icon: <MdWarning className="w-8 h-8 text-yellow-500" />,
       title: "Redirección",
       className: "text-yellow-500",
+    };
+  }
+  if (status === 400) {
+    return {
+      icon: <MdError className="w-8 h-8 text-red-500" />,
+      title: "Error de Validación",
+      className: "text-red-500",
     };
   }
   return {
@@ -52,7 +62,31 @@ export const TestResponseModal = ({
   response,
 }: TestResponseModalProps) => {
   const { icon, title, className } = getStatusInfo(response.status);
-  const responseStr = JSON.stringify(response.data, null, 2);
+
+  let displayData = response.data;
+
+  if (response.status >= 400) {
+    if (isPlainObject(response.data) && Object.keys(response.data).length > 0) {
+      const errorData = response.data as any;
+      displayData = {
+        message:
+          errorData.error?.message ||
+          errorData.message ||
+          "Error desconocido",
+        complete:
+          errorData.error?.complete ||
+          errorData.complete ||
+          `Error ${response.status}: No se pudo completar la operación`,
+      };
+    } else {
+      displayData = {
+        message: "Error en el servidor",
+        complete: `Error ${response.status}: No se pudo completar la operación`,  
+      };
+    }
+  }
+
+  const responseStr = JSON.stringify(displayData, null, 2);
   const truncatedResponse = responseStr.split("\n").slice(0, 15).join("\n");
   const hasMore = responseStr.split("\n").length > 15;
 
@@ -75,7 +109,7 @@ export const TestResponseModal = ({
         {hasMore && (
           <div className="flex justify-end">
             <button
-              onClick={() => showFullResponse(response.data)}
+              onClick={() => showFullResponse(displayData)}
               className="text-sm text-blue-600 hover:text-blue-700"
             >
               Ver respuesta completa
