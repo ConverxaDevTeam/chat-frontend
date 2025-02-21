@@ -104,7 +104,7 @@ export const ParamsModal = ({
       onClose={onClose}
       header={<h2 className="text-xl font-semibold">Parámetros</h2>}
     >
-      <div className="space-y-4">
+      <div className="space-y-4 w-[518px]">
         <div className="flex justify-end">
           <Button onClick={handleAdd} disabled={isLoading} variant="primary">
             <img

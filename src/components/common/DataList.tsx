@@ -19,7 +19,7 @@ export const DataListItem: React.FC<DataListItemProps> = ({
   onClick,
 }) => {
   return (
-    <div className="grid w-full sm:w-[470px]">
+    <div className="grid w-full">
       <div
         className={`flex flex-col items-start gap-4 p-[16px] self-stretch rounded-t-lg rounded-bl-lg border border-sofia-darkBlue cursor-pointer transition-colors ${
           selected

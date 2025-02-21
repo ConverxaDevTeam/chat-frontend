@@ -112,7 +112,7 @@ const ParamListContent = ({
   onEdit: (param: FunctionParam, index: number) => void;
   onDelete: (index: number) => void;
 }) => (
-  <div className="grid gap-[8px]">
+  <div className="grid gap-[8px] w-full">
     {params.map((param, index) => (
       <ParamItem
         key={`${param.name}-${index}`}

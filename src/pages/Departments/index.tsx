@@ -56,7 +56,7 @@ const Departments = () => {
 
   return (
     <PageContainer
-      buttonText="Crear Departamento"
+      buttonText="+ Crear Departamento"
       onButtonClick={() => handleOpenModal()}
       loading={loading}
       appends={

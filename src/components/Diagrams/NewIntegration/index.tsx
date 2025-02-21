@@ -1,6 +1,6 @@
-import ButtonIntegracion from "./ButtonIntegracion";
 import ButtonWhatsAppIntegration from "./ButtonWhatsAppIntegration";
 import ButtonMessagerIntegration from "./ButtonMessagerIntegration";
+import ButtonSlackIntegration from "./ButtonSlackIntegration";
 
 interface NewIntegrationProps {
   setIsMenuVisible: (value: boolean) => void;
@@ -25,11 +25,9 @@ const NewIntegration = ({
           departmentId={departmentId}
           close={() => setIsMenuVisible(false)}
         />
-        <ButtonIntegracion
-          action={() => setIsMenuVisible(false)}
-          Icon="slack"
-          text="Slack"
-          disabled
+        <ButtonSlackIntegration
+          departmentId={departmentId}
+          close={() => setIsMenuVisible(false)}
         />
       </div>
     </div>

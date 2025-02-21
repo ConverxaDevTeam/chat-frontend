@@ -1,4 +1,3 @@
-import { FiPlus } from "react-icons/fi";
 import { ReactNode } from "react";
 import Loading from "@components/Loading";
 
@@ -20,14 +19,14 @@ const PageContainer = ({
 }: PageContainerProps) => {
   return (
     <>
-      <div className="p-6">
+      <div>
         <div className="flex justify-between items-center mb-6">
           {buttonText && onButtonClick && (
             <button
               onClick={onButtonClick}
-              className="flex items-center gap-1 px-4 py-2 bg-app-dark text-white rounded-lg hover:bg-opacity-90"
+              className="flex items-center gap-1 px-4 py-2 bg-[#001130] text-white rounded-lg hover:bg-opacity-90"
             >
-              <FiPlus /> {buttonText}
+              {buttonText}
             </button>
           )}
         </div>

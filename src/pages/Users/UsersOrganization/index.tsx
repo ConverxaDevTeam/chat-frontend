@@ -7,6 +7,7 @@ import { RootState } from "@store";
 import { OrganizationRoleType } from "@utils/interfaces";
 import Modal from "@components/Modal";
 import ModalAddUser from "./ModalAddUser";
+import { toast } from "react-toastify";
 
 export interface IUserApi {
   id: number;
@@ -28,11 +29,13 @@ const UsersOrganization = () => {
     (state: RootState) => state.auth
   );
   const [modalAddUser, setModalAddUser] = useState<boolean>(false);
+  const [modalEditUser, setModalEditUser] = useState<boolean>(false);
+  const [selectedUser, setSelectedUser] = useState<IUserApi | null>(null);
   const [users, setUsers] = useState<IUserApi[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
   const role = myOrganizations.find(
-    organization => organization.id === selectOrganizationId
+    organization => organization.organization?.id === selectOrganizationId
   )?.role;
 
   const getAllUsers = async () => {
@@ -47,6 +50,18 @@ const UsersOrganization = () => {
     }
   };
 
+  const handleDelete = () => {
+    toast.error("Esta función no está disponible en este momento", {
+      position: "top-right",
+      autoClose: 3000
+    });
+  };
+
+  const handleEdit = (user: IUserApi) => {
+    setSelectedUser(user);
+    setModalEditUser(true);
+  };
+
   useEffect(() => {
     getAllUsers();
   }, []);
@@ -54,16 +69,30 @@ const UsersOrganization = () => {
   return (
     <>
       <Modal isShown={modalAddUser} onClose={() => setModalAddUser(false)}>
-        <ModalAddUser close={setModalAddUser} getAllUsers={getAllUsers} />
+        <ModalAddUser 
+          close={setModalAddUser} 
+          getAllUsers={getAllUsers}
+          users={users}
+        />
       </Modal>
+
+      <Modal isShown={modalEditUser} onClose={() => setModalEditUser(false)}>
+        <ModalAddUser 
+          close={setModalEditUser} 
+          getAllUsers={getAllUsers} 
+          editUser={selectedUser}
+          users={users}
+        />
+      </Modal>
+
       <div className="flex flex-1 flex-col gap-[20px] overflow-auto w-full">
         {role === OrganizationRoleType.OWNER && (
           <button
             type="button"
             onClick={() => setModalAddUser(true)}
-            className="w-[190px] h-[40px] border-[1px] rounded-full text-[16px] ml-auto leading-[24px] font-poppinsMedium bg-app-dark text-white"
+            className="flex justify-center items-center gap-2 w-[170px] h-[40px] text-white rounded-lg leading-[24px] bg-[#001130] hover:bg-opacity-90"
           >
-            Agregar usuario
+            + Agregar usuario
           </button>
         )}
         {loading ? (
@@ -71,7 +100,12 @@ const UsersOrganization = () => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-[20px] 2xl:gap-[24px]">
             {users.map(user => {
-              return <UserCard key={user.id} userData={user} />;
+              return <UserCard 
+                key={user.id} 
+                userData={user} 
+                onEdit={() => handleEdit(user)} 
+                onDelete={handleDelete} 
+              />;
             })}
           </div>
         )}
