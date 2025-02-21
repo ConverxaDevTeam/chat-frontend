@@ -24,7 +24,6 @@ const Navbar = ({ mobileResolution }: NavbarProps) => {
 
   const pathSegments = location.pathname.split("/").filter(Boolean).filter(segment => segment !== "dashboard");
 
-
   let accumulatedPath = "";
   const breadcrumbItems = [
     { path: "/dashboard", label: "Dashboard" },
@@ -78,6 +77,7 @@ const Navbar = ({ mobileResolution }: NavbarProps) => {
           <p className="text-sofia-superDark font-normal text-[14px] mr-3">
             {user?.email}
           </p>
+
           <div className={`bg-white  border border-gray-300 shadow-sm border-inherit max-w-[148px] h-[36px] relative rounded-lg flex justify-between items-center gap- p-3 cursor-pointer ${
           mobileResolution ? "w-full" : "w-[200px]"
         }`}>
