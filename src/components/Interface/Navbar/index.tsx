@@ -56,7 +56,7 @@ const UserActions = ({
   contextMenu,
   setContextMenu,
 }: {
-  user: any;
+  user: { email: string } | null;
   mobileResolution: boolean;
   contextMenu: { x: number; y: number; notifications: Notification[] } | null;
   setContextMenu: (
