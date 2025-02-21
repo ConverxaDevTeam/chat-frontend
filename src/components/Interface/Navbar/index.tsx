@@ -50,6 +50,87 @@ const Breadcrumb = ({
   );
 };
 
+const NotificationsMenu = ({
+  contextMenu,
+  setContextMenu,
+}: {
+  contextMenu: { x: number; y: number; notifications: Notification[] } | null;
+  setContextMenu: (
+    contextMenu: { x: number; y: number; notifications: Notification[] } | null
+  ) => void;
+}) => {
+  const [contextMenuState, setContextMenuState] = useState<{
+    x: number;
+    y: number;
+    notifications: Notification[];
+  } | null>(null);
+
+  const handleBellClick = async (event: React.MouseEvent) => {
+    const notifications = await getNotifications();
+    const { clientX, clientY } = event;
+    setContextMenuState({ x: clientX, y: clientY, notifications });
+    setContextMenu({ x: clientX, y: clientY, notifications });
+  };
+
+  return (
+    <>
+      <img
+        src="/mvp/bell.svg"
+        alt="Bell"
+        className="w-5 h-5"
+        onClick={handleBellClick}
+      />
+      {(contextMenu || contextMenuState) && (
+        <ContextMenu
+          x={(contextMenu || contextMenuState)?.x ?? 0}
+          y={(contextMenu || contextMenuState)?.y ?? 0}
+          onClose={() => {
+            setContextMenuState(null);
+            setContextMenu(null);
+          }}
+          header={
+            <div className="flex justify-between items-center self-stretch">
+              <span className="text-[#001130] text-sm font-bold leading-6">
+                Notificaciones
+              </span>
+              <button
+                onClick={() => {
+                  setContextMenuState(null);
+                  setContextMenu(null);
+                }}
+                className="text-base"
+              >
+                &times;
+              </button>
+            </div>
+          }
+        >
+          {(contextMenu || contextMenuState)?.notifications.map(
+            notification => (
+              <div
+                key={notification.id}
+                onClick={() => {
+                  if (notification.link)
+                    window.location.href = notification.link;
+                  setContextMenuState(null);
+                  setContextMenu(null);
+                }}
+              >
+                <div className="text-sm truncate max-w-[300px]">
+                  {notification.title}
+                </div>
+                <div className="text-xs text-gray-500">
+                  {new Date(notification.created_at).toLocaleDateString()}
+                </div>
+              </div>
+            )
+          )}
+        </ContextMenu>
+      )}
+    </>
+  );
+};
+
 const UserActions = ({
   user,
   mobileResolution,
@@ -63,12 +144,6 @@ const UserActions = ({
     contextMenu: { x: number; y: number; notifications: Notification[] } | null
   ) => void;
 }) => {
-  const handleBellClick = async (event: React.MouseEvent) => {
-    const notifications = await getNotifications();
-    const { clientX, clientY } = event;
-    setContextMenu({ x: clientX, y: clientY, notifications });
-  };
-
   return (
     <div
       className={`flex gap-[8px] items-center ${mobileResolution ? "ml-auto" : ""}`}
@@ -81,11 +156,9 @@ const UserActions = ({
           mobileResolution ? "w-full" : "w-[200px]"
         }`}
       >
-        <img
-          src="/mvp/bell.svg"
-          alt="Bell"
-          className="w-5 h-5"
-          onClick={handleBellClick}
+        <NotificationsMenu
+          contextMenu={contextMenu}
+          setContextMenu={setContextMenu}
         />
         <img src="/mvp/settings.svg" alt="Settings" className="w-5 h-5" />
         <img src="/mvp/spanish.svg" alt="Language" className="w-5 h-5" />
@@ -95,30 +168,6 @@ const UserActions = ({
           className="w-5 h-5"
         />
       </div>
-      {contextMenu && (
-        <ContextMenu
-          x={contextMenu.x}
-          y={contextMenu.y}
-          onClose={() => setContextMenu(null)}
-        >
-          {contextMenu.notifications.map(notification => (
-            <div
-              key={notification.id}
-              onClick={() => {
-                if (notification.link) window.location.href = notification.link;
-                setContextMenu(null);
-              }}
-            >
-              <div className="text-sm truncate max-w-[300px]">
-                {notification.title}
-              </div>
-              <div className="text-xs text-gray-500">
-                {new Date(notification.created_at).toLocaleDateString()}
-              </div>
-            </div>
-          ))}
-        </ContextMenu>
-      )}
     </div>
   );
 };
