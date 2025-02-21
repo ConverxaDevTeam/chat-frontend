@@ -223,7 +223,10 @@ const NotificationsMenu = ({
         onClick={handleBellClick}
       />
       {(contextMenu || contextMenuState) && (
-        <div ref={menuRef} className="fixed right-4 top-[60px] w-[400px] bg-white shadow-lg rounded-lg border border-gray-200 p-4">
+        <div
+          ref={menuRef}
+          className="fixed right-4 top-[60px] w-[400px] bg-white shadow-lg rounded-lg border border-gray-200 p-4 z-10"
+        >
           <NotificationsHeader
             activeTab={activeTab}
             setActiveTab={setActiveTab}
