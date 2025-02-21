@@ -3,7 +3,7 @@ import { RootState } from "@store";
 import { useSelector } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
 import { getNotifications } from "@services/notifications.service";
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import ContextMenu from "@components/ContextMenu";
 import {
   Notification,
@@ -124,7 +124,7 @@ const NotificationsMenu = ({
             setContextMenu(null);
           }}
           header={
-            <>
+            <Fragment>
               <div className="flex justify-between items-center self-stretch">
                 <span className="text-[#001130] text-sm font-bold leading-6">
                   Notificaciones
@@ -140,7 +140,7 @@ const NotificationsMenu = ({
                 </button>
               </div>
               <OptionTabs activeTab={activeTab} setActiveTab={setActiveTab} />
-            </>
+            </Fragment>
           }
         >
           {filteredNotifications.map(notification => (
@@ -160,22 +160,24 @@ const NotificationsMenu = ({
               </div>
               <div className="flex-1">
                 <div className="flex items-center gap-2">
-                  <div className="text-xs font-normal text-[#001130] line-clamp-2 w-[239px] h-[32px]">
+                  <div className="text-xs font-normal text-[#001130] line-clamp-2 w-[239px]">
                     {notification.title}
                   </div>
                   {!notification.isRead && (
-                    <div className="w-[48px] h-3 bg-green-400 rounded-full" />
+                    <div className="w-[48px] flex justify-end items-start">
+                      <div className="w-3 h-3 bg-green-400 rounded-full" />
+                    </div>
                   )}
                 </div>
                 <div className="flex justify-between text-xs text-gray-500 mt-1">
-                  <span>
+                  <span className="text-[#A6A8AB] text-right text-[8px] font-normal leading-none">
                     {new Date(notification.created_at).toLocaleTimeString([], {
                       hour: "2-digit",
                       minute: "2-digit",
                       hour12: false,
                     })}
                   </span>
-                  <span>
+                  <span className="text-[#A6A8AB] text-right text-[8px] font-normal leading-none">
                     {new Date(notification.created_at).toLocaleDateString()}
                   </span>
                 </div>
