@@ -3,7 +3,7 @@ import { RootState } from "@store";
 import { useSelector } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
 import { getNotifications } from "@services/notifications.service";
-import { Fragment, useState } from "react";
+import { Fragment, useState, useRef, useEffect } from "react";
 import {
   Notification,
   NotificationType,
@@ -173,6 +173,7 @@ const NotificationsMenu = ({
     contextMenu: { notifications: Notification[] } | null
   ) => void;
 }) => {
+  const menuRef = useRef<HTMLDivElement>(null);
   const [contextMenuState, setContextMenuState] = useState<{
     notifications: Notification[];
   } | null>(null);
@@ -180,6 +181,18 @@ const NotificationsMenu = ({
   const { selectOrganizationId } = useSelector(
     (state: RootState) => state.auth
   );
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setContextMenuState(null);
+        setContextMenu(null);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [setContextMenu]);
 
   const handleBellClick = async () => {
     if (!selectOrganizationId) return;
@@ -210,7 +223,7 @@ const NotificationsMenu = ({
         onClick={handleBellClick}
       />
       {(contextMenu || contextMenuState) && (
-        <div className="fixed right-4 top-[60px] w-[400px] bg-white shadow-lg rounded-lg border border-gray-200 p-4">
+        <div ref={menuRef} className="fixed right-4 top-[60px] w-[400px] bg-white shadow-lg rounded-lg border border-gray-200 p-4">
           <NotificationsHeader
             activeTab={activeTab}
             setActiveTab={setActiveTab}
