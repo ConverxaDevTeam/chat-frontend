@@ -76,6 +76,46 @@ const OptionTabs = ({
   );
 };
 
+const NotificationsHeader = ({
+  activeTab,
+  setActiveTab,
+  onClose,
+}: {
+  activeTab: string;
+  setActiveTab: (tab: string) => void;
+  onClose: () => void;
+}) => (
+  <Fragment>
+    <div className="flex justify-between items-center self-stretch">
+      <span className="text-[#001130] text-sm font-bold leading-6">
+        Notificaciones
+      </span>
+      <button onClick={onClose} className="text-base">
+        &times;
+      </button>
+    </div>
+    <OptionTabs activeTab={activeTab} setActiveTab={setActiveTab} />
+  </Fragment>
+);
+
+const NotificationsFooter = ({
+  onMarkAllAsRead,
+}: {
+  onMarkAllAsRead: () => void;
+}) => (
+  <div className="flex justify-between items-center py-[15px]">
+    <button
+      onClick={onMarkAllAsRead}
+      className="text-sofia-superDark text-xs font-normal underline underline-offset-auto underline-from-font hover:underline"
+    >
+      Marcar todas como leídas
+    </button>
+    <button className="text-sofia-blancoPuro text-[12px] font-bold leading-6 bg-sofia-superDark hover:bg-[#E5E7EB] py-2 px-4 rounded-lg">
+      Ver todas
+    </button>
+  </div>
+);
+
 const NotificationsMenu = ({
   contextMenu,
   setContextMenu,
@@ -130,37 +170,16 @@ const NotificationsMenu = ({
             setContextMenu(null);
           }}
           header={
-            <Fragment>
-              <div className="flex justify-between items-center self-stretch">
-                <span className="text-[#001130] text-sm font-bold leading-6">
-                  Notificaciones
-                </span>
-                <button
-                  onClick={() => {
-                    setContextMenuState(null);
-                    setContextMenu(null);
-                  }}
-                  className="text-base"
-                >
-                  &times;
-                </button>
-              </div>
-              <OptionTabs activeTab={activeTab} setActiveTab={setActiveTab} />
-            </Fragment>
+            <NotificationsHeader
+              activeTab={activeTab}
+              setActiveTab={setActiveTab}
+              onClose={() => {
+                setContextMenuState(null);
+                setContextMenu(null);
+              }}
+            />
           }
-          footer={
-            <div className="flex justify-between items-center py-[15px]">
-              <button
-                onClick={markAllAsRead}
-                className="text-sofia-superDark text-xs font-normal underline underline-offset-auto underline-from-font hover:underline"
-              >
-                Marcar todas como leídas
-              </button>
-              <button className="text-sofia-blancoPuro text-[12px] font-bold leading-6 bg-sofia-superDark hover:bg-[#E5E7EB] py-2 px-4 rounded-lg">
-                Ver todas
-              </button>
-            </div>
-          }
+          footer={<NotificationsFooter onMarkAllAsRead={markAllAsRead} />}
         >
           {filteredNotifications.map(notification => (
             <div
