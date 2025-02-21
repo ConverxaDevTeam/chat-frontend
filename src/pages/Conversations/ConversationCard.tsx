@@ -153,6 +153,13 @@ const ConversationCard = ({
         {conversation.type === IntegrationType.WHATSAPP && (
           <img className="select-none" src="/img/icon-wa.png" alt="WhatsApp" />
         )}
+        {conversation.type === IntegrationType.SLACK && (
+          <img
+            className="select-none w-[24px] h-[24px] bg-white p-[5px] rounded"
+            src="/mvp/slack.svg"
+            alt="WhatsApp"
+          />
+        )}
       </div>
       <div className="w-[calc(100%/19*4)] flex items-center justify-between pr-[16px]">
         <HitlButton
