@@ -7,6 +7,8 @@ interface ContextMenuProps {
   onClose: () => void;
   children: React.ReactNode;
   parentId?: string;
+  header?: React.ReactNode;
+  footer?: React.ReactNode;
 }
 
 // Registro de menús abiertos
@@ -142,12 +144,12 @@ const useMenuPosition = (
 
 // Componente para el divisor
 const MenuDivider = () => (
-  <div className="h-[1px] bg-sofia-navyBlue/20 w-[50px] mx-auto" />
+  <div className="h-[1px] bg-sofia-celeste/20 w-[50px] mx-auto" />
 );
 
 // Componente para envolver items del menú
 const MenuItem: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <div className="flex justify-center items-center gap-2.5 self-stretch rounded hover:bg-sofia-electricOlive cursor-pointer">
+  <div className="flex justify-center items-center gap-2.5 self-stretch rounded hover:bg-sofia-celeste cursor-pointer">
     <div className="px-1 py-0.5 w-full">{children}</div>
   </div>
 );
@@ -184,6 +186,8 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
   onClose,
   children,
   parentId,
+  header,
+  footer,
 }) => {
   const menuRef = useRef<HTMLDivElement>(null);
   const menuId = useRef(`menu-${Math.random()}`);
@@ -196,9 +200,10 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
     <div
       ref={menuRef}
       data-menu-id={menuId.current}
-      className="context-menu absolute inline-flex flex-col items-start p-[16px] gap-2 rounded-lg border border-sofia-navyBlue bg-sofia-blancoPuro z-50"
+      className="context-menu absolute inline-flex flex-col items-start p-[16px] gap-2 rounded-md border-2 border-sofia-darkBlue bg-sofia-blancoPuro z-50"
       style={{ left: x, top: y }}
     >
+      {header && <div className="w-full mb-2">{header}</div>}
       {React.Children.map(children, child => {
         if (React.isValidElement(child) && child.props["data-divider"]) {
           return <MenuDivider />;
@@ -208,6 +213,7 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
           <MenuItem>{handleMenuItemClick(child, menuId.current)}</MenuItem>
         );
       })}
+      {footer && <div className="w-full mt-2">{footer}</div>}
     </div>,
     document.body
   );
