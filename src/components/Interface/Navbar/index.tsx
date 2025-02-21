@@ -22,15 +22,13 @@ const Navbar = ({ mobileResolution }: NavbarProps) => {
   const { user } = useSelector((state: RootState) => state.auth);
   const location = useLocation();
 
-  const pathSegments = location.pathname
-    .split("/")
-    .filter(Boolean)
-    .filter(segment => segment !== "dashboard");
+  const pathSegments = location.pathname.split("/").filter(Boolean).filter(segment => segment !== "dashboard");
+
 
   let accumulatedPath = "";
   const breadcrumbItems = [
     { path: "/dashboard", label: "Dashboard" },
-    ...pathSegments.map(segment => {
+    ...pathSegments.map((segment) => {
       accumulatedPath += `/${segment}`;
       return {
         path: accumulatedPath,
