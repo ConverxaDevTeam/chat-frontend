@@ -4,7 +4,6 @@ import { useSelector } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
 import { getNotifications } from "@services/notifications.service";
 import { Fragment, useState } from "react";
-import ContextMenu from "@components/ContextMenu";
 import {
   Notification,
   NotificationType,
@@ -169,23 +168,24 @@ const NotificationsMenu = ({
   contextMenu,
   setContextMenu,
 }: {
-  contextMenu: { x: number; y: number; notifications: Notification[] } | null;
+  contextMenu: { notifications: Notification[] } | null;
   setContextMenu: (
-    contextMenu: { x: number; y: number; notifications: Notification[] } | null
+    contextMenu: { notifications: Notification[] } | null
   ) => void;
 }) => {
   const [contextMenuState, setContextMenuState] = useState<{
-    x: number;
-    y: number;
     notifications: Notification[];
   } | null>(null);
   const [activeTab, setActiveTab] = useState("Todos");
+  const { selectOrganizationId } = useSelector(
+    (state: RootState) => state.auth
+  );
 
-  const handleBellClick = async (event: React.MouseEvent) => {
-    const notifications = await getNotifications();
-    const { clientX, clientY } = event;
-    setContextMenuState({ x: clientX, y: clientY, notifications });
-    setContextMenu({ x: clientX, y: clientY, notifications });
+  const handleBellClick = async () => {
+    if (!selectOrganizationId) return;
+    const notifications = await getNotifications(selectOrganizationId);
+    setContextMenuState({ notifications });
+    setContextMenu({ notifications });
   };
 
   const filteredNotifications =
@@ -202,7 +202,7 @@ const NotificationsMenu = ({
   };
 
   return (
-    <>
+    <div className="relative">
       <img
         src="/mvp/bell.svg"
         alt="Bell"
@@ -210,39 +210,31 @@ const NotificationsMenu = ({
         onClick={handleBellClick}
       />
       {(contextMenu || contextMenuState) && (
-        <ContextMenu
-          x={(contextMenu || contextMenuState)?.x ?? 0}
-          y={(contextMenu || contextMenuState)?.y ?? 0}
-          bodyClassname="max-h-[500px] overflow-y-auto -mx-4"
-          onClose={() => {
-            setContextMenuState(null);
-            setContextMenu(null);
-          }}
-          header={
-            <NotificationsHeader
-              activeTab={activeTab}
-              setActiveTab={setActiveTab}
-              onClose={() => {
-                setContextMenuState(null);
-                setContextMenu(null);
-              }}
-            />
-          }
-          footer={<NotificationsFooter onMarkAllAsRead={markAllAsRead} />}
-        >
-          {filteredNotifications.map(notification => (
-            <NotificationItem
-              key={notification.id}
-              notification={notification}
-              onClose={() => {
-                setContextMenuState(null);
-                setContextMenu(null);
-              }}
-            />
-          ))}
-        </ContextMenu>
+        <div className="fixed right-4 top-[60px] w-[400px] bg-white shadow-lg rounded-lg border border-gray-200 p-4">
+          <NotificationsHeader
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
+            onClose={() => {
+              setContextMenuState(null);
+              setContextMenu(null);
+            }}
+          />
+          <div className="max-h-[500px] overflow-y-auto -mx-4">
+            {filteredNotifications.map(notification => (
+              <NotificationItem
+                key={notification.id}
+                notification={notification}
+                onClose={() => {
+                  setContextMenuState(null);
+                  setContextMenu(null);
+                }}
+              />
+            ))}
+          </div>
+          <NotificationsFooter onMarkAllAsRead={markAllAsRead} />
+        </div>
       )}
-    </>
+    </div>
   );
 };
 
@@ -254,9 +246,9 @@ const UserActions = ({
 }: {
   user: { email: string } | null;
   mobileResolution: boolean;
-  contextMenu: { x: number; y: number; notifications: Notification[] } | null;
+  contextMenu: { notifications: Notification[] } | null;
   setContextMenu: (
-    contextMenu: { x: number; y: number; notifications: Notification[] } | null
+    contextMenu: { notifications: Notification[] } | null
   ) => void;
 }) => {
   return (
@@ -309,8 +301,6 @@ const Navbar = ({ mobileResolution }: NavbarProps) => {
   ];
 
   const [contextMenu, setContextMenu] = useState<{
-    x: number;
-    y: number;
     notifications: Notification[];
   } | null>(null);
 

@@ -2,9 +2,9 @@ import { apiUrls } from "@config/config";
 import { axiosInstance } from "@store/actions/auth";
 import { Notification } from "@interfaces/notification.interface";
 
-export const getNotifications = async () => {
+export const getNotifications = async (organizationId: number) => {
   const { data } = await axiosInstance.get<Notification[]>(
-    apiUrls.notifications.base()
+    apiUrls.notifications.byOrganization(organizationId)
   );
   return data;
 };
