@@ -32,7 +32,17 @@ const SelectOrganization = ({ mobileResolution }: SelectOrganizationProps) => {
         leaveRoom(`organization-${organization.organization.id}`);
       });
     };
-  }, []);
+  }, [user?.is_super_admin]);
+
+  useEffect(() => {
+    if (
+      !user?.is_super_admin &&
+      realOrganizations.length > 0 &&
+      !selectOrganizationId
+    ) {
+      dispatch(setOrganizationId(realOrganizations[0].organization.id));
+    }
+  }, [realOrganizations, selectOrganizationId]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -55,7 +65,9 @@ const SelectOrganization = ({ mobileResolution }: SelectOrganizationProps) => {
       return;
     }
     navigate("/dashboard");
-    dispatch(setOrganizationId(Number(organizationId)));
+    dispatch(
+      setOrganizationId(organizationId === 0 ? null : Number(organizationId))
+    );
   };
 
   const options = realOrganizations.map(org => ({
@@ -67,7 +79,10 @@ const SelectOrganization = ({ mobileResolution }: SelectOrganizationProps) => {
     user?.is_super_admin || myOrganizations.some(org => !org.organization);
   const customOptions = isGlobalUser ? (
     <div
-      onClick={() => handleSelectOrganization(0)}
+      onClick={() => {
+        handleSelectOrganization(0);
+        setIsOpen(false);
+      }}
       className={`p-[6px] cursor-pointer hover:bg-app-c1 ${
         selectOrganizationId === 0 || selectOrganizationId === null
           ? "bg-app-c1"

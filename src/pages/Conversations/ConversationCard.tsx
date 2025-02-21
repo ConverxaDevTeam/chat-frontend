@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { MessageType, ConversationListItem } from "@interfaces/conversation";
 import { IntegrationType } from "@interfaces/integrations";
+import ButtonExportConversation from "./ButtonExportConversation";
 
 interface MessagePreviewProps {
   type: MessageType;
@@ -166,12 +167,7 @@ const ConversationCard = ({
           >
             <p className="text-[12px] text-sofia-superDark">Ver Chat</p>
           </button>
-          <button
-            type="button"
-            className="bg-sofia-superDark rounded-[4px] w-[63px] h-[24px]"
-          >
-            <p className="text-[12px] text-white">Exportar</p>
-          </button>
+          <ButtonExportConversation conversation={conversation} />
         </div>
       </div>
     </div>
