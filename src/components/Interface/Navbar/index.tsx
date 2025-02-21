@@ -131,7 +131,7 @@ const NotificationItem = ({
   };
 
   const handleClick = async () => {
-    if (!notification.isRead) {
+    if (!notification.isRead && notification.type === NotificationType.USER) {
       await handleMarkNotificationAsRead(notification.id);
     }
     if (notification.link) window.location.href = notification.link;
