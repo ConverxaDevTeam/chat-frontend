@@ -2,6 +2,7 @@ import { useSelector } from "react-redux";
 import ButtonIntegracion from "../ButtonIntegracion";
 import { RootState } from "@store";
 import { alertError } from "@utils/alerts";
+import { baseUrl } from "@config/config";
 
 interface ButtonSlackIntegrationProps {
   departmentId: number | null;
@@ -19,9 +20,7 @@ const ButtonSlackIntegration = ({
   const slackAuthUrl = async () => {
     if (!departmentId || !selectOrganizationId) return;
     const clientId = "7464676423766.8502943266896";
-    const redirectUri = encodeURIComponent(
-      "https://mxvlu5nnqui9pcvi1x9mxi.webrelay.io/api/slack/auth"
-    );
+    const redirectUri = encodeURIComponent(`${baseUrl}/api/slack/auth`);
     const scopes = encodeURIComponent(
       "channels:read,chat:write,im:history,im:write,mpim:read,users:read,users:read.email,users.profile:read,channels:manage,chat:write.public,commands,groups:write,conversations.connect:read,channels:history"
     );

@@ -73,6 +73,7 @@ export interface ConversationResponseMessage {
   text: string;
   audio: string | null;
   images: string[] | null;
+  time: number;
   type: MessageType;
 }
 
