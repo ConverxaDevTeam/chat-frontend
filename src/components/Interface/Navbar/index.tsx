@@ -10,6 +10,7 @@ import {
   NotificationType,
 } from "@interfaces/notification.interface";
 import SelectOrganization from "./SelectOrganization";
+import { formatDateWithWeekday } from "@utils/format";
 
 interface NavbarProps {
   windowWidth: number;
@@ -107,6 +108,10 @@ const NotificationsMenu = ({
         (activeTab === "Usuario" && notification.type === NotificationType.USER)
     ) || [];
 
+  const markAllAsRead = () => {
+    // Implementar la lógica para marcar todas las notificaciones como leídas
+  };
+
   return (
     <>
       <img
@@ -119,6 +124,7 @@ const NotificationsMenu = ({
         <ContextMenu
           x={(contextMenu || contextMenuState)?.x ?? 0}
           y={(contextMenu || contextMenuState)?.y ?? 0}
+          bodyClassname="max-h-[500px] overflow-y-auto"
           onClose={() => {
             setContextMenuState(null);
             setContextMenu(null);
@@ -141,6 +147,19 @@ const NotificationsMenu = ({
               </div>
               <OptionTabs activeTab={activeTab} setActiveTab={setActiveTab} />
             </Fragment>
+          }
+          footer={
+            <div className="flex justify-between items-center py-[15px]">
+              <button
+                onClick={markAllAsRead}
+                className="text-sofia-superDark text-xs font-normal underline underline-offset-auto underline-from-font hover:underline"
+              >
+                Marcar todas como leídas
+              </button>
+              <button className="text-sofia-blancoPuro text-[12px] font-bold leading-6 bg-sofia-superDark hover:bg-[#E5E7EB] py-2 px-4 rounded-lg">
+                Ver todas
+              </button>
+            </div>
           }
         >
           {filteredNotifications.map(notification => (
@@ -178,7 +197,7 @@ const NotificationsMenu = ({
                     })}
                   </span>
                   <span className="text-[#A6A8AB] text-right text-[8px] font-normal leading-none">
-                    {new Date(notification.created_at).toLocaleDateString()}
+                    {formatDateWithWeekday(notification.created_at)}
                   </span>
                 </div>
               </div>

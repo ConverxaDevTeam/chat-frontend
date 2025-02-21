@@ -7,6 +7,7 @@ interface ContextMenuProps {
   onClose: () => void;
   children: React.ReactNode;
   parentId?: string;
+  bodyClassname?: string;
   header?: React.ReactNode;
   footer?: React.ReactNode;
 }
@@ -188,6 +189,7 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
   parentId,
   header,
   footer,
+  bodyClassname,
 }) => {
   const menuRef = useRef<HTMLDivElement>(null);
   const menuId = useRef(`menu-${Math.random()}`);
@@ -204,15 +206,17 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
       style={{ left: x, top: y }}
     >
       {header && <div className="w-full mb-2">{header}</div>}
-      {React.Children.map(children, child => {
-        if (React.isValidElement(child) && child.props["data-divider"]) {
-          return <MenuDivider />;
-        }
+      <div className={bodyClassname}>
+        {React.Children.map(children, child => {
+          if (React.isValidElement(child) && child.props["data-divider"]) {
+            return <MenuDivider />;
+          }
 
-        return (
-          <MenuItem>{handleMenuItemClick(child, menuId.current)}</MenuItem>
-        );
-      })}
+          return (
+            <MenuItem>{handleMenuItemClick(child, menuId.current)}</MenuItem>
+          );
+        })}
+      </div>
       {footer && <div className="w-full mt-2">{footer}</div>}
     </div>,
     document.body
