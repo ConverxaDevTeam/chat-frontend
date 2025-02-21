@@ -2,7 +2,10 @@ import SelectDepartment from "./SelectDepartment";
 import { RootState } from "@store";
 import { useSelector } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
-import { getNotifications } from "@services/notifications.service";
+import {
+  getNotifications,
+  markNotificationAsRead,
+} from "@services/notifications.service";
 import { Fragment, useState, useRef, useEffect } from "react";
 import {
   Notification,
@@ -121,48 +124,59 @@ const NotificationItem = ({
 }: {
   notification: Notification;
   onClose: () => void;
-}) => (
-  <div
-    key={notification.id}
-    onClick={() => {
-      if (notification.link) window.location.href = notification.link;
-      onClose();
-    }}
-    className={`flex items-center gap-4 px-4 py-[16px] cursor-pointer ${
-      notification.isRead ? "" : "bg-sofia-celeste"
-    }`}
-  >
-    <div className="relative">
-      <div className="rounded-full bg-sofia-darkLight w-[40px] h-[40px] flex items-center justify-center">
-        <img src="/icon.svg" alt="notification" />
-      </div>
-    </div>
-    <div className="flex-1">
-      <div className="flex items-center gap-2">
-        <div className="text-xs font-normal text-[#001130] line-clamp-2 w-[239px]">
-          {notification.title}
+}) => {
+  const handleMarkNotificationAsRead = async (notificationId: number) => {
+    await markNotificationAsRead(notificationId);
+  };
+
+  const handleClick = async () => {
+    if (!notification.isRead) {
+      await handleMarkNotificationAsRead(notification.id);
+    }
+    if (notification.link) window.location.href = notification.link;
+    onClose();
+  };
+
+  return (
+    <div
+      key={notification.id}
+      onClick={handleClick}
+      className={`flex items-center gap-4 px-4 py-[16px] cursor-pointer ${
+        notification.isRead ? "" : "bg-sofia-celeste"
+      }`}
+    >
+      <div className="relative">
+        <div className="rounded-full bg-sofia-darkLight w-[40px] h-[40px] flex items-center justify-center">
+          <img src="/icon.svg" alt="notification" />
         </div>
-        {!notification.isRead && (
-          <div className="w-[48px] flex justify-end items-start">
-            <div className="w-3 h-3 bg-green-400 rounded-full" />
-          </div>
-        )}
       </div>
-      <div className="flex justify-between text-xs text-gray-500 mt-1">
-        <span className="text-[#A6A8AB] text-right text-[8px] font-normal leading-none">
-          {new Date(notification.created_at).toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit",
-            hour12: false,
-          })}
-        </span>
-        <span className="text-[#A6A8AB] text-right text-[8px] font-normal leading-none">
-          {formatDateWithWeekday(notification.created_at)}
-        </span>
+      <div className="flex-1">
+        <div className="flex items-center gap-2">
+          <div className="text-xs font-normal text-[#001130] line-clamp-2 w-[239px]">
+            {notification.title}
+          </div>
+          {!notification.isRead && (
+            <div className="w-[48px] flex justify-end items-start">
+              <div className="w-3 h-3 bg-green-400 rounded-full" />
+            </div>
+          )}
+        </div>
+        <div className="flex justify-between text-xs text-gray-500 mt-1">
+          <span className="text-[#A6A8AB] text-right text-[8px] font-normal leading-none">
+            {new Date(notification.created_at).toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: false,
+            })}
+          </span>
+          <span className="text-[#A6A8AB] text-right text-[8px] font-normal leading-none">
+            {formatDateWithWeekday(notification.created_at)}
+          </span>
+        </div>
       </div>
     </div>
-  </div>
-);
+  );
+};
 
 const NotificationsMenu = ({
   contextMenu,
