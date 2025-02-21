@@ -1,4 +1,3 @@
-import SelectOrganization from "./SelectOrganization";
 import SelectDepartment from "./SelectDepartment";
 import { RootState } from "@store";
 import { useSelector } from "react-redux";
@@ -6,7 +5,11 @@ import { Link, useLocation } from "react-router-dom";
 import { getNotifications } from "@services/notifications.service";
 import { useState } from "react";
 import ContextMenu from "@components/ContextMenu";
-import { Notification } from "@interfaces/notification.interface";
+import {
+  Notification,
+  NotificationType,
+} from "@interfaces/notification.interface";
+import SelectOrganization from "./SelectOrganization";
 
 interface NavbarProps {
   windowWidth: number;
@@ -50,6 +53,28 @@ const Breadcrumb = ({
   );
 };
 
+const OptionTabs = ({
+  activeTab,
+  setActiveTab,
+}: {
+  activeTab: string;
+  setActiveTab: (tab: string) => void;
+}) => {
+  return (
+    <div className="flex py-4 items-center gap-[16px] self-stretch">
+      {["Todos", "Sistema", "Usuario"].map(tab => (
+        <button
+          key={tab}
+          className={`text-xs p-[8px] rounded-[4px]  ${activeTab === tab ? "font-medium text-[#001130] bg-sofia-darkBlue" : "text-gray-500"}`}
+          onClick={() => setActiveTab(tab)}
+        >
+          {tab}
+        </button>
+      ))}
+    </div>
+  );
+};
+
 const NotificationsMenu = ({
   contextMenu,
   setContextMenu,
@@ -64,6 +89,7 @@ const NotificationsMenu = ({
     y: number;
     notifications: Notification[];
   } | null>(null);
+  const [activeTab, setActiveTab] = useState("Todos");
 
   const handleBellClick = async (event: React.MouseEvent) => {
     const notifications = await getNotifications();
@@ -71,6 +97,15 @@ const NotificationsMenu = ({
     setContextMenuState({ x: clientX, y: clientY, notifications });
     setContextMenu({ x: clientX, y: clientY, notifications });
   };
+
+  const filteredNotifications =
+    (contextMenu || contextMenuState)?.notifications.filter(
+      notification =>
+        activeTab === "Todos" ||
+        (activeTab === "Sistema" &&
+          notification.type === NotificationType.SYSTEM) ||
+        (activeTab === "Usuario" && notification.type === NotificationType.USER)
+    ) || [];
 
   return (
     <>
@@ -89,42 +124,42 @@ const NotificationsMenu = ({
             setContextMenu(null);
           }}
           header={
-            <div className="flex justify-between items-center self-stretch">
-              <span className="text-[#001130] text-sm font-bold leading-6">
-                Notificaciones
-              </span>
-              <button
-                onClick={() => {
-                  setContextMenuState(null);
-                  setContextMenu(null);
-                }}
-                className="text-base"
-              >
-                &times;
-              </button>
-            </div>
+            <>
+              <div className="flex justify-between items-center self-stretch">
+                <span className="text-[#001130] text-sm font-bold leading-6">
+                  Notificaciones
+                </span>
+                <button
+                  onClick={() => {
+                    setContextMenuState(null);
+                    setContextMenu(null);
+                  }}
+                  className="text-base"
+                >
+                  &times;
+                </button>
+              </div>
+              <OptionTabs activeTab={activeTab} setActiveTab={setActiveTab} />
+            </>
           }
         >
-          {(contextMenu || contextMenuState)?.notifications.map(
-            notification => (
-              <div
-                key={notification.id}
-                onClick={() => {
-                  if (notification.link)
-                    window.location.href = notification.link;
-                  setContextMenuState(null);
-                  setContextMenu(null);
-                }}
-              >
-                <div className="text-sm truncate max-w-[300px]">
-                  {notification.title}
-                </div>
-                <div className="text-xs text-gray-500">
-                  {new Date(notification.created_at).toLocaleDateString()}
-                </div>
+          {filteredNotifications.map(notification => (
+            <div
+              key={notification.id}
+              onClick={() => {
+                if (notification.link) window.location.href = notification.link;
+                setContextMenuState(null);
+                setContextMenu(null);
+              }}
+            >
+              <div className="text-sm truncate max-w-[300px]">
+                {notification.title}
               </div>
-            )
-          )}
+              <div className="text-xs text-gray-500">
+                {new Date(notification.created_at).toLocaleDateString()}
+              </div>
+            </div>
+          ))}
         </ContextMenu>
       )}
     </>

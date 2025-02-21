@@ -1,3 +1,8 @@
+export enum NotificationType {
+  SYSTEM = "SYSTEM",
+  USER = "USER",
+}
+
 export interface Notification {
   id: number;
   title: string;
@@ -7,4 +12,5 @@ export interface Notification {
   link: string | null;
   createdAt: string;
   updatedAt: string;
+  type: NotificationType;
 }
