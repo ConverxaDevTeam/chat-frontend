@@ -129,7 +129,9 @@ const NotificationItem = ({
       if (notification.link) window.location.href = notification.link;
       onClose();
     }}
-    className="flex items-center gap-4 py-[16px] hover:bg-gray-50 cursor-pointer"
+    className={`flex items-center gap-4 px-4 py-[16px] cursor-pointer ${
+      notification.isRead ? "" : "bg-sofia-celeste"
+    }`}
   >
     <div className="relative">
       <div className="rounded-full bg-sofia-darkLight w-[40px] h-[40px] flex items-center justify-center">
@@ -211,7 +213,7 @@ const NotificationsMenu = ({
         <ContextMenu
           x={(contextMenu || contextMenuState)?.x ?? 0}
           y={(contextMenu || contextMenuState)?.y ?? 0}
-          bodyClassname="max-h-[500px] overflow-y-auto"
+          bodyClassname="max-h-[500px] overflow-y-auto -mx-4"
           onClose={() => {
             setContextMenuState(null);
             setContextMenu(null);
