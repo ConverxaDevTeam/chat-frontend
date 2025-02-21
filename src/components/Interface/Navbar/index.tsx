@@ -151,12 +151,34 @@ const NotificationsMenu = ({
                 setContextMenuState(null);
                 setContextMenu(null);
               }}
+              className="flex items-center gap-4 py-[16px] hover:bg-gray-50 cursor-pointer"
             >
-              <div className="text-sm truncate max-w-[300px]">
-                {notification.title}
+              <div className="relative">
+                <div className="rounded-full bg-sofia-darkLight w-[40px] h-[40px] flex items-center justify-center">
+                  <img src="/icon.svg" alt="notification" />
+                </div>
               </div>
-              <div className="text-xs text-gray-500">
-                {new Date(notification.created_at).toLocaleDateString()}
+              <div className="flex-1">
+                <div className="flex items-center gap-2">
+                  <div className="text-xs font-normal text-[#001130] line-clamp-2 w-[239px] h-[32px]">
+                    {notification.title}
+                  </div>
+                  {!notification.isRead && (
+                    <div className="w-[48px] h-3 bg-green-400 rounded-full" />
+                  )}
+                </div>
+                <div className="flex justify-between text-xs text-gray-500 mt-1">
+                  <span>
+                    {new Date(notification.created_at).toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      hour12: false,
+                    })}
+                  </span>
+                  <span>
+                    {new Date(notification.created_at).toLocaleDateString()}
+                  </span>
+                </div>
               </div>
             </div>
           ))}

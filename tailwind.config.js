@@ -42,6 +42,7 @@ export default {
         sofia: {
           superDark: "#001126",
           darkBlue: "#DBEAF2",
+          darkLight: "#1A273B",
           electricOlive: "#BAF88F",
           electricLight: "#DDFBC7",
           electricGreen: "#15ECDA",
