@@ -22,3 +22,8 @@ export const markNotificationAsRead = async (id: number) => {
   );
   return data;
 };
+
+export const markAllNotificationsAsRead = async () => {
+  const { data } = await axiosInstance.put(apiUrls.notifications.readAll());
+  return data;
+};

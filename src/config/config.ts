@@ -123,6 +123,7 @@ export const apiUrls = {
     base: () => `/api/notifications`,
     byId: (id: number) => `/api/notifications/${id}`,
     read: (id: number) => `/api/notifications/${id}/read`,
+    readAll: () => `/api/notifications/read-all`,
     byOrganization: (organizationId: number) =>
       `/api/notifications/organization/${organizationId}`,
   },

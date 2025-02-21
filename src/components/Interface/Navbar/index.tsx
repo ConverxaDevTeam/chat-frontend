@@ -5,6 +5,7 @@ import { Link, useLocation } from "react-router-dom";
 import {
   getNotifications,
   markNotificationAsRead,
+  markAllNotificationsAsRead,
 } from "@services/notifications.service";
 import { Fragment, useState, useRef, useEffect } from "react";
 import {
@@ -224,8 +225,14 @@ const NotificationsMenu = ({
         (activeTab === "Usuario" && notification.type === NotificationType.USER)
     ) || [];
 
-  const markAllAsRead = () => {
-    // Implementar la lógica para marcar todas las notificaciones como leídas
+  const markAllAsRead = async () => {
+    try {
+      await markAllNotificationsAsRead();
+      setContextMenuState(null);
+      setContextMenu(null);
+    } catch (error) {
+      console.error("Error marking all notifications as read:", error);
+    }
   };
 
   return (
