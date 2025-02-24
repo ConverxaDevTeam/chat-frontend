@@ -33,7 +33,8 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
 
     return ReactDOM.createPortal(
         <div
-            className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+            className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50"
+            style={{ zIndex: 999 }}
             onClick={handleBackgroundClick}
         >
             <div className="bg-white rounded-xl p-6 w-[500px] shadow-xl">

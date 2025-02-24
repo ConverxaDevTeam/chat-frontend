@@ -64,27 +64,14 @@ const useOutsideClick = (
   onClose: () => void
 ) => {
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as HTMLElement;
-
-      if (
-        target.closest("button") ||
-        target.closest('input[type="checkbox"]')
-      ) {
-        return;
-      }
-
-      const isInsideAnyMenu = target.closest(".context-menu");
-
-      if (!isInsideAnyMenu) {
-        const menusToClose = Array.from(openMenus.values());
-        menusToClose.forEach(menu => {
-          const event = new CustomEvent("closeMenu", {
-            detail: { id: menu.id },
-          });
-          document.dispatchEvent(event);
+    const handleClickOutside = () => {
+      const menusToClose = Array.from(openMenus.values());
+      menusToClose.forEach(menu => {
+        const event = new CustomEvent("closeMenu", {
+          detail: { id: menu.id },
         });
-      }
+        document.dispatchEvent(event);
+      });
     };
 
     document.addEventListener("mousedown", handleClickOutside);
@@ -160,7 +147,7 @@ const handleMenuItemClick = (child: React.ReactNode, menuId: string) => {
   if (React.isValidElement<React.HTMLAttributes<HTMLElement>>(child)) {
     const originalOnClick = child.props.onClick;
     return React.cloneElement(child, {
-      onClick: (e: React.MouseEvent<HTMLElement>) => {
+      onClick: async (e: React.MouseEvent<HTMLElement>) => {
         const childMenus = Array.from(openMenus.values()).filter(
           menu => menu.parentId === menuId
         );
@@ -192,18 +179,22 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
   bodyClassname,
 }) => {
   const menuRef = useRef<HTMLDivElement>(null);
-  const menuId = useRef(`menu-${Math.random()}`);
+  const menuId = useRef(`menu-${Math.random()}`).current;
 
-  useMenuClosing(menuId.current, parentId, onClose);
-  useOutsideClick(menuId.current, parentId, onClose);
+  useMenuClosing(menuId, parentId, onClose);
+  useOutsideClick(menuId, parentId, onClose);
   useMenuPosition(menuRef, x, y, parentId);
 
   return createPortal(
     <div
       ref={menuRef}
-      data-menu-id={menuId.current}
-      className="context-menu absolute inline-flex flex-col items-start p-[16px] gap-2 rounded-md border-2 border-sofia-darkBlue bg-sofia-blancoPuro z-50"
-      style={{ left: x, top: y }}
+      className="absolute inline-flex flex-col items-start p-[16px] gap-2 rounded-md border-2 border-sofia-darkBlue bg-sofia-blancoPuro"
+      style={{
+        left: x,
+        top: y,
+        zIndex: 998,
+      }}
+      onClick={(e) => e.stopPropagation()}
     >
       {header && <div className="w-full mb-2">{header}</div>}
       <div className={bodyClassname}>
@@ -213,7 +204,7 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
           }
 
           return (
-            <MenuItem>{handleMenuItemClick(child, menuId.current)}</MenuItem>
+            <MenuItem>{handleMenuItemClick(child, menuId.current ?? menuId)}</MenuItem>
           );
         })}
       </div>

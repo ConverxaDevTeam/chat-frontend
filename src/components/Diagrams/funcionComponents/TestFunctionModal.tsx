@@ -35,7 +35,7 @@ export const TestFunctionModal = ({
       if ("error" in responseData) {
         setTestResponse({
           status: (responseData?.error as { status: number })?.status || 500,
-          data: (responseData?.error as { message: string })?.message,
+          data: responseData
         });
         return;
       }
@@ -55,7 +55,7 @@ export const TestFunctionModal = ({
         onClose={onClose}
         header={<h2 className="text-xl font-semibold">Probar Función</h2>}
       >
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 w-[475px]">
           {params.length === 0 ? (
             <p className="text-center text-gray-600 py-4">
               Esta función no tiene parámetros configurados
@@ -74,21 +74,23 @@ export const TestFunctionModal = ({
               </InputGroup>
             ))
           )}
-          <div className="flex justify-end gap-2 mt-4">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2 text-sm text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
-            >
-              Cancelar
-            </button>
-            <button
-              type="submit"
-              className="px-4 py-2 text-sm text-white bg-blue-600 rounded-md hover:bg-blue-700"
-            >
-              Probar
-            </button>
-          </div>
+          {params.length > 0 && (
+            <div className="flex justify-center gap-2 mt-4">
+              <button
+                type="button"
+                onClick={onClose}
+                className="w-full px-4 py-2 text-gray-500 border-2 rounded-md text-sm font-semibold"
+              >
+                Cancelar
+              </button>
+              <button
+                type="submit"
+                className="w-full px-4 py-2 bg-sofia-electricGreen text-gray-900 rounded-md text-sm font-semibold hover:bg-opacity-50 transition-all"
+              >
+                Probar
+              </button>
+            </div>
+          )}
         </form>
       </Modal>
       {testResponse && (

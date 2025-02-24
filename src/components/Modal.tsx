@@ -47,7 +47,9 @@ const Modal: React.FC<ModalProps> = ({
     ? ReactDOM.createPortal(
         <div
           ref={modalRef}
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+          className="fixed w-full h-full flex justify-center items-center top-0 left-0 bg-[#212121] bg-opacity-75"
+          style={{ zIndex: 999 }}
+
           onClick={handleBackgroundClick}
         >
           <div className="bg-white rounded-xl p-6 w-auto max-w-full relative">
