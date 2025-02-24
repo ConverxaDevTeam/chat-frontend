@@ -15,6 +15,7 @@ import {
   HttpRequestFunction,
   FunctionData,
   FunctionNodeTypes,
+  BodyType,
 } from "@interfaces/functions.interface";
 import { Button } from "@components/common/Button";
 
@@ -24,6 +25,7 @@ interface FunctionFormValues {
   description: string;
   url: string;
   method: HttpMethod;
+  bodyType: BodyType;
 }
 
 interface FunctionFormProps {
@@ -58,6 +60,7 @@ const useFunctionForm = (props: FunctionFormProps) => {
       description: initialData?.description || "",
       url: initialData?.config?.url || "",
       method: initialData?.config?.method || HttpMethod.GET,
+      bodyType: initialData?.config?.bodyType || BodyType.JSON,
     },
   });
 
@@ -73,6 +76,7 @@ const useFunctionForm = (props: FunctionFormProps) => {
       config: {
         url: formData.url,
         method: formData.method,
+        bodyType: formData.bodyType,
       },
     };
     onSuccess?.(functionData);
@@ -227,6 +231,17 @@ export const FunctionForm = (props: FunctionFormProps) => {
       validation: { required: "El tipo de operación es obligatorio" },
       type: "select",
       options: HTTP_METHODS,
+    },
+    {
+      name: "bodyType",
+      label: "Tipo de Body",
+      placeholder: "",
+      validation: { required: "El tipo de body es obligatorio" },
+      type: "select",
+      options: [
+        { value: BodyType.JSON, label: "JSON" },
+        { value: BodyType.FORM_DATA, label: "Form Data" },
+      ],
     },
   ] as const satisfies Array<{
     name: keyof FunctionFormValues;

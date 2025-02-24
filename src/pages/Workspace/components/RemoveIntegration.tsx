@@ -4,13 +4,13 @@ import RawModal from "@components/RawModal";
 import { NodeData } from "@interfaces/workflow";
 import { deleteIntegrationbyId } from "@services/integration";
 
-interface AddWebchatProps {
+interface RemoveIntegrationProps {
   isOpen: boolean;
   onClose: () => void;
   data: NodeData;
 }
 
-const RemoveIntegration: React.FC<AddWebchatProps> = ({
+const RemoveIntegration: React.FC<RemoveIntegrationProps> = ({
   isOpen,
   onClose,
   data,

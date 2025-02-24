@@ -41,6 +41,18 @@ export const apiUrls = {
   deleteIntegrationbyId: (id: number) => `/api/integration/${id}/remove`,
   getPagesFacebook: (departmentId: number, organizationId: number) =>
     `/api/facebook/get-pages/${organizationId}/${departmentId}`,
+  getChannelNameByIntegrationId: (
+    departmentId: number,
+    organizationId: number,
+    integrationId: number
+  ) =>
+    `/api/integration/get-channel-name/${departmentId}/${organizationId}/${integrationId}`,
+  changeChannelName: (
+    departmentId: number,
+    organizationId: number,
+    integrationId: number
+  ) =>
+    `/api/integration/change-channel-name/${departmentId}/${organizationId}/${integrationId}`,
   //conversations
   getConversationsByOrganizationId: (organizationId: number) =>
     `/api/conversation/organization/${organizationId}`,
