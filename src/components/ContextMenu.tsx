@@ -194,7 +194,7 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
         top: y,
         zIndex: 998,
       }}
-      onClick={(e) => e.stopPropagation()}
+      onClick={e => e.stopPropagation()}
     >
       {header && <div className="w-full mb-2">{header}</div>}
       <div className={bodyClassname}>
@@ -203,9 +203,7 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
             return <MenuDivider />;
           }
 
-          return (
-            <MenuItem>{handleMenuItemClick(child, menuId.current ?? menuId)}</MenuItem>
-          );
+          return <MenuItem>{handleMenuItemClick(child, menuId)}</MenuItem>;
         })}
       </div>
       {footer && <div className="w-full mt-2">{footer}</div>}
