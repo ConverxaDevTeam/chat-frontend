@@ -7,6 +7,9 @@ interface ContextMenuProps {
   onClose: () => void;
   children: React.ReactNode;
   parentId?: string;
+  bodyClassname?: string;
+  header?: React.ReactNode;
+  footer?: React.ReactNode;
 }
 
 // Registro de menús abiertos
@@ -129,12 +132,12 @@ const useMenuPosition = (
 
 // Componente para el divisor
 const MenuDivider = () => (
-  <div className="h-[1px] bg-sofia-navyBlue/20 w-[50px] mx-auto" />
+  <div className="h-[1px] bg-sofia-celeste/20 w-[50px] mx-auto" />
 );
 
 // Componente para envolver items del menú
 const MenuItem: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <div className="flex justify-center items-center gap-2.5 self-stretch rounded hover:bg-sofia-electricOlive cursor-pointer">
+  <div className="flex justify-center items-center gap-2.5 self-stretch rounded hover:bg-sofia-celeste cursor-pointer">
     <div className="px-1 py-0.5 w-full">{children}</div>
   </div>
 );
@@ -171,6 +174,9 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
   onClose,
   children,
   parentId,
+  header,
+  footer,
+  bodyClassname,
 }) => {
   const menuRef = useRef<HTMLDivElement>(null);
   const menuId = useRef(`menu-${Math.random()}`).current;
@@ -182,7 +188,7 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
   return createPortal(
     <div
       ref={menuRef}
-      className="absolute inline-flex flex-col items-start p-[16px] gap-2 rounded-lg border border-sofia-navyBlue bg-sofia-blancoPuro"
+      className="absolute inline-flex flex-col items-start p-[16px] gap-2 rounded-md border-2 border-sofia-darkBlue bg-sofia-blancoPuro"
       style={{
         left: x,
         top: y,
@@ -190,12 +196,19 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
       }}
       onClick={(e) => e.stopPropagation()}
     >
-      {React.Children.map(children, child => {
-        if (React.isValidElement(child) && child.props["data-divider"]) {
-          return <MenuDivider />;
-        }
-        return <MenuItem>{handleMenuItemClick(child, menuId)}</MenuItem>;
-      })}
+      {header && <div className="w-full mb-2">{header}</div>}
+      <div className={bodyClassname}>
+        {React.Children.map(children, child => {
+          if (React.isValidElement(child) && child.props["data-divider"]) {
+            return <MenuDivider />;
+          }
+
+          return (
+            <MenuItem>{handleMenuItemClick(child, menuId.current ?? menuId)}</MenuItem>
+          );
+        })}
+      </div>
+      {footer && <div className="w-full mt-2">{footer}</div>}
     </div>,
     document.body
   );
