@@ -320,12 +320,15 @@ const Navbar = ({ mobileResolution }: NavbarProps) => {
   const { user } = useSelector((state: RootState) => state.auth);
   const location = useLocation();
 
-  const pathSegments = location.pathname.split("/").filter(Boolean).filter(segment => segment !== "dashboard");
+  const pathSegments = location.pathname
+    .split("/")
+    .filter(Boolean)
+    .filter(segment => segment !== "dashboard");
 
   let accumulatedPath = "";
   const breadcrumbItems = [
     { path: "/dashboard", label: "Dashboard" },
-    ...pathSegments.map((segment) => {
+    ...pathSegments.map(segment => {
       accumulatedPath += `/${segment}`;
       return {
         path: accumulatedPath,
@@ -339,38 +342,36 @@ const Navbar = ({ mobileResolution }: NavbarProps) => {
   } | null>(null);
 
   return (
-    <>
+    <div
+      className={`w-full ${mobileResolution ? "mt-[10px] h-[80px]" : "mt-[20px] h-[36px]"}`}
+    >
       <div
-        className={`w-full ${mobileResolution ? "mt-[10px] h-[80px]" : "mt-[20px] h-[36px]"}`}
+        style={{
+          width: "100%",
+        }}
+        className={`flex ${mobileResolution ? "flex-col  h-[100px] p-[10px]" : "h-[36px]"}  justify-between items-center `}
       >
-        <div
-          style={{
-            width: "100%",
-          }}
-          className={`flex ${mobileResolution ? "flex-col  h-[100px] p-[10px]" : "h-[36px]"}  justify-between items-center `}
-        >
-          <div className="flex md:flex-row flex-col items-start md:items-center gap-7 w-full">
-            <Breadcrumb breadcrumbItems={breadcrumbItems} />
-            <div
-              className={`flex gap-[24px] items-center ${mobileResolution ? "w-full" : ""}`}
-            >
-              <SelectOrganization mobileResolution={mobileResolution} />
-              <SelectDepartment mobileResolution={mobileResolution} />
-            </div>
-          </div>
+        <div className="flex md:flex-row flex-col items-start md:items-center gap-7 w-full">
+          <Breadcrumb breadcrumbItems={breadcrumbItems} />
           <div
-            className={`flex gap-[8px] items-center ${mobileResolution ? "ml-auto" : ""}`}
+            className={`flex gap-[24px] items-center ${mobileResolution ? "w-full" : ""}`}
           >
-            <UserActions
-              user={user}
-              mobileResolution={mobileResolution}
-              contextMenu={contextMenu}
-              setContextMenu={setContextMenu}
-            />
+            <SelectOrganization mobileResolution={mobileResolution} />
+            <SelectDepartment mobileResolution={mobileResolution} />
           </div>
         </div>
+        <div
+          className={`flex gap-[8px] items-center ${mobileResolution ? "ml-auto" : ""}`}
+        >
+          <UserActions
+            user={user}
+            mobileResolution={mobileResolution}
+            contextMenu={contextMenu}
+            setContextMenu={setContextMenu}
+          />
+        </div>
       </div>
-    </>
+    </div>
   );
 };
 
