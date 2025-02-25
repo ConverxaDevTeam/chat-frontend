@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { sidebarAdminLinks, sidebarLinks } from "@utils/lists";
 import { logOutAsync } from "@store/actions/auth";
 import { OrganizationRoleType } from "@utils/interfaces";
+import GuideConfig from "@components/GuideConfig";
 
 type SidebarProps = {
   windowHeight: number;
@@ -94,25 +95,33 @@ const Sidebar = ({
                     );
                   })}
             </ul>
-            <div
-              className={`mt-auto mb-[38px] flex h-[35px] items-center gap-[16px] ${sidebarMinimized || mobileResolution ? "w-full justify-center" : "w-full pl-[12px]"}`}
-            >
-              <img
-                className="w-6 h-6 fill-current cursor-pointer"
-                src="/mvp/exit.svg"
-                title="Cerrar sesión"
-                onClick={() => dispatch(logOutAsync())}
-                alt="Logo"
-              />
+            <div className="mt-auto">
               {!(sidebarMinimized || mobileResolution) && (
-                <p
+                <div className="flex flex-col justify-center items-center mb-2">
+                  <GuideConfig />
+                </div>
+              )}
+              <div
+                className={`mt-[18px] mb-[38px] flex h-[35px] items-center gap-[16px] ${sidebarMinimized || mobileResolution ? "w-full justify-center" : "w-full pl-[12px]"}`}
+              >
+                
+                <img
+                  className="w-6 h-6 fill-current cursor-pointer"
+                  src="/mvp/exit.svg"
                   title="Cerrar sesión"
                   onClick={() => dispatch(logOutAsync())}
-                  className="font-normal text-[#001126] transition-all duration-300 ease-in-out cursor-pointer"
-                >
-                  Cerrar sesión
-                </p>
-              )}
+                  alt="Logo"
+                />
+                {!(sidebarMinimized || mobileResolution) && (
+                  <p
+                    title="Cerrar sesión"
+                    onClick={() => dispatch(logOutAsync())}
+                    className="font-normal text-[#001126] transition-all duration-300 ease-in-out cursor-pointer"
+                  >
+                    Cerrar sesión
+                  </p>
+                )}
+              </div>
             </div>
           </div>
         </div>
