@@ -26,6 +26,7 @@ import {
   HttpRequestFunction,
   FunctionNodeTypes,
   HttpMethod,
+  BodyType,
 } from "@/interfaces/functions.interface";
 import IntegracionesNode from "./Diagrams/IntegracionesNode";
 import AgenteNode from "./Diagrams/AgenteNode";
@@ -142,6 +143,7 @@ const nodeFactory = {
           method: HttpMethod.GET,
           url: "",
           requestBody: [],
+          bodyType: BodyType.JSON,
         },
       },
       "funcion"

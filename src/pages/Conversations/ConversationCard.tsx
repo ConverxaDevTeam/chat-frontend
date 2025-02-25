@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { MessageType, ConversationListItem } from "@interfaces/conversation";
 import { IntegrationType } from "@interfaces/integrations";
+import ButtonExportConversation from "./ButtonExportConversation";
 
 interface MessagePreviewProps {
   type: MessageType;
@@ -152,6 +153,13 @@ const ConversationCard = ({
         {conversation.type === IntegrationType.WHATSAPP && (
           <img className="select-none" src="/img/icon-wa.png" alt="WhatsApp" />
         )}
+        {conversation.type === IntegrationType.SLACK && (
+          <img
+            className="select-none w-[24px] h-[24px] bg-white p-[5px] rounded"
+            src="/mvp/slack.svg"
+            alt="WhatsApp"
+          />
+        )}
       </div>
       <div className="w-[calc(100%/19*4)] flex items-center justify-between pr-[16px]">
         <HitlButton
@@ -166,12 +174,7 @@ const ConversationCard = ({
           >
             <p className="text-[12px] text-sofia-superDark">Ver Chat</p>
           </button>
-          <button
-            type="button"
-            className="bg-sofia-superDark rounded-[4px] w-[63px] h-[24px]"
-          >
-            <p className="text-[12px] text-white">Exportar</p>
-          </button>
+          <ButtonExportConversation conversation={conversation} />
         </div>
       </div>
     </div>

@@ -13,15 +13,21 @@ export enum HttpMethod {
   DELETE = "DELETE",
 }
 
+export enum BodyType {
+  JSON = "json",
+  FORM_DATA = "form-data",
+}
+
 export interface HttpRequestFunction {
   id: number;
   name: string;
   autenticador?: { id: number };
   type: FunctionNodeTypes.API_ENDPOINT;
   config: {
-    url?: string;
-    method?: HttpMethod;
+    url: string;
+    method: HttpMethod;
     requestBody?: FunctionParam[];
+    bodyType: BodyType;
   };
 }
 

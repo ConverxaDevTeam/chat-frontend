@@ -41,6 +41,18 @@ export const apiUrls = {
   deleteIntegrationbyId: (id: number) => `/api/integration/${id}/remove`,
   getPagesFacebook: (departmentId: number, organizationId: number) =>
     `/api/facebook/get-pages/${organizationId}/${departmentId}`,
+  getChannelNameByIntegrationId: (
+    departmentId: number,
+    organizationId: number,
+    integrationId: number
+  ) =>
+    `/api/integration/get-channel-name/${departmentId}/${organizationId}/${integrationId}`,
+  changeChannelName: (
+    departmentId: number,
+    organizationId: number,
+    integrationId: number
+  ) =>
+    `/api/integration/change-channel-name/${departmentId}/${organizationId}/${integrationId}`,
   //conversations
   getConversationsByOrganizationId: (organizationId: number) =>
     `/api/conversation/organization/${organizationId}`,
@@ -118,6 +130,14 @@ export const apiUrls = {
   },
   analytics: {
     base: () => `/api/analytics`,
+  },
+  notifications: {
+    base: () => `/api/notifications`,
+    byId: (id: number) => `/api/notifications/${id}`,
+    read: (id: number) => `/api/notifications/${id}/read`,
+    readAll: () => `/api/notifications/read-all`,
+    byOrganization: (organizationId: number) =>
+      `/api/notifications/organization/${organizationId}`,
   },
 } as const;
 
