@@ -1,49 +1,49 @@
 import { ConversationDetailResponse } from "@interfaces/conversation";
-import {
-  BsChatDots,
-  BsCalendar4,
-  BsWindows,
-  BsGeoAlt,
-  BsEnvelope,
-} from "react-icons/bs";
+// import {
+//   BsChatDots,
+//   BsCalendar4,
+//   BsWindows,
+//   BsGeoAlt,
+//   BsEnvelope,
+// } from "react-icons/bs";
 import { Avatar } from "./Avatar";
 
 interface UserInfoPanelProps {
   conversation?: ConversationDetailResponse;
 }
 
-const infoItems = [
-  {
-    icon: BsChatDots,
-    label: "Chat ID",
-    value: "D076Z7SJYP2",
-  },
-  {
-    icon: BsCalendar4,
-    label: "Fecha de inicio",
-    value: "09/01/25",
-  },
-  {
-    icon: BsWindows,
-    label: "Dispositivo",
-    value: "Windows 11",
-  },
-  {
-    icon: BsCalendar4,
-    label: "Fecha de visita",
-    value: "14:37",
-  },
-  {
-    icon: BsGeoAlt,
-    label: "País",
-    value: "Avenida Isidro Menendez, Centro Historico, El Salvador",
-  },
-  {
-    icon: BsEnvelope,
-    label: "Email",
-    value: "j_martinez@gmail.com",
-  },
-];
+// const infoItems = [
+//   {
+//     icon: BsChatDots,
+//     label: "Chat ID",
+//     value: "D076Z7SJYP2",
+//   },
+//   {
+//     icon: BsCalendar4,
+//     label: "Fecha de inicio",
+//     value: "09/01/25",
+//   },
+//   {
+//     icon: BsWindows,
+//     label: "Dispositivo",
+//     value: "Windows 11",
+//   },
+//   {
+//     icon: BsCalendar4,
+//     label: "Fecha de visita",
+//     value: "14:37",
+//   },
+//   {
+//     icon: BsGeoAlt,
+//     label: "País",
+//     value: "Avenida Isidro Menendez, Centro Historico, El Salvador",
+//   },
+//   {
+//     icon: BsEnvelope,
+//     label: "Email",
+//     value: "j_martinez@gmail.com",
+//   },
+// ];
 
 export const UserInfoPanel = ({ conversation }: UserInfoPanelProps) => {
   return (
