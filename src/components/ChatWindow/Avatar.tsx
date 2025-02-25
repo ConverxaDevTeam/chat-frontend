@@ -29,7 +29,7 @@ export const Avatar = ({
             style={{ borderColor: borderColor }}
           />
           <span
-            className="relative z-10 text-base font-semibold text-sofia-superDark"
+            className="relative z-1 text-base font-semibold text-sofia-superDark"
             style={{ color: borderColor }}
           >
             {secret?.substring(0, 2)}

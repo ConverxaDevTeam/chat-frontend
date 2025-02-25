@@ -62,10 +62,11 @@ const TabsCarousel = ({
   const canScrollLeft = startIndex > 0;
   const canScrollRight = startIndex + 3 < scrollableTabs.length;
 
-  const integrationTabsNames = {
+  const integrationTabsNames: Record<IntegrationType, string> = {
     [IntegrationType.WHATSAPP]: "WhatsApp",
     [IntegrationType.MESSENGER]: "Messenger",
-    [IntegrationType.CHAT_WEB]: "Web",
+    [IntegrationType.CHAT_WEB]: "Chat Web",
+    [IntegrationType.SLACK]: "Slack",
   };
 
   return (

@@ -75,8 +75,10 @@ const DepartmentModal: FC<DepartmentModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-      onClick={handleBackgroundClick}>
+    <div
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+      onClick={handleBackgroundClick}
+    >
       <div className="bg-white rounded-xl p-6 w-full max-w-md relative">
         <button
           type="button"
@@ -92,7 +94,9 @@ const DepartmentModal: FC<DepartmentModalProps> = ({
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           {department && (
             <div>
-              <label className="block text-gray-700 font-semibold mb-2">ID</label>
+              <label className="block text-gray-700 font-semibold mb-2">
+                ID
+              </label>
               <input
                 type="text"
                 value={department.id}
@@ -102,7 +106,9 @@ const DepartmentModal: FC<DepartmentModalProps> = ({
             </div>
           )}
           <div>
-            <label className="block text-gray-700 font-semibold mb-2">Nombre</label>
+            <label className="block text-gray-700 font-semibold mb-2">
+              Nombre
+            </label>
             <input
               {...register("name", { required: "Nombre es requerido" })}
               className="w-full p-3 border rounded-lg focus:outline-none  focus:ring-2 focus:ring-blue-500 mb-2"
@@ -115,8 +121,11 @@ const DepartmentModal: FC<DepartmentModalProps> = ({
             )}
           </div>
           <div>
-            <label className="block text-gray-700 font-semibold mb-2">Descripción</label>
-            <input className="w-full p-3 border text-gray-400 rounded-lg cursor-not-allowed mb-2"
+            <label className="block text-gray-700 font-semibold mb-2">
+              Descripción
+            </label>
+            <input
+              className="w-full p-3 border text-gray-400 rounded-lg cursor-not-allowed mb-2"
               placeholder="Descripción"
               disabled
             />

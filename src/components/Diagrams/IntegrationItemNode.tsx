@@ -5,6 +5,7 @@ import { NodeData } from "@interfaces/workflow";
 import { IntegrationType } from "@interfaces/integrations";
 import AddWebchat from "@pages/Workspace/components/AddWebChat";
 import RemoveIntegration from "@pages/Workspace/components/RemoveIntegration";
+import SlackIntegration from "@pages/Workspace/components/SlackIntegration";
 
 interface IntegrationItemProps extends CustomTypeNodeProps<NodeData> {
   data: NodeData & {
@@ -17,6 +18,7 @@ const getIntegrationIcon = (type: IntegrationType) => {
     [IntegrationType.CHAT_WEB]: "/mvp/globe.svg",
     [IntegrationType.WHATSAPP]: "/mvp/whatsapp.svg",
     [IntegrationType.MESSENGER]: "/mvp/messenger.svg",
+    [IntegrationType.SLACK]: "/mvp/slack.svg",
   };
   return iconMap[type] || "/mvp/globe.svg";
 };
@@ -26,6 +28,7 @@ const getIntegrationName = (type: IntegrationType) => {
     [IntegrationType.CHAT_WEB]: "Chat Web",
     [IntegrationType.WHATSAPP]: "WhatsApp",
     [IntegrationType.MESSENGER]: "Messenger",
+    [IntegrationType.SLACK]: "Slack",
   };
   return nameMap[type] || type;
 };
@@ -34,18 +37,30 @@ export const contextMenuOptions = ({
   setIsModalOpen,
   itemType,
   setIsRemoveModalOpen,
+  setIsSlackModalOpen,
 }: {
   setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
   itemType: IntegrationType;
   setIsRemoveModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsSlackModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
   const choices = [];
+  if (itemType === IntegrationType.SLACK) {
+    choices.push({
+      child: <img src="/mvp/pencil.svg" alt="slack" />,
+      onClick: () => setIsSlackModalOpen(true),
+    });
+  }
   if (itemType === IntegrationType.CHAT_WEB) {
     choices.push({
       child: <img src="/mvp/globe.svg" alt="Webchat" />,
       onClick: () => setIsModalOpen(true),
     });
-  } else if (itemType === IntegrationType.MESSENGER) {
+  } else if (
+    itemType === IntegrationType.MESSENGER ||
+    itemType === IntegrationType.WHATSAPP ||
+    itemType === IntegrationType.SLACK
+  ) {
     choices.push({
       child: <img src="/mvp/trash.svg" alt="Remove" />,
       onClick: () => setIsRemoveModalOpen(true),
@@ -58,8 +73,9 @@ const IntegrationItemNode = memo((props: IntegrationItemProps) => {
   const { data } = props;
   const type = data.type || IntegrationType.CHAT_WEB;
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [isRemoveModalOpen, setIsRemoveModalOpen] = useState<boolean>(false);
+  const [isSlackModalOpen, setIsSlackModalOpen] = useState<boolean>(false);
   return (
     <Fragment>
       <DefaultNode
@@ -82,6 +98,7 @@ const IntegrationItemNode = memo((props: IntegrationItemProps) => {
           setIsModalOpen,
           itemType: type,
           setIsRemoveModalOpen,
+          setIsSlackModalOpen,
         })}
       />
       <AddWebchat isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
@@ -90,6 +107,13 @@ const IntegrationItemNode = memo((props: IntegrationItemProps) => {
         onClose={() => setIsRemoveModalOpen(false)}
         data={data}
       />
+      {isSlackModalOpen && (
+        <SlackIntegration
+          isOpen={isSlackModalOpen}
+          onClose={() => setIsSlackModalOpen(false)}
+          data={data}
+        />
+      )}
     </Fragment>
   );
 });

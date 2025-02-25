@@ -2,6 +2,7 @@ export enum ParamType {
   STRING = "string",
   NUMBER = "number",
   BOOLEAN = "boolean",
+  OBJECT = "object",
 }
 
 export interface CreateFunctionParamDto {

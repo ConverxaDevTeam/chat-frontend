@@ -7,6 +7,7 @@ import {
   BsEnvelope,
 } from "react-icons/bs";
 import { Avatar } from "./Avatar";
+import { formatTime } from "@utils/format";
 
 interface UserInfoPanelProps {
   conversation?: ConversationDetailResponse;
@@ -71,7 +72,7 @@ export const UserInfoPanel = ({ conversation }: UserInfoPanelProps) => {
       <div className="flex justify-between mb-4">
         <div className="text-center">
           <div className="text-[32px] font-bold text-sofia-superDark">
-            325
+            {conversation?.messages.length}
           </div>
           <div className="text-[14px] font-normal text-sofia-superDark">
             Mensajes Totales
@@ -79,7 +80,12 @@ export const UserInfoPanel = ({ conversation }: UserInfoPanelProps) => {
         </div>
         <div className="text-center">
           <div className="text-[32px] font-bold text-sofia-superDark">
-            5:46
+            {formatTime(
+              conversation?.messages.reduce(
+                (total, message) => total + (message.time || 0),
+                0
+              ) || 0
+            )}
           </div>
           <div className="text-[14px] font-normal text-sofia-superDark">
             Minutos de audio
@@ -107,9 +113,8 @@ export const UserInfoPanel = ({ conversation }: UserInfoPanelProps) => {
             </div>
           </div>
         ))} */}
-
-      {/* Ítem de integración */}
-      {/* <div className="flex items-center gap-2">
+        {/* Ítem de integración */}
+        {/* <div className="flex items-center gap-2">
           <img
             src="/mvp/messenger.svg"
             alt="messenger"
@@ -124,6 +129,7 @@ export const UserInfoPanel = ({ conversation }: UserInfoPanelProps) => {
             </div>
           </div>
         </div> */}
+      </div>
     </div>
     // </div>
   );

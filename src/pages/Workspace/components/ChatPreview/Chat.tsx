@@ -21,6 +21,7 @@ const transformMessage = (message: IMessage): ConversationResponseMessage => ({
   audio: message.audio || null,
   images: message.images || null,
   type: message.type,
+  time: Date.now(),
 });
 
 const Chat = ({ config, conversation }: ChatProps) => {
