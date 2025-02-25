@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, HTMLAttributes } from "react";
 import { RiArrowUpDownFill } from "react-icons/ri";
 
 interface Column {
@@ -9,27 +9,27 @@ interface Column {
   hidden?: boolean;
 }
 
-interface TableHeaderProps {
+interface TableHeaderProps extends HTMLAttributes<HTMLTableSectionElement> {
   columns: Column[];
   onSort?: (key: string) => void;
 }
 
-const TableHeader: FC<TableHeaderProps> = ({ columns, onSort }) => {
+const TableHeader: FC<TableHeaderProps> = ({ columns, onSort, ...props }) => {
   return (
-    <thead>
-      <tr className="h-[60px] text-[14px] border-b-[1px] bg-gray-50">
+    <thead {...props}>
+      <tr className="h-[36px] text-[16px]">
         {columns.map(
           column =>
             !column.hidden && (
               <th
                 key={column.key}
-                className={`${column.width || ""} text-left px-4 font-poppinsMedium text-[#212121]`}
+                className={`${column.width || ""} text-left px-4 text-sofia-superDark font-normal`}
               >
-                <div className="flex items-center gap-2">
-                  {column.label}
+                <div className="flex gap-[10px] items-center">
+                  <p>{column.label}</p>
                   {column.sortable && onSort && (
                     <button onClick={() => onSort(column.key)}>
-                      <RiArrowUpDownFill className="text-gray-400" />
+                      <RiArrowUpDownFill className="text-[#A6A8AB] cursor-pointer hover:text-sofia-superDark" />
                     </button>
                   )}
                 </div>

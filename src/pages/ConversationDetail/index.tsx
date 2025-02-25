@@ -95,7 +95,10 @@ const useConversationDetail = (
         if (!prev) return null;
         return {
           ...prev,
-          messages: [...prev.messages, normalizedLastMessage],
+          messages: [
+            ...prev.messages,
+            { ...normalizedLastMessage, time: Date.now() },
+          ],
         };
       });
     }

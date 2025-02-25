@@ -17,6 +17,7 @@ export const transformMessageToConversationMessage = (
   type: message.sender === "user" ? MessageType.USER : MessageType.AGENT,
   audio: null,
   images: message.images || null,
+  time: Date.now(),
 });
 
 export const ChatHistory = ({ messages }: ChatHistoryProps) => {

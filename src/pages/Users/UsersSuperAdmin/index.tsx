@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { deleteGlobalUser, getGlobalUsers } from "@services/user";
 import Table from "@components/Card/Table";
 import TableHeader from "@components/Card/TableHeader";
-import CardItem from "@components/Card/CardItem";
+import TableBody from "@components/Card/TableBody";
 import { IUserApi } from "../UsersOrganization";
 import PageContainer from "@components/PageContainer";
 import CreateUserModal from "./CreateUserModal";
@@ -34,13 +34,13 @@ const UserRow = ({
   onEdit: (userId: number) => void;
 }) => (
   <tr className="h-[60px] text-[14px] border-b-[1px] hover:bg-gray-50">
-    <CardItem>{user.email}</CardItem>
-    <CardItem>{user.first_name || "-"}</CardItem>
-    <CardItem>{user.last_name || "-"}</CardItem>
-    <CardItem>
+    <td className="px-4 py-2">{user.email}</td>
+    <td className="px-4 py-2">{user.first_name || "-"}</td>
+    <td className="px-4 py-2">{user.last_name || "-"}</td>
+    <td className="px-4 py-2">
       {user.userOrganizations.map(org => org.role).join(", ")}
-    </CardItem>
-    <CardItem>
+    </td>
+    <td className="px-4 py-2">
       <span
         className={`px-2 py-1 rounded-full text-xs ${
           user.email_verified
@@ -50,13 +50,13 @@ const UserRow = ({
       >
         {user.email_verified ? "Verificado" : "No Verificado"}
       </span>
-    </CardItem>
-    <CardItem>
+    </td>
+    <td className="px-4 py-2">
       {user.last_login
         ? new Date(user.last_login).toLocaleDateString()
         : "Nunca"}
-    </CardItem>
-    <CardItem>
+    </td>
+    <td className="px-4 py-2">
       <div className="flex gap-2">
         <button
           className="text-blue-600 hover:text-blue-800"
@@ -71,7 +71,7 @@ const UserRow = ({
           Eliminar
         </button>
       </div>
-    </CardItem>
+    </td>
   </tr>
 );
 
@@ -153,7 +153,7 @@ const UsersSuperAdmin = () => {
     >
       <Table>
         <TableHeader columns={columns} />
-        <tbody>
+        <TableBody>
           {users.map(user => (
             <UserRow
               key={user.id}
@@ -162,7 +162,7 @@ const UsersSuperAdmin = () => {
               onEdit={handleEdit} // Pasa la función de edición
             />
           ))}
-        </tbody>
+        </TableBody>
       </Table>
     </PageContainer>
   );
