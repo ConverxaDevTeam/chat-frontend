@@ -7,7 +7,7 @@ import ModalCreateOrganization from "./ModalCreateUser";
 import { useForm } from "react-hook-form";
 import { getUserMyOrganization } from "@services/user";
 import { IUserApi } from "../Users/UsersOrganization";
-import { FiPlus } from "react-icons/fi";
+import { FiChevronLeft, FiChevronRight, FiPlus } from "react-icons/fi";
 import { useAlertContext } from "@components/Diagrams/components/AlertContext";
 import { IOrganization } from "@interfaces/organization.interface";
 
@@ -185,8 +185,11 @@ const useHandles = (
   };
 };
 
+const ITEMS_PER_PAGE = 8;
+
 const Organizations = () => {
   const { organizations, loading, getAllOrganizations } = useOrganizations();
+  const [currentPage, setCurrentPage] = useState<number>(1);
   const { users, getUsers } = useUsers();
   const { isModalOpen, setIsModalOpen } = useModals();
   const {
@@ -207,6 +210,24 @@ const Organizations = () => {
       reset({ owner_id: selectedOrg.owner?.user.id || 0 });
     }
   }, [selectedOrg, isModalOpen, reset]);
+  
+  useEffect(() => {
+    const newTotalPages = Math.ceil(organizations.length / ITEMS_PER_PAGE);
+    if (currentPage > newTotalPages) {
+      setCurrentPage(newTotalPages === 0 ? 1 : newTotalPages);
+    }
+  }, [organizations, currentPage]);
+
+  const totalPages = Math.ceil(organizations.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const endIndex = startIndex + ITEMS_PER_PAGE;
+  const currentOrganizations = organizations.slice(startIndex, endIndex);
+
+  const goToPage = (pageNumber: number) => {
+    if (pageNumber >= 1 && pageNumber <= totalPages) {
+      setCurrentPage(pageNumber);
+    }
+  };
 
   return (
     <>
@@ -236,7 +257,7 @@ const Organizations = () => {
           <Loading />
         ) : (
           <OrganizationList
-            organizations={organizations}
+            organizations={currentOrganizations}
             onEdit={organization => {
               setSelectedOrg(organization);
               setIsModalOpen(true);
@@ -245,6 +266,39 @@ const Organizations = () => {
           />
         )}
       </div>
+      {totalPages > 1 && (
+              <div className="flex items-center justify-center gap-2 mt-4">
+                <button
+                  className="px-3 py-1 border rounded disabled:opacity-50"
+                  onClick={() => goToPage(currentPage - 1)}
+                  disabled={currentPage === 1}
+                >
+                  <FiChevronLeft />
+                </button>
+
+                {Array.from({ length: totalPages }, (_, index) => index + 1).map(
+                  pageNum => (
+                    <button
+                      key={pageNum}
+                      onClick={() => goToPage(pageNum)}
+                      className={`px-3 py-1 border rounded ${
+                        pageNum === currentPage ? "bg-gray-300" : ""
+                      }`}
+                    >
+                      {pageNum}
+                    </button>
+                  )
+                )}
+
+                <button
+                  className="px-3 py-1 border rounded disabled:opacity-50"
+                  onClick={() => goToPage(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                >
+                  <FiChevronRight/>
+                </button>
+              </div>
+            )}
     </>
   );
 };
