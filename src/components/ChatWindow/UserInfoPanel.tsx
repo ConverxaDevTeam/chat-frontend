@@ -87,8 +87,11 @@ export const UserInfoPanel = ({ conversation }: UserInfoPanelProps) => {
         </div>
       </div>
 
+      <div className="text-center text-gray-500">
+        No hay información disponible.
+      </div>
       {/* Lista de información */}
-      <div className="space-y-4">
+      {/* <div className="space-y-4">
         {infoItems.map((item, index) => (
           <div key={index} className="flex items-center gap-2">
             <div className="flex w-[32px] h-[32px] p-[5px_2px] flex-col justify-center items-center rounded-[24px] border border-sofia-superDark bg-sofia-celeste">
@@ -103,10 +106,10 @@ export const UserInfoPanel = ({ conversation }: UserInfoPanelProps) => {
               </div>
             </div>
           </div>
-        ))}
+        ))} */}
 
-        {/* Ítem de integración */}
-        <div className="flex items-center gap-2">
+      {/* Ítem de integración */}
+      {/* <div className="flex items-center gap-2">
           <img
             src="/mvp/messenger.svg"
             alt="messenger"
@@ -120,8 +123,8 @@ export const UserInfoPanel = ({ conversation }: UserInfoPanelProps) => {
               jesus_mtz
             </div>
           </div>
-        </div>
-      </div>
+        </div> */}
     </div>
+    // </div>
   );
 };
