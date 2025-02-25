@@ -35,7 +35,7 @@ export const TestFunctionModal = ({
       if ("error" in responseData) {
         setTestResponse({
           status: (responseData?.error as { status: number })?.status || 500,
-          data: (responseData?.error as { message: string })?.message,
+          data: responseData
         });
         return;
       }

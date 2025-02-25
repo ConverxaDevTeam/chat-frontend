@@ -131,6 +131,14 @@ export const apiUrls = {
   analytics: {
     base: () => `/api/analytics`,
   },
+  notifications: {
+    base: () => `/api/notifications`,
+    byId: (id: number) => `/api/notifications/${id}`,
+    read: (id: number) => `/api/notifications/${id}/read`,
+    readAll: () => `/api/notifications/read-all`,
+    byOrganization: (organizationId: number) =>
+      `/api/notifications/organization/${organizationId}`,
+  },
 } as const;
 
 export const tokenAccess = {

@@ -196,3 +196,20 @@ export const formatDateOrTime = (dateISO: string): string => {
   const year = date.getFullYear();
   return `${month}/${day}/${year}`;
 };
+
+export const formatDateWithWeekday = (dateISO: string): string => {
+  const date = new Date(dateISO);
+  const weekdays = [
+    "Domingo",
+    "Lunes",
+    "Martes",
+    "Miércoles",
+    "Jueves",
+    "Viernes",
+    "Sábado",
+  ];
+  const day = date.getDate();
+  const month = date.getMonth() + 1;
+  const year = date.getFullYear();
+  return `${weekdays[date.getDay()]} ${month}/${day}/${year}`;
+};

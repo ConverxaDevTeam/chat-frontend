@@ -66,7 +66,7 @@ const CreateUserModal = ({
     <Modal
       isShown={isOpen}
       onClose={onClose}
-      header={<h2 className="text-xl font-bold">Nuevo Usuario</h2>}
+      header={<h2 className="text-xl font-bold w-[550px]">Nuevo Usuario</h2>}
     >
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <InputGroup label="Email" errors={errors.email}>
@@ -80,7 +80,7 @@ const CreateUserModal = ({
               },
             })}
             disabled={isSubmitting || !!email}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+            className="w-full p-3 border text-gray-700 text-[14px] rounded-lg"
           />
         </InputGroup>
         <InputGroup label="Rol" errors={errors.role}>
@@ -102,6 +102,7 @@ const CreateUserModal = ({
         )}
         <div className="flex justify-end gap-2">
           <Button type="submit" disabled={isSubmitting} variant="primary">
+
             {isSubmitting
               ? "Creando..."
               : email
