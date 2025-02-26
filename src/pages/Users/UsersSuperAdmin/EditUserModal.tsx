@@ -77,14 +77,14 @@ const EditUserModal = ({
       header={<h2 className="text-xl font-bold">Editar Usuario</h2>}
     >
       <Fragment>
-        <div className="space-y-4">
+        <div className="space-y-4 w-[518px]">
           <InputGroup label="Email">
             <Input
               type="email"
               value={email}
               onChange={e => setEmail(e.target.value)}
             />
-          </InputGroup>
+          </InputGroup> 
 
           <div className="flex justify-between items-center">
             <h3 className="text-lg font-medium">Roles</h3>
@@ -133,7 +133,7 @@ const EditUserModal = ({
 
           <div className="flex justify-end gap-2">
             <Button type="button" onClick={handleSave} variant="primary">
-              Guardar Cambios
+              Guardar cambios
             </Button>
           </div>
         </div>

@@ -130,7 +130,7 @@ const UsersSuperAdmin = () => {
   return (
     <PageContainer
       title="Usuarios"
-      buttonText="Nuevo Usuario"
+      buttonText="+ Nuevo usuario"
       onButtonClick={() => setIsCreateModalOpen(true)}
       loading={loading}
       appends={

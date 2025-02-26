@@ -325,7 +325,7 @@ export function AuthenticatorModal({
         isShown={show}
         onClose={onClose}
         header={
-          <div className="flex justify-between items-center">
+          <div className="flex justify-between items-center w-[518px]">
             <h2 className="text-lg font-semibold">Gestión de Autenticadores</h2>
           </div>
         }

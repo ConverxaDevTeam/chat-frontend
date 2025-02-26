@@ -52,7 +52,7 @@ const DepartmentModal: FC<DepartmentModalProps> = ({
         ? await updateDepartment(department.id, data.name, data.description)
         : await createDepartment(organizationId, data.name, data.description);
 
-      onSuccess(result);
+      onSuccess({ ...department, ...result });
       toast.success(
         `Departamento ${department ? "actualizado" : "creado"} exitosamente`
       );
@@ -124,10 +124,11 @@ const DepartmentModal: FC<DepartmentModalProps> = ({
             <label className="block text-gray-700 font-semibold mb-2">
               Descripción
             </label>
-            <input
-              className="w-full p-3 border text-gray-400 rounded-lg cursor-not-allowed mb-2"
-              placeholder="Descripción"
-              disabled
+            <textarea
+              {...register("description")}
+              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-1"
+              rows={4}
+              placeholder="Ingrese una descripción para el departamento"
             />
           </div>
           <div className="flex justify-end gap-2">

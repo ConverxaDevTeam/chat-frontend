@@ -1,5 +1,4 @@
 import { ConversationDetailResponse } from "@interfaces/conversation";
-
 import { Avatar } from "./Avatar";
 import { formatTime } from "@utils/format";
 

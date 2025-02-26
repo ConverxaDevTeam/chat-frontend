@@ -51,7 +51,7 @@ const UsersOrganization = () => {
   };
 
   const handleDelete = () => {
-    toast.error("Esta función no está disponible en este momento", {
+    toast.error("No tienes permisos para realizar esta acción", {
       position: "top-right",
       autoClose: 3000
     });
