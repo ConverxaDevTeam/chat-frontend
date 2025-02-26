@@ -27,6 +27,7 @@ const NewIntegration = ({
         />
         <ButtonSlackIntegration
           departmentId={departmentId}
+          getDataIntegrations={getDataIntegrations}
           close={() => setIsMenuVisible(false)}
         />
       </div>
