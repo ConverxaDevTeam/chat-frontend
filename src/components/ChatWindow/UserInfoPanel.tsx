@@ -131,7 +131,6 @@ export const UserInfoPanel = ({ conversation }: UserInfoPanelProps) => {
         </div> */}
 
       </div>
-    </div>
     // </div>
   );
 };

@@ -60,18 +60,18 @@ const DepartmentCard: FC<DepartmentCardProps> = ({
         </p>
       </div>
 
-      <div className="flex justify-center gap-4 mt-4">
+      <div className="flex flex-col sm:flex-row justify-center gap-2 sm:gap-4 mt-4">
         <button
           onClick={handleDelete}
           className="w-full px-4 py-1 text-gray-500 border-2 rounded-md text-sm font-semibold"
         >
-          <span className="hidden sm:block">Eliminar</span>
+          Eliminar
         </button>
         <button
           onClick={onUpdate}
           className="w-full px-4 py-1 bg-sofia-electricGreen text-gray-900 rounded-md text-sm font-semibold hover:bg-opacity-50 transition-all"
         >
-          <span className="hidden sm:block">Editar</span>
+          Editar
         </button>
       </div>
     </div>

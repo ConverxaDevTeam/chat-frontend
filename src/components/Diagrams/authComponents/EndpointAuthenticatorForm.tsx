@@ -75,10 +75,10 @@ export const EndpointAuthenticatorForm = ({
       {params && onUpdateParam && (
         <div className="space-y-4 mt-4">
           <div className="flex justify-between items-center">
-            <h3 className="text-lg font-medium">Parámetros</h3>
+            <h3 className="text-lg font-semibold">Parámetros</h3>
           </div>
           {params.map((param, index) => (
-            <div key={index} className="flex gap-2 items-start">
+            <div key={index} className="grid grid-cols-2 gap-3 w-full">
               <InputGroup label="Parámetro">
                 <Input
                   placeholder="Nombre del parámetro"
