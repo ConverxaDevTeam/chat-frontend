@@ -106,15 +106,12 @@ const NotificationsFooter = ({
 }: {
   onMarkAllAsRead: () => void;
 }) => (
-  <div className="flex justify-between items-center py-[15px]">
+  <div className="flex justify-end items-center py-[15px]">
     <button
       onClick={onMarkAllAsRead}
       className="text-sofia-superDark text-xs font-normal underline underline-offset-auto underline-from-font hover:underline"
     >
       Marcar todas como leídas
-    </button>
-    <button className="text-sofia-blancoPuro text-[12px] font-bold leading-6 bg-sofia-superDark hover:bg-[#E5E7EB] py-2 px-4 rounded-lg">
-      Ver todas
     </button>
   </div>
 );
