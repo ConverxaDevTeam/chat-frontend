@@ -47,6 +47,12 @@ interface UserInfoPanelProps {
 // ];
 
 export const UserInfoPanel = ({ conversation }: UserInfoPanelProps) => {
+  const totalTime = conversation?.messages.reduce(
+    (total, message) => total + (message.time || 0),
+    0
+  ) || 0;
+  const formattedTime = formatTime(totalTime);
+
   return (
     <div className="w-full h-full flex-shrink-0 rounded-lg border border-app-lightGray bg-sofia-blancoPuro p-[13px]">
       {/* Header verde */}
@@ -70,22 +76,19 @@ export const UserInfoPanel = ({ conversation }: UserInfoPanelProps) => {
 
       {/* Contadores */}
       <div className="flex justify-between mb-4">
-        <div className="text-center">
-          <div className="text-[32px] font-bold text-sofia-superDark">
+        <div className="text-center w-1/2 px-2">
+          <div className="text-[32px] font-bold text-sofia-superDark truncate">
             {conversation?.messages.length}
           </div>
           <div className="text-[14px] font-normal text-sofia-superDark">
             Mensajes Totales
           </div>
         </div>
-        <div className="text-center">
-          <div className="text-[32px] font-bold text-sofia-superDark">
-            {formatTime(
-              conversation?.messages.reduce(
-                (total, message) => total + (message.time || 0),
-                0
-              ) || 0
-            )}
+        <div className="text-center w-1/2 px-2">
+          <div className="group relative">
+            <div className="text-[32px] font-bold text-sofia-superDark truncate group-hover:cursor-pointer" title={formattedTime}>
+              {formattedTime}
+            </div>
           </div>
           <div className="text-[14px] font-normal text-sofia-superDark">
             Minutos de audio
