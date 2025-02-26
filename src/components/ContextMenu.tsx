@@ -137,8 +137,8 @@ const MenuDivider = () => (
 
 // Componente para envolver items del menú
 const MenuItem: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <div className="flex justify-center items-center gap-2.5 self-stretch rounded hover:bg-sofia-celeste cursor-pointer">
-    <div className="px-1 py-0.5 w-full">{children}</div>
+  <div className="flex justify-center items-center gap-3 self-stretch rounded hover:bg-[#DBEAF2] cursor-pointer">
+    <div className="px-1 py-1 w-full">{children}</div>
   </div>
 );
 
@@ -188,7 +188,8 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
   return createPortal(
     <div
       ref={menuRef}
-      className="absolute inline-flex flex-col items-start p-[16px] gap-2 rounded-md border-2 border-sofia-darkBlue bg-sofia-blancoPuro"
+      data-menu-id={menuId}
+      className="fixed flex flex-col p-[16px] gap-3 items-start rounded-lg border-2 border-sofia-darkBlue bg-sofia-blancoPuro min-w-[200px] whitespace-nowrap"
       style={{
         left: x,
         top: y,

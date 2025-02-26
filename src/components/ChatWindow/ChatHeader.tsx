@@ -6,6 +6,7 @@ interface ChatHeaderProps {
   searchTerm: string;
   onSearchChange: (value: string) => void;
   onMenuClick: (e: React.MouseEvent) => void;
+  onConversationsClick?: () => void;
 }
 
 export const ChatHeader = ({
@@ -14,10 +15,17 @@ export const ChatHeader = ({
   searchTerm,
   onSearchChange,
   onMenuClick,
+  onConversationsClick,
 }: ChatHeaderProps) => {
   return (
-    <div className="h-[89px] flex-shrink-0 border-t border-r border-b border-app-lightGray bg-sofia-electricOlive rounded-tr-lg">
-      <div className="flex items-center p-4 gap-3">
+    <div className="h-[89px] flex-shrink-0 border-t border-r border-b border-app-lightGray bg-sofia-electricOlive rounded-tr-lg overflow-x-auto">
+      <div className="flex items-center p-4 gap-3 min-w-fit">
+        <button
+          onClick={onConversationsClick}
+          className="md:hidden w-8 h-8 flex items-center justify-center bg-sofia-blancoPuro rounded-lg"
+        >
+          <img src="/mvp/chevron-down.svg" alt="Ver conversaciones" className="w-5 h-5" />
+        </button>
         <Avatar avatar={avatar} secret={secret} className="flex-none" />
         <div className="max-w-[calc(50%-3rem)] flex flex-col items-start">
           <h3 className="self-stretch text-sofia-superDark text-xl font-semibold truncate">

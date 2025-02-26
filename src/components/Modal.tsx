@@ -59,7 +59,7 @@ const Modal: React.FC<ModalProps> = ({
                 <hr className="border-t border-gray-300 mb-4" />
               </Fragment>
             )}
-            <div className="w-full space-y-4 mt-7 flex flex-col">
+            <div className="w-full space-y-4 flex flex-col max-h-[calc(100vh-200px)] overflow-y-auto">
               {children}
             </div>
             {footer && <footer className="mt-4">{footer}</footer>}
