@@ -217,6 +217,7 @@ const ConversationDetail = () => {
   const organizationId = useAppSelector(
     state => state.auth.selectOrganizationId
   );
+  const [showDrawer, setShowDrawer] = useState(false);
 
   const { conversationsList } = useConversationList(organizationId, id);
   const { conversation, messagesEndRef, getConversationDetailById } =
@@ -240,6 +241,28 @@ const ConversationDetail = () => {
   }
 
   return (
+    <div className="w-full h-full relative">
+      {/* Drawer de conversaciones en mobile */}
+      <div 
+        className={`fixed md:hidden inset-0 bg-black bg-opacity-50 z-20 transition-opacity duration-300 ${
+          showDrawer ? 'opacity-100' : 'opacity-0 pointer-events-none'
+        }`}
+        onClick={() => setShowDrawer(false)}
+      />
+      <div 
+        className={`fixed md:hidden left-0 top-0 h-full w-[345px] bg-white z-30 transform transition-transform duration-300 ease-in-out ${
+          showDrawer ? 'translate-x-0' : '-translate-x-full'
+        }`}
+      >
+        <ConversationsList
+          conversations={conversationsList}
+          onSelectConversation={(userId) => {
+            handleSelectConversation(userId);
+            setShowDrawer(false);
+          }}
+          selectedId={Number(id)}
+        />
+      </div>
     <div className="w-full h-full grid grid-cols-[minmax(0,1fr)] md:grid-cols-[345px,minmax(0,1fr)] xl:grid-cols-[345px,minmax(0,1fr),248px]">
       {showContextMenu.show && conversation && (
         <ConversationContextMenu
@@ -280,6 +303,7 @@ const ConversationDetail = () => {
               y: e.clientY,
             });
           }}
+          onConversationsClick={() => setShowDrawer(true)}
         />
 
         {/* Chat Content */}
@@ -311,6 +335,7 @@ const ConversationDetail = () => {
       {/* Right Column - User Info */}
       <div className="hidden xl:block ml-4">
         <UserInfoPanel conversation={conversation} />
+      </div>
       </div>
     </div>
   );

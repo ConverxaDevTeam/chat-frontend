@@ -67,6 +67,7 @@ const TabsCarousel = ({
     [IntegrationType.MESSENGER]: "Messenger",
     [IntegrationType.CHAT_WEB]: "Chat Web",
     [IntegrationType.SLACK]: "Slack",
+    [IntegrationType.MESSENGER_MANUAL]: "Messenger",
   };
 
   return (

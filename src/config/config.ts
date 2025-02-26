@@ -47,12 +47,35 @@ export const apiUrls = {
     integrationId: number
   ) =>
     `/api/integration/get-channel-name/${departmentId}/${organizationId}/${integrationId}`,
+  updateIntegrationMessangerManual: (
+    departmentId: number,
+    organizationId: number,
+    integrationId: number
+  ) =>
+    `/api/integration/update-messenger-manual/${departmentId}/${organizationId}/${integrationId}`,
+  getIntegrationMessangerManual: (
+    departmentId: number,
+    organizationId: number,
+    integrationId: number
+  ) =>
+    `/api/integration/get-messenger-manual/${departmentId}/${organizationId}/${integrationId}`,
+  changeCodeIntegrationMessengerManual: (
+    departmentId: number,
+    organizationId: number,
+    integrationId: number
+  ) =>
+    `/api/integration/change-messenger-manual-code/${departmentId}/${organizationId}/${integrationId}`,
   changeChannelName: (
     departmentId: number,
     organizationId: number,
     integrationId: number
   ) =>
     `/api/integration/change-channel-name/${departmentId}/${organizationId}/${integrationId}`,
+  createIntegrationMessagerManual: (
+    departmentId: number,
+    organizationId: number
+  ) =>
+    `/api/integration/create-messager-manual/${organizationId}/${departmentId}`,
   //conversations
   getConversationsByOrganizationId: (organizationId: number) =>
     `/api/conversation/organization/${organizationId}`,

@@ -290,14 +290,16 @@ const UserActions = ({
 }) => {
   return (
     <div
-      className={`flex gap-[8px] items-center ${mobileResolution ? "ml-auto" : ""}`}
+      className={`flex gap-[8px] items-center ${mobileResolution ? "self-end" : ""}`}
     >
-      <p className="text-sofia-superDark font-normal text-[14px] mr-3">
+      <p className={`text-sofia-superDark font-normal text-[14px] ${
+          mobileResolution ? "" : "mr-3"
+        }`}>
         {user?.email}
       </p>
       <div
         className={`bg-white  border border-gray-300 shadow-sm border-inherit max-w-[148px] h-[36px] relative rounded-lg flex justify-between items-center gap- p-3 cursor-pointer ${
-          mobileResolution ? "w-full" : "w-[200px]"
+          mobileResolution ? "w-full gap-3" : "w-[200px]"
         }`}
       >
         <NotificationsMenu
@@ -343,25 +345,25 @@ const Navbar = ({ mobileResolution }: NavbarProps) => {
 
   return (
     <div
-      className={`w-full ${mobileResolution ? "mt-[10px] h-[80px]" : "mt-[20px] h-[36px]"}`}
+      className={`w-full ${mobileResolution ? "mt-[10px]" : "mt-[20px]"} h-auto`}
     >
       <div
         style={{
           width: "100%",
         }}
-        className={`flex ${mobileResolution ? "flex-col  h-[100px] p-[10px]" : "h-[36px]"}  justify-between items-center `}
+        className={`flex flex-col gap-4 lg:gap-0 lg:flex-row justify-between items-start lg:items-center`}
       >
-        <div className="flex md:flex-row flex-col items-start md:items-center gap-7 w-full">
-          <Breadcrumb breadcrumbItems={breadcrumbItems} />
-          <div
-            className={`flex gap-[24px] items-center ${mobileResolution ? "w-full" : ""}`}
-          >
+        <div className="flex flex-col md:flex-col lg:flex-row items-start lg:items-center gap-4 w-full">
+          <div className={`${mobileResolution ? "" : "block"} order-1 lg:order-none`}>
+            <Breadcrumb breadcrumbItems={breadcrumbItems} />
+          </div>
+          <div className={`flex gap-[24px] items-center w-full md:w-auto order-1 lg:order-none`}>
             <SelectOrganization mobileResolution={mobileResolution} />
             <SelectDepartment mobileResolution={mobileResolution} />
           </div>
         </div>
         <div
-          className={`flex gap-[8px] items-center ${mobileResolution ? "ml-auto" : ""}`}
+          className={`flex gap-[8px] items-center ${mobileResolution ? "ml-auto " : ""}`}
         >
           <UserActions
             user={user}

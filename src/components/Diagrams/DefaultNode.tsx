@@ -18,25 +18,6 @@ interface CustomNodeProps extends NodeProps {
   contextMenuVersion?: "v1" | "v2";
 }
 
-interface NodeLabelProps {
-  name: string;
-  selected?: boolean;
-}
-
-const NodeLabel: React.FC<NodeLabelProps> = ({ name, selected }) => {
-  if (selected) return null;
-
-  return (
-    <div className="absolute top-[116px] left-1/2 -translate-x-1/2 z-10">
-      <div className="w-[100px] text-center">
-        <p className="text-center text-xs font-normal text-sofia-superDark line-clamp-2 overflow-hidden">
-          {name}
-        </p>
-      </div>
-    </div>
-  );
-};
-
 const NodeHandles: React.FC<{
   allowedConnections: ("source" | "target")[];
 }> = ({ allowedConnections }) => (
@@ -172,7 +153,8 @@ const DefaultNode: React.FC<CustomNodeProps> = ({
     | undefined
   >();
 
-  const { name, description, style } = data;
+  const { name, description } = data;
+  const style: NodeStyle = data.style || NodeStyle.NEUMORPHIC;
 
   useEffect(() => {
     if (ref.current) {
@@ -226,7 +208,22 @@ const DefaultNode: React.FC<CustomNodeProps> = ({
   return (
     <div className="relative" ref={ref}>
       {style !== NodeStyle.SMALL && (
-        <NodeLabel name={name} selected={selected} />
+        <div
+          className={`
+            absolute
+            left-1/2
+            -translate-x-1/2
+            z-10
+            ${style === NodeStyle.CENTRAL ? "top-[108px]" : ""}
+            ${style === NodeStyle.NEUMORPHIC ? "top-[124px]" : ""}
+          `}
+        >
+          <div className="w-[100px] text-center">
+            <p className="text-xs font-normal text-sofia-superDark line-clamp-2 overflow-hidden">
+              {name}
+            </p>
+          </div>
+        </div>
       )}
       {(() => {
         switch (style) {

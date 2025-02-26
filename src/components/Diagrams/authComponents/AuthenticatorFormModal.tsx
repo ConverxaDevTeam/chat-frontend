@@ -301,9 +301,11 @@ const AuthenticatorFormModal = ({
       isShown={isShown}
       onClose={handleClose}
       header={
-        <h2 className="text-lg font-medium">
-          {initialData ? "Editar Autenticador" : "Crear Autenticador"}
-        </h2>
+        <div className="w-[518px]">
+          <h2 className="text-lg font-semibold">
+            {initialData ? "Editar Autenticador" : "Crear Autenticador"}
+          </h2>
+        </div>
       }
     >
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -334,15 +336,8 @@ const AuthenticatorFormModal = ({
 
         <div className="flex justify-end gap-2">
           <button
-            type="button"
-            onClick={handleClose}
-            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
-          >
-            Cancelar
-          </button>
-          <button
             type="submit"
-            className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700"
+            className="w-full px-4 py-3 bg-sofia-electricGreen text-gray-900 rounded-md text-sm font-semibold hover:bg-opacity-50 transition-all"
           >
             {initialData ? "Actualizar" : "Crear"}
           </button>

@@ -41,7 +41,8 @@ const Conversations = () => {
       >
         <p className="text-[14px] text-sofia-superDark">Ver todos los chats</p>
       </button>
-      <div className="w-full border-spacing-0 mb-[16px]">
+      <div className="w-full overflow-x-auto">
+        <div className="w-full min-w-[900px] border-spacing-0 mb-[16px]">
         <div className="h-[36px] text-[16px] flex">
           <div className="w-[calc(100%/19*2)]">
             <div className="flex gap-[10px] items-center pl-[16px]">
@@ -102,6 +103,7 @@ const Conversations = () => {
       >
         <p className="text-[14px] text-white">Exportar todos</p>
       </button>
+    </div>
     </div>
   );
 };
