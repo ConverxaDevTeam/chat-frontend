@@ -271,3 +271,144 @@ export const changeChannelName = async (
     return false;
   }
 };
+
+export const createIntegrationMessagerManual = async (
+  departmentId: number,
+  organizationId: number
+) => {
+  try {
+    const response = await axiosInstance.post(
+      apiUrls.createIntegrationMessagerManual(departmentId, organizationId),
+      {}
+    );
+    if (response.data.ok) {
+      return true;
+    } else {
+      return false;
+    }
+  } catch (error) {
+    let message = "Error inesperado";
+    if (axios.isAxiosError(error)) {
+      if (error.response) {
+        message =
+          error.response.data?.message || "Error inesperado del servidor";
+      } else if (error.request) {
+        message = "No se pudo conectar con el servidor";
+      } else {
+        message = error.message;
+      }
+    }
+    alertError(message);
+    return false;
+  }
+};
+
+export const getIntegrationMessangerManual = async (
+  departmentId: number,
+  selectOrganizationId: number,
+  integrationId: number
+) => {
+  try {
+    const response = await axiosInstance.get(
+      apiUrls.getIntegrationMessangerManual(
+        departmentId,
+        selectOrganizationId,
+        integrationId
+      )
+    );
+    if (response.data.ok) {
+      return response.data.integration;
+    } else {
+      alertError(response.data.message);
+      return null;
+    }
+  } catch (error) {
+    let message = "Error inesperado";
+    if (axios.isAxiosError(error)) {
+      if (error.response) {
+        message =
+          error.response.data?.message || "Error inesperado del servidor";
+      } else if (error.request) {
+        message = "No se pudo conectar con el servidor";
+      } else {
+        message = error.message;
+      }
+    }
+    alertError(message);
+    return null;
+  }
+};
+
+export const changeCodeIntegrationMessengerManual = async (
+  departmentId: number,
+  organizationId: number,
+  integrationId: number
+) => {
+  try {
+    const response = await axiosInstance.post(
+      apiUrls.changeCodeIntegrationMessengerManual(
+        departmentId,
+        organizationId,
+        integrationId
+      ),
+      {}
+    );
+    if (response.data.ok) {
+      return response.data.code_webhook;
+    } else {
+      return null;
+    }
+  } catch (error) {
+    let message = "Error inesperado";
+    if (axios.isAxiosError(error)) {
+      if (error.response) {
+        message =
+          error.response.data?.message || "Error inesperado del servidor";
+      } else if (error.request) {
+        message = "No se pudo conectar con el servidor";
+      } else {
+        message = error.message;
+      }
+    }
+    alertError(message);
+    return null;
+  }
+};
+
+export const updateIntegrationMessangerManual = async (
+  departmentId: number,
+  selectOrganizationId: number,
+  integrationId: number,
+  pageId: string,
+  token: string
+) => {
+  try {
+    const response = await axiosInstance.post(
+      apiUrls.updateIntegrationMessangerManual(
+        departmentId,
+        selectOrganizationId,
+        integrationId
+      ),
+      { page_id: pageId, token: token }
+    );
+
+    if (response.data.ok) {
+      return true;
+    }
+    return false;
+  } catch (error) {
+    let message = "Error inesperado";
+    if (axios.isAxiosError(error)) {
+      if (error.response) {
+        message =
+          error.response.data?.message || "Error inesperado del servidor";
+      } else if (error.request) {
+        message = "No se pudo conectar con el servidor";
+      } else {
+        message = error.message;
+      }
+    }
+    alertError(message);
+    return false;
+  }
+};
