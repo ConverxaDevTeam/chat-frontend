@@ -145,7 +145,7 @@ const MessengerManualIntegration: React.FC<MessengerManualIntegrationProps> = ({
                 Codigo de webhook
               </label>
               <p
-                className={`text-[12px] bg-sofia-superDark py-[2px] px-[8px] rounded-lg ${
+                className={`text-[12px] text-sofia-superDark py-[2px] px-[8px] rounded-lg ${
                   info.validated_webhook ? "bg-green-300" : "bg-red-300"
                 }`}
               >
