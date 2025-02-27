@@ -3,19 +3,24 @@ import { createIntegrationWhatsApp } from "@services/facebook";
 import { useSelector } from "react-redux";
 import { RootState } from "@store";
 import { useEffect, useMemo, useState } from "react";
+import Modal from "@components/Modal";
+import { createIntegrationWhatsAppManual } from "@services/integration";
 
 interface ButtonWhatsAppIntegrationProps {
   getDataIntegrations: () => void;
   departmentId: number | null;
+  close: () => void;
 }
 
 const ButtonWhatsAppIntegration = ({
   getDataIntegrations,
   departmentId,
+  close,
 }: ButtonWhatsAppIntegrationProps) => {
   const { selectOrganizationId } = useSelector(
     (state: RootState) => state.auth
   );
+  const [menuIntegracion, setMenuIntegracion] = useState<boolean>(false);
   const [data, setData] = useState<{
     code: string | null;
     phone_number_id: string | null;
@@ -79,9 +84,24 @@ const ButtonWhatsAppIntegration = ({
       );
       if (integration) {
         getDataIntegrations();
+        close();
       }
       // Limpiar datos después de procesar la integración
       setData({ code: null, phone_number_id: null, waba_id: null });
+    }
+  };
+
+  const handleCreateIntegrationWhatsAppManual = async () => {
+    if (!departmentId || !selectOrganizationId) return;
+
+    const response = await createIntegrationWhatsAppManual(
+      departmentId,
+      selectOrganizationId
+    );
+    if (response) {
+      getDataIntegrations();
+      setMenuIntegracion(false);
+      close();
     }
   };
 
@@ -100,11 +120,31 @@ const ButtonWhatsAppIntegration = ({
   }, []);
 
   return (
-    <ButtonIntegracion
-      action={handleConnectFacebook}
-      Icon="whatsapp"
-      text="Whatsapp"
-    />
+    <>
+      <Modal
+        isShown={menuIntegracion}
+        header={<h1>Integración de Messenger</h1>}
+        onClose={() => setMenuIntegracion(false)}
+      >
+        <div className="flex gap-[16px]">
+          <ButtonIntegracion
+            action={handleConnectFacebook}
+            Icon="whatsapp"
+            text="WhatsApp Integración Automática"
+          />
+          <ButtonIntegracion
+            action={handleCreateIntegrationWhatsAppManual}
+            Icon="whatsapp"
+            text="WhatsApp Integración Manual"
+          />
+        </div>
+      </Modal>
+      <ButtonIntegracion
+        action={() => setMenuIntegracion(true)}
+        Icon="whatsapp"
+        text="Whatsapp"
+      />
+    </>
   );
 };
 

@@ -13,6 +13,7 @@ import {
   IOrganization,
   OrganizationType,
 } from "@interfaces/organization.interface";
+import { toast } from "react-toastify";
 
 interface ModalCreateOrganizationProps {
   close: (value: boolean) => void;
@@ -352,29 +353,35 @@ const ModalCreateOrganization = ({
 
   const handleSubmitForm = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (isEditMode) {
-      const editData = {
-        owner_id: Number(data.owner_id),
-        name: data.name,
-        description: data.description,
-        type: data.type,
-      };
-      await editOrganization(organization.id, editData);
-      await getAllOrganizations();
-      close(false);
-    } else {
-      const createData: CreateOrganizationData = {
-        name: data.name,
-        description: data.description,
-        logo: data.logoFile,
-        email: data.email,
-        type: data.type,
-      };
-      const response = await createOrganization(createData);
-      if (response) {
+    try {
+      if (isEditMode) {
+        const editData = {
+          owner_id: Number(data.owner_id),
+          name: data.name,
+          description: data.description,
+          type: data.type,
+        };
+        await editOrganization(organization.id, editData);
         await getAllOrganizations();
+        toast.success("Organización actualizada exitosamente");
         close(false);
+      } else {
+        const createData: CreateOrganizationData = {
+          name: data.name,
+          description: data.description,
+          logo: data.logoFile,
+          email: data.email,
+          type: data.type,
+        };
+        const response = await createOrganization(createData);
+        if (response) {
+          await getAllOrganizations();
+          toast.success("Organización creada exitosamente");
+          close(false);
+        }
       }
+    } catch (error) {
+      toast.error("Ha ocurrido un error. Por favor, inténtalo de nuevo.");
     }
   };
 

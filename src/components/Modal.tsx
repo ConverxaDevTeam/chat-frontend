@@ -21,7 +21,7 @@ const ModalHeader: React.FC<{
       className="absolute top-7 right-7 text-gray-900 hover:text-gray-600 font-semibold"
       aria-label="Cerrar modal"
     >
-      ✕
+      <img src="/mvp/vector-x.svg" alt="Cerrar" />
     </button>
   </div>
 );

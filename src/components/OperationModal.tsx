@@ -14,25 +14,42 @@ const OperationModal: React.FC<OperationModalProps> = ({ isShown, title, text, t
     const modalRoot = document.getElementById("modal");
     if (!modalRoot) return null;
 
+    const imageMapping: Record<"success" | "error", { src: string; alt: string }> = {
+        success: { src: "/mvp/check-circle.svg", alt: "Check circle" },
+        error: { src: "/mvp/triangle-alert.svg", alt: "Alert triangle" },
+    };
+
+    const imageData = type !== "loading" ? imageMapping[type] : null;
+
     return ReactDOM.createPortal(
         <div
-            className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+            className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 transition-opacity duration-300 ease-in-out"
+            style={{ zIndex: 999 }}
             onClick={(e) => {
                 if (onClose && e.target === e.currentTarget && type !== "loading") {
                     onClose();
                 }
             }}
         >
-            <div className="bg-white rounded-xl p-6 w-[500px] shadow-lg text-center">
-                <h2 className="text-xl font-bold mb-4">{title}</h2>
-                <p className="mb-4">{text}</p>
+            <div className="bg-white flex flex-col justify-center items-center rounded-xl p-6 w-[500px] shadow-lg text-center transform transition-all duration-300 ease-in-out animate-modal-open">
+                {imageData && (
+                    <img
+                        src={imageData.src}
+                        alt={imageData.alt}
+                        className="w-[53px] h-[80px]"
+                    />
+                )}
+                <h2 className="text-xl gap-2 font-semibold text-center mb-2">
+                    {title}
+                </h2>
+                <p className="text-center text-gray-600 mb-6">{text}</p>
                 {type !== "loading" && onClose && (
                     <button
                         onClick={onClose}
-                        className="px-4 py-2 bg-sofia-electricGreen font-semibold text-gray-900 rounded-md"
+                        className="w-full mx-auto px-5 py-2 border border-gray-500 rounded-[4px] text-gray-700 hover:bg-gray-100 transition duration-300"
                         aria-label="Cerrar modal"
                     >
-                        Cerrar
+                        Ok
                     </button>
                 )}
                 {type === "loading" && (

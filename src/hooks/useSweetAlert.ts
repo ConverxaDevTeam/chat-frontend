@@ -193,7 +193,7 @@ export const useSweetAlert = () => {
           title: options.successTitle,
           text: options.successText,
           type: "success",
-          autoCloseDelay: 1500,
+          autoCloseDelay: 3000,
         }).then(() => {
           resolve();
         });

@@ -85,7 +85,7 @@ const DepartmentModal: FC<DepartmentModalProps> = ({
           onClick={handleClose}
           className="absolute top-7 right-7 text-gray-900 hover:text-gray-600 font-semibold"
         >
-          ✕
+          <img src="/mvp/vector-x.svg" alt="Cerrar" />
         </button>
         <h2 className="text-xl font-bold mb-4">
           {department ? "Editar" : "Nuevo"} departamento

@@ -25,6 +25,7 @@ export const AgentEditModal = ({
         agentId={agentId}
         initialData={initialData}
         onSuccess={onSuccess}
+        onClose={onClose}
       />
     </Modal>
   );

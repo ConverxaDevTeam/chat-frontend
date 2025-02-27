@@ -34,6 +34,7 @@ interface FunctionFormProps {
   onSuccess?: (data: FunctionData<HttpRequestFunction>) => void;
   isLoading?: boolean;
   agentId?: number;
+  onCancel?: () => void;
 }
 
 const HTTP_METHODS = [
@@ -171,21 +172,31 @@ const FormField = ({
 interface SubmitButtonProps {
   isLoading: boolean;
   isCreating: boolean;
+  onCancel?: () => void;
 }
 
-const SubmitButton = ({ isLoading, isCreating }: SubmitButtonProps) => (
-  <Button
-    type="submit"
-    variant="primary"
-    className="w-full"
-    disabled={isLoading}
-  >
-    {isLoading
-      ? "Guardando..."
-      : isCreating
-        ? "Crear función"
-        : "Actualizar función"}
-  </Button>
+const SubmitButton = ({ isLoading, isCreating, onCancel }: SubmitButtonProps) => (
+  <div className="flex gap-2">
+    <Button
+      type="button"
+      className="w-full"
+      onClick={onCancel}
+    >
+      Cancelar
+    </Button>
+    <Button
+      type="submit"
+      variant="primary"
+      className="w-full"
+      disabled={isLoading}
+    >
+      {isLoading
+        ? "Guardando..."
+        : isCreating
+          ? "Crear función"
+          : "Actualizar función"}
+    </Button>
+  </div>
 );
 
 // Componente principal
@@ -266,7 +277,7 @@ export const FunctionForm = (props: FunctionFormProps) => {
           />
         ))}
       </div>
-      <SubmitButton isLoading={isLoading ?? false} isCreating={isCreating} />
+      <SubmitButton isLoading={isLoading ?? false} isCreating={isCreating} onCancel={props.onCancel} />
     </form>
   );
 };
