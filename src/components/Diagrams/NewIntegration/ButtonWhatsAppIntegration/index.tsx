@@ -95,8 +95,8 @@ const ButtonWhatsAppIntegration = ({
     if (!departmentId || !selectOrganizationId) return;
 
     const response = await createIntegrationWhatsAppManual(
-      departmentId,
-      selectOrganizationId
+      selectOrganizationId,
+      departmentId
     );
     if (response) {
       getDataIntegrations();

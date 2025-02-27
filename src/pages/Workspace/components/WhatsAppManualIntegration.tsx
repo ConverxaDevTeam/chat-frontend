@@ -55,8 +55,8 @@ const WhatsAppManualIntegration: React.FC<WhatsAppManualIntegrationProps> = ({
     e.preventDefault();
     if (!data.id || !selectedDepartmentId || !selectOrganizationId) return;
     const response = await updateIntegrationWhatsAppManual(
-      selectedDepartmentId,
       selectOrganizationId,
+      selectedDepartmentId,
       data.id,
       {
         phone_number_id: info.phone_number_id,
@@ -74,8 +74,8 @@ const WhatsAppManualIntegration: React.FC<WhatsAppManualIntegrationProps> = ({
     if (!data.id || !selectedDepartmentId || !selectOrganizationId) return;
     setLoading(true);
     const response = await getIntegrationWhatsAppManual(
-      selectedDepartmentId,
       selectOrganizationId,
+      selectedDepartmentId,
       data.id
     );
     if (response) {
