@@ -18,15 +18,13 @@ export interface JsonField {
 interface JsonStructureEditorProps {
   value: ObjectParamProperty[];
   control: Control<CreateFunctionParamDto>;
-  setValue: (name: string, value: any, options?: any) => void;
+  setValue: (name: "properties", value: ObjectParamProperty[]) => void;
   onCloseMainModal?: () => void;
 }
 
 export const JsonStructureEditor = ({
   value = [],
-  control,
   setValue,
-  onCloseMainModal,
 }: JsonStructureEditorProps) => {
   const [fields, setFields] = useState<ObjectParamProperty[]>(value);
   const [editingField, setEditingField] = useState<ObjectParamProperty | null>(

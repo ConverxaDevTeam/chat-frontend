@@ -6,9 +6,9 @@ import {
 import { useCallback, useMemo, useState, useEffect } from "react";
 import { InputGroup } from "@components/forms/inputGroup";
 import { Input } from "@components/forms/input";
-import { TextArea } from "@components/forms/textArea";
 import { Select } from "@components/forms/select";
 import { Button } from "@components/common/Button";
+import { useForm, Controller } from "react-hook-form";
 
 // Types
 interface JsonFieldFormModalProps {
@@ -50,6 +50,13 @@ export const JsonFieldFormModal = ({
     [formState.name]
   );
 
+  // Crear un formulario temporal para usar con los componentes
+  const { control } = useForm({
+    defaultValues: {
+      fieldType: formState.type,
+    },
+  });
+
   return (
     <Modal isShown={isShown} onClose={onClose} header={modalHeader}>
       <div className="space-y-4 w-[475px]">
@@ -58,29 +65,43 @@ export const JsonFieldFormModal = ({
             <Input
               placeholder="Nombre del campo"
               value={formState.name}
-              onChange={e => handleChange({ name: e.target.value })}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                handleChange({ name: e.target.value })
+              }
             />
           </InputGroup>
 
           <InputGroup label="Tipo">
-            <Select
+            <Controller
               name="fieldType"
-              value={formState.type}
-              onChange={value => handleChange({ type: value as ParamType })}
-              options={Object.values(ParamType).map(type => ({
-                value: type,
-                label: type,
-              }))}
-              placeholder="Seleccionar tipo"
+              control={control}
+              render={() => (
+                <Select
+                  name="fieldType"
+                  control={control}
+                  options={Object.values(ParamType).map(type => ({
+                    value: type,
+                    label: type,
+                  }))}
+                  placeholder="Seleccionar tipo"
+                  rules={{
+                    onChange: (value: ParamType) =>
+                      handleChange({ type: value }),
+                  }}
+                />
+              )}
             />
           </InputGroup>
 
           <InputGroup label="Descripción">
-            <TextArea
+            <textarea
               placeholder="Descripción del campo"
               value={formState.description || ""}
-              onChange={e => handleChange({ description: e.target.value })}
+              onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+                handleChange({ description: e.target.value })
+              }
               rows={3}
+              className="w-full p-2 border border-gray-300 rounded"
             />
           </InputGroup>
 
@@ -88,7 +109,9 @@ export const JsonFieldFormModal = ({
             <input
               type="checkbox"
               checked={formState.required || false}
-              onChange={e => handleChange({ required: e.target.checked })}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                handleChange({ required: e.target.checked })
+              }
               className="h-4 w-4 rounded border-gray-300 accent-sofia-electricOlive"
             />
             <label className="ml-2 text-sofia-superDark text-[14px] font-semibold leading-[16px]">

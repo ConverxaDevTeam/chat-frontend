@@ -3,7 +3,6 @@ import {
   CreateFunctionParamDto,
   FunctionParam,
   ParamType,
-  ObjectParamProperty,
 } from "@interfaces/function-params.interface";
 import { useCallback, useMemo, useEffect } from "react";
 import { InputGroup } from "@components/forms/inputGroup";
