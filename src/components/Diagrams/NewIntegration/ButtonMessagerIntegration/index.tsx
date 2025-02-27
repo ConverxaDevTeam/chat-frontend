@@ -76,8 +76,8 @@ const ButtonMessagerIntegration = ({
     if (!departmentId || !selectOrganizationId) return;
 
     const response = await createIntegrationMessagerManual(
-      departmentId,
-      selectOrganizationId
+      selectOrganizationId,
+      departmentId
     );
     if (response) {
       getDataIntegrations();

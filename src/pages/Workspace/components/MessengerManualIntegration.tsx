@@ -53,8 +53,8 @@ const MessengerManualIntegration: React.FC<MessengerManualIntegrationProps> = ({
     e.preventDefault();
     if (!data.id || !selectedDepartmentId || !selectOrganizationId) return;
     const response = await updateIntegrationMessangerManual(
-      selectedDepartmentId,
       selectOrganizationId,
+      selectedDepartmentId,
       data.id,
       info.page_id,
       info.token
@@ -69,8 +69,8 @@ const MessengerManualIntegration: React.FC<MessengerManualIntegrationProps> = ({
     if (!data.id || !selectedDepartmentId || !selectOrganizationId) return;
     setLoading(true);
     const response = await getIntegrationMessangerManual(
-      selectedDepartmentId,
       selectOrganizationId,
+      selectedDepartmentId,
       data.id
     );
     if (response) {
@@ -89,8 +89,8 @@ const MessengerManualIntegration: React.FC<MessengerManualIntegrationProps> = ({
   const handleUpdateWebhook = async () => {
     if (!data.id || !selectedDepartmentId || !selectOrganizationId) return;
     const response = await changeCodeIntegrationManual(
-      selectedDepartmentId,
       selectOrganizationId,
+      selectedDepartmentId,
       data.id
     );
     if (response) {
