@@ -32,7 +32,7 @@ const ModalAddUser = ({ close, getAllUsers, editUser, users = [] }: ModalAddUser
     
     if (emailExists) {
       toast.error("Ya existe un usuario con este correo electrónico", {
-        position: "top-right",
+        position: "bottom-right",
         autoClose: 3000,
       });
       return;
@@ -43,14 +43,14 @@ const ModalAddUser = ({ close, getAllUsers, editUser, users = [] }: ModalAddUser
       if (editUser) {
         response = true;
         toast.success("Usuario actualizado exitosamente", {
-          position: "top-right",
+          position: "bottom-right",
           autoClose: 3000,
         });
       } else {
         response = await addUserInOrganizationById(selectOrganizationId, data);
         if (response) {
           toast.success("Usuario agregado exitosamente", {
-            position: "top-right",
+            position: "bottom-right",
             autoClose: 3000,
           });
         }
@@ -65,7 +65,7 @@ const ModalAddUser = ({ close, getAllUsers, editUser, users = [] }: ModalAddUser
           ? "No se pudo actualizar el usuario. Por favor, intente nuevamente."
           : "No se pudo agregar el usuario. Por favor, intente nuevamente.",
         {
-          position: "top-right",
+          position: "bottom-right",
           autoClose: 3000,
         }
       );
@@ -78,9 +78,9 @@ const ModalAddUser = ({ close, getAllUsers, editUser, users = [] }: ModalAddUser
       <button
         type="button"
         onClick={() => close(false)}
-        className="absolute right-7 text-gray-900 hover:text-gray-600 font-semibold"
+        className="absolute top-2 right-2 text-gray-900 hover:text-gray-600 font-semibold"
       >
-        ✕
+        <img src="/mvp/vector-x.svg" alt="Cerrar" />
       </button>
       <h2 className="text-xl font-bold mb-4">
         {editUser ? "Editar Usuario" : "Agregar Usuario"}

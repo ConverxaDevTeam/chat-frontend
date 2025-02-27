@@ -3,7 +3,7 @@ import { ToastContainerProps } from "react-toastify";
 const baseClasses = "relative flex w-[434px] font-medium rounded-[4px] shadow-lg mb-3 p-3";
 
 export const toastConfig: ToastContainerProps = {
-  position: "top-right",
+  position: "bottom-right",
   autoClose: 3000,
   hideProgressBar: true,
   closeButton: false,

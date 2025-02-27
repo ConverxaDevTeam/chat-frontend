@@ -17,12 +17,14 @@ interface AgenteFormProps {
     name: string;
     description: string;
   };
+  onClose: () => void;
   onSuccess?: () => void;
 }
 
 export const AgenteForm = ({
   agentId,
   initialData,
+  onClose,
   onSuccess,
 }: AgenteFormProps) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -107,6 +109,7 @@ export const AgenteForm = ({
         <div className="flex gap-[16px] mt-auto">
           <button
             type="button"
+            onClick={onClose}
             className="flex-1 h-[48px] text-sofia-navyBlue border-sofia-navyBlue border-[1px] font-semibold rounded-[8px]"
           >
             Cancelar

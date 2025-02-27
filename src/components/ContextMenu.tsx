@@ -137,8 +137,8 @@ const MenuDivider = () => (
 
 // Componente para envolver items del menú
 const MenuItem: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <div className="flex justify-center items-center gap-3 self-stretch rounded hover:bg-[#DBEAF2] cursor-pointer">
-    <div className="px-1 py-1 w-full">{children}</div>
+  <div className="flex justify-center items-center gap-3 hover:bg-[#DBEAF2] cursor-pointer px-3 py-1 rounded w-full">
+    {children}
   </div>
 );
 
