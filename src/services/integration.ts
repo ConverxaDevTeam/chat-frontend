@@ -339,14 +339,14 @@ export const getIntegrationMessangerManual = async (
   }
 };
 
-export const changeCodeIntegrationMessengerManual = async (
+export const changeCodeIntegrationManual = async (
   departmentId: number,
   organizationId: number,
   integrationId: number
 ) => {
   try {
     const response = await axiosInstance.post(
-      apiUrls.changeCodeIntegrationMessengerManual(
+      apiUrls.changeCodeIntegrationManual(
         departmentId,
         organizationId,
         integrationId
@@ -390,6 +390,114 @@ export const updateIntegrationMessangerManual = async (
         integrationId
       ),
       { page_id: pageId, token: token }
+    );
+
+    if (response.data.ok) {
+      return true;
+    }
+    return false;
+  } catch (error) {
+    let message = "Error inesperado";
+    if (axios.isAxiosError(error)) {
+      if (error.response) {
+        message =
+          error.response.data?.message || "Error inesperado del servidor";
+      } else if (error.request) {
+        message = "No se pudo conectar con el servidor";
+      } else {
+        message = error.message;
+      }
+    }
+    alertError(message);
+    return false;
+  }
+};
+
+export const createIntegrationWhatsAppManual = async (
+  departmentId: number,
+  organizationId: number
+) => {
+  try {
+    const response = await axiosInstance.post(
+      apiUrls.createIntegrationWhatsAppManual(departmentId, organizationId),
+      {}
+    );
+    if (response.data.ok) {
+      return true;
+    } else {
+      return false;
+    }
+  } catch (error) {
+    let message = "Error inesperado";
+    if (axios.isAxiosError(error)) {
+      if (error.response) {
+        message =
+          error.response.data?.message || "Error inesperado del servidor";
+      } else if (error.request) {
+        message = "No se pudo conectar con el servidor";
+      } else {
+        message = error.message;
+      }
+    }
+    alertError(message);
+    return false;
+  }
+};
+
+export const getIntegrationWhatsAppManual = async (
+  departmentId: number,
+  selectOrganizationId: number,
+  integrationId: number
+) => {
+  try {
+    const response = await axiosInstance.get(
+      apiUrls.getIntegrationWhatsAppManual(
+        departmentId,
+        selectOrganizationId,
+        integrationId
+      )
+    );
+    if (response.data.ok) {
+      return response.data.integration;
+    } else {
+      alertError(response.data.message);
+      return null;
+    }
+  } catch (error) {
+    let message = "Error inesperado";
+    if (axios.isAxiosError(error)) {
+      if (error.response) {
+        message =
+          error.response.data?.message || "Error inesperado del servidor";
+      } else if (error.request) {
+        message = "No se pudo conectar con el servidor";
+      } else {
+        message = error.message;
+      }
+    }
+    alertError(message);
+    return null;
+  }
+};
+
+export const updateIntegrationWhatsAppManual = async (
+  departmentId: number,
+  selectOrganizationId: number,
+  integrationId: number,
+  data: {
+    phone_number_id: string;
+    waba_id: string;
+    token: string;
+  }
+) => {
+  try {
+    const response = await axiosInstance.post(
+      apiUrls.updateIntegrationWhatsAppManual(
+        departmentId,
+        selectOrganizationId,
+        integrationId
+      ),
+      data
     );
 
     if (response.data.ok) {
