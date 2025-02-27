@@ -38,6 +38,7 @@ export const JsonFieldFormModal = ({
 
   // Actualizar el estado cuando cambia el campo
   useEffect(() => {
+    console.log("Field to edit:", field);
     setFormState(field);
     setValue("name", field.name || "");
     setValue("fieldType", field.type || ParamType.STRING);

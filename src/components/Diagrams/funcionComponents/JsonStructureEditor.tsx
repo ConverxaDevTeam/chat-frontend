@@ -44,6 +44,15 @@ export const JsonStructureEditor = ({
   };
 
   const handleSaveField = (field: ObjectParamProperty) => {
+    console.log(
+      "Saving field:",
+      field,
+      "Current path:",
+      currentPath,
+      "Editing field:",
+      editingField
+    );
+
     if (currentPath.length === 0) {
       // Agregar/editar en el nivel principal
       // Verificar si estamos editando un campo existente o creando uno nuevo
@@ -90,17 +99,31 @@ export const JsonStructureEditor = ({
         }
 
         // Verificar si estamos editando un campo existente o creando uno nuevo
-        const existingFieldIndex = targetObj.properties.findIndex(
-          f => f.name === editingField?.name
-        );
-        const isNew = existingFieldIndex === -1;
+        // Si editingField no tiene nombre, estamos creando uno nuevo
+        const isNew = !editingField?.name;
 
         if (isNew) {
           // Crear un nuevo campo
+          console.log("Creating new nested field:", field);
           targetObj.properties.push(field);
         } else {
           // Actualizar un campo existente
-          targetObj.properties[existingFieldIndex] = field;
+          console.log(
+            "Updating existing nested field:",
+            editingField?.name,
+            "to",
+            field
+          );
+          const existingFieldIndex = targetObj.properties.findIndex(
+            f => f.name === editingField?.name
+          );
+
+          if (existingFieldIndex !== -1) {
+            targetObj.properties[existingFieldIndex] = field;
+          } else {
+            // Si no se encuentra, agregarlo como nuevo
+            targetObj.properties.push(field);
+          }
         }
 
         setFields(newFields);
@@ -112,18 +135,31 @@ export const JsonStructureEditor = ({
     setCurrentPath([]);
   };
 
-  const handleEditField = (field: ObjectParamProperty) => {
-    console.log(field, "on edit field");
+  const handleEditField = (
+    field: ObjectParamProperty,
+    parentPath: string[] = []
+  ) => {
+    console.log(field, "on edit field", parentPath);
     setEditingField(field);
-    setCurrentPath([]);
+    setCurrentPath(parentPath);
   };
 
-  const handleAddNestedField = (parentField: ObjectParamProperty) => {
-    // Encontrar la ruta al campo padre
-    const path = findFieldPath(fields, parentField.name);
-    if (path) {
-      addField(path);
+  const handleAddNestedField = (
+    parentField: ObjectParamProperty,
+    parentPath: string[] = []
+  ) => {
+    // Si no se proporciona una ruta, intentar encontrarla
+    if (parentPath.length === 0) {
+      const path = findFieldPath(fields, parentField.name);
+      if (path) {
+        parentPath = path;
+      }
     }
+
+    // Crear un nuevo campo vacío y establecer la ruta del padre
+    const newField = { name: "", type: ParamType.STRING, required: false };
+    setEditingField(newField);
+    setCurrentPath(parentPath);
   };
 
   // Función auxiliar para encontrar la ruta a un campo por nombre
@@ -207,7 +243,7 @@ export const JsonStructureEditor = ({
             <div className="flex items-center gap-1">
               <button
                 type="button"
-                onClick={() => handleEditField(field)}
+                onClick={() => handleEditField(field, parentPath)}
                 className="hover:bg-gray-200 rounded p-1"
               >
                 <IoMdInformationCircle className="w-5 h-5 text-gray-600" />
@@ -215,7 +251,7 @@ export const JsonStructureEditor = ({
               {field.type === ParamType.OBJECT && (
                 <button
                   type="button"
-                  onClick={() => handleAddNestedField(field)}
+                  onClick={() => handleAddNestedField(field, parentPath)}
                   className="hover:bg-gray-200 rounded p-1"
                 >
                   <IoMdAdd className="w-5 h-5 text-green-600" />
