@@ -200,15 +200,15 @@ export const deleteIntegrationbyId = async (
 };
 
 export const getChannelNameByIntegrationId = async (
-  departmentId: number,
   selectOrganizationId: number,
+  departmentId: number,
   integrationId: number
 ) => {
   try {
     const response = await axiosInstance.get(
       apiUrls.getChannelNameByIntegrationId(
-        departmentId,
         selectOrganizationId,
+        departmentId,
         integrationId
       )
     );
@@ -236,16 +236,16 @@ export const getChannelNameByIntegrationId = async (
 };
 
 export const changeChannelName = async (
-  departmentId: number,
   selectOrganizationId: number,
+  departmentId: number,
   integrationId: number,
   channelName: string
 ) => {
   try {
     const response = await axiosInstance.post(
       apiUrls.changeChannelName(
-        departmentId,
         selectOrganizationId,
+        departmentId,
         integrationId
       ),
       { name: channelName }
@@ -273,12 +273,12 @@ export const changeChannelName = async (
 };
 
 export const createIntegrationMessagerManual = async (
-  departmentId: number,
-  organizationId: number
+  organizationId: number,
+  departmentId: number
 ) => {
   try {
     const response = await axiosInstance.post(
-      apiUrls.createIntegrationMessagerManual(departmentId, organizationId),
+      apiUrls.createIntegrationMessagerManual(organizationId, departmentId),
       {}
     );
     if (response.data.ok) {
@@ -304,15 +304,15 @@ export const createIntegrationMessagerManual = async (
 };
 
 export const getIntegrationMessangerManual = async (
-  departmentId: number,
   selectOrganizationId: number,
+  departmentId: number,
   integrationId: number
 ) => {
   try {
     const response = await axiosInstance.get(
       apiUrls.getIntegrationMessangerManual(
-        departmentId,
         selectOrganizationId,
+        departmentId,
         integrationId
       )
     );
@@ -340,15 +340,15 @@ export const getIntegrationMessangerManual = async (
 };
 
 export const changeCodeIntegrationManual = async (
-  departmentId: number,
   organizationId: number,
+  departmentId: number,
   integrationId: number
 ) => {
   try {
     const response = await axiosInstance.post(
       apiUrls.changeCodeIntegrationManual(
-        departmentId,
         organizationId,
+        departmentId,
         integrationId
       ),
       {}
@@ -376,8 +376,8 @@ export const changeCodeIntegrationManual = async (
 };
 
 export const updateIntegrationMessangerManual = async (
-  departmentId: number,
   selectOrganizationId: number,
+  departmentId: number,
   integrationId: number,
   pageId: string,
   token: string
@@ -385,8 +385,8 @@ export const updateIntegrationMessangerManual = async (
   try {
     const response = await axiosInstance.post(
       apiUrls.updateIntegrationMessangerManual(
-        departmentId,
         selectOrganizationId,
+        departmentId,
         integrationId
       ),
       { page_id: pageId, token: token }
@@ -414,12 +414,12 @@ export const updateIntegrationMessangerManual = async (
 };
 
 export const createIntegrationWhatsAppManual = async (
-  departmentId: number,
-  organizationId: number
+  organizationId: number,
+  departmentId: number
 ) => {
   try {
     const response = await axiosInstance.post(
-      apiUrls.createIntegrationWhatsAppManual(departmentId, organizationId),
+      apiUrls.createIntegrationWhatsAppManual(organizationId, departmentId),
       {}
     );
     if (response.data.ok) {
@@ -445,15 +445,15 @@ export const createIntegrationWhatsAppManual = async (
 };
 
 export const getIntegrationWhatsAppManual = async (
-  departmentId: number,
   selectOrganizationId: number,
+  departmentId: number,
   integrationId: number
 ) => {
   try {
     const response = await axiosInstance.get(
       apiUrls.getIntegrationWhatsAppManual(
-        departmentId,
         selectOrganizationId,
+        departmentId,
         integrationId
       )
     );
@@ -481,8 +481,8 @@ export const getIntegrationWhatsAppManual = async (
 };
 
 export const updateIntegrationWhatsAppManual = async (
-  departmentId: number,
   selectOrganizationId: number,
+  departmentId: number,
   integrationId: number,
   data: {
     phone_number_id: string;
@@ -493,8 +493,8 @@ export const updateIntegrationWhatsAppManual = async (
   try {
     const response = await axiosInstance.post(
       apiUrls.updateIntegrationWhatsAppManual(
-        departmentId,
         selectOrganizationId,
+        departmentId,
         integrationId
       ),
       data
