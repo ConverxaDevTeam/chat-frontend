@@ -1,8 +1,7 @@
 import Modal from "@components/Modal";
 import {
-  CreateFunctionParamDto,
-  FunctionParam,
   ParamType,
+  ObjectParamProperty,
 } from "@interfaces/function-params.interface";
 import { useCallback, useMemo, useEffect } from "react";
 import { InputGroup } from "@components/forms/inputGroup";
@@ -18,28 +17,35 @@ import {
 } from "react-hook-form";
 import { Button } from "@components/common/Button";
 import { JsonStructureEditor } from "./JsonStructureEditor";
-import { JsonField } from "./JsonFieldFormModal";
 
 // Types
-interface ParamFormModalProps {
-  isShown: boolean;
-  onClose: () => void;
-  param?: FunctionParam | null;
-  onSubmit: (param: CreateFunctionParamDto) => void;
+export interface JsonField {
+  key: string;
+  type: string;
+  required: boolean;
+  description?: string;
+  properties?: ObjectParamProperty[];
 }
 
-interface ParamFormFieldsProps {
-  register: UseFormRegister<CreateFunctionParamDto>;
-  control: Control<CreateFunctionParamDto>;
-  errors: FieldErrors<CreateFunctionParamDto>;
+interface JsonFieldFormModalProps {
+  isShown: boolean;
+  onClose: () => void;
+  field?: JsonField | null;
+  onSubmit: (field: JsonField) => void;
+}
+
+interface JsonFieldFormFieldsProps {
+  register: UseFormRegister<JsonField>;
+  control: Control<JsonField>;
+  errors: FieldErrors<JsonField>;
   onClose: () => void;
 }
 
 // Form Hook
-const useParamForm = (initialParam?: FunctionParam | null) => {
+const useJsonFieldForm = (initialField?: JsonField | null) => {
   const defaultValues = useMemo(
     () => ({
-      name: "",
+      key: "",
       type: ParamType.STRING,
       description: "",
       required: false,
@@ -54,7 +60,7 @@ const useParamForm = (initialParam?: FunctionParam | null) => {
     reset,
     control,
     formState: { errors },
-  } = useForm<CreateFunctionParamDto>({
+  } = useForm<JsonField>({
     defaultValues,
   });
 
@@ -63,18 +69,18 @@ const useParamForm = (initialParam?: FunctionParam | null) => {
   }, [reset, defaultValues]);
 
   useEffect(() => {
-    if (initialParam) {
+    if (initialField) {
       reset({
-        name: initialParam.name,
-        type: initialParam.type,
-        description: initialParam.description || "",
-        required: initialParam.required || false,
-        properties: initialParam.properties || [],
+        key: initialField.key,
+        type: initialField.type as ParamType,
+        description: initialField.description || "",
+        required: initialField.required || false,
+        properties: initialField.properties || [],
       });
     } else {
       resetForm();
     }
-  }, [initialParam, reset, resetForm]);
+  }, [initialField, reset, resetForm]);
 
   return {
     register,
@@ -86,21 +92,21 @@ const useParamForm = (initialParam?: FunctionParam | null) => {
 };
 
 // Form Fields Component
-const ParamFormFields = ({
+const JsonFieldFormFields = ({
   register,
   control,
   errors,
   onClose,
-}: ParamFormFieldsProps) => {
+}: JsonFieldFormFieldsProps) => {
   const type = useWatch({ control, name: "type" });
 
   return (
     <div className="flex flex-col gap-[24px]">
-      <InputGroup label="Nombre" errors={errors.name}>
+      <InputGroup label="Nombre" errors={errors.key}>
         <Input
-          placeholder="Nombre del parámetro"
-          register={register("name", { required: "El nombre es obligatorio" })}
-          error={errors.name?.message}
+          placeholder="Nombre del campo"
+          register={register("key", { required: "El nombre es obligatorio" })}
+          error={errors.key?.message}
         />
       </InputGroup>
 
@@ -129,7 +135,7 @@ const ParamFormFields = ({
       )}
       <InputGroup label="Descripción" errors={errors.description}>
         <TextArea
-          placeholder="Descripción del parámetro"
+          placeholder="Descripción del campo"
           register={register("description")}
           error={errors.description?.message}
           rows={3}
@@ -151,7 +157,7 @@ const ParamFormFields = ({
 };
 
 // Form Actions Component
-const ParamFormActions = ({
+const JsonFieldFormActions = ({
   isEdit,
   disabled = false,
 }: {
@@ -164,23 +170,23 @@ const ParamFormActions = ({
     className="w-full"
     disabled={disabled}
   >
-    {isEdit ? "Actualizar parámetro" : "Crear parámetro"}
+    {isEdit ? "Actualizar campo" : "Agregar campo"}
   </Button>
 );
 
 // Main Component
-export const ParamFormModal = ({
+export const JsonFieldFormModal = ({
   isShown,
   onClose,
-  param,
+  field,
   onSubmit,
-}: ParamFormModalProps) => {
+}: JsonFieldFormModalProps) => {
   const { register, handleSubmit, control, errors, resetForm } =
-    useParamForm(param);
+    useJsonFieldForm(field);
 
   const onFormSubmit = useCallback(
     handleSubmit(data => {
-      onSubmit(data as CreateFunctionParamDto);
+      onSubmit(data);
       resetForm();
       onClose();
     }),
@@ -201,22 +207,22 @@ export const ParamFormModal = ({
   const modalHeader = useMemo(
     () => (
       <h2 className="text-xl font-semibold">
-        {param ? "Editar Parámetro" : "Nuevo Parámetro"}
+        {field ? "Editar Campo" : "Nuevo Campo"}
       </h2>
     ),
-    [param]
+    [field]
   );
 
   return (
     <Modal isShown={isShown} onClose={handleClose} header={modalHeader}>
       <form onSubmit={onFormSubmit} className="space-y-4 w-[475px]">
-        <ParamFormFields
+        <JsonFieldFormFields
           register={register}
           control={control}
           errors={errors}
           onClose={handleClose}
         />
-        <ParamFormActions isEdit={!!param} />
+        <JsonFieldFormActions isEdit={!!field} />
       </form>
     </Modal>
   );
