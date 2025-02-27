@@ -1,8 +1,14 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { IoMdAdd, IoMdInformationCircle } from "react-icons/io";
-import { JsonFieldModal } from "./JsonFieldModal";
+import { JsonFieldFormModal } from "./JsonFieldFormModal";
+import {
+  ObjectParamProperty,
+  ParamType,
+} from "@interfaces/function-params.interface";
+import { Control } from "react-hook-form";
+import { CreateFunctionParamDto } from "@interfaces/function-params.interface";
 
-interface JsonField {
+export interface JsonField {
   key: string;
   type: string;
   required: boolean;
@@ -10,38 +16,46 @@ interface JsonField {
 }
 
 interface JsonStructureEditorProps {
-  value: JsonField[];
-  onChange: (fields: JsonField[]) => void;
+  value: ObjectParamProperty[];
+  control: Control<CreateFunctionParamDto>;
+  setValue: (name: string, value: any, options?: any) => void;
   onCloseMainModal?: () => void;
 }
 
 export const JsonStructureEditor = ({
   value = [],
-  onChange,
+  control,
+  setValue,
   onCloseMainModal,
 }: JsonStructureEditorProps) => {
-  const [fields, setFields] = useState<JsonField[]>(value);
-  const [editingField, setEditingField] = useState<JsonField | null>(null);
+  const [fields, setFields] = useState<ObjectParamProperty[]>(value);
+  const [editingField, setEditingField] = useState<ObjectParamProperty | null>(
+    null
+  );
+
+  // Actualizar los campos cuando cambia el valor externo
+  useEffect(() => {
+    setFields(value);
+  }, [value]);
 
   const addField = () => {
-    const newField = { key: "", type: "string", required: false };
+    const newField = { name: "", type: ParamType.STRING, required: false };
     setEditingField(newField);
   };
 
-  const handleSaveField = (field: JsonField) => {
-    const isNew = !fields.find(f => f.key === field.key);
+  const handleSaveField = (field: ObjectParamProperty) => {
+    const isNew = !fields.find(f => f.name === field.name);
     const newFields = isNew
       ? [...fields, field]
-      : fields.map(f => (f.key === field.key ? field : f));
+      : fields.map(f => (f.name === field.name ? field : f));
 
     setFields(newFields);
-    onChange(newFields);
+    setValue("properties", newFields);
     setEditingField(null);
   };
 
-  const handleEditField = (field: JsonField) => {
+  const handleEditField = (field: ObjectParamProperty) => {
     setEditingField(field);
-    onCloseMainModal?.();
   };
 
   return (
@@ -52,7 +66,7 @@ export const JsonStructureEditor = ({
           className="flex items-center justify-between p-2 bg-gray-50 rounded hover:bg-gray-100"
         >
           <span className="text-sm font-medium">
-            {field.key || "Sin nombre"}
+            {field.name || "Sin nombre"}
             {field.required && <span className="text-red-500 ml-1">*</span>}
           </span>
           <button
@@ -74,12 +88,14 @@ export const JsonStructureEditor = ({
         <span>Agregar campo</span>
       </button>
 
-      <JsonFieldModal
-        isShown={!!editingField}
-        onClose={() => setEditingField(null)}
-        field={editingField || { key: "", type: "string", required: false }}
-        onSubmit={handleSaveField}
-      />
+      {editingField && (
+        <JsonFieldFormModal
+          isShown={!!editingField}
+          onClose={() => setEditingField(null)}
+          field={editingField}
+          onSubmit={handleSaveField}
+        />
+      )}
     </div>
   );
 };

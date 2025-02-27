@@ -3,6 +3,7 @@ import {
   CreateFunctionParamDto,
   FunctionParam,
   ParamType,
+  ObjectParamProperty,
 } from "@interfaces/function-params.interface";
 import { useCallback, useMemo, useEffect } from "react";
 import { InputGroup } from "@components/forms/inputGroup";
@@ -15,10 +16,10 @@ import {
   FieldErrors,
   Control,
   useWatch,
+  UseFormSetValue,
 } from "react-hook-form";
 import { Button } from "@components/common/Button";
 import { JsonStructureEditor } from "./JsonStructureEditor";
-import { JsonField } from "./JsonFieldFormModal";
 
 // Types
 interface ParamFormModalProps {
@@ -33,6 +34,7 @@ interface ParamFormFieldsProps {
   control: Control<CreateFunctionParamDto>;
   errors: FieldErrors<CreateFunctionParamDto>;
   onClose: () => void;
+  setValue: UseFormSetValue<CreateFunctionParamDto>;
 }
 
 // Form Hook
@@ -53,6 +55,7 @@ const useParamForm = (initialParam?: FunctionParam | null) => {
     handleSubmit,
     reset,
     control,
+    setValue,
     formState: { errors },
   } = useForm<CreateFunctionParamDto>({
     defaultValues,
@@ -80,6 +83,7 @@ const useParamForm = (initialParam?: FunctionParam | null) => {
     register,
     handleSubmit,
     control,
+    setValue,
     errors,
     resetForm,
   };
@@ -91,6 +95,7 @@ const ParamFormFields = ({
   control,
   errors,
   onClose,
+  setValue,
 }: ParamFormFieldsProps) => {
   const type = useWatch({ control, name: "type" });
 
@@ -119,10 +124,11 @@ const ParamFormFields = ({
       {type === ParamType.OBJECT && (
         <InputGroup label="Estructura">
           <JsonStructureEditor
-            value={[]}
-            onChange={(fields: JsonField[]) => {
-              // Aquí manejar el cambio de campos
-            }}
+            value={control._formValues.properties || []}
+            control={control}
+            setValue={(name, value) =>
+              setValue(name, value, { shouldValidate: true })
+            }
             onCloseMainModal={onClose}
           />
         </InputGroup>
@@ -175,7 +181,7 @@ export const ParamFormModal = ({
   param,
   onSubmit,
 }: ParamFormModalProps) => {
-  const { register, handleSubmit, control, errors, resetForm } =
+  const { register, handleSubmit, control, setValue, errors, resetForm } =
     useParamForm(param);
 
   const onFormSubmit = useCallback(
@@ -215,6 +221,7 @@ export const ParamFormModal = ({
           control={control}
           errors={errors}
           onClose={handleClose}
+          setValue={setValue}
         />
         <ParamFormActions isEdit={!!param} />
       </form>
