@@ -4,8 +4,8 @@ import { baseUrl } from "@config/config";
 import { NodeData } from "@interfaces/workflow";
 import {
   changeCodeIntegrationManual,
-  getIntegrationMessangerManual,
-  updateIntegrationMessangerManual,
+  getIntegrationWhatsAppManual,
+  updateIntegrationWhatsAppManual,
 } from "@services/integration";
 import { RootState } from "@store";
 import { useEffect, useState } from "react";
@@ -15,7 +15,7 @@ import { RiFileCopy2Line } from "react-icons/ri";
 import { alertConfirm } from "@utils/alerts";
 import { RxUpdate } from "react-icons/rx";
 
-interface MessengerManualIntegrationProps {
+interface WhatsAppManualIntegrationProps {
   isOpen: boolean;
   onClose: () => void;
   data: NodeData;
@@ -23,13 +23,14 @@ interface MessengerManualIntegrationProps {
 
 interface IntegrationMessengerManualAPI {
   id: string;
-  page_id: string;
+  phone_number_id: string;
+  waba_id: string;
   token: string;
   code_webhook: string;
   validated_webhook: boolean;
 }
 
-const MessengerManualIntegration: React.FC<MessengerManualIntegrationProps> = ({
+const WhatsAppManualIntegration: React.FC<WhatsAppManualIntegrationProps> = ({
   isOpen,
   onClose,
   data,
@@ -43,7 +44,8 @@ const MessengerManualIntegration: React.FC<MessengerManualIntegrationProps> = ({
   const [loading, setLoading] = useState<boolean>(true);
   const [info, setInfo] = useState<IntegrationMessengerManualAPI>({
     id: "",
-    page_id: "",
+    phone_number_id: "",
+    waba_id: "",
     token: "",
     code_webhook: "",
     validated_webhook: false,
@@ -52,23 +54,26 @@ const MessengerManualIntegration: React.FC<MessengerManualIntegrationProps> = ({
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!data.id || !selectedDepartmentId || !selectOrganizationId) return;
-    const response = await updateIntegrationMessangerManual(
+    const response = await updateIntegrationWhatsAppManual(
       selectedDepartmentId,
       selectOrganizationId,
       data.id,
-      info.page_id,
-      info.token
+      {
+        phone_number_id: info.phone_number_id,
+        waba_id: info.waba_id,
+        token: info.token,
+      }
     );
     if (response) {
       alertConfirm("Se ha guardado la información");
-      getIntegrationMessangerManualInfo();
+      getIntegrationWhatsAppManualInfo();
     }
   };
 
-  const getIntegrationMessangerManualInfo = async () => {
+  const getIntegrationWhatsAppManualInfo = async () => {
     if (!data.id || !selectedDepartmentId || !selectOrganizationId) return;
     setLoading(true);
-    const response = await getIntegrationMessangerManual(
+    const response = await getIntegrationWhatsAppManual(
       selectedDepartmentId,
       selectOrganizationId,
       data.id
@@ -76,7 +81,8 @@ const MessengerManualIntegration: React.FC<MessengerManualIntegrationProps> = ({
     if (response) {
       setInfo({
         id: response.id,
-        page_id: response.page_id || "",
+        phone_number_id: response.phone_number_id || "",
+        waba_id: response.waba_id || "",
         token: response.token || "",
         code_webhook: response.code_webhook,
         validated_webhook: response.validated_webhook,
@@ -104,7 +110,7 @@ const MessengerManualIntegration: React.FC<MessengerManualIntegrationProps> = ({
 
   useEffect(() => {
     if (!data.id) return;
-    getIntegrationMessangerManualInfo();
+    getIntegrationWhatsAppManualInfo();
   }, []);
 
   return (
@@ -169,17 +175,34 @@ const MessengerManualIntegration: React.FC<MessengerManualIntegrationProps> = ({
               />
             </div>
             <label
-              htmlFor="page_id"
+              htmlFor="phone_number_id"
               className="text-sofia-superDark font-bold text-[14px]"
             >
-              Identificador de pagina
+              Identificador de número de teléfono
             </label>
             <input
               type="text"
-              id="page_id"
-              placeholder="Identificador de pagina"
-              onChange={e => setInfo({ ...info, page_id: e.target.value })}
-              value={info.page_id}
+              id="phone_number_id"
+              placeholder="Identificador de número de teléfono"
+              onChange={e =>
+                setInfo({ ...info, phone_number_id: e.target.value })
+              }
+              value={info.phone_number_id}
+              required
+              className="flex w-full h-[56px] pl-4 pr-9 py-2.5 justify-between items-center flex-shrink-0 rounded-lg border border-app-gray bg-sofia-blancoPuro text-[14px] font-normal placeholder:text-[#A6A8AB]"
+            />
+            <label
+              htmlFor="waba_id"
+              className="text-sofia-superDark font-bold text-[14px]"
+            >
+              Identificador de la cuenta de WhatsApp Business
+            </label>
+            <input
+              type="text"
+              id="waba_id"
+              placeholder="Identificador de la cuenta de WhatsApp Business"
+              onChange={e => setInfo({ ...info, waba_id: e.target.value })}
+              value={info.waba_id}
               required
               className="flex w-full h-[56px] pl-4 pr-9 py-2.5 justify-between items-center flex-shrink-0 rounded-lg border border-app-gray bg-sofia-blancoPuro text-[14px] font-normal placeholder:text-[#A6A8AB]"
             />
@@ -209,7 +232,7 @@ const MessengerManualIntegration: React.FC<MessengerManualIntegrationProps> = ({
               <button
                 type="button"
                 className="text-sofia-superDark font-bold text-[16px] flex-1 h-[48px] border border-app-gray rounded-[8px] flex justify-center items-center"
-                onClick={getIntegrationMessangerManualInfo}
+                onClick={getIntegrationWhatsAppManualInfo}
               >
                 Actualizar
               </button>
@@ -227,4 +250,4 @@ const MessengerManualIntegration: React.FC<MessengerManualIntegrationProps> = ({
   );
 };
 
-export default MessengerManualIntegration;
+export default WhatsAppManualIntegration;

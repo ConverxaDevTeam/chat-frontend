@@ -59,12 +59,12 @@ export const apiUrls = {
     integrationId: number
   ) =>
     `/api/integration/get-messenger-manual/${departmentId}/${organizationId}/${integrationId}`,
-  changeCodeIntegrationMessengerManual: (
+  changeCodeIntegrationManual: (
     departmentId: number,
     organizationId: number,
     integrationId: number
   ) =>
-    `/api/integration/change-messenger-manual-code/${departmentId}/${organizationId}/${integrationId}`,
+    `/api/integration/change-manual-code/${departmentId}/${organizationId}/${integrationId}`,
   changeChannelName: (
     departmentId: number,
     organizationId: number,
@@ -76,6 +76,23 @@ export const apiUrls = {
     organizationId: number
   ) =>
     `/api/integration/create-messager-manual/${organizationId}/${departmentId}`,
+  createIntegrationWhatsAppManual: (
+    departmentId: number,
+    organizationId: number
+  ) =>
+    `/api/integration/create-whatsapp-manual/${organizationId}/${departmentId}`,
+  getIntegrationWhatsAppManual: (
+    departmentId: number,
+    organizationId: number,
+    integrationId: number
+  ) =>
+    `/api/integration/get-whatsapp-manual/${departmentId}/${organizationId}/${integrationId}`,
+  updateIntegrationWhatsAppManual: (
+    departmentId: number,
+    organizationId: number,
+    integrationId: number
+  ) =>
+    `/api/integration/update-whatsapp-manual/${departmentId}/${organizationId}/${integrationId}`,
   //conversations
   getConversationsByOrganizationId: (organizationId: number) =>
     `/api/conversation/organization/${organizationId}`,
