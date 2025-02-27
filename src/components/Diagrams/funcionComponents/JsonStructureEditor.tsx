@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { IoMdAdd, IoMdInformationCircle } from "react-icons/io";
+import { IoMdAdd, IoMdInformationCircle, IoMdTrash } from "react-icons/io";
 import { JsonFieldFormModal } from "./JsonFieldFormModal";
 import {
   ObjectParamProperty,
@@ -56,6 +56,12 @@ export const JsonStructureEditor = ({
     setEditingField(field);
   };
 
+  const handleDeleteField = (fieldName: string) => {
+    const newFields = fields.filter(f => f.name !== fieldName);
+    setFields(newFields);
+    setValue("properties", newFields);
+  };
+
   return (
     <div className="space-y-1">
       {fields.map((field, index) => (
@@ -67,13 +73,22 @@ export const JsonStructureEditor = ({
             {field.name || "Sin nombre"}
             {field.required && <span className="text-red-500 ml-1">*</span>}
           </span>
-          <button
-            type="button"
-            onClick={() => handleEditField(field)}
-            className="hover:bg-gray-200 rounded"
-          >
-            <IoMdInformationCircle className="w-5 h-5 text-gray-600" />
-          </button>
+          <div className="flex items-center gap-1">
+            <button
+              type="button"
+              onClick={() => handleEditField(field)}
+              className="hover:bg-gray-200 rounded p-1"
+            >
+              <IoMdInformationCircle className="w-5 h-5 text-gray-600" />
+            </button>
+            <button
+              type="button"
+              onClick={() => handleDeleteField(field.name)}
+              className="hover:bg-gray-200 rounded p-1"
+            >
+              <IoMdTrash className="w-5 h-5 text-red-500" />
+            </button>
+          </div>
         </div>
       ))}
 
