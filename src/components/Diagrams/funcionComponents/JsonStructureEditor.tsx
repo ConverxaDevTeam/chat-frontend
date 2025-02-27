@@ -53,6 +53,7 @@ export const JsonStructureEditor = ({
   };
 
   const handleEditField = (field: ObjectParamProperty) => {
+    console.log(field, "on edit field");
     setEditingField(field);
   };
 

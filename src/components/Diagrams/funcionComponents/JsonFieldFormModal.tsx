@@ -6,7 +6,6 @@ import {
 import { useCallback, useMemo, useState, useEffect } from "react";
 import { InputGroup } from "@components/forms/inputGroup";
 import { Input } from "@components/forms/input";
-import { Select } from "@components/forms/select";
 import { Button } from "@components/common/Button";
 import { useForm, Controller } from "react-hook-form";
 
@@ -27,10 +26,24 @@ export const JsonFieldFormModal = ({
 }: JsonFieldFormModalProps) => {
   const [formState, setFormState] = useState<ObjectParamProperty>(field);
 
+  // Form setup with correct default values
+  const { control, setValue } = useForm({
+    defaultValues: {
+      name: field.name || "",
+      fieldType: field.type || ParamType.STRING,
+      description: field.description || "",
+      required: field.required || false,
+    },
+  });
+
   // Actualizar el estado cuando cambia el campo
   useEffect(() => {
     setFormState(field);
-  }, [field]);
+    setValue("name", field.name || "");
+    setValue("fieldType", field.type || ParamType.STRING);
+    setValue("description", field.description || "");
+    setValue("required", field.required || false);
+  }, [field, setValue]);
 
   const handleChange = useCallback((newState: Partial<ObjectParamProperty>) => {
     setFormState(prev => ({ ...prev, ...newState }));
@@ -50,13 +63,6 @@ export const JsonFieldFormModal = ({
     [formState.name]
   );
 
-  // Crear un formulario temporal para usar con los componentes
-  const { control } = useForm({
-    defaultValues: {
-      fieldType: formState.type,
-    },
-  });
-
   return (
     <Modal isShown={isShown} onClose={onClose} header={modalHeader}>
       <div className="space-y-4 w-[475px]">
@@ -75,20 +81,26 @@ export const JsonFieldFormModal = ({
             <Controller
               name="fieldType"
               control={control}
-              render={() => (
-                <Select
-                  name="fieldType"
-                  control={control}
-                  options={Object.values(ParamType).map(type => ({
-                    value: type,
-                    label: type,
-                  }))}
-                  placeholder="Seleccionar tipo"
-                  rules={{
-                    onChange: (value: ParamType) =>
-                      handleChange({ type: value }),
+              render={({ field: controlField }) => (
+                <select
+                  {...controlField}
+                  value={formState.type}
+                  onChange={e => {
+                    const newType = e.target.value as ParamType;
+                    controlField.onChange(newType);
+                    handleChange({ type: newType });
                   }}
-                />
+                  className="flex w-full px-3 py-4 items-center gap-[11px] bg-[#FCFCFC] self-stretch rounded-lg border border-sofia-darkBlue text-sofia-superDark text-[14px] font-normal leading-normal appearance-none bg-[url('/mvp/chevron-down.svg')] bg-no-repeat bg-[center_right_1rem] focus:outline-none focus:ring-0 focus:border-sofia-darkBlue"
+                >
+                  <option value="" disabled>
+                    Seleccionar tipo
+                  </option>
+                  {Object.values(ParamType).map(type => (
+                    <option key={type} value={type}>
+                      {type}
+                    </option>
+                  ))}
+                </select>
               )}
             />
           </InputGroup>
