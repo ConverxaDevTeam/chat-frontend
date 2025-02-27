@@ -44,102 +44,154 @@ export const JsonStructureEditor = ({
   };
 
   const handleSaveField = (field: ObjectParamProperty) => {
-    console.log(
-      "Saving field:",
-      field,
-      "Current path:",
-      currentPath,
-      "Editing field:",
-      editingField
-    );
+    console.log("Saving field:", field);
+    console.log("Current path:", currentPath);
+    console.log("Editing field:", editingField);
 
     if (currentPath.length === 0) {
-      // Agregar/editar en el nivel principal
-      // Verificar si estamos editando un campo existente o creando uno nuevo
-      const existingFieldIndex = fields.findIndex(
-        f => f.name === editingField?.name
-      );
-      const isNew = existingFieldIndex === -1;
-
-      let newFields;
-      if (isNew) {
-        // Crear un nuevo campo
-        newFields = [...fields, field];
+      // Si no hay ruta, estamos en el nivel raíz
+      if (editingField && editingField.name) {
+        // Estamos editando un campo existente
+        const updatedFields = fields.map(f =>
+          f.name === editingField.name ? field : f
+        );
+        setFields(updatedFields);
+        setValue("properties", updatedFields);
       } else {
-        // Actualizar un campo existente
-        newFields = [...fields];
-        newFields[existingFieldIndex] = field;
+        // Estamos creando un nuevo campo
+        setFields([...fields, field]);
+        setValue("properties", [...fields, field]);
       }
-
-      setFields(newFields);
-      setValue("properties", newFields);
     } else {
-      // Agregar/editar en un objeto anidado
-      const newFields = [...fields];
-      let currentObj = newFields;
-      let targetObj = null;
+      // Estamos en un nivel anidado
+      console.log("Updating nested field with path:", currentPath);
 
-      // Navegar hasta el objeto padre
-      for (let i = 0; i < currentPath.length; i++) {
-        const fieldName = currentPath[i];
-        targetObj = currentObj.find(f => f.name === fieldName);
+      // Creamos una copia del array de campos
+      const updatedFields = updateNestedField(
+        fields,
+        currentPath,
+        0,
+        field,
+        editingField?.name
+      );
 
-        if (targetObj && i < currentPath.length - 1) {
-          if (!targetObj.properties) {
-            targetObj.properties = [];
-          }
-          currentObj = targetObj.properties;
-        }
-      }
-
-      // Agregar o actualizar el campo en el objeto padre
-      if (targetObj) {
-        if (!targetObj.properties) {
-          targetObj.properties = [];
-        }
-
-        // Verificar si estamos editando un campo existente o creando uno nuevo
-        // Si editingField no tiene nombre, estamos creando uno nuevo
-        const isNew = !editingField?.name;
-
-        if (isNew) {
-          // Crear un nuevo campo
-          console.log("Creating new nested field:", field);
-          targetObj.properties.push(field);
-        } else {
-          // Actualizar un campo existente
-          console.log(
-            "Updating existing nested field:",
-            editingField?.name,
-            "to",
-            field
-          );
-          const existingFieldIndex = targetObj.properties.findIndex(
-            f => f.name === editingField?.name
-          );
-
-          if (existingFieldIndex !== -1) {
-            targetObj.properties[existingFieldIndex] = field;
-          } else {
-            // Si no se encuentra, agregarlo como nuevo
-            targetObj.properties.push(field);
-          }
-        }
-
-        setFields(newFields);
-        setValue("properties", newFields);
-      }
+      console.log("Updated fields:", updatedFields);
+      setFields(updatedFields);
+      setValue("properties", updatedFields);
     }
 
+    // Limpiar el estado de edición
     setEditingField(null);
     setCurrentPath([]);
+  };
+
+  // Función recursiva para encontrar y actualizar un campo en cualquier nivel de anidación
+  const updateNestedField = (
+    fields: ObjectParamProperty[],
+    path: string[],
+    currentIndex: number,
+    newField: ObjectParamProperty,
+    originalFieldName: string | undefined
+  ): ObjectParamProperty[] => {
+    console.log("updateNestedField called with:", {
+      pathLength: path.length,
+      currentIndex,
+      currentPathSegment: path[currentIndex],
+      remainingPath: path.slice(currentIndex),
+      originalFieldName,
+      newFieldName: newField.name,
+    });
+
+    // Si hemos llegado al final del camino, actualizamos el campo en este nivel
+    if (currentIndex >= path.length - 1) {
+      console.log("Reached target level, updating field at path:", path);
+      // Estamos en el nivel del objeto padre, ahora actualizamos sus propiedades
+      const parentFieldName = path[currentIndex];
+      const parentFieldIndex = fields.findIndex(
+        f => f.name === parentFieldName
+      );
+
+      if (parentFieldIndex === -1) {
+        console.log("Parent field not found:", parentFieldName);
+        return fields;
+      }
+
+      const parentField = { ...fields[parentFieldIndex] };
+      if (!parentField.properties) {
+        parentField.properties = [];
+      }
+
+      // Verificar si estamos editando un campo existente o creando uno nuevo
+      const isNew = !originalFieldName;
+
+      if (isNew) {
+        // Crear un nuevo campo
+        console.log("Creating new field in parent:", parentFieldName);
+        parentField.properties = [...parentField.properties, newField];
+      } else {
+        // Actualizar un campo existente
+        console.log(
+          "Updating existing field:",
+          originalFieldName,
+          "to",
+          newField.name
+        );
+        const existingFieldIndex = parentField.properties.findIndex(
+          f => f.name === originalFieldName
+        );
+
+        if (existingFieldIndex !== -1) {
+          const updatedProperties = [...parentField.properties];
+          updatedProperties[existingFieldIndex] = newField;
+          parentField.properties = updatedProperties;
+        } else {
+          // Si no se encuentra, agregarlo como nuevo
+          console.log("Field not found, adding as new:", newField.name);
+          parentField.properties = [...parentField.properties, newField];
+        }
+      }
+
+      const updatedFields = [...fields];
+      updatedFields[parentFieldIndex] = parentField;
+      return updatedFields;
+    }
+
+    // Buscar el campo en el camino actual
+    const fieldName = path[currentIndex];
+    const fieldIndex = fields.findIndex(f => f.name === fieldName);
+
+    // Si no encontramos el campo, devolvemos los campos sin cambios
+    if (fieldIndex === -1) {
+      console.log("Field not found in path:", fieldName);
+      return fields;
+    }
+
+    // Obtener el campo actual y asegurarnos de que tiene propiedades
+    const currentField = { ...fields[fieldIndex] };
+    if (!currentField.properties) {
+      currentField.properties = [];
+    }
+
+    // Actualizar recursivamente las propiedades del campo
+    currentField.properties = updateNestedField(
+      currentField.properties,
+      path,
+      currentIndex + 1,
+      newField,
+      originalFieldName
+    );
+
+    // Crear una nueva lista de campos con el campo actualizado
+    const updatedFields = [...fields];
+    updatedFields[fieldIndex] = currentField;
+    return updatedFields;
   };
 
   const handleEditField = (
     field: ObjectParamProperty,
     parentPath: string[] = []
   ) => {
-    console.log(field, "on edit field", parentPath);
+    console.log("Edit field:", field, "Parent path:", parentPath);
     setEditingField(field);
     setCurrentPath(parentPath);
   };
@@ -148,6 +200,12 @@ export const JsonStructureEditor = ({
     parentField: ObjectParamProperty,
     parentPath: string[] = []
   ) => {
+    console.log(
+      "Add nested field to parent:",
+      parentField,
+      "Parent path:",
+      parentPath
+    );
     // Si no se proporciona una ruta, intentar encontrarla
     if (parentPath.length === 0) {
       const path = findFieldPath(fields, parentField.name);
@@ -156,6 +214,7 @@ export const JsonStructureEditor = ({
       }
     }
 
+    console.log("Final parent path for new field:", parentPath);
     // Crear un nuevo campo vacío y establecer la ruta del padre
     const newField = { name: "", type: ParamType.STRING, required: false };
     setEditingField(newField);
@@ -168,9 +227,17 @@ export const JsonStructureEditor = ({
     fieldName: string,
     currentPath: string[] = []
   ): string[] | null => {
+    console.log(
+      "Finding path for:",
+      fieldName,
+      "in current path:",
+      currentPath
+    );
     for (const field of fieldArray) {
       if (field.name === fieldName) {
-        return [...currentPath, field.name];
+        const foundPath = [...currentPath, field.name];
+        console.log("Found path:", foundPath);
+        return foundPath;
       }
 
       if (field.properties && field.properties.length > 0) {
@@ -188,6 +255,86 @@ export const JsonStructureEditor = ({
     return null;
   };
 
+  // Función recursiva para eliminar un campo en cualquier nivel de anidación
+  const deleteNestedField = (
+    fields: ObjectParamProperty[],
+    path: string[],
+    currentIndex: number,
+    fieldToDelete: string
+  ): ObjectParamProperty[] => {
+    console.log("deleteNestedField called with:", {
+      pathLength: path.length,
+      currentIndex,
+      currentPathSegment: path[currentIndex],
+      remainingPath: path.slice(currentIndex),
+      fieldToDelete,
+    });
+
+    // Si estamos en el último nivel del camino, eliminamos el campo
+    if (currentIndex >= path.length - 1) {
+      console.log(
+        "Reached target level, deleting field:",
+        fieldToDelete,
+        "from parent:",
+        path[currentIndex]
+      );
+      // Estamos en el nivel del objeto padre, ahora eliminamos de sus propiedades
+      const parentFieldName = path[currentIndex];
+      const parentFieldIndex = fields.findIndex(
+        f => f.name === parentFieldName
+      );
+
+      if (parentFieldIndex === -1) {
+        console.log("Parent field not found:", parentFieldName);
+        return fields;
+      }
+
+      const parentField = { ...fields[parentFieldIndex] };
+      if (!parentField.properties) {
+        return fields; // No hay propiedades para eliminar
+      }
+
+      // Eliminar el campo de las propiedades del padre
+      console.log("Removing field:", fieldToDelete, "from parent properties");
+      parentField.properties = parentField.properties.filter(
+        f => f.name !== fieldToDelete
+      );
+
+      const updatedFields = [...fields];
+      updatedFields[parentFieldIndex] = parentField;
+      return updatedFields;
+    }
+
+    // Buscar el campo en el camino actual
+    const fieldName = path[currentIndex];
+    const fieldIndex = fields.findIndex(f => f.name === fieldName);
+
+    // Si no encontramos el campo, devolvemos los campos sin cambios
+    if (fieldIndex === -1) {
+      console.log("Field not found in path:", fieldName);
+      return fields;
+    }
+
+    // Obtener el campo actual y asegurarnos de que tiene propiedades
+    const currentField = { ...fields[fieldIndex] };
+    if (!currentField.properties) {
+      return fields; // No hay propiedades para eliminar
+    }
+
+    // Eliminar recursivamente en las propiedades del campo
+    currentField.properties = deleteNestedField(
+      currentField.properties,
+      path,
+      currentIndex + 1,
+      fieldToDelete
+    );
+
+    // Crear una nueva lista de campos con el campo actualizado
+    const updatedFields = [...fields];
+    updatedFields[fieldIndex] = currentField;
+    return updatedFields;
+  };
+
   const handleDeleteField = (fieldName: string, parentPath: string[] = []) => {
     if (parentPath.length === 0) {
       // Eliminar del nivel principal
@@ -195,32 +342,16 @@ export const JsonStructureEditor = ({
       setFields(newFields);
       setValue("properties", newFields);
     } else {
-      // Eliminar de un objeto anidado
-      const newFields = [...fields];
-      let currentObj = newFields;
-      let targetObj = null;
+      // Eliminar de un nivel anidado usando la función recursiva
+      const updatedFields = deleteNestedField(
+        [...fields],
+        parentPath,
+        0,
+        fieldName
+      );
 
-      // Navegar hasta el objeto padre
-      for (let i = 0; i < parentPath.length; i++) {
-        const pathFieldName = parentPath[i];
-        targetObj = currentObj.find(f => f.name === pathFieldName);
-
-        if (targetObj && i < parentPath.length - 1) {
-          if (!targetObj.properties) {
-            return; // No hay propiedades para eliminar
-          }
-          currentObj = targetObj.properties;
-        }
-      }
-
-      // Eliminar el campo del objeto padre
-      if (targetObj && targetObj.properties) {
-        targetObj.properties = targetObj.properties.filter(
-          f => f.name !== fieldName
-        );
-        setFields(newFields);
-        setValue("properties", newFields);
-      }
+      setFields(updatedFields);
+      setValue("properties", updatedFields);
     }
   };
 
@@ -230,7 +361,8 @@ export const JsonStructureEditor = ({
     parentPath: string[] = []
   ) => {
     return fieldList.map((field, index) => {
-      const currentPath = [...parentPath, field.name];
+      // El path actual debe incluir el nombre del campo actual
+      const fieldPath = [...parentPath, field.name];
 
       return (
         <div key={index} className="space-y-1">
@@ -251,7 +383,7 @@ export const JsonStructureEditor = ({
               {field.type === ParamType.OBJECT && (
                 <button
                   type="button"
-                  onClick={() => handleAddNestedField(field, parentPath)}
+                  onClick={() => handleAddNestedField(field, fieldPath)}
                   className="hover:bg-gray-200 rounded p-1"
                 >
                   <IoMdAdd className="w-5 h-5 text-green-600" />
@@ -270,7 +402,7 @@ export const JsonStructureEditor = ({
             field.properties &&
             field.properties.length > 0 && (
               <div className="pl-4 border-l border-gray-300 ml-4 space-y-1">
-                {renderFields(field.properties, currentPath)}
+                {renderFields(field.properties, fieldPath)}
               </div>
             )}
         </div>
@@ -279,9 +411,10 @@ export const JsonStructureEditor = ({
   };
 
   return (
-    <div className="space-y-1">
-      {renderFields(fields)}
-
+    <div className="space-y-1 overflow-y-auto w-full">
+      <div className="max-h-56 overflow-y-auto w-full">
+        {renderFields(fields)}
+      </div>
       <button
         type="button"
         onClick={() => addField()}
