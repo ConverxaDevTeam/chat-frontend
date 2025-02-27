@@ -373,13 +373,6 @@ export const JsonStructureEditor = ({
               <span className="text-xs text-gray-500 ml-2">({field.type})</span>
             </span>
             <div className="flex items-center gap-1">
-              <button
-                type="button"
-                onClick={() => handleEditField(field, parentPath)}
-                className="hover:bg-gray-200 rounded p-1"
-              >
-                <IoMdInformationCircle className="w-5 h-5 text-gray-600" />
-              </button>
               {field.type === ParamType.OBJECT && (
                 <button
                   type="button"
@@ -389,6 +382,14 @@ export const JsonStructureEditor = ({
                   <IoMdAdd className="w-5 h-5 text-green-600" />
                 </button>
               )}
+              <button
+                type="button"
+                onClick={() => handleEditField(field, parentPath)}
+                className="hover:bg-gray-200 rounded p-1"
+              >
+                <IoMdInformationCircle className="w-5 h-5 text-gray-600" />
+              </button>
+
               <button
                 type="button"
                 onClick={() => handleDeleteField(field.name, parentPath)}
@@ -418,7 +419,7 @@ export const JsonStructureEditor = ({
       <button
         type="button"
         onClick={() => addField()}
-        className="flex items-center gap-2 w-full p-2 bg-gray-50 rounded hover:bg-gray-100 text-sm font-medium text-gray-600"
+        className="flex items-center justify-center gap-2 w-full p-2 bg-gray-50 rounded hover:bg-gray-100 text-sm font-medium text-gray-600"
       >
         <IoMdAdd className="w-5 h-5" />
         <span>Agregar campo</span>
