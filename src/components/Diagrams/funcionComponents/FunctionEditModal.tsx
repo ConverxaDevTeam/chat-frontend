@@ -44,6 +44,7 @@ export const FunctionEditModal = ({
             onSuccess={handleSuccess}
             isLoading={isLoading}
             agentId={agentId}
+            onCancel={onClose}
           />
         </div>
       </div>

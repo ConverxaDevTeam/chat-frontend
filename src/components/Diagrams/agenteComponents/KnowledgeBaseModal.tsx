@@ -398,6 +398,7 @@ const KnowledgeBaseModal = ({
               <div className="flex gap-[16px] mt-auto justify-end">
                 <button
                   type="button"
+                  onClick={onClose}
                   className="w-[115px] h-[48px] text-sofia-navyBlue border-sofia-navyBlue border-[1px] font-semibold rounded-[8px]"
                 >
                   Cancelar
