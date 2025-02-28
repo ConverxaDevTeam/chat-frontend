@@ -55,11 +55,9 @@ const MessageContainer = ({
 const MessageHeader = ({
   message,
   config,
-  userName,
 }: {
   message: ConversationResponseMessage;
   config: ConfigWebChat;
-  userName: string;
 }) => {
   return (
     <div className="flex justify-center items-center gap-2">
@@ -67,7 +65,7 @@ const MessageHeader = ({
         className="text-[14px] font-bold"
         style={{ color: config.text_color }}
       >
-        {userName}
+        {message.type === MessageType.USER ? "Usuario" : "Asistente"}
       </span>
       <span
         className="text-[14px] font-bold"
@@ -150,11 +148,7 @@ const MessageCard = ({
           />
         </div>
         <div className="flex flex-col items-start gap-1">
-          <MessageHeader
-            message={message}
-            config={config}
-            userName={userName}
-          />
+          <MessageHeader message={message} config={config} />
           <div
             className="flex justify-center items-center self-stretch p-2 shadow-[2px_2px_4px_0px_rgba(0,0,0,0.10)]"
             style={{
@@ -173,7 +167,7 @@ const MessageCard = ({
   return (
     <MessageContainer align="end">
       <div className="flex flex-col items-end gap-1">
-        <MessageHeader message={message} config={config} userName={userName} />
+        <MessageHeader message={message} config={config} />
         <div
           className="flex justify-center items-center self-stretch p-2 shadow-[2px_2px_4px_0px_rgba(0,0,0,0.10)]"
           style={{

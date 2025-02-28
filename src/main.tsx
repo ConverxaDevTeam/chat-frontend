@@ -4,6 +4,7 @@ import { BrowserRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import { Provider } from "react-redux";
 import store from "./store";
+import { CounterProvider } from "@hooks/CounterContext";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <BrowserRouter
@@ -12,9 +13,11 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
       v7_startTransition: true,
     }}
   >
-    <Provider store={store}>
-      <App />
-      <ToastContainer />
-    </Provider>
+    <CounterProvider>
+      <Provider store={store}>
+        <App />
+        <ToastContainer />
+      </Provider>
+    </CounterProvider>
   </BrowserRouter>
 );

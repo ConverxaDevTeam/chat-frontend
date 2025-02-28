@@ -19,6 +19,7 @@ const NewIntegration = ({
         <ButtonWhatsAppIntegration
           getDataIntegrations={getDataIntegrations}
           departmentId={departmentId}
+          close={() => setIsMenuVisible(false)}
         />
         <ButtonMessagerIntegration
           getDataIntegrations={getDataIntegrations}
@@ -27,6 +28,7 @@ const NewIntegration = ({
         />
         <ButtonSlackIntegration
           departmentId={departmentId}
+          getDataIntegrations={getDataIntegrations}
           close={() => setIsMenuVisible(false)}
         />
       </div>

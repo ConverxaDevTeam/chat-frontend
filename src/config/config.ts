@@ -40,19 +40,59 @@ export const apiUrls = {
   deleteIntegrationLogo: (id: number) => `/api/integration/${id}/logo`,
   deleteIntegrationbyId: (id: number) => `/api/integration/${id}/remove`,
   getPagesFacebook: (departmentId: number, organizationId: number) =>
-    `/api/facebook/get-pages/${organizationId}/${departmentId}`,
+    `/api/facebook/get-pages/${organizationId}/${departmentId}`, //xxx
   getChannelNameByIntegrationId: (
-    departmentId: number,
     organizationId: number,
+    departmentId: number,
     integrationId: number
   ) =>
-    `/api/integration/get-channel-name/${departmentId}/${organizationId}/${integrationId}`,
+    `/api/integration/get-channel-name/${organizationId}/${departmentId}/${integrationId}`,
+  updateIntegrationMessangerManual: (
+    organizationId: number,
+    departmentId: number,
+    integrationId: number
+  ) =>
+    `/api/integration/update-messenger-manual/${organizationId}/${departmentId}/${integrationId}`,
+  getIntegrationMessangerManual: (
+    organizationId: number,
+    departmentId: number,
+    integrationId: number
+  ) =>
+    `/api/integration/get-messenger-manual/${organizationId}/${departmentId}/${integrationId}`,
+  changeCodeIntegrationManual: (
+    organizationId: number,
+    departmentId: number,
+    integrationId: number
+  ) =>
+    `/api/integration/change-manual-code/${organizationId}/${departmentId}/${integrationId}`,
   changeChannelName: (
-    departmentId: number,
     organizationId: number,
+    departmentId: number,
     integrationId: number
   ) =>
-    `/api/integration/change-channel-name/${departmentId}/${organizationId}/${integrationId}`,
+    `/api/integration/change-channel-name/${organizationId}/${departmentId}/${integrationId}`,
+  createIntegrationMessagerManual: (
+    organizationId: number,
+    departmentId: number
+  ) =>
+    `/api/integration/create-messager-manual/${organizationId}/${departmentId}`,
+  createIntegrationWhatsAppManual: (
+    organizationId: number,
+    departmentId: number
+  ) =>
+    `/api/integration/create-whatsapp-manual/${organizationId}/${departmentId}`,
+  getIntegrationWhatsAppManual: (
+    organizationId: number,
+    departmentId: number,
+    integrationId: number
+  ) =>
+    `/api/integration/get-whatsapp-manual/organization/${organizationId}/departamento/${departmentId}/integration/${integrationId}`,
+  updateIntegrationWhatsAppManual: (
+    organizationId: number,
+    departmentId: number,
+    integrationId: number
+  ) =>
+    `/api/integration/update-whatsapp-manual/${organizationId}/${departmentId}/${integrationId}`,
   //conversations
   getConversationsByOrganizationId: (organizationId: number) =>
     `/api/conversation/organization/${organizationId}`,

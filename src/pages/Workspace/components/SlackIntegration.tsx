@@ -33,8 +33,8 @@ const SlackIntegration: React.FC<SlackIntegrationProps> = ({
   const getChannelName = async () => {
     if (!data.id || !selectedDepartmentId || !selectOrganizationId) return;
     const respone = await getChannelNameByIntegrationId(
-      selectedDepartmentId,
       selectOrganizationId,
+      selectedDepartmentId,
       data.id
     );
     if (respone) {
@@ -47,8 +47,8 @@ const SlackIntegration: React.FC<SlackIntegrationProps> = ({
     e.preventDefault();
     if (!data.id || !selectedDepartmentId || !selectOrganizationId) return;
     const respone = await changeChannelName(
-      selectedDepartmentId,
       selectOrganizationId,
+      selectedDepartmentId,
       data.id,
       channelName
     );

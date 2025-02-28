@@ -47,8 +47,14 @@ const useParamsModal = ({
   };
 
   const handleEdit = (param: FunctionParam, index: number) => {
-    setEditingParam({ param, index });
+    const paramCopy = JSON.parse(JSON.stringify(param));
+    setEditingParam({ param: paramCopy, index });
     setShowParamForm(true);
+  };
+
+  const handleCloseForm = () => {
+    setEditingParam(null);
+    setShowParamForm(false);
   };
 
   const handleSubmit = async (param: CreateFunctionParamDto) => {
@@ -57,12 +63,11 @@ const useParamsModal = ({
     } else {
       await createParam(param);
     }
-    setShowParamForm(false);
+    handleCloseForm();
   };
 
   return {
     showParamForm,
-    setShowParamForm,
     editingParam,
     currentPage,
     itemsPerPage,
@@ -73,6 +78,7 @@ const useParamsModal = ({
     handleSubmit,
     deleteParam,
     setCurrentPage,
+    handleCloseForm,
   };
 };
 
@@ -85,7 +91,6 @@ export const ParamsModal = ({
 }: ParamsModalProps) => {
   const {
     showParamForm,
-    setShowParamForm,
     editingParam,
     currentPage,
     itemsPerPage,
@@ -96,6 +101,7 @@ export const ParamsModal = ({
     handleSubmit,
     deleteParam,
     setCurrentPage,
+    handleCloseForm,
   } = useParamsModal({ functionData, params, setParams });
 
   return (
@@ -128,7 +134,7 @@ export const ParamsModal = ({
 
         <ParamFormModal
           isShown={showParamForm}
-          onClose={() => setShowParamForm(false)}
+          onClose={handleCloseForm}
           param={editingParam?.param}
           onSubmit={handleSubmit}
         />

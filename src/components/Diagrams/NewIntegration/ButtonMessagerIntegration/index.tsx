@@ -8,6 +8,7 @@ import {
 import { useState } from "react";
 import Modal from "@components/Modal";
 import Loading from "@components/Loading";
+import { createIntegrationMessagerManual } from "@services/integration";
 
 interface ButtonMessagerIntegrationProps {
   getDataIntegrations: () => void;
@@ -32,6 +33,7 @@ const ButtonMessagerIntegration = ({
   departmentId,
   close,
 }: ButtonMessagerIntegrationProps) => {
+  const [menuIntegracion, setMenuIntegracion] = useState<boolean>(false);
   const [pages, setPages] = useState<FacebookPage[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [openModal, setOpenModal] = useState<boolean>(false);
@@ -67,6 +69,21 @@ const ButtonMessagerIntegration = ({
         },
       }
     );
+    setMenuIntegracion(false);
+  };
+
+  const handleCreateIntegrationFacebookManual = async () => {
+    if (!departmentId || !selectOrganizationId) return;
+
+    const response = await createIntegrationMessagerManual(
+      selectOrganizationId,
+      departmentId
+    );
+    if (response) {
+      getDataIntegrations();
+      setMenuIntegracion(false);
+      close();
+    }
   };
 
   return (
@@ -97,6 +114,7 @@ const ButtonMessagerIntegration = ({
                       );
                       if (response) {
                         getDataIntegrations();
+                        setMenuIntegracion(false);
                         close();
                       }
                     };
@@ -123,10 +141,28 @@ const ButtonMessagerIntegration = ({
           )}
         </div>
       </Modal>
+      <Modal
+        isShown={menuIntegracion}
+        header={<h1>Integración de Messenger</h1>}
+        onClose={() => setMenuIntegracion(false)}
+      >
+        <div className="flex gap-[16px]">
+          <ButtonIntegracion
+            action={handleConnectFacebook}
+            Icon="messenger"
+            text="Messenger Integración Automática"
+          />
+          <ButtonIntegracion
+            action={handleCreateIntegrationFacebookManual}
+            Icon="messenger"
+            text="Messenger Integración Manual"
+          />
+        </div>
+      </Modal>
       <ButtonIntegracion
-        action={handleConnectFacebook}
+        action={() => setMenuIntegracion(true)}
         Icon="messenger"
-        text="Messager"
+        text="Messenger"
       />
     </>
   );

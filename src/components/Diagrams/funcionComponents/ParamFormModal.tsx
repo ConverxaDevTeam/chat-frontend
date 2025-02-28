@@ -14,8 +14,11 @@ import {
   UseFormRegister,
   FieldErrors,
   Control,
+  useWatch,
+  UseFormSetValue,
 } from "react-hook-form";
 import { Button } from "@components/common/Button";
+import { JsonStructureEditor } from "./JsonStructureEditor";
 
 // Types
 interface ParamFormModalProps {
@@ -29,6 +32,8 @@ interface ParamFormFieldsProps {
   register: UseFormRegister<CreateFunctionParamDto>;
   control: Control<CreateFunctionParamDto>;
   errors: FieldErrors<CreateFunctionParamDto>;
+  onClose: () => void;
+  setValue: UseFormSetValue<CreateFunctionParamDto>;
 }
 
 // Form Hook
@@ -39,6 +44,7 @@ const useParamForm = (initialParam?: FunctionParam | null) => {
       type: ParamType.STRING,
       description: "",
       required: false,
+      properties: [],
     }),
     []
   );
@@ -48,6 +54,7 @@ const useParamForm = (initialParam?: FunctionParam | null) => {
     handleSubmit,
     reset,
     control,
+    setValue,
     formState: { errors },
   } = useForm<CreateFunctionParamDto>({
     defaultValues,
@@ -64,6 +71,7 @@ const useParamForm = (initialParam?: FunctionParam | null) => {
         type: initialParam.type,
         description: initialParam.description || "",
         required: initialParam.required || false,
+        properties: initialParam.properties || [],
       });
     } else {
       resetForm();
@@ -74,6 +82,7 @@ const useParamForm = (initialParam?: FunctionParam | null) => {
     register,
     handleSubmit,
     control,
+    setValue,
     errors,
     resetForm,
   };
@@ -84,49 +93,67 @@ const ParamFormFields = ({
   register,
   control,
   errors,
-}: ParamFormFieldsProps) => (
-  <div className="flex flex-col gap-[24px]">
-    <InputGroup label="Nombre" errors={errors.name}>
-      <Input
-        placeholder="Nombre del parámetro"
-        register={register("name", { required: "El nombre es obligatorio" })}
-        error={errors.name?.message}
-      />
-    </InputGroup>
+  onClose,
+  setValue,
+}: ParamFormFieldsProps) => {
+  const type = useWatch({ control, name: "type" });
 
-    <InputGroup label="Tipo" errors={errors.type}>
-      <Select
-        name="type"
-        control={control}
-        options={Object.values(ParamType).map(type => ({
-          value: type,
-          label: type,
-        }))}
-        placeholder="Seleccionar tipo"
-      />
-    </InputGroup>
+  return (
+    <div className="flex flex-col gap-[24px]">
+      <InputGroup label="Nombre" errors={errors.name}>
+        <Input
+          placeholder="Nombre del parámetro"
+          register={register("name", { required: "El nombre es obligatorio" })}
+          error={errors.name?.message}
+        />
+      </InputGroup>
 
-    <InputGroup label="Descripción" errors={errors.description}>
-      <TextArea
-        placeholder="Descripción del parámetro"
-        register={register("description")}
-        error={errors.description?.message}
-        rows={3}
-      />
-    </InputGroup>
+      <InputGroup label="Tipo" errors={errors.type}>
+        <Select
+          name="type"
+          control={control}
+          options={Object.values(ParamType).map(type => ({
+            value: type,
+            label: type,
+          }))}
+          placeholder="Seleccionar tipo"
+        />
+      </InputGroup>
 
-    <div className="flex items-center">
-      <input
-        type="checkbox"
-        {...register("required")}
-        className="h-4 w-4 rounded border-gray-300 accent-sofia-electricOlive"
-      />
-      <label className="ml-2 text-sofia-superDark text-[14px] font-semibold leading-[16px]">
-        Requerido
-      </label>
+      {type === ParamType.OBJECT && (
+        <InputGroup label="Estructura">
+          <JsonStructureEditor
+            value={control._formValues.properties || []}
+            control={control}
+            setValue={(name, value) =>
+              setValue(name, value, { shouldValidate: true })
+            }
+            onCloseMainModal={onClose}
+          />
+        </InputGroup>
+      )}
+      <InputGroup label="Descripción" errors={errors.description}>
+        <TextArea
+          placeholder="Descripción del parámetro"
+          register={register("description")}
+          error={errors.description?.message}
+          rows={3}
+        />
+      </InputGroup>
+
+      <div className="flex items-center">
+        <input
+          type="checkbox"
+          {...register("required")}
+          className="h-4 w-4 rounded border-gray-300 accent-sofia-electricOlive"
+        />
+        <label className="ml-2 text-sofia-superDark text-[14px] font-semibold leading-[16px]">
+          Requerido
+        </label>
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 // Form Actions Component
 const ParamFormActions = ({
@@ -153,12 +180,12 @@ export const ParamFormModal = ({
   param,
   onSubmit,
 }: ParamFormModalProps) => {
-  const { register, handleSubmit, control, errors, resetForm } =
+  const { register, handleSubmit, control, setValue, errors, resetForm } =
     useParamForm(param);
 
   const onFormSubmit = useCallback(
     handleSubmit(data => {
-      onSubmit(data);
+      onSubmit(data as CreateFunctionParamDto);
       resetForm();
       onClose();
     }),
@@ -192,6 +219,8 @@ export const ParamFormModal = ({
           register={register}
           control={control}
           errors={errors}
+          onClose={handleClose}
+          setValue={setValue}
         />
         <ParamFormActions isEdit={!!param} />
       </form>

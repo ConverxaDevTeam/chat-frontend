@@ -1,16 +1,14 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import DefaultNode from "./DefaultNode";
-import { HiPlusCircle } from "react-icons/hi";
 import { CustomTypeNodeProps, NodeData } from "@interfaces/workflow";
 import Modal from "@components/Modal";
 import NewIntegration from "./NewIntegration";
 import { RootState } from "@store";
 import { useSelector } from "react-redux";
 import { ConfigWebChat } from "@pages/Workspace/components/CustomizeChat";
-import { getIntegrations } from "@services/integration";
-import ButtonIntegrationActive from "./ButtonIntegrationActive";
 import { ContextMenuOption } from "./DiagramContextMenu";
 import { IntegrationType } from "@interfaces/integrations";
+import { useCounter } from "@hooks/CounterContext";
 
 export interface ConfigWhatsApp {
   name_app: string | null;
@@ -37,51 +35,34 @@ const IntegracionesNode = ({
   selected,
   ...rest
 }: CustomTypeNodeProps<NodeData>) => {
-  const { selectOrganizationId } = useSelector(
-    (state: RootState) => state.auth
-  );
+  const { increment } = useCounter();
   const selectedDepartmentId = useSelector(
     (state: RootState) => state.department.selectedDepartmentId
   );
-  const [integrations, setIntegrations] = useState<IIntegration[]>([]);
   const [isMenuVisible, setIsMenuVisible] = useState(false);
 
   const toggleMenu = () => {
     setIsMenuVisible(!isMenuVisible);
   };
 
-  const getDataIntegrations = async () => {
-    if (!selectOrganizationId || !selectedDepartmentId) return;
-
-    try {
-      const response = await getIntegrations(selectedDepartmentId);
-      setIntegrations(response);
-    } catch (error) {
-      console.error("Error getting integrations:", error);
-    }
-  };
-
-  useEffect(() => {
-    getDataIntegrations();
-  }, [selectOrganizationId, selectedDepartmentId]);
-
   const contextMenuOptions: ContextMenuOption[] = [
     {
       child: (
-      <div className="group relative">
-        <img src="/mvp/circle-plus.svg" alt="Nueva Integración" />
-        <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-5 hidden group-hover:block bg-gray-800 text-white text-lm px-2 py-1 rounded whitespace-nowrap">
+        <div className="group relative">
+          <img src="/mvp/circle-plus.svg" alt="Nueva Integración" />
+          <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-5 hidden group-hover:block bg-gray-800 text-white text-lm px-2 py-1 rounded whitespace-nowrap">
             Agregar integración
           </div>
-      </div>
-      
-    )
-      ,
+        </div>
+      ),
       onClick: () => setIsMenuVisible(true),
     },
     // Add more options here if needed
   ];
 
+  const getDataIntegrations = () => {
+    increment();
+  };
   return (
     <>
       <Modal
@@ -108,7 +89,7 @@ const IntegracionesNode = ({
         contextMenuOptions={contextMenuOptions}
         {...rest}
       >
-        <div className="bg-transparent rounded-md text-black flex flex-col gap-[10px]">
+        {/* <div className="bg-transparent rounded-md text-black flex flex-col gap-[10px]">
           <button
             onClick={toggleMenu}
             className="w-full py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition duration-300 flex items-center justify-center gap-2"
@@ -126,7 +107,7 @@ const IntegracionesNode = ({
                 integration={integration}
               />
             ))}
-        </div>
+        </div> */}
       </DefaultNode>
     </>
   );
