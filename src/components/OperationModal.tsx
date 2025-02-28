@@ -15,7 +15,7 @@ const OperationModal: React.FC<OperationModalProps> = ({ isShown, title, text, t
     if (!modalRoot) return null;
 
     const imageMapping: Record<"success" | "error", { src: string; alt: string }> = {
-        success: { src: "/mvp/check-circle.svg", alt: "Check circle" },
+        success: { src: "/mvp/circle-alert.svg", alt: "Check circle" },
         error: { src: "/mvp/triangle-alert.svg", alt: "Alert triangle" },
     };
 

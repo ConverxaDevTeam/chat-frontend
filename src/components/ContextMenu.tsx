@@ -131,13 +131,13 @@ const useMenuPosition = (
 };
 
 // Componente para el divisor
-const MenuDivider = () => (
+export const MenuDivider = () => (
   <div className="h-[1px] bg-sofia-celeste/20 w-[50px] mx-auto" />
 );
 
 // Componente para envolver items del menú
-const MenuItem: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <div className="flex justify-center items-center gap-3 hover:bg-[#DBEAF2] cursor-pointer px-3 py-1 rounded w-full">
+export const MenuItem: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <div className="flex justify-center items-center gap-[10px] hover:bg-[#DBEAF2] cursor-pointer px-3 py-1 rounded w-full">
     {children}
   </div>
 );
@@ -189,7 +189,7 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
     <div
       ref={menuRef}
       data-menu-id={menuId}
-      className="fixed flex flex-col p-[16px] gap-3 items-start rounded-lg border-2 border-sofia-darkBlue bg-sofia-blancoPuro min-w-[200px] whitespace-nowrap"
+      className="fixed flex flex-col p-[16px] gap-[10px] items-start rounded-lg border-2 border-sofia-darkBlue bg-sofia-blancoPuro min-w-[200px] whitespace-nowrap"
       style={{
         left: x,
         top: y,
