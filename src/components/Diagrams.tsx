@@ -50,6 +50,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "@store";
 import { getWorkspaceData } from "@services/department";
 import { useAlertContext } from "./Diagrams/components/AlertContext";
+import { useCounter } from "@hooks/CounterContext";
 
 // Tipos y interfaces
 interface ContextMenuState {
@@ -394,6 +395,7 @@ const ZoomTransition = ({
 }: {
   onAgentIdChange: (id: number) => void;
 }) => {
+  const { count } = useCounter();
   const [agentId, setAgentId] = useState<number | null>(null);
   const departmentId = useSelector(
     (state: RootState) => state.department.selectedDepartmentId
@@ -403,33 +405,32 @@ const ZoomTransition = ({
   const [edges, setEdges] = useEdgesState<Edge>([]);
   const { handleOperation } = useAlertContext();
 
-  useEffect(() => {
-    if (!departmentId) return;
-
-    const fetchDepartmentData = async () => {
-      try {
-        const response = await getWorkspaceData(departmentId);
-        const agentState = {
-          agentFunctions: response.department.agente.funciones,
-          integrations: response.department.integrations,
-        };
-        if (response.department?.agente?.id) {
-          setAgentId(response.department.agente.id);
-          onAgentIdChange(response.department.agente.id);
-          const { nodes: initialNodes, initialEdges } = createInitialNodes(
-            agentId ?? undefined,
-            agentState
-          );
-          setNodesState(initialNodes);
-          setEdges(initialEdges);
-        }
-      } catch (error) {
-        console.error("Error fetching department data:", error);
+  const fetchDepartmentData = async () => {
+    try {
+      if (!departmentId) return;
+      const response = await getWorkspaceData(departmentId);
+      const agentState = {
+        agentFunctions: response.department.agente.funciones,
+        integrations: response.department.integrations,
+      };
+      if (response.department?.agente?.id) {
+        setAgentId(response.department.agente.id);
+        onAgentIdChange(response.department.agente.id);
+        const { nodes: initialNodes, initialEdges } = createInitialNodes(
+          agentId ?? undefined,
+          agentState
+        );
+        setNodesState(initialNodes);
+        setEdges(initialEdges);
       }
-    };
+    } catch (error) {
+      console.error("Error fetching department data:", error);
+    }
+  };
 
+  useEffect(() => {
     fetchDepartmentData();
-  }, [departmentId, agentId]);
+  }, [departmentId, agentId, count]);
 
   const reactFlowInstance = useReactFlow();
   const { fitView } = reactFlowInstance;

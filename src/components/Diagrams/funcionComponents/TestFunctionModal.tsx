@@ -16,6 +16,14 @@ interface TestFunctionModalProps {
   params: FunctionParam[];
 }
 
+type Property = {
+  name: string;
+  type: string;
+  required?: boolean;
+  description?: string;
+  properties?: Property[];
+};
+
 export const TestFunctionModal = ({
   isShown,
   onClose,
@@ -30,12 +38,18 @@ export const TestFunctionModal = ({
 
   const onSubmit = async (data: Record<string, unknown>) => {
     try {
-      const response = await onTest(data);
+      console.log("Form data:", data);
+
+      // Transformar datos para manejar objetos anidados
+      const transformedData = transformFormData(data);
+      console.log("Transformed data:", transformedData);
+
+      const response = await onTest(transformedData);
       const responseData = response.data as Record<string, unknown>;
       if ("error" in responseData) {
         setTestResponse({
           status: (responseData?.error as { status: number })?.status || 500,
-          data: responseData
+          data: responseData,
         });
         return;
       }
@@ -46,6 +60,88 @@ export const TestFunctionModal = ({
     } catch (error: unknown) {
       setTestResponse(getErrorResponse(error));
     }
+  };
+
+  // Función para transformar datos del formulario en estructura anidada
+  const transformFormData = (
+    data: Record<string, unknown>
+  ): Record<string, unknown> => {
+    const result: Record<string, unknown> = {};
+
+    // Procesar todos los campos del formulario
+    Object.entries(data).forEach(([key, value]) => {
+      if (!key.includes(".")) {
+        // Campos de primer nivel
+        result[key] = value;
+      }
+    });
+
+    // Procesar campos anidados
+    Object.entries(data).forEach(([key, value]) => {
+      if (key.includes(".")) {
+        const parts = key.split(".");
+        let current = result;
+
+        // Construir la estructura anidada
+        for (let i = 0; i < parts.length - 1; i++) {
+          const part = parts[i];
+          if (!current[part]) {
+            current[part] = {};
+          }
+          current = current[part] as Record<string, unknown>;
+        }
+
+        // Asignar el valor al último nivel
+        const lastPart = parts[parts.length - 1];
+        current[lastPart] = value;
+      }
+    });
+
+    return result;
+  };
+
+  // Renderiza campos de formulario de forma recursiva
+  const renderFormFields = (
+    parameters: FunctionParam[] | Property[],
+    prefix = ""
+  ): JSX.Element[] => {
+    return parameters.flatMap(param => {
+      const fieldName = prefix ? `${prefix}.${param.name}` : param.name;
+
+      if (param.type === "object" && param.properties) {
+        return [
+          <div key={fieldName} className="mt-4 mb-2">
+            <h3 className="font-medium text-gray-700">
+              {param.name}
+              {param.required ? " *" : ""}
+            </h3>
+            {param.description && (
+              <p className="text-sm text-gray-500">{param.description}</p>
+            )}
+          </div>,
+          ...renderFormFields(param.properties, fieldName),
+        ];
+      }
+
+      return [
+        <InputGroup
+          key={fieldName}
+          label={`${fieldName}${param.required ? " *" : ""}`}
+        >
+          <Input
+            placeholder={`Ingrese ${param.name}`}
+            register={register(fieldName, {
+              required: param.required ? "Este campo es requerido" : false,
+              valueAsNumber: param.type === "number",
+            })}
+            type={param.type === "number" ? "number" : "text"}
+          />
+          {param.description && (
+            <p className="text-xs text-gray-500 mt-1">{param.description}</p>
+          )}
+        </InputGroup>,
+      ];
+    });
   };
 
   return (
@@ -61,18 +157,7 @@ export const TestFunctionModal = ({
               Esta función no tiene parámetros configurados
             </p>
           ) : (
-            params.map(param => (
-              <InputGroup key={param.name} label={param.name}>
-                <Input
-                  placeholder={`Ingrese ${param.name}`}
-                  register={register(param.name, {
-                    required: "Este campo es requerido",
-                    valueAsNumber: param.type === "number",
-                  })}
-                  type={param.type === "number" ? "number" : "text"}
-                />
-              </InputGroup>
-            ))
+            renderFormFields(params)
           )}
           {params.length > 0 && (
             <div className="flex justify-center gap-2 mt-4">

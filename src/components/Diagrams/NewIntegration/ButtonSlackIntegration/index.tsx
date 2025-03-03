@@ -7,11 +7,13 @@ import { baseUrl } from "@config/config";
 interface ButtonSlackIntegrationProps {
   departmentId: number | null;
   close: () => void;
+  getDataIntegrations: () => void;
 }
 
 const ButtonSlackIntegration = ({
   departmentId,
   close,
+  getDataIntegrations,
 }: ButtonSlackIntegrationProps) => {
   const { selectOrganizationId } = useSelector(
     (state: RootState) => state.auth
@@ -42,8 +44,8 @@ const ButtonSlackIntegration = ({
 
     window.addEventListener("message", event => {
       if (event.data?.success) {
+        getDataIntegrations();
         close();
-        window.location.reload();
       } else {
         alertError(event.data?.message);
       }
