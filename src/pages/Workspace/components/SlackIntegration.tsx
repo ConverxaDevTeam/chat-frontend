@@ -8,7 +8,6 @@ import {
 import Loading from "@components/Loading";
 import { RootState } from "@store";
 import { useSelector } from "react-redux";
-import { IoClose } from "react-icons/io5";
 
 interface SlackIntegrationProps {
   isOpen: boolean;
@@ -65,7 +64,7 @@ const SlackIntegration: React.FC<SlackIntegrationProps> = ({
   return (
     <RawModal isShown={isOpen} onClose={onClose}>
       <div
-        className={`flex flex-col w-[470px] ${loading ? "min-h-[300px]" : ""} bg-white p-[24px] rounded-[16px] justify-center`}
+        className={`flex flex-col w-[470px] ${loading ? "min-h-[300px]" : ""} bg-white p-[24px] rounded-[4px] justify-center`}
       >
         {loading ? (
           <Loading />
@@ -75,14 +74,16 @@ const SlackIntegration: React.FC<SlackIntegrationProps> = ({
               <p className="text-sofia-superDark font-semibold text-[24px]">
                 Integración de Slack
               </p>
-              <IoClose
-                className="w-[20px] h-[20px] cursor-pointer"
+              <img
+                src="/mvp/vector-x.svg"
+                alt="Cerrar"
+                className="w-[14px] h-[14px] cursor-pointer" 
                 onClick={onClose}
               />
             </div>
             <label
               htmlFor="channelName"
-              className="text-sofia-superDark font-bold text-[14px] mb-[8px]"
+              className="text-sofia-superDark font-semibold text-[14px] mb-[8px]"
             >
               Nombre del canal
             </label>
@@ -92,19 +93,19 @@ const SlackIntegration: React.FC<SlackIntegrationProps> = ({
               placeholder="Nombre del canal"
               value={channelName}
               onChange={e => setChannelName(e.target.value)}
-              className="flex w-full h-[56px] pl-4 pr-9 py-2.5 justify-between items-center flex-shrink-0 rounded-lg border border-app-gray bg-sofia-blancoPuro text-[14px] font-normal placeholder:text-[#A6A8AB]"
+              className="flex w-full h-[56px] pl-4 pr-9 py-2.5 justify-between items-center flex-shrink-0 rounded-lg border border-sofia-darkBlue text-[14px] font-normal placeholder:text-[#A6A8AB]"
             />
-            <div className="flex gap-[24px] mt-[24px]">
+            <div className="flex gap-[16px] mt-[24px]">
               <button
                 type="button"
-                className="text-sofia-superDark font-bold text-[16px] flex-1 h-[48px] border border-app-gray rounded-[8px] flex justify-center items-center"
+                className="text-sofia-superDark font-semibold text-[16px] flex-1 h-[48px] border border-app-gray rounded-[4px] flex justify-center items-center"
                 onClick={onClose}
               >
                 Cancelar
               </button>
               <button
                 type="submit"
-                className="bg-sofia-electricGreen text-sofia-superDark font-bold text-[16px] rounded-[8px] flex-1"
+                className="bg-sofia-electricGreen text-sofia-superDark font-semibold text-[16px] rounded-[4px] flex-1"
               >
                 Guardar
               </button>
