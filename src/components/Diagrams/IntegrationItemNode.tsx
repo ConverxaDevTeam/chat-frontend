@@ -11,6 +11,7 @@ import MessengerManualIntegration from "@pages/Workspace/components/MessengerMan
 import WhatsAppManualIntegration from "@pages/Workspace/components/WhatsAppManualIntegration";
 import ConfirmationModal from "@components/ConfirmationModal";
 import { deleteIntegrationbyId } from "@services/integration";
+import { ContextMenuOption } from "./DiagramContextMenu";
 
 interface IntegrationItemProps extends CustomTypeNodeProps<NodeData> {
   data: NodeData & {
@@ -73,29 +74,33 @@ export const contextMenuOptions = ({
   setMessengerManualModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
   setWhatsAppManualModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
-  const choices = [];
+  const choices: ContextMenuOption[] = [];
   if (itemType === IntegrationType.SLACK) {
     choices.push({
       child: <img src="/mvp/pencil.svg" alt="slack" />,
       onClick: () => setIsSlackModalOpen(true),
+      tooltip: "Editar integración Slack"
     });
   }
   if (itemType === IntegrationType.MESSENGER_MANUAL) {
     choices.push({
       child: <img src="/mvp/settings.svg" alt="messenger" />,
       onClick: () => setMessengerManualModalOpen(true),
+      tooltip: "Configurar Messenger"
     });
   }
   if (itemType === IntegrationType.WHATSAP_MANUAL) {
     choices.push({
-      child: <img src="/mvp/settings.svg" alt="messenger" />,
+      child: <img src="/mvp/settings.svg" alt="whatsapp" />,
       onClick: () => setWhatsAppManualModalOpen(true),
+      tooltip: "Configurar WhatsApp"
     });
   }
   if (itemType === IntegrationType.CHAT_WEB) {
     choices.push({
       child: <img src="/mvp/globe.svg" alt="Webchat" />,
       onClick: () => setIsModalOpen(true),
+      tooltip: "Configurar Webchat"
     });
   } else if (
     itemType === IntegrationType.MESSENGER ||
@@ -107,6 +112,7 @@ export const contextMenuOptions = ({
     choices.push({
       child: <img src="/mvp/trash.svg" alt="Remove" />,
       onClick: () => setIsRemoveModalOpen(true),
+      tooltip: "Eliminar integración"
     });
   }
   return choices;
@@ -142,6 +148,7 @@ const IntegrationItemNode = memo((props: IntegrationItemProps) => {
           />
         }
         allowedConnections={["source"]}
+        contextMenuVersion="v2"
         contextMenuOptions={contextMenuOptions({
           setIsModalOpen,
           itemType: type,
