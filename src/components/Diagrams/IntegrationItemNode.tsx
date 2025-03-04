@@ -9,6 +9,8 @@ import ConfirmationModal from "@components/ConfirmationModal";
 import { deleteIntegrationbyId } from "@services/integration";
 import MessengerManualIntegration from "@pages/Workspace/components/MessengerManualIntegration";
 import WhatsAppManualIntegration from "@pages/Workspace/components/WhatsAppManualIntegration";
+import ConfirmationModal from "@components/ConfirmationModal";
+import { deleteIntegrationbyId } from "@services/integration";
 
 interface IntegrationItemProps extends CustomTypeNodeProps<NodeData> {
   data: NodeData & {
