@@ -9,11 +9,8 @@ import {
 } from "@services/integration";
 import { RootState } from "@store";
 import { useEffect, useState } from "react";
-import { IoClose } from "react-icons/io5";
 import { useSelector } from "react-redux";
-import { RiFileCopy2Line } from "react-icons/ri";
 import { alertConfirm } from "@utils/alerts";
-import { RxUpdate } from "react-icons/rx";
 
 interface WhatsAppManualIntegrationProps {
   isOpen: boolean;
@@ -116,7 +113,7 @@ const WhatsAppManualIntegration: React.FC<WhatsAppManualIntegrationProps> = ({
   return (
     <RawModal isShown={isOpen} onClose={onClose}>
       <div
-        className={`flex flex-col w-[500px] ${loading ? "min-h-[300px]" : ""} bg-white p-[24px] rounded-[16px] justify-center`}
+        className={`flex flex-col w-[500px] ${loading ? "min-h-[300px]" : ""} bg-white p-[24px] rounded-[4px] justify-center`}
       >
         {loading ? (
           <Loading />
@@ -124,55 +121,76 @@ const WhatsAppManualIntegration: React.FC<WhatsAppManualIntegrationProps> = ({
           <form onSubmit={handleSubmit} className="flex flex-col gap-[8px]">
             <div className="w-full flex justify-between items-center mb-[24px]">
               <p className="text-sofia-superDark font-semibold text-[24px]">
-                Integración de Messenger Manual
+                Integración manual de WhatsApp
               </p>
-              <IoClose
-                className="w-[20px] h-[20px] cursor-pointer"
+              <img
+                src="/mvp/vector-x.svg"
+                alt="Cerrar"
+                className="w-[14px] h-[14px] cursor-pointer" 
                 onClick={onClose}
               />
             </div>
             <label className="text-sofia-superDark font-bold text-[14px]">
               Webhook de Integración
             </label>
-            <div className="flex gap-[8px] items-center">
-              <p className="flex-1 bg-sofia-darkBlue p-[8px] rounded-lg">{`${baseUrl}/api/facebook/webhook/${info.id}`}</p>
-              <RiFileCopy2Line
-                className="cursor-pointer bg-sofia-darkBlue p-[8px] rounded-lg w-[36px] h-[36px] text-sofia-darkLight"
-                onClick={() => {
-                  navigator.clipboard.writeText(
-                    `${baseUrl}/api/facebook/webhook/${info.id}`
-                  );
-                  alertConfirm("Copiado");
-                }}
-              />
+            <div className="flex gap-[8px] items-center w-full">
+              <div className="relative w-full">
+                <input
+                  type="text"
+                  readOnly
+                  value={`${baseUrl}/api/facebook/webhook/${info.id}`}
+                  className="flex w-full px-3 py-4 items-center gap-[11px] bg-[#FCFCFC] self-stretch rounded-lg border border-sofia-darkBlue text-sofia-superDark text-[14px] font-normal leading-normal pr-12"
+                />
+                <img
+                  src="/mvp/copy.svg"
+                  alt="Copy"
+                  className="cursor-pointer p-[8px] rounded-lg w-[36px] h-[36px] text-sofia-darkLight absolute right-2 top-1/2 transform -translate-y-1/2"
+                  onClick={() => {
+                    navigator.clipboard.writeText(
+                      `${baseUrl}/api/facebook/webhook/${info.id}`
+                    );
+                    alertConfirm("Copiado");
+                  }}
+                />
+              </div>
             </div>
             <div className="flex gap-[8px] items-center">
               <label className="text-sofia-superDark font-bold text-[14px]">
                 Codigo de webhook
               </label>
               <p
-                className={`text-[12px] text-sofia-superDark py-[2px] px-[8px] rounded-lg ${
-                  info.validated_webhook ? "bg-green-300" : "bg-red-300"
+                className={`text-[12px] text-white py-[2px] px-[8px] rounded-[4px] ${
+                  info.validated_webhook ? "bg-[#3AC0A0]" : "bg-[#FF616D]"
                 }`}
               >
                 {info.validated_webhook ? "Validado" : "No validado"}
               </p>
             </div>
-            <div className="flex gap-[8px] items-center">
-              <p className="flex-1 bg-sofia-darkBlue p-[8px] rounded-lg">
-                {info.code_webhook}
-              </p>
-              <RiFileCopy2Line
-                className="cursor-pointer bg-sofia-darkBlue p-[8px] rounded-lg w-[36px] h-[36px] text-sofia-darkLight"
-                onClick={() => {
-                  navigator.clipboard.writeText(info.code_webhook);
-                  alertConfirm("Copiado");
-                }}
+            <div className="relative flex-1">
+              <input
+                type="text"
+                value={info.code_webhook}
+                readOnly
+                className="w-full border border-sofia-darkBlue p-[8px] pr-[90px] rounded-lg"
               />
-              <RxUpdate
-                className="cursor-pointer bg-sofia-darkBlue p-[8px] rounded-lg w-[36px] h-[36px] text-sofia-darkLight"
-                onClick={handleUpdateWebhook}
-              />
+              <div className="absolute right-2 top-1/2 -translate-y-1/2 flex gap-[8px]">
+                <img
+                  src="/mvp/copy.svg"
+                  alt="Copy"
+                  className="cursor-pointer p-[8px] rounded-lg w-[36px] h-[36px]"
+                  onClick={() => {
+                    navigator.clipboard.writeText(info.code_webhook);
+                    alertConfirm("Copiado");
+                  }}
+                />
+                <img 
+                  src="/mvp/refresh-cw.svg" 
+                  alt="Refresh"
+                  className="cursor-pointer p-[8px] rounded-lg w-[36px] h-[36px]"
+                  onClick={handleUpdateWebhook}
+                   />
+                
+              </div>
             </div>
             <label
               htmlFor="phone_number_id"
@@ -189,7 +207,7 @@ const WhatsAppManualIntegration: React.FC<WhatsAppManualIntegrationProps> = ({
               }
               value={info.phone_number_id}
               required
-              className="flex w-full h-[56px] pl-4 pr-9 py-2.5 justify-between items-center flex-shrink-0 rounded-lg border border-app-gray bg-sofia-blancoPuro text-[14px] font-normal placeholder:text-[#A6A8AB]"
+              className="flex w-full h-[56px] pl-4 pr-9 py-2.5 justify-between items-center flex-shrink-0 rounded-lg border border-sofia-darkBlue text-[14px] font-normal placeholder:text-[#A6A8AB]"
             />
             <label
               htmlFor="waba_id"
@@ -204,7 +222,7 @@ const WhatsAppManualIntegration: React.FC<WhatsAppManualIntegrationProps> = ({
               onChange={e => setInfo({ ...info, waba_id: e.target.value })}
               value={info.waba_id}
               required
-              className="flex w-full h-[56px] pl-4 pr-9 py-2.5 justify-between items-center flex-shrink-0 rounded-lg border border-app-gray bg-sofia-blancoPuro text-[14px] font-normal placeholder:text-[#A6A8AB]"
+              className="flex w-full h-[56px] pl-4 pr-9 py-2.5 justify-between items-center flex-shrink-0 rounded-lg border border-sofia-darkBlue text-[14px] font-normal placeholder:text-[#A6A8AB]"
             />
             <label
               htmlFor="token"
@@ -219,26 +237,26 @@ const WhatsAppManualIntegration: React.FC<WhatsAppManualIntegrationProps> = ({
               onChange={e => setInfo({ ...info, token: e.target.value })}
               value={info.token}
               required
-              className="flex w-full h-[56px] pl-4 pr-9 py-2.5 justify-between items-center flex-shrink-0 rounded-lg border border-app-gray bg-sofia-blancoPuro text-[14px] font-normal placeholder:text-[#A6A8AB]"
+              className="flex w-full h-[56px] pl-4 pr-9 py-2.5 justify-between items-center flex-shrink-0 rounded-lg border border-sofia-darkBlue text-[14px] font-normal placeholder:text-[#A6A8AB]"
             />
-            <div className="flex gap-[24px] mt-[24px]">
+            <div className="flex gap-[16px] p-[16px] mt-[24px]">
               <button
                 type="button"
-                className="text-sofia-superDark font-bold text-[16px] flex-1 h-[48px] border border-app-gray rounded-[8px] flex justify-center items-center"
+                className="text-sofia-superDark font-semibold text-[16px] flex-1 h-[48px] border border-app-gray rounded-[4px] flex justify-center items-center"
                 onClick={onClose}
               >
                 Cancelar
               </button>
               <button
                 type="button"
-                className="text-sofia-superDark font-bold text-[16px] flex-1 h-[48px] border border-app-gray rounded-[8px] flex justify-center items-center"
+                className="text-sofia-superDark bg-sofia-electricGreen font-semibold text-[16px] flex-1 h-[48px] border rounded-[4px] flex justify-center items-center"
                 onClick={getIntegrationWhatsAppManualInfo}
               >
                 Actualizar
               </button>
               <button
                 type="submit"
-                className="bg-sofia-electricGreen text-sofia-superDark font-bold text-[16px] rounded-[8px] flex-1"
+                className="bg-sofia-superDark text-white font-semibold text-[16px] rounded-[4px] flex-1"
               >
                 Guardar
               </button>
