@@ -21,7 +21,7 @@ export const DiagramContextMenuV2: React.FC<DiagramContextMenuV2Props> = ({
         <button
           key={index}
           onClick={option.onClick}
-          className="flex w-full items-center rounded-lg hover:bg-sofia-electricOlive/10 transition-colors gap-[10px]"
+          className="flex w-full items-center rounded-lg hover:bg-sofia-electricOlive/10 transition-colors gap-[10px] whitespace-nowrap"
         >
           {option.child}{" "}
           <span className="text-[#001126] text-[14px] font-[500] leading-normal">

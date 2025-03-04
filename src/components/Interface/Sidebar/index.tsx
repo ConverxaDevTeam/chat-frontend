@@ -48,7 +48,17 @@ const Sidebar = ({
               : "rounded-2xl w-[260px]"
             }`}
         >
-          <div className="flex flex-col bg-[#F1F5F9] rounded-lg w-[calc(100%-24px)] h-[calc(100%-24px)] mt-[12px] ml-[12px] [box-shadow:0px_4px_8px_0px_rgba(201,_217,_232,_0.8)]">
+          <div className="flex flex-col bg-[#F1F5F9] rounded-lg w-[calc(100%-24px)] h-[calc(100%-24px)] mt-[12px] ml-[12px] [box-shadow:0px_4px_8px_0px_rgba(201,_217,_232,_0.8)] relative">
+            <div 
+              className="absolute -right-7 top-1/2 transform -translate-y-1/2 cursor-pointer rounded-full p-1"
+              onClick={() => setSidebarMinimized(!sidebarMinimized)}
+            >
+              {sidebarMinimized ? (
+                <img src="/mvp/circle-chevron-right.svg" alt="Expandir sidebar" className="w-6 h-6" />
+              ) : (
+                <img src="/mvp/circle-chevron-left.svg" alt="Minimizar sidebar" className="w-6 h-6" />
+              )}
+            </div>
             <div className="flex h-[107px] justify-center">
               {sidebarMinimized || mobileResolution ? (
                 <img
@@ -92,7 +102,7 @@ const Sidebar = ({
                 })}
             </ul>
             <div className="mt-auto">
-            {!(sidebarMinimized || mobileResolution) && (
+              {!(sidebarMinimized || mobileResolution) && (
                 <div className="mx-auto bg-[#343E4F] w-[193px] h-[141px] rounded-[4px] p-[16px] gap-[16px] flex flex-col ">
                 <p className="text-white text-[16px]">
                   ¿Necesitas ayuda? Visita nuestro centro de soporte
@@ -105,11 +115,9 @@ const Sidebar = ({
                 </button>
               </div>
               )}
-              
               <div
                 className={`mt-[18px] mb-[38px] flex h-[35px] items-center gap-[16px] ${sidebarMinimized || mobileResolution ? "w-full justify-center" : "w-full pl-[12px]"}`}
               >
-
                 <img
                   className="w-6 h-6 fill-current cursor-pointer"
                   src="/mvp/exit.svg"

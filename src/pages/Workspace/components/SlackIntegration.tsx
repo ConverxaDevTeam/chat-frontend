@@ -82,7 +82,7 @@ const SlackIntegration: React.FC<SlackIntegrationProps> = ({
             </div>
             <label
               htmlFor="channelName"
-              className="text-sofia-superDark font-bold text-[14px] mb-[8px]"
+              className="text-sofia-superDark font-semibold text-[14px] mb-[8px]"
             >
               Nombre del canal
             </label>
@@ -92,7 +92,7 @@ const SlackIntegration: React.FC<SlackIntegrationProps> = ({
               placeholder="Nombre del canal"
               value={channelName}
               onChange={e => setChannelName(e.target.value)}
-              className="flex w-full h-[56px] pl-4 pr-9 py-2.5 justify-between items-center flex-shrink-0 rounded-lg border border-app-gray bg-sofia-blancoPuro text-[14px] font-normal placeholder:text-[#A6A8AB]"
+              className="flex w-full h-[56px] pl-4 pr-9 py-2.5 justify-between items-center flex-shrink-0 rounded-lg border border-sofia-darkBlue bg-[#FCFCFC] text-[14px] font-normal placeholder:text-[#A6A8AB]"
             />
             <div className="flex gap-[24px] mt-[24px]">
               <button

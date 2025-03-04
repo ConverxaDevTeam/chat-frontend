@@ -18,53 +18,61 @@ const AgenteNode = (props: CustomTypeNodeProps<AgentData>) => {
   const contextMenuOptions: ContextMenuOption[] = [
     {
       child: (
-        <div className="group relative">
-          <img src="/mvp/pencil.svg" alt="Editar agente" />
-          <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-5 hidden group-hover:block bg-gray-800 text-white text-lm px-2 py-1 rounded whitespace-nowrap">
-            Editar agente
-          </div>
+        <div className="flex items-center gap-[10px]">
+          <img src="/mvp/square-pen.svg" alt="Editar" className="w-4 h-4" />
+          <span className="text-[#001126] text-[14px] font-[500] leading-normal">Editar agente</span>
         </div>
       ),
       onClick: () => setEventOpen(ActionType.EDIT_AGENT),
     },
     {
       child: (
-        <div className="group relative">
-          <img src="/mvp/circle-plus.svg" alt="Agregar función" />
-          <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-5 hidden group-hover:block bg-gray-800 text-white text-lm px-2 py-1 rounded whitespace-nowrap">
-            Agregar función
-          </div>
+        <div className="flex items-center gap-[10px]">
+          <img src="/mvp/parentheses.svg" alt="Agregar" className="w-4 h-4" />
+          <span className="text-[#001126] text-[14px] font-[500] leading-normal">Agregar función</span>
         </div>
       ),
       onClick: () => setEventOpen(ActionType.ADD_FUNCTION),
     },
     {
       child: (
-        <div className="group relative">
-          <img src="/mvp/book-plus.svg" alt="Agregar documento" />
-          <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-5 hidden group-hover:block bg-gray-800 text-white text-lm px-2 py-1 rounded whitespace-nowrap">
-            Agregar documento
-          </div>
+        <div className="flex items-center gap-[10px]">
+          <img src="/mvp/square-library.svg" alt="Documento" className="w-4 h-4" />
+          <span className="text-[#001126] text-[14px] font-[500] leading-normal">Agregar documento</span>
         </div>
       ),
       onClick: () => setEventOpen(ActionType.ADD_DOCUMENT),
     },
     {
       child: (
-        <div className="group relative">
+        <div className="relative flex items-center gap-[10px]">
           <img
-            src={`/mvp/${humanCommunication ? "headset" : "headphone-off"}.svg`}
-            alt={
-              humanCommunication
-                ? "Desactivar comunicación con un agente humano"
-                : "Activar comunicación con un agente humano"
-            }
+            src="/mvp/bot.svg"
+            alt={humanCommunication ? "Desactivar comunicación" : "Activar comunicación"}
+            className="w-4 h-4"
           />
-          <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-4 hidden group-hover:block bg-gray-800 text-white text-lm px-2 py-1 rounded whitespace-nowrap">
-          {humanCommunication
-          ? "Desactivar comunicación con un agente humano"
-          : "Activar comunicación con un agente humano"}
-          </div>
+          <span className="text-[#001126] text-[14px] font-[500] leading-normal flex items-center gap-[5px]">
+            Comunicación humana
+            <div className="group relative inline-flex">
+              <img src="/mvp/Vector.svg" alt="Vector" className="cursor-pointer" />
+              <div className={`
+                absolute left-1/2 bottom-full -translate-x-1/2 mb-2 group-hover:flex hidden z-10
+                bg-[#F6F6F6] border border-[#001126] text-[#001126] text-[12px] px-2 py-1.5 rounded w-[178px] h-auto
+                font-[400] whitespace-normal tracking-[0.17px] leading-[143%] text-left
+              `}>
+                El agente ahora podrá escalar conversaciones a un humano
+              </div>
+            </div>
+          </span>
+          <label className="relative inline-flex items-center cursor-pointer">
+            <input
+              type="checkbox"
+              className="sr-only peer"
+              checked={humanCommunication}
+              onChange={handleHumanCommunicationToggle}
+            />
+            <div className="w-9 h-5 bg-gray-300 peer-checked:bg-[#001126] rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all"></div>
+          </label>
         </div>
       ),
       onClick: handleHumanCommunicationToggle,
@@ -83,6 +91,7 @@ const AgenteNode = (props: CustomTypeNodeProps<AgentData>) => {
         }}
         icon={<img src="/icon.svg" alt="Agente" />}
         contextMenuOptions={contextMenuOptions}
+        contextMenuVersion="v2"
         allowedConnections={["source", "target"]}
       ></DefaultNode>
       <ActionButtons

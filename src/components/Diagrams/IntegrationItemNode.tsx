@@ -4,8 +4,9 @@ import { CustomTypeNodeProps, NodeStyle } from "@interfaces/workflow";
 import { NodeData } from "@interfaces/workflow";
 import { IntegrationType } from "@interfaces/integrations";
 import AddWebchat from "@pages/Workspace/components/AddWebChat";
-import RemoveIntegration from "@pages/Workspace/components/RemoveIntegration";
 import SlackIntegration from "@pages/Workspace/components/SlackIntegration";
+import ConfirmationModal from "@components/ConfirmationModal";
+import { deleteIntegrationbyId } from "@services/integration";
 import MessengerManualIntegration from "@pages/Workspace/components/MessengerManualIntegration";
 import WhatsAppManualIntegration from "@pages/Workspace/components/WhatsAppManualIntegration";
 
@@ -37,6 +38,22 @@ const getIntegrationName = (type: IntegrationType) => {
     [IntegrationType.SLACK]: "Slack",
   };
   return nameMap[type] || type;
+};
+
+const useIntegrationActions = (data: NodeData) => {
+  const handleDeleteIntegration = async () => {
+    if (!data.id) return false;
+    const response = await deleteIntegrationbyId(data.id);
+    if (response) {
+      window.location.reload();
+      return true;
+    }
+    return false;
+  };
+
+  return {
+    handleDeleteIntegration
+  };
 };
 
 export const contextMenuOptions = ({
@@ -96,6 +113,7 @@ export const contextMenuOptions = ({
 const IntegrationItemNode = memo((props: IntegrationItemProps) => {
   const { data } = props;
   const type = data.type || IntegrationType.CHAT_WEB;
+  const { handleDeleteIntegration } = useIntegrationActions(data);
 
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [isRemoveModalOpen, setIsRemoveModalOpen] = useState<boolean>(false);
@@ -132,10 +150,18 @@ const IntegrationItemNode = memo((props: IntegrationItemProps) => {
         })}
       />
       <AddWebchat isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
-      <RemoveIntegration
-        isOpen={isRemoveModalOpen}
+      <ConfirmationModal
+        isShown={isRemoveModalOpen}
+        title="Eliminar integración"
+        text="¿Estás seguro de que deseas eliminar esta integración?"
+        onConfirm={async () => {
+          const success = await handleDeleteIntegration();
+          if (success) {
+            setIsRemoveModalOpen(false);
+          }
+          return success;
+        }}
         onClose={() => setIsRemoveModalOpen(false)}
-        data={data}
       />
       {isSlackModalOpen && (
         <SlackIntegration
