@@ -136,8 +136,14 @@ export const MenuDivider = () => (
 );
 
 // Componente para envolver items del menú
-export const MenuItem: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <div className="flex justify-center items-center gap-[10px] hover:bg-[#DBEAF2] cursor-pointer px-3 py-1 rounded w-full">
+export const MenuItem: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => (
+  <div
+    className="flex justify-center items-center gap-[10px] hover:bg-[#DBEAF2] cursor-pointer px-3 py-1 rounded w-full"
+    onClick={e => e.stopPropagation()}
+    onMouseDown={e => e.stopPropagation()}
+  >
     {children}
   </div>
 );
@@ -148,6 +154,9 @@ const handleMenuItemClick = (child: React.ReactNode, menuId: string) => {
     const originalOnClick = child.props.onClick;
     return React.cloneElement(child, {
       onClick: async (e: React.MouseEvent<HTMLElement>) => {
+        e.stopPropagation();
+        e.preventDefault();
+
         const childMenus = Array.from(openMenus.values()).filter(
           menu => menu.parentId === menuId
         );
@@ -162,6 +171,10 @@ const handleMenuItemClick = (child: React.ReactNode, menuId: string) => {
         }
 
         if (originalOnClick) originalOnClick(e);
+      },
+      onMouseDown: (e: React.MouseEvent<HTMLElement>) => {
+        e.stopPropagation();
+        if (child.props.onMouseDown) child.props.onMouseDown(e);
       },
     });
   }
@@ -185,20 +198,42 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
   useOutsideClick(menuId, parentId, onClose);
   useMenuPosition(menuRef, x, y, parentId);
 
+  // Prevenir que los eventos se propaguen fuera del menú
+  const preventPropagation = (e: React.MouseEvent | React.TouchEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+  };
+
   return createPortal(
     <div
       ref={menuRef}
       data-menu-id={menuId}
-      className="fixed flex flex-col p-[16px] gap-[10px] items-start rounded-lg border-2 border-sofia-darkBlue bg-sofia-blancoPuro min-w-[200px] whitespace-nowrap"
+      className="fixed flex flex-col p-[16px] gap-[10px] items-start rounded-lg border-2 border-sofia-darkBlue bg-sofia-blancoPuro whitespace-nowrap"
       style={{
         left: x,
         top: y,
         zIndex: 998,
       }}
-      onClick={e => e.stopPropagation()}
+      onClick={preventPropagation}
+      onMouseDown={preventPropagation}
+      onTouchStart={preventPropagation}
+      onTouchMove={preventPropagation}
+      onTouchEnd={preventPropagation}
     >
-      {header && <div className="w-full mb-2">{header}</div>}
-      <div className={bodyClassname}>
+      {header && (
+        <div
+          className="w-full mb-2"
+          onClick={preventPropagation}
+          onMouseDown={preventPropagation}
+        >
+          {header}
+        </div>
+      )}
+      <div
+        className={bodyClassname}
+        onClick={preventPropagation}
+        onMouseDown={preventPropagation}
+      >
         {React.Children.map(children, child => {
           if (React.isValidElement(child) && child.props["data-divider"]) {
             return <MenuDivider />;
@@ -207,7 +242,15 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
           return <MenuItem>{handleMenuItemClick(child, menuId)}</MenuItem>;
         })}
       </div>
-      {footer && <div className="w-full mt-2">{footer}</div>}
+      {footer && (
+        <div
+          className="w-full mt-2"
+          onClick={preventPropagation}
+          onMouseDown={preventPropagation}
+        >
+          {footer}
+        </div>
+      )}
     </div>,
     document.body
   );
