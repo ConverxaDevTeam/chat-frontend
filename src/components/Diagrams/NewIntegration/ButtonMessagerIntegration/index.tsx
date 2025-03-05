@@ -149,7 +149,7 @@ const ButtonMessagerIntegration = ({
         <div className="flex gap-[16px]">
           <ButtonIntegracion
             action={handleConnectFacebook}
-            Icon="messenger"
+            Icon="messenger-gray"
             text="Messenger Integración Automática"
           />
           <ButtonIntegracion
