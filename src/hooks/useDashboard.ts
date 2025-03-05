@@ -24,7 +24,9 @@ export const useDashboard = (organizationId: number | null) => {
         setState(initialState);
       } catch (error) {
         console.error("Error loading cards:", error);
-        toast.error("No perteneces a esta organización. Por favor, verifica tus permisos o contacta al administrador.");
+        toast.error(
+          "No perteneces a esta organización. Por favor, verifica tus permisos o contacta al administrador."
+        );
       } finally {
         setLoading(false);
       }
