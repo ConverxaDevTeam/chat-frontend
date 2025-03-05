@@ -20,7 +20,7 @@ const RawModal: React.FC<RawModalProps> = ({ isShown, children, onClose }) => {
   return isShown
     ? ReactDOM.createPortal(
         <div
-          className="fixed z-[100] w-full h-full flex justify-center items-center top-0 left-0 bg-[#212121] bg-opacity-75"
+          className="fixed z-[1000] w-full h-full flex justify-center items-center top-0 left-0 bg-[#212121] bg-opacity-75"
           onClick={handleBackgroundClick}
         >
           {children}
