@@ -289,7 +289,9 @@ const createInitialNodes = (
 
   const integrationsList = agentState?.integrations || [];
   const defaultIntegrations =
-    integrationsList.length === 0
+    integrationsList.filter(
+      integration => integration.type === IntegrationType.CHAT_WEB
+    ).length === 0
       ? [{ id: -1, type: IntegrationType.CHAT_WEB }]
       : [...integrationsList];
 
