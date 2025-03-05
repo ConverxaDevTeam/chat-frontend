@@ -184,7 +184,7 @@ interface OptionsMenuProps {
   onStatisticsTypeClick: (e: React.MouseEvent) => void;
   showLegend: boolean;
   onShowLegendChange: (value: boolean) => void;
-  onDeleteCard?: () => void;
+  onDeleteCard?: (e: React.MouseEvent) => void;
 }
 
 const OptionsMenu = ({
@@ -211,7 +211,9 @@ const OptionsMenu = ({
       }}
     />
     <div data-divider />
-    <MenuButton onClick={onDeleteCard}>Eliminar Tarjeta</MenuButton>
+    <MenuButton onClick={onDeleteCard ? onDeleteCard : e => e.preventDefault()}>
+      Eliminar Tarjeta
+    </MenuButton>
   </ContextMenu>
 );
 
@@ -461,7 +463,8 @@ export const OptionsSelector = ({
           onShowLegendChange={onShowLegendChange}
           onDeleteCard={
             cardId && onDeleteCard
-              ? () => {
+              ? (e: React.MouseEvent) => {
+                  e.preventDefault();
                   onDeleteCard(cardId);
                   onMenuClose();
                 }
