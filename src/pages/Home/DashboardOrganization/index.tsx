@@ -86,6 +86,7 @@ const DashboardOrganization = () => {
     updateLayouts,
     updateCard: updateCardService,
     addCard,
+    removeCard,
   } = useDashboard(organizationId);
   const [currentBreakpoint, setCurrentBreakpoint] = useState(
     getBreakpoint(window.innerWidth)
@@ -175,6 +176,7 @@ const DashboardOrganization = () => {
               className="h-full"
               showLegend={card.showLegend}
               onUpdateCard={updates => updateCardService(card.id, updates)}
+              onDeleteCard={removeCard}
             />
           </div>
         ))}

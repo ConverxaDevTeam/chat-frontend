@@ -57,7 +57,7 @@ const DataOptionsModal = ({
         <button
           key={option.id}
           className={`flex w-full justify-center gap-2 px-4 py-2 text-sm rounded-md ${
-            selectedTypes.includes(option.id) ? "bg-sofia-electricOlive" : ""
+            selectedTypes.includes(option.id) ? "bg-sofia-darkBlue" : ""
           }`}
           onClick={e => handleOptionClick(option.id, e)}
           onMouseDown={e => e.stopPropagation()}
@@ -98,13 +98,14 @@ const StatisticsTypeModal = ({
       y={position.y}
       onClose={onClose}
       parentId={parentId}
+      bodyClassname="w-full"
     >
       {statisticsTypes.map((option: Option) => (
         <button
           key={option.id}
-          className={`text-center text-xs font-medium text-sofia-superDark leading-none self-stretch [font-feature-settings:'liga'_off,'clig'_off] whitespace-nowrap ${
+          className={`text-center w-full text-xs font-medium text-sofia-superDark leading-none self-stretch [font-feature-settings:'liga'_off,'clig'_off] whitespace-nowrap ${
             selectedDisplayType === option.id
-              ? "bg-sofia-electricOlive text-sofia-superDark"
+              ? "bg-sofia-darkBlue text-sofia-superDark"
               : ""
           }`}
           onClick={e => handleTypeClick(option.id as StatisticsDisplayType, e)}
@@ -168,7 +169,7 @@ const LegendToggle = ({ showLegend, onChange }: LegendToggleProps) => (
       type="checkbox"
       checked={showLegend}
       readOnly
-      className="w-3 h-3 rounded border-sofia-navyBlue/30 text-sofia-electricOlive focus:ring-sofia-electricOlive"
+      className="w-3 h-3 rounded border-sofia-navyBlue/30 text-sofia-darkBlue focus:ring-sofia-darkBlue"
       onClick={e => e.stopPropagation()}
     />
     Mostrar leyenda
@@ -183,6 +184,7 @@ interface OptionsMenuProps {
   onStatisticsTypeClick: (e: React.MouseEvent) => void;
   showLegend: boolean;
   onShowLegendChange: (value: boolean) => void;
+  onDeleteCard?: () => void;
 }
 
 const OptionsMenu = ({
@@ -193,6 +195,7 @@ const OptionsMenu = ({
   onStatisticsTypeClick,
   showLegend,
   onShowLegendChange,
+  onDeleteCard,
 }: OptionsMenuProps) => (
   <ContextMenu x={x} y={y} onClose={onClose} bodyClassname="w-full">
     <MenuButton onClick={onDataOptionClick}>Datos a mostrar</MenuButton>
@@ -207,6 +210,8 @@ const OptionsMenu = ({
         onClose();
       }}
     />
+    <div data-divider />
+    <MenuButton onClick={onDeleteCard}>Eliminar Tarjeta</MenuButton>
   </ContextMenu>
 );
 
@@ -268,6 +273,8 @@ interface OptionsSelectorProps {
   selectedAnalyticTypes: AnalyticType[];
   selectedDisplayType: StatisticsDisplayType;
   showLegend: boolean;
+  cardId?: number;
+  onDeleteCard?: (cardId: number) => void;
 }
 
 const useMenuId = (menuPosition: { x: number; y: number } | null) => {
@@ -409,6 +416,8 @@ export const OptionsSelector = ({
   selectedAnalyticTypes,
   selectedDisplayType,
   showLegend,
+  cardId,
+  onDeleteCard,
 }: OptionsSelectorProps) => {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const menuId = useMenuId(menuPosition);
@@ -450,6 +459,14 @@ export const OptionsSelector = ({
           onStatisticsTypeClick={handleStatisticsTypeClick}
           showLegend={showLegend}
           onShowLegendChange={onShowLegendChange}
+          onDeleteCard={
+            cardId && onDeleteCard
+              ? () => {
+                  onDeleteCard(cardId);
+                  onMenuClose();
+                }
+              : undefined
+          }
         />
       )}
 

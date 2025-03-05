@@ -255,6 +255,7 @@ export interface StatisticsCardProps {
     displayType?: StatisticsDisplayType;
     showLegend?: boolean;
   }) => void;
+  onDeleteCard?: (cardId: number) => void;
 }
 
 export const StatisticsCard = ({
@@ -266,6 +267,7 @@ export const StatisticsCard = ({
   className = "",
   showLegend,
   onUpdateCard,
+  onDeleteCard,
 }: StatisticsCardProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -354,6 +356,8 @@ export const StatisticsCard = ({
             selectedAnalyticTypes={analyticTypes}
             selectedDisplayType={displayType}
             showLegend={showLegend ?? false}
+            cardId={id}
+            onDeleteCard={onDeleteCard}
           />
         </div>
       </div>
