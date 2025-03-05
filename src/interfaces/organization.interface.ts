@@ -10,6 +10,11 @@ export enum OrganizationType {
   MVP = "mvp",
 }
 
+export enum AgentType {
+  SOFIA = "sofia",
+  CLAUDE = "claude",
+}
+
 export type IOrganization = {
   id: number;
   logo?: string | null;
@@ -17,6 +22,7 @@ export type IOrganization = {
   updated_at: string;
   name: string;
   type: OrganizationType;
+  agent_type?: AgentType;
   description: string;
   users: number;
   owner?: {

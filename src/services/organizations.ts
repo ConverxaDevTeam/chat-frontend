@@ -1,5 +1,8 @@
 import { apiUrls } from "@config/config";
-import { OrganizationType } from "@interfaces/organization.interface";
+import {
+  OrganizationType,
+  AgentType,
+} from "@interfaces/organization.interface";
 import { axiosInstance } from "@store/actions/auth";
 import { alertError } from "@utils/alerts";
 import axios from "axios";
@@ -115,6 +118,35 @@ export const editOrganization = async (
     );
     if (!response.data.ok) {
       throw new Error(response.data.message || "Error al editar organización");
+    }
+    return true;
+  } catch (error) {
+    let message = "Error inesperado";
+    if (axios.isAxiosError(error)) {
+      if (error.response) {
+        message = error.response.data?.message || "Error del servidor";
+        throw new Error(message);
+      } else if (error.request) {
+        throw new Error("No se pudo conectar con el servidor");
+      }
+      throw error;
+    }
+    throw new Error(message);
+  }
+};
+
+export const updateOrganizationAgentType = async (
+  id: number,
+  agentType: AgentType
+) => {
+  try {
+    const response = await axiosInstance.patch(apiUrls.editOrganization(id), {
+      agent_type: agentType,
+    });
+    if (!response.data.ok) {
+      throw new Error(
+        response.data.message || "Error al actualizar el tipo de agente"
+      );
     }
     return true;
   } catch (error) {

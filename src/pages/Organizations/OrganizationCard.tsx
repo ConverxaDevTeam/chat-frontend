@@ -1,6 +1,9 @@
-import { getInitials } from "@utils/format";
 import { useRoleAuth } from "@hooks/useRoleAuth";
-import { IOrganization } from "@interfaces/organization.interface";
+import { IOrganization, AgentType } from "@interfaces/organization.interface";
+import { getInitials } from "@utils/format";
+import { InlineInputGroup } from "@components/forms/inlineInputGroup";
+import { useState, useEffect } from "react";
+import { updateOrganizationAgentType } from "@services/organizations";
 
 interface OrganizationCardProps {
   organization: IOrganization;
@@ -15,6 +18,22 @@ const OrganizationCard = ({
 }: OrganizationCardProps) => {
   const { isSuperAdmin } = useRoleAuth();
   const hasDeletePermission = isSuperAdmin;
+  const [agentType, setAgentType] = useState<AgentType>(
+    organization.agent_type || AgentType.SOFIA
+  );
+
+  const handleAgentTypeChange = async (
+    e: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    const newAgentType = e.target.value as AgentType;
+    setAgentType(newAgentType);
+    await updateOrganizationAgentType(organization.id, newAgentType);
+  };
+
+  useEffect(() => {
+    setAgentType(organization.agent_type || AgentType.SOFIA);
+  }, [organization.agent_type]);
+
   return (
     <div className="bg-[#f5faff] rounded-xl p-5 flex flex-col border-2 border-[#d3eafa] w-full min-h-[250px]">
       <div className="flex flex-col items-center gap-[16px] flex-1">
@@ -31,7 +50,7 @@ const OrganizationCard = ({
             </p>
           )}
         </div>
-        <div className="flex flex-col items-center h-full justify-between flex-1">
+        <div className="w-full flex flex-col items-center h-full justify-between flex-1">
           <p className="text-[10px] font-bold text-gray-500 ">
             ID: {organization.id}
           </p>
@@ -51,6 +70,21 @@ const OrganizationCard = ({
               {organization.users}
             </p>
           </div>
+
+          {isSuperAdmin && (
+            <div className="w-full mt-4 flex justify-center">
+              <InlineInputGroup label="Agente">
+                <select
+                  className="w-full p-2 border rounded-lg focus:outline-none text-[14px] bg-white"
+                  value={agentType}
+                  onChange={handleAgentTypeChange}
+                >
+                  <option value={AgentType.SOFIA}>Sofia</option>
+                  <option value={AgentType.CLAUDE}>Claude</option>
+                </select>
+              </InlineInputGroup>
+            </div>
+          )}
         </div>
       </div>
       <div className="flex justify-center gap-4 mt-4">

@@ -210,7 +210,7 @@ const Organizations = () => {
       reset({ owner_id: selectedOrg.owner?.user.id || 0 });
     }
   }, [selectedOrg, isModalOpen, reset]);
-  
+
   useEffect(() => {
     const newTotalPages = Math.ceil(organizations.length / ITEMS_PER_PAGE);
     if (currentPage > newTotalPages) {
@@ -267,38 +267,38 @@ const Organizations = () => {
         )}
       </div>
       {totalPages > 1 && (
-              <div className="flex items-center justify-center gap-2 mt-4">
-                <button
-                  className="px-3 py-1 border rounded disabled:opacity-50"
-                  onClick={() => goToPage(currentPage - 1)}
-                  disabled={currentPage === 1}
-                >
-                  <FiChevronLeft />
-                </button>
+        <div className="flex items-center justify-center gap-2 mt-4">
+          <button
+            className="px-3 py-1 border rounded disabled:opacity-50"
+            onClick={() => goToPage(currentPage - 1)}
+            disabled={currentPage === 1}
+          >
+            <FiChevronLeft />
+          </button>
 
-                {Array.from({ length: totalPages }, (_, index) => index + 1).map(
-                  pageNum => (
-                    <button
-                      key={pageNum}
-                      onClick={() => goToPage(pageNum)}
-                      className={`px-3 py-1 border rounded ${
-                        pageNum === currentPage ? "bg-gray-300" : ""
-                      }`}
-                    >
-                      {pageNum}
-                    </button>
-                  )
-                )}
+          {Array.from({ length: totalPages }, (_, index) => index + 1).map(
+            pageNum => (
+              <button
+                key={pageNum}
+                onClick={() => goToPage(pageNum)}
+                className={`px-3 py-1 border rounded ${
+                  pageNum === currentPage ? "bg-gray-300" : ""
+                }`}
+              >
+                {pageNum}
+              </button>
+            )
+          )}
 
-                <button
-                  className="px-3 py-1 border rounded disabled:opacity-50"
-                  onClick={() => goToPage(currentPage + 1)}
-                  disabled={currentPage === totalPages}
-                >
-                  <FiChevronRight/>
-                </button>
-              </div>
-            )}
+          <button
+            className="px-3 py-1 border rounded disabled:opacity-50"
+            onClick={() => goToPage(currentPage + 1)}
+            disabled={currentPage === totalPages}
+          >
+            <FiChevronRight />
+          </button>
+        </div>
+      )}
     </>
   );
 };
