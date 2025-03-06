@@ -16,10 +16,10 @@ const OrganizationCard = ({
   const { isSuperAdmin } = useRoleAuth();
   const hasDeletePermission = isSuperAdmin;
   return (
-    <tr className="hover:bg-[#f5faff] border-b transition-all">
-      <td className="py-4 px-4">
+    <tr className="h-[60px] border-b-[1px] border-[#DBEAF2] hover:bg-gray-50">
+      <td className="py-2.5 px-6">
         <div className="flex items-center gap-3">
-          <div className="flex justify-center items-center border-sofiaCall-electricGreen border-[1px] w-[40px] h-[40px] rounded-full bg-sofiaCall-light overflow-hidden flex-shrink-0">
+          <div className="flex justify-center items-center w-8 h-8 rounded-[4px] bg-gray-50 overflow-hidden flex-shrink-0">
             {organization.logo ? (
               <img
                 src={organization.logo}
@@ -27,42 +27,42 @@ const OrganizationCard = ({
                 className="w-full h-full object-cover"
               />
             ) : (
-              <p className="text-sofiaCall-dark font-poppinsSemiBold text-[16px]">
+              <p className="text-gray-600 font-medium text-sm">
                 {getInitials(organization.name)}
               </p>
             )}
           </div>
-          <span className="font-semibold text-sofiaCall-dark">
+          <span className="font-medium text-gray-900">
             {organization.name}
           </span>
         </div>
       </td>
-      <td className="py-4 px-4 text-sm text-gray-500">
+      <td className="py-2.5 px-6 text-sm text-gray-600">
         {organization.id}
       </td>
-      <td className="py-4 px-4 max-w-[300px]">
-        <p className="text-sm text-sofiaCall-gray line-clamp-1">
+      <td className="py-2.5 px-6">
+        <p className="text-sm text-gray-600 truncate max-w-[200px]" title={organization.description}>
           {organization.description}
         </p>
       </td>
-      <td className="py-4 px-4 text-center">
-        <span className="text-sm font-semibold text-sofiaCall-dark bg-sofiaCall-electricGreen px-3 py-1 rounded-full">
+      <td className="py-2.5 px-6 text-center">
+        <span className="text-sm font-medium text-gray-600 bg-gray-50 px-3 py-0.5 rounded-[4px]">
           {organization.users}
         </span>
       </td>
-      <td className="py-4 px-4">
+      <td className="py-2.5 px-6 first:rounded-tr-[8px] last:rounded-br-[8px]">
         <div className="flex justify-end gap-2">
           {hasDeletePermission && (
             <button
               onClick={onDelete}
-              className="px-3 py-1 text-gray-500 border rounded-md text-sm font-semibold hover:bg-gray-50 transition-all"
+              className="px-3 py-1 text-gray-500 bg-white border border-gray-200 rounded-[4px] font-size-[12px] font-medium hover:bg-gray-50 transition-all"
             >
               Eliminar
             </button>
           )}
           <button
             onClick={onEdit}
-            className="px-3 py-1 bg-sofia-electricGreen text-gray-900 rounded-md text-sm font-semibold hover:bg-opacity-50 transition-all"
+            className="px-3 py-1 text-white bg-[#001130] rounded-[4px] font-size-[12px] font-medium hover:bg-opacity-90 transition-all"
           >
             Editar
           </button>

@@ -27,7 +27,7 @@ const OrganizationList = ({
   onDelete,
 }: OrganizationListProps) => {
   const [currentPage, setCurrentPage] = useState(1);
-  const ITEMS_PER_PAGE = 8;
+  const ITEMS_PER_PAGE = 10;
 
   const totalPages = Math.ceil(organizations.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
@@ -36,38 +36,40 @@ const OrganizationList = ({
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="overflow-x-auto w-full rounded-[4px] border border-gray-200">
-        <table className="min-w-full bg-white">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Organización
-              </th>
-              <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                ID
-              </th>
-              <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Descripción
-              </th>
-              <th className="py-3 px-4 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Usuarios
-              </th>
-              <th className="py-3 px-4 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Acciones
-              </th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {currentOrganizations.map(organization => (
-              <OrganizationCard
-                key={organization.id}
-                organization={organization}
-                onEdit={() => onEdit(organization)}
-                onDelete={() => onDelete(organization)}
-              />
-            ))}
-          </tbody>
-        </table>
+      <div className="w-full">
+        <div className="w-full overflow-x-auto">
+          <table className="w-full border-collapse">
+            <thead>
+              <tr>
+                <th className="py-2.5 px-6 text-left font-size-[16px] font-bold text-gray-900">
+                  Organización
+                </th>
+                <th className="py-2.5 px-6 text-left font-size-[16px] font-bold text-gray-900">
+                  ID
+                </th>
+                <th className="py-2.5 px-6 text-left font-size-[16px] font-bold text-gray-900">
+                  Descripción
+                </th>
+                <th className="py-2.5 px-6 text-center font-size-[16px] font-bold text-gray-900">
+                  Usuarios
+                </th>
+                <th className="py-2.5 px-6 text-right font-size-[16px] font-bold text-gray-900">
+                  Acciones
+                </th>
+              </tr>
+            </thead>
+            <tbody className="relative before:content-[''] before:absolute before:-z-10 before:inset-0 before:rounded-[8px] before:border-[2px] before:border-[#DBEAF2] before:border-inherit">
+              {currentOrganizations.map(organization => (
+                <OrganizationCard
+                  key={organization.id}
+                  organization={organization}
+                  onEdit={() => onEdit(organization)}
+                  onDelete={() => onDelete(organization)}
+                />
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
       {totalPages > 1 && (
         <div className="flex justify-between items-center py-3 px-4">
