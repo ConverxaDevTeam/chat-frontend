@@ -98,7 +98,7 @@ const FormInputs = ({
 }: {
   data: OrganizationFormData;
   handleChange: (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => void;
   isEditMode: boolean;
   register: UseFormRegister<OrganizationFormData>;
@@ -124,10 +124,9 @@ const FormInputs = ({
       <label className="text-gray-700 font-semibold mb-3" htmlFor="description">
         Descripción
       </label>
-      <input
-        className="w-full mt-2 p-3 border rounded-lg focus:outline-none text-[15px]"
+      <textarea
+        className="w-full mt-2 p-3 border rounded-lg focus:outline-none text-[15px] min-h-[120px] resize-y"
         id="description"
-        type="text"
         name="description"
         placeholder="Descripción"
         value={data.description}
@@ -273,7 +272,7 @@ const useFormData = (organization: IOrganization | null | undefined) => {
   });
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
     setData({ ...data, [e.target.name]: e.target.value });
   };
