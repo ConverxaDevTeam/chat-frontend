@@ -19,7 +19,7 @@ const OrganizationCard = ({
   const { isSuperAdmin } = useRoleAuth();
   const hasDeletePermission = isSuperAdmin;
   const [agentType, setAgentType] = useState<AgentType>(
-    organization.agent_type || AgentType.SOFIA
+    organization.agentType || AgentType.SOFIA_ASISTENTE
   );
 
   const handleAgentTypeChange = async (
@@ -31,8 +31,8 @@ const OrganizationCard = ({
   };
 
   useEffect(() => {
-    setAgentType(organization.agent_type || AgentType.SOFIA);
-  }, [organization.agent_type]);
+    setAgentType(organization.agentType || AgentType.SOFIA_ASISTENTE);
+  }, [organization.agentType]);
 
   return (
     <div className="bg-[#f5faff] rounded-xl p-5 flex flex-col border-2 border-[#d3eafa] w-full min-h-[250px]">
@@ -79,7 +79,7 @@ const OrganizationCard = ({
                   value={agentType}
                   onChange={handleAgentTypeChange}
                 >
-                  <option value={AgentType.SOFIA}>Sofia</option>
+                  <option value={AgentType.SOFIA_ASISTENTE}>Sofia</option>
                   <option value={AgentType.CLAUDE}>Claude</option>
                 </select>
               </InlineInputGroup>

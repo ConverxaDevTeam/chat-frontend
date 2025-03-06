@@ -140,9 +140,12 @@ export const updateOrganizationAgentType = async (
   agentType: AgentType
 ) => {
   try {
-    const response = await axiosInstance.patch(apiUrls.editOrganization(id), {
-      agent_type: agentType,
-    });
+    const response = await axiosInstance.patch(
+      apiUrls.updateOrganizationAgentType(id),
+      {
+        agentType: agentType,
+      }
+    );
     if (!response.data.ok) {
       throw new Error(
         response.data.message || "Error al actualizar el tipo de agente"

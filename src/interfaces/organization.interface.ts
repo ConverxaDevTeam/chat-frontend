@@ -11,7 +11,7 @@ export enum OrganizationType {
 }
 
 export enum AgentType {
-  SOFIA = "sofia",
+  SOFIA_ASISTENTE = "sofia_asistente",
   CLAUDE = "claude",
 }
 
@@ -22,7 +22,7 @@ export type IOrganization = {
   updated_at: string;
   name: string;
   type: OrganizationType;
-  agent_type?: AgentType;
+  agentType?: AgentType;
   description: string;
   users: number;
   owner?: {
