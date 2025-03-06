@@ -56,7 +56,7 @@ const DataOptionsModal = ({
       {dataOptions.map(option => (
         <button
           key={option.id}
-          className={`flex w-full justify-center gap-2 px-4 py-2 text-sm rounded-md ${
+          className={`flex w-full items-center gap-2 px-2 py-1 text-[14px] text-sofia-superDark rounded-md ${
             selectedTypes.includes(option.id) ? "bg-sofia-darkBlue" : ""
           }`}
           onClick={e => handleOptionClick(option.id, e)}
@@ -103,9 +103,9 @@ const StatisticsTypeModal = ({
       {statisticsTypes.map((option: Option) => (
         <button
           key={option.id}
-          className={`text-center w-full text-xs font-medium text-sofia-superDark leading-none self-stretch [font-feature-settings:'liga'_off,'clig'_off] whitespace-nowrap ${
+          className={`flex w-full items-center gap-2 px-2 py-[2px] text-[14px] text-sofia-superDark rounded-md hover:bg-sofia-lightBlue/10 transition-colors ${
             selectedDisplayType === option.id
-              ? "bg-sofia-darkBlue text-sofia-superDark"
+              ? "bg-sofia-darkBlue"
               : ""
           }`}
           onClick={e => handleTypeClick(option.id as StatisticsDisplayType, e)}
@@ -122,18 +122,22 @@ interface OptionsButtonProps {
   buttonRef: React.RefObject<HTMLButtonElement>;
   onClick: (e: React.MouseEvent) => void;
   onMouseDown: (e: React.MouseEvent) => void;
+  isOpen?: boolean;
 }
 
 const OptionsButton = ({
   buttonRef,
   onClick,
   onMouseDown,
+  isOpen,
 }: OptionsButtonProps) => (
   <button
     ref={buttonRef}
     onClick={onClick}
     onMouseDown={onMouseDown}
-    className="p-1.5 hover:bg-white/50 rounded-lg text-gray-500 hover:text-gray-700 transition-colors"
+    className={`p-1.5 hover:bg-white/50 rounded-lg text-gray-500 hover:text-gray-700 transition-colors ${
+      isOpen ? "bg-sofia-darkBlue" : ""
+    }`}
   >
     <img src="mvp/three-dots.svg" className="w-[24px] h-[24px]" />
   </button>
@@ -142,15 +146,19 @@ const OptionsButton = ({
 interface MenuButtonProps {
   onClick: (e: React.MouseEvent) => void;
   children: React.ReactNode;
+  iconUrl?: string;
 }
 
-const MenuButton = ({ onClick, children }: MenuButtonProps) => (
+const MenuButton = ({ onClick, children, iconUrl }: MenuButtonProps) => (
   <button
-    className="text-left text-xs font-medium text-sofia-superDark leading-none self-stretch [font-feature-settings:'liga'_off,'clig'_off]"
+    className="flex items-center gap-2 w-full text-[14px] text-sofia-superDark hover:bg-sofia-lightBlue/10 transition-colors"
     onClick={onClick}
     onMouseDown={e => e.stopPropagation()}
   >
-    {children}
+    {iconUrl && (
+      <img src={iconUrl} alt="Icon" className="w-4 h-4 flex-shrink-0" />
+    )}
+    <span className="flex-grow text-left">{children}</span>
   </button>
 );
 
@@ -163,16 +171,16 @@ const LegendToggle = ({ showLegend, onChange }: LegendToggleProps) => (
   <button
     onClick={onChange}
     onMouseDown={e => e.stopPropagation()}
-    className="flex items-center gap-2 text-left text-xs font-medium text-sofia-superDark leading-none [font-feature-settings:'liga'_off,'clig'_off] whitespace-nowrap"
+    className="flex items-center gap-2 w-full text-[14px] text-sofia-superDark hover:bg-sofia-lightBlue/10 transition-colors"
   >
     <input
       type="checkbox"
       checked={showLegend}
       readOnly
-      className="w-3 h-3 rounded border-sofia-navyBlue/30 text-sofia-darkBlue focus:ring-sofia-darkBlue"
+      className="w-4 h-4 rounded border-sofia-navyBlue/30 text-sofia-darkBlue focus:ring-sofia-darkBlue flex-shrink-0"
       onClick={e => e.stopPropagation()}
     />
-    Mostrar leyenda
+    <span className="flex-grow text-left">Mostrar leyenda</span>
   </button>
 );
 
@@ -198,8 +206,8 @@ const OptionsMenu = ({
   onDeleteCard,
 }: OptionsMenuProps) => (
   <ContextMenu x={x} y={y} onClose={onClose} bodyClassname="w-full">
-    <MenuButton onClick={onDataOptionClick}>Datos a mostrar</MenuButton>
-    <MenuButton onClick={onStatisticsTypeClick}>Tipo de estadística</MenuButton>
+    <MenuButton onClick={onDataOptionClick} iconUrl="mvp/list.svg">Datos a mostrar</MenuButton>
+    <MenuButton onClick={onStatisticsTypeClick} iconUrl="mvp/estadistica.svg">Tipo de estadística</MenuButton>
     <div data-divider />
     <LegendToggle
       showLegend={showLegend}
@@ -211,7 +219,7 @@ const OptionsMenu = ({
       }}
     />
     <div data-divider />
-    <MenuButton onClick={onDeleteCard ? onDeleteCard : e => e.preventDefault()}>
+    <MenuButton onClick={onDeleteCard ? onDeleteCard : e => e.preventDefault()} iconUrl="mvp/trash.svg">
       Eliminar Tarjeta
     </MenuButton>
   </ContextMenu>
@@ -442,14 +450,27 @@ export const OptionsSelector = ({
     onMenuOpen,
     onMenuClose
   );
-  useTouchEvents(buttonRef, onMenuOpen);
+
+  const handleOptionsButtonClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    
+    if (menuPosition) {
+      onMenuClose();
+    } else {
+      handleClick(e); 
+    }
+  };
+
+  useTouchEvents(buttonRef, handleClick); 
 
   return (
     <>
       <OptionsButton
         buttonRef={buttonRef}
-        onClick={handleClick}
+        onClick={handleOptionsButtonClick}
         onMouseDown={handleMouseDown}
+        isOpen={!!menuPosition}
       />
 
       {menuPosition && (

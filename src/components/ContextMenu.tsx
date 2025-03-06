@@ -140,7 +140,7 @@ export const MenuItem: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => (
   <div
-    className="flex justify-center items-center gap-[10px] hover:bg-[#DBEAF2] cursor-pointer px-3 py-1 rounded w-full"
+    className="flex items-start gap-[10px] hover:bg-[#DBEAF2] cursor-pointer px-2 py-1 rounded w-full"
     onClick={e => e.stopPropagation()}
     onMouseDown={e => e.stopPropagation()}
   >
@@ -155,7 +155,6 @@ const handleMenuItemClick = (child: React.ReactNode, menuId: string) => {
     return React.cloneElement(child, {
       onClick: async (e: React.MouseEvent<HTMLElement>) => {
         e.stopPropagation();
-        e.preventDefault();
 
         const childMenus = Array.from(openMenus.values()).filter(
           menu => menu.parentId === menuId
@@ -201,14 +200,13 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
   // Prevenir que los eventos se propaguen fuera del menú
   const preventPropagation = (e: React.MouseEvent | React.TouchEvent) => {
     e.stopPropagation();
-    e.preventDefault();
   };
 
   return createPortal(
     <div
       ref={menuRef}
       data-menu-id={menuId}
-      className="fixed flex flex-col p-[16px] gap-[10px] items-start rounded-lg border-2 border-sofia-darkBlue bg-sofia-blancoPuro whitespace-nowrap"
+      className="fixed flex flex-col p-[12px] gap-[10px] items-start rounded-lg border-2 border-sofia-darkBlue bg-sofia-blancoPuro whitespace-nowrap"
       style={{
         left: x,
         top: y,
