@@ -5,10 +5,10 @@ import { NodeData } from "@interfaces/workflow";
 import { IntegrationType } from "@interfaces/integrations";
 import AddWebchat from "@pages/Workspace/components/AddWebChat";
 import SlackIntegration from "@pages/Workspace/components/SlackIntegration";
-import MessengerManualIntegration from "@pages/Workspace/components/MessengerManualIntegration";
-import WhatsAppManualIntegration from "@pages/Workspace/components/WhatsAppManualIntegration";
 import ConfirmationModal from "@components/ConfirmationModal";
 import { deleteIntegrationbyId } from "@services/integration";
+import MessengerManualIntegration from "@pages/Workspace/components/MessengerManualIntegration";
+import WhatsAppManualIntegration from "@pages/Workspace/components/WhatsAppManualIntegration";
 import { ContextMenuOption } from "./DiagramContextMenu";
 
 interface IntegrationItemProps extends CustomTypeNodeProps<NodeData> {

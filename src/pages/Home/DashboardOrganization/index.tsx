@@ -6,6 +6,13 @@ import { useDashboard } from "../../../hooks/useDashboard";
 import { useSelector } from "react-redux";
 import { RootState } from "@store";
 import { useMemo, useState } from "react";
+import { FiPlus } from "react-icons/fi";
+import {
+  AnalyticType,
+  StatisticsDisplayType,
+  TimeRange,
+} from "../../../services/analyticTypes";
+import { Button } from "@components/common/Button";
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
@@ -30,6 +37,44 @@ const getBreakpoint = (width: number) => {
   return "xs";
 };
 
+const DEFAULT_CARD = {
+  title: "Nueva tarjeta",
+  analyticTypes: [AnalyticType.TOTAL_USERS],
+  displayType: StatisticsDisplayType.METRIC,
+  timeRange: TimeRange.LAST_7_DAYS,
+  showLegend: true,
+  layout: {
+    lg: {
+      h: 8,
+      i: "0",
+      w: 12,
+      x: 0,
+      y: 23,
+    },
+    md: {
+      h: 5,
+      i: "0",
+      w: 7,
+      x: 0,
+      y: 18,
+    },
+    sm: {
+      h: 4,
+      i: "0",
+      w: 5,
+      x: 0,
+      y: 7,
+    },
+    xs: {
+      h: 4,
+      i: "0",
+      w: 12,
+      x: 0,
+      y: 4,
+    },
+  },
+};
+
 const DashboardOrganization = () => {
   const organizationId = useSelector(
     (state: RootState) => state.auth.selectOrganizationId
@@ -40,6 +85,8 @@ const DashboardOrganization = () => {
     state,
     updateLayouts,
     updateCard: updateCardService,
+    addCard,
+    removeCard,
   } = useDashboard(organizationId);
   const [currentBreakpoint, setCurrentBreakpoint] = useState(
     getBreakpoint(window.innerWidth)
@@ -75,8 +122,34 @@ const DashboardOrganization = () => {
     updateLayouts(layout, currentBreakpoint, roleId);
   };
 
+  const handleAddCard = () => {
+    const roleId = roles.find(
+      org => org.organization?.id === organizationId
+    )?.id;
+    if (!roleId || !organizationId) return;
+
+    // Calcular la posición Y para la nueva tarjeta
+    const maxY =
+      state.length > 0
+        ? Math.max(...state.map(card => card.layout.lg.y + card.layout.lg.h))
+        : 0;
+
+    const newCard = {
+      ...DEFAULT_CARD,
+      layout: {
+        lg: { ...DEFAULT_CARD.layout.lg, y: maxY, i: 0 },
+      },
+    };
+
+    addCard(newCard);
+  };
+
   return (
     <div className="p-4 h-full">
+      <Button variant="primary" onClick={handleAddCard} className="w-[141px]">
+        <FiPlus size={18} />
+        <span>Crear tarjeta</span>
+      </Button>
       <ResponsiveGridLayout
         className="layout"
         layouts={layouts}
@@ -103,6 +176,7 @@ const DashboardOrganization = () => {
               className="h-full"
               showLegend={card.showLegend}
               onUpdateCard={updates => updateCardService(card.id, updates)}
+              onDeleteCard={removeCard}
             />
           </div>
         ))}
