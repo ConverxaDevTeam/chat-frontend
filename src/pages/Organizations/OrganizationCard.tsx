@@ -51,16 +51,15 @@ const OrganizationCard = ({
               </p>
             )}
           </div>
-          <span className="font-medium text-gray-900">
-            {organization.name}
-          </span>
+          <span className="font-medium text-gray-900">{organization.name}</span>
         </div>
       </td>
-      <td className="py-2.5 px-6 text-sm text-gray-600">
-        {organization.id}
-      </td>
+      <td className="py-2.5 px-6 text-sm text-gray-600">{organization.id}</td>
       <td className="py-2.5 px-6">
-        <p className="text-sm text-gray-600 truncate max-w-[200px]" title={organization.description}>
+        <p
+          className="text-sm text-gray-600 truncate max-w-[200px]"
+          title={organization.description}
+        >
           {organization.description}
         </p>
       </td>
@@ -87,6 +86,22 @@ const OrganizationCard = ({
           </button>
         </div>
       </td>
+      {isSuperAdmin && (
+        <td className="py-2.5 px-6">
+          <div className="w-full mt-4 flex justify-center">
+            <InlineInputGroup label="Agente">
+              <select
+                className="w-full p-2 border rounded-lg focus:outline-none text-[14px] bg-white"
+                value={agentType}
+                onChange={handleAgentTypeChange}
+              >
+                <option value={AgentType.SOFIA_ASISTENTE}>Sofia</option>
+                <option value={AgentType.CLAUDE}>Claude</option>
+              </select>
+            </InlineInputGroup>
+          </div>
+        </td>
+      )}
     </tr>
   );
 };
