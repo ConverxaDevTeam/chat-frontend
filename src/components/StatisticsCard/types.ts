@@ -1,3 +1,3 @@
-import { TimeRange, timeRangeLabels } from "../../services/analyticTypes";
+import { TimeRange, timeRangeLabels, timeRangeOptions } from "../../services/analyticTypes";
 
-export { TimeRange, timeRangeLabels };
+export { TimeRange, timeRangeLabels, timeRangeOptions };
