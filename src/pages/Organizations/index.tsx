@@ -25,18 +25,84 @@ const OrganizationList = ({
   organizations,
   onEdit,
   onDelete,
-}: OrganizationListProps) => (
-  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-[20px] 2xl:gap-[24px]">
-    {organizations.map(organization => (
-      <OrganizationCard
-        key={organization.id}
-        organization={organization}
-        onEdit={() => onEdit(organization)}
-        onDelete={() => onDelete(organization)}
-      />
-    ))}
-  </div>
-);
+}: OrganizationListProps) => {
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 10;
+
+  const totalPages = Math.ceil(organizations.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const endIndex = startIndex + ITEMS_PER_PAGE;
+  const currentOrganizations = organizations.slice(startIndex, endIndex);
+
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="w-full">
+        <div className="w-full overflow-x-auto">
+          <table className="w-full border-collapse">
+            <thead>
+              <tr>
+                <th className="py-2.5 px-6 text-left font-size-[16px] font-bold text-gray-900">
+                  Organización
+                </th>
+                <th className="py-2.5 px-6 text-left font-size-[16px] font-bold text-gray-900">
+                  ID
+                </th>
+                <th className="py-2.5 px-6 text-left font-size-[16px] font-bold text-gray-900">
+                  Descripción
+                </th>
+                <th className="py-2.5 px-6 text-center font-size-[16px] font-bold text-gray-900">
+                  Usuarios
+                </th>
+                <th className="py-2.5 px-6 text-right font-size-[16px] font-bold text-gray-900">
+                  Acciones
+                </th>
+              </tr>
+            </thead>
+            <tbody className="relative before:content-[''] before:absolute before:-z-10 before:inset-0 before:rounded-[8px] before:border-[2px] before:border-[#DBEAF2] before:border-inherit">
+              {currentOrganizations.map(organization => (
+                <OrganizationCard
+                  key={organization.id}
+                  organization={organization}
+                  onEdit={() => onEdit(organization)}
+                  onDelete={() => onDelete(organization)}
+                />
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      {totalPages > 1 && (
+        <div className="flex justify-between items-center py-3 px-4">
+          <div className="flex items-center gap-2">
+            <p className="text-sm text-gray-700">
+              Mostrando{" "}
+              <span className="font-medium">
+                {startIndex + 1} - {Math.min(endIndex, organizations.length)}
+              </span>{" "}
+              de <span className="font-medium">{organizations.length}</span>
+            </p>
+          </div>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+              className="p-2 text-gray-600 hover:bg-gray-100 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <img src="/mvp/chevron-left.svg" alt="Anterior" className="w-5 h-5" />
+            </button>
+            <button
+              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+              disabled={currentPage === totalPages}
+              className="p-2 text-gray-600 hover:bg-gray-100 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <img src="/mvp/chevron-right.svg" alt="Siguiente" className="w-5 h-5" />
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
 
 interface CreateModalProps {
   isShown: boolean;
@@ -210,7 +276,7 @@ const Organizations = () => {
       reset({ owner_id: selectedOrg.owner?.user.id || 0 });
     }
   }, [selectedOrg, isModalOpen, reset]);
-  
+
   useEffect(() => {
     const newTotalPages = Math.ceil(organizations.length / ITEMS_PER_PAGE);
     if (currentPage > newTotalPages) {
@@ -267,38 +333,38 @@ const Organizations = () => {
         )}
       </div>
       {totalPages > 1 && (
-              <div className="flex items-center justify-center gap-2 mt-4">
-                <button
-                  className="px-3 py-1 border rounded disabled:opacity-50"
-                  onClick={() => goToPage(currentPage - 1)}
-                  disabled={currentPage === 1}
-                >
-                  <FiChevronLeft />
-                </button>
+        <div className="flex items-center justify-center gap-2 mt-4">
+          <button
+            className="px-3 py-1 border rounded disabled:opacity-50"
+            onClick={() => goToPage(currentPage - 1)}
+            disabled={currentPage === 1}
+          >
+            <FiChevronLeft />
+          </button>
 
-                {Array.from({ length: totalPages }, (_, index) => index + 1).map(
-                  pageNum => (
-                    <button
-                      key={pageNum}
-                      onClick={() => goToPage(pageNum)}
-                      className={`px-3 py-1 border rounded ${
-                        pageNum === currentPage ? "bg-gray-300" : ""
-                      }`}
-                    >
-                      {pageNum}
-                    </button>
-                  )
-                )}
+          {Array.from({ length: totalPages }, (_, index) => index + 1).map(
+            pageNum => (
+              <button
+                key={pageNum}
+                onClick={() => goToPage(pageNum)}
+                className={`px-3 py-1 border rounded ${
+                  pageNum === currentPage ? "bg-gray-300" : ""
+                }`}
+              >
+                {pageNum}
+              </button>
+            )
+          )}
 
-                <button
-                  className="px-3 py-1 border rounded disabled:opacity-50"
-                  onClick={() => goToPage(currentPage + 1)}
-                  disabled={currentPage === totalPages}
-                >
-                  <FiChevronRight/>
-                </button>
-              </div>
-            )}
+          <button
+            className="px-3 py-1 border rounded disabled:opacity-50"
+            onClick={() => goToPage(currentPage + 1)}
+            disabled={currentPage === totalPages}
+          >
+            <FiChevronRight />
+          </button>
+        </div>
+      )}
     </>
   );
 };
