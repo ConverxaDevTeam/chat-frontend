@@ -47,7 +47,13 @@ export const getConversationByOrganizationIdAndById = async (
       )
     );
     if (response.status === 200) {
-      return response.data;
+      return {
+        ...response.data,
+        messages: response.data.messages.sort(
+          (a, b) =>
+            new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+        ),
+      };
     } else {
       alertError(String(response.data));
       return null;
@@ -138,15 +144,22 @@ export const exportConversation = (
   conversation: ConversationDetailResponse
 ): boolean => {
   try {
+    const sortedConversation = {
+      ...conversation,
+      messages: conversation.messages.sort(
+        (a, b) =>
+          new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+      ),
+    };
     switch (format) {
       case "csv":
-        exportToCSV(conversation);
+        exportToCSV(sortedConversation);
         break;
       case "excel":
-        exportToExcel(conversation);
+        exportToExcel(sortedConversation);
         break;
       case "pdf":
-        exportToPDF(conversation);
+        exportToPDF(sortedConversation);
         break;
     }
     return true;
