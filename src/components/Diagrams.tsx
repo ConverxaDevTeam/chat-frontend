@@ -292,7 +292,7 @@ const createInitialNodes = (
     integrationsList.filter(
       integration => integration.type === IntegrationType.CHAT_WEB
     ).length === 0
-      ? [{ id: -1, type: IntegrationType.CHAT_WEB }]
+      ? [{ id: -1, type: IntegrationType.CHAT_WEB }, ...integrationsList]
       : [...integrationsList];
 
   if (defaultIntegrations.length > 0) {
