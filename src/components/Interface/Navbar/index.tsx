@@ -304,7 +304,7 @@ const UserActions = ({
           setContextMenu={setContextMenu}
         />
         <img src="/mvp/settings.svg" alt="Settings" className="w-5 h-5" />
-        <img src="/mvp/spanish.svg" alt="Language" className="w-5 h-5" />
+        <img src="/mvp/spanish.svg" alt="Language" className="w-4 h-4" />
         <img
           src="/mvp/chevron-down.svg"
           alt="Chevron down"
