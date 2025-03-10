@@ -295,8 +295,9 @@ const UserActions = ({
         {user?.email}
       </p>
       <div
-        className={`bg-white  border border-gray-300 shadow-sm border-inherit max-w-[148px] h-[36px] relative rounded-lg flex justify-between items-center gap- p-3 cursor-pointer ${
-          mobileResolution ? "w-full gap-3" : "w-[200px]"
+        className={`
+          bg-[#F1F5F9] rounded-[8px] shadow-[1px_1px_2px_0px_#B8CCE0,-1px_-1px_2px_0px_#FFFFFF,1px_1px_2px_0px_#B8CCE0_inset,-1px_-1px_2px_0px_#FFFFFF_inset] relative flex justify-between items-center gap-2 p-3 cursor-pointer h-[36px] ${
+          mobileResolution ? "w-full" : "w-[148px]"
         }`}
       >
         <NotificationsMenu

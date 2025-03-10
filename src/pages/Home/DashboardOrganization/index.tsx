@@ -145,8 +145,8 @@ const DashboardOrganization = () => {
 
   return (
     <div className="h-full">
-      <Button variant="primary" onClick={handleAddCard} className="w-[161px] h-[35px] text-[14px]">
-        <span>+ Crear tarjeta</span>
+      <Button variant="primary" onClick={handleAddCard} className="w-[161px] h-[40px] flex items-center gap-1 px-4 py-2 bg-[#001130] text-white rounded-lg hover:bg-opacity-90">
+        + Crear tarjeta
       </Button>
       <ResponsiveGridLayout
         className="layout"
