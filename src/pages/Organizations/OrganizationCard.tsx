@@ -19,7 +19,7 @@ const OrganizationCard = ({
     <tr className="h-[60px] border-b-[1px] border-[#DBEAF2] hover:bg-gray-50">
       <td className="py-2.5 px-6">
         <div className="flex items-center gap-3">
-          <div className="flex justify-center items-center w-8 h-8 rounded-[4px] bg-gray-50 overflow-hidden flex-shrink-0">
+          <div className="flex justify-center items-center w-8 h-8 rounded-[4px] before:content-[''] before:absolute before:-z-10 before:inset-0 before:bg-custom-gradient before:rounded-[8px] before:border-[2px] before:border-[#B8CCE0] before:border-inherit before:bg-app-c2 overflow-hidden flex-shrink-0">
             {organization.logo ? (
               <img
                 src={organization.logo}
@@ -46,7 +46,7 @@ const OrganizationCard = ({
         </p>
       </td>
       <td className="py-2.5 px-6 text-center">
-        <span className="text-sm font-medium text-gray-600 bg-gray-50 px-3 py-0.5 rounded-[4px]">
+        <span className="text-sm font-medium text-gray-600 px-3 py-0.5 rounded-[4px]">
           {organization.users}
         </span>
       </td>

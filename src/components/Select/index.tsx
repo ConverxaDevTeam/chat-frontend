@@ -41,7 +41,8 @@ const Select: FC<SelectProps> = ({
   return (
     <div className="relative">
       <div
-        className={`bg-white border border-gray-200 shadow-sm border-inherit h-[36px] relative rounded-lg flex justify-between items-center p-[6px] cursor-pointer text-gray-700 ${
+        className={`
+          bg-[#F1F5F9] rounded-[8px] shadow-[1px_1px_2px_0px_#B8CCE0,-1px_-1px_2px_0px_#FFFFFF,1px_1px_2px_0px_#B8CCE0_inset,-1px_-1px_2px_0px_#FFFFFF_inset] relative flex justify-between items-center p-[6px] cursor-pointer text-sofia-superDark h-[36px] ${
           mobileResolution ? "w-full" : "w-[200px]"
         }`}
         onClick={handleToggle}
@@ -59,13 +60,13 @@ const Select: FC<SelectProps> = ({
       </div>
 
       {isOpen && (
-        <div className="absolute w-full bg-app-c2 top-[36px] left-0 rounded-lg border-[1px] border-app-c3 z-50 max-h-[300px] overflow-y-auto">
+        <div className="absolute w-full bg-[#F1F5F9] top-[36px] left-0 rounded-lg border-[1px] border-[#B8CCE0] z-50 max-h-[300px] overflow-y-auto shadow-[1px_1px_2px_0px_#B8CCE0,-1px_-1px_2px_0px_#FFFFFF]">
           {customOptions}
           {options.map(option => (
             <div
               key={String(option.id)}
-              className={`p-[6px] cursor-pointer hover:bg-app-c1 ${
-                option.id === value ? "bg-app-c1" : ""
+              className={`p-[6px] cursor-pointer hover:bg-[#E2E8F0] ${
+                option.id === value ? "bg-[#E2E8F0]" : ""
               }`}
               onClick={() => {
                 onChange(option.id);

@@ -22,7 +22,7 @@ export const ConversationContextMenu = ({
   return (
     <ContextMenu x={x} y={y} onClose={onClose}>
       <button
-        className="w-full text-left"
+        className="w-full text-left flex items-center gap-2"
         onClick={() => {
           exportConversation(
             organizationId,
@@ -32,10 +32,11 @@ export const ConversationContextMenu = ({
           );
         }}
       >
-        Exportar Chat CSV
+        <img src="/mvp/download.svg" alt="" className="w-4 h-4" />
+        Exportar chat CSV
       </button>
       <button
-        className="w-full text-left"
+        className="w-full text-left flex items-center gap-2"
         onClick={() => {
           exportConversation(
             organizationId,
@@ -45,10 +46,11 @@ export const ConversationContextMenu = ({
           );
         }}
       >
-        Exportar Chat PDF
+        <img src="/mvp/download.svg" alt="" className="w-4 h-4" />
+        Exportar chat PDF
       </button>
       <button
-        className="w-full text-left"
+        className="w-full text-left flex items-center gap-2"
         onClick={() => {
           exportConversation(
             organizationId,
@@ -58,10 +60,12 @@ export const ConversationContextMenu = ({
           );
         }}
       >
-        Exportar Chat EXCEL
+        <img src="/mvp/download.svg" alt="" className="w-4 h-4" />
+        Exportar chat EXCEL
       </button>
-      <button className="w-full text-left text-red-500" onClick={onDelete}>
-        Eliminar Chat
+      <button className="w-full text-left text-red-500 flex items-center gap-2" onClick={onDelete}>
+        <img src="/mvp/trash.svg" alt="" className="w-4 h-4" />
+        Eliminar chat
       </button>
     </ContextMenu>
   );
