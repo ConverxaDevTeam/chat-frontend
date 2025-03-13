@@ -6,7 +6,7 @@ const BlockingPage = () => {
   const dispatch = useDispatch<AppDispatch>();
   return (
     <div className="flex flex-col w-full h-full bg-app-background relative overflow-hidden">
-      <div className="w-full h-full absolute bg-[url('demo/more.png')] bg-repeat z-10"></div>
+      <div className="w-full h-full absolute bg-[url('/demo/more.png')] bg-repeat z-10"></div>
       <div className="h-[66px] w-full flex items-center px-[12px] justify-between z-20">
         <img
           className="h-[40px] select-none"
