@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect, useRef, useState } from "react";
-import { Handle, Position, NodeProps } from "@xyflow/react";
+import { Handle, Position, NodeProps, useEdges } from "@xyflow/react";
 import { NodeData, NodeStyle } from "@interfaces/workflow";
 import { NeumorphicButton } from "../NeumorphicButton";
 import DiagramContextMenu, { ContextMenuOption } from "./DiagramContextMenu";
@@ -20,38 +20,76 @@ interface CustomNodeProps extends NodeProps {
 
 const NodeHandles: React.FC<{
   allowedConnections: ("source" | "target")[];
-}> = ({ allowedConnections }) => (
-  <>
-    {allowedConnections.includes("target") && (
-      <Handle
-        type="target"
-        position={Position.Top}
-        id={`node-target-${Position.Top}`}
-        style={{
-          opacity: 0,
-          // Posicionamos el handle en el centro
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-        }}
-      />
-    )}
-    {allowedConnections.includes("source") && (
-      <Handle
-        type="source"
-        position={Position.Top}
-        id={`node-source-${Position.Top}`}
-        style={{
-          opacity: 0,
-          // Posicionamos el handle en el centro
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-        }}
-      />
-    )}
-  </>
-);
+  nodeId: string;
+}> = ({ allowedConnections, nodeId }) => {
+  const edges = useEdges();
+  
+  const connectedHandles = edges.reduce((acc, edge) => {
+    if (edge.source === nodeId && edge.sourceHandle) {
+      const position = edge.sourceHandle.includes('top') ? Position.Top :
+                      edge.sourceHandle.includes('right') ? Position.Right :
+                      edge.sourceHandle.includes('bottom') ? Position.Bottom :
+                      edge.sourceHandle.includes('left') ? Position.Left : null;
+      
+      if (position) {
+        acc.push({ type: 'source', position });
+      }
+    }
+    if (edge.target === nodeId && edge.targetHandle) {
+      const position = edge.targetHandle.includes('top') ? Position.Top :
+                      edge.targetHandle.includes('right') ? Position.Right :
+                      edge.targetHandle.includes('bottom') ? Position.Bottom :
+                      edge.targetHandle.includes('left') ? Position.Left : null;
+      
+      if (position) {
+        acc.push({ type: 'target', position });
+      }
+    }
+    return acc;
+  }, [] as Array<{ type: 'source' | 'target', position: Position }>);
+
+  // Solo renderizar los handles que tienen conexiones
+  return (
+    <>
+      {allowedConnections.includes("target") && connectedHandles
+        .filter(handle => handle.type === 'target')
+        .map(handle => (
+          <Handle
+            key={`target-${handle.position}`}
+            type="target"
+            position={handle.position}
+            id={`node-target-${handle.position}`}
+            className="w-3 h-3 bg-white border-2 border-blue-400 rounded-full"
+            style={{
+              top: handle.position === Position.Top ? "-2px" : handle.position === Position.Bottom ? "auto" : "50%",
+              bottom: handle.position === Position.Bottom ? "-2px" : "auto",
+              left: handle.position === Position.Left ? "-2px" : handle.position === Position.Right ? "auto" : "50%",
+              right: handle.position === Position.Right ? "-2px" : "auto",
+              transform: handle.position === Position.Left || handle.position === Position.Right ? "translate(0, -50%)" : "translate(-50%, 0)"
+            }}
+          />
+        ))}
+      {allowedConnections.includes("source") && connectedHandles
+        .filter(handle => handle.type === 'source')
+        .map(handle => (
+          <Handle
+            key={`source-${handle.position}`}
+            type="source"
+            position={handle.position}
+            id={`node-source-${handle.position}`}
+            className="w-3 h-3 bg-white border-2 border-green-400 rounded-full"
+            style={{
+              top: handle.position === Position.Top ? "-2px" : handle.position === Position.Bottom ? "auto" : "50%",
+              bottom: handle.position === Position.Bottom ? "-2px" : "auto",
+              left: handle.position === Position.Left ? "-2px" : handle.position === Position.Right ? "auto" : "50%",
+              right: handle.position === Position.Right ? "-2px" : "auto",
+              transform: handle.position === Position.Left || handle.position === Position.Right ? "translate(0, -50%)" : "translate(-50%, 0)"
+            }}
+          />
+        ))}
+    </>
+  );
+};
 
 interface NodeContentProps {
   children?: React.ReactNode;
@@ -206,7 +244,10 @@ const DefaultNode: React.FC<CustomNodeProps> = ({
   );
 
   return (
-    <div className="relative" ref={ref}>
+    <div
+      className="relative"
+      ref={ref}
+    >
       {style !== NodeStyle.SMALL && (
         <div
           className={`
@@ -215,11 +256,11 @@ const DefaultNode: React.FC<CustomNodeProps> = ({
             -translate-x-1/2
             z-10
             ${style === NodeStyle.CENTRAL ? "top-[108px]" : ""}
-            ${style === NodeStyle.NEUMORPHIC ? "top-[124px]" : ""}
+            ${style === NodeStyle.NEUMORPHIC ? "top-[115px]" : ""}
           `}
         >
           <div className="w-[100px] text-center">
-            <p className="text-xs font-normal text-sofia-superDark line-clamp-2 overflow-hidden">
+            <p className="text-xs font-normal text-sofia-superDark line-clamp-1 overflow-hidden">
               {name}
             </p>
           </div>
@@ -230,7 +271,7 @@ const DefaultNode: React.FC<CustomNodeProps> = ({
           case NodeStyle.CENTRAL:
             return (
               <Fragment>
-                <NodeHandles allowedConnections={allowedConnections} />
+                <NodeHandles allowedConnections={allowedConnections} nodeId={props.id}/>
                 <NeumorphicButton
                   externalProps={{
                     radius: "full",
@@ -238,7 +279,7 @@ const DefaultNode: React.FC<CustomNodeProps> = ({
                   }}
                   internalProps={{
                     radius: "full",
-                    className: "bg-node-gradient",
+                    className: "bg-node-gradiant",
                   }}
                   height="140px"
                   width="140px"
@@ -250,19 +291,19 @@ const DefaultNode: React.FC<CustomNodeProps> = ({
           case NodeStyle.SMALL:
             return (
               <Fragment>
-                <NodeHandles allowedConnections={allowedConnections} />
+                <NodeHandles allowedConnections={allowedConnections} nodeId={props.id}/>
                 <SmallNode>{nodeContent}</SmallNode>
               </Fragment>
             );
           default:
             return (
               <Fragment>
-                <NodeHandles allowedConnections={allowedConnections} />
+                <NodeHandles allowedConnections={allowedConnections} nodeId={props.id}/>
                 <NeumorphicButton
                   externalProps={{
                     className: "rounded-[32px] pb-8",
                   }}
-                  height="165px"
+                  height="155px"
                 >
                   {nodeContent}
                 </NeumorphicButton>

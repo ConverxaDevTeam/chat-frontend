@@ -35,10 +35,7 @@ import IntegrationItemNode from "./Diagrams/IntegrationItemNode";
 import ContextMenu from "./ContextMenu";
 import { useNodeSelection } from "./Diagrams/hooks/useNodeSelection";
 import { useContextMenu } from "./Diagrams/hooks/useContextMenu";
-import {
-  nodePositioning,
-  useUnifiedNodeCreation,
-} from "./Diagrams/hooks/useUnifiedNodeCreation";
+import { useUnifiedNodeCreation } from "./Diagrams/hooks/useUnifiedNodeCreation";
 import { useEdges } from "./workspace/hooks/Diagrams";
 import { AuthEdge } from "./Diagrams/edges/AuthEdge";
 import { FunctionEditModal } from "./Diagrams/funcionComponents/FunctionEditModal";
@@ -89,6 +86,57 @@ interface Position2D {
   y: number;
 }
 
+// Enum para las posiciones disponibles
+const NodePositions = {
+  positions: [Position.Bottom, Position.Top, Position.Right] as const,
+  currentIndex: Number(localStorage.getItem('nodePositionsIndex')) || 0,
+  next(isNewNode: boolean = false) {
+    if (!isNewNode) {
+      return this.positions[this.currentIndex];
+    }
+    
+    const currentPosition = this.positions[this.currentIndex];
+    this.currentIndex = (this.currentIndex + 1) % this.positions.length;
+    localStorage.setItem('nodePositionsIndex', this.currentIndex.toString());
+    return currentPosition;
+  }
+};
+
+const SPECIAL_NODE_IDS = {
+  INTEGRATION: '-1'
+} as const;
+
+const DEFAULT_POSITIONS = {
+  INTEGRATION: Position.Bottom
+} as const;
+
+// Gestión de posiciones de nodos
+const nodePositionManager = {
+  getStoredPosition: (nodeId: string): Position | null => {
+    const savedPosition = localStorage.getItem(`node-position-${nodeId}`);
+    return savedPosition ? savedPosition as Position : null;
+  },
+
+  savePosition: (nodeId: string, position: Position): void => {
+    localStorage.setItem(`node-position-${nodeId}`, position);
+  },
+
+  getNodePosition: (nodeId: string, isNewNode: boolean = false): Position => {
+    if (nodeId === SPECIAL_NODE_IDS.INTEGRATION) {
+      return DEFAULT_POSITIONS.INTEGRATION;
+    }
+
+    const savedPosition = nodePositionManager.getStoredPosition(nodeId);
+    if (savedPosition) {
+      return savedPosition;
+    }
+    
+    const position = NodePositions.next(isNewNode);
+    nodePositionManager.savePosition(nodeId, position);
+    return position;
+  }
+};
+
 // Factory de nodos
 const nodeFactory = {
   createBaseNode: <T extends NodeData>(
@@ -96,15 +144,23 @@ const nodeFactory = {
     position: Position2D,
     data: T,
     type: NodeType
-  ): Node<T> => ({
-    id,
-    position,
-    data,
-    type,
-  }),
+  ): Node<T> => {
+    const nodePosition = nodePositionManager.getNodePosition(id, true);
+    return {
+      id,
+      position,
+      data: {
+        ...data,
+        handlePosition: nodePosition
+      },
+      type,
+      sourcePosition: nodePosition,
+      targetPosition: nodePosition === Position.Top ? Position.Bottom : nodePosition === Position.Bottom ? Position.Top : nodePosition === Position.Left ? Position.Right : Position.Left
+    };
+  },
 
-  createAgentNode: (agentId: number, position: Position2D): Node<AgentData> =>
-    nodeFactory.createBaseNode(
+  createAgentNode: (agentId: number, position: Position2D): Node<AgentData> => {
+    const node = nodeFactory.createBaseNode(
       "agent",
       position,
       {
@@ -113,10 +169,12 @@ const nodeFactory = {
         agentId,
       },
       "agente"
-    ),
+    );
+    return node;
+  },
 
-  createIntegrationsNode: (position: Position2D): Node<NodeData> =>
-    nodeFactory.createBaseNode(
+  createIntegrationsNode: (position: Position2D): Node<NodeData> => {
+    const node = nodeFactory.createBaseNode(
       "integrations",
       position,
       {
@@ -124,14 +182,16 @@ const nodeFactory = {
         description: "This is Node A",
       },
       "integraciones"
-    ),
+    );
+    return node;
+  },
 
   createFunctionNode: (
     func: { id: number; name: string },
     position: Position2D,
     agentId: number
-  ): Node<FunctionData<HttpRequestFunction>> =>
-    nodeFactory.createBaseNode(
+  ): Node<FunctionData<HttpRequestFunction>> => {
+    const node = nodeFactory.createBaseNode(
       `function-${func.id}`,
       position,
       {
@@ -148,13 +208,16 @@ const nodeFactory = {
         },
       },
       "funcion"
-    ),
+    );
+    return node;
+  },
+
   createIntegrationItemNode: (
     id: number,
     position: Position2D,
     type: IntegrationType
-  ): Node<NodeData> =>
-    nodeFactory.createBaseNode(
+  ): Node<NodeData> => {
+    const node = nodeFactory.createBaseNode(
       id.toString(),
       position,
       {
@@ -164,7 +227,9 @@ const nodeFactory = {
         id: id,
       } as NodeData,
       "integration-item"
-    ),
+    );
+    return node;
+  },
 };
 
 // Factory de edges
@@ -188,12 +253,16 @@ const edgeFactory = {
     functionNode: Node<FunctionData<HttpRequestFunction>>,
     authenticatorId?: number
   ): Edge => {
+    const isNewNode = !localStorage.getItem(`node-position-${functionNode.id}`);
+    const sourcePos = nodePositionManager.getNodePosition(functionNode.id, isNewNode);
+    const targetPos = sourcePos === Position.Top ? Position.Bottom : sourcePos === Position.Bottom ? Position.Top : Position.Left;
+
     return {
       id: `e${functionNode.id}`,
       source: "agent",
       target: functionNode.id,
-      sourceHandle: `node-source-${Position.Top}`,
-      targetHandle: `node-target-${Position.Top}`,
+      sourceHandle: `node-source-${sourcePos}`,
+      targetHandle: `node-target-${targetPos}`,
       type: "auth",
       data: {
         functionId: functionNode.data.functionId,
@@ -201,11 +270,6 @@ const edgeFactory = {
       },
     };
   },
-};
-
-const edgeTypes = {
-  auth: AuthEdge,
-  default: CustomEdge,
 };
 
 interface AgentState {
@@ -244,8 +308,8 @@ const createInitialNodes = (
       "e1-2",
       "integrations",
       "agent",
-      `node-source-${Position.Top}`,
-      `node-target-${Position.Top}`
+      `node-source-${Position.Right}`,
+      `node-target-${Position.Left}`
     ),
   ];
 
@@ -258,8 +322,8 @@ const createInitialNodes = (
       // Usar posición guardada si existe, sino calcular nueva posición
       const position =
         func.config?.position ||
-        nodePositioning.calculateCircularPosition(
-          acc, // Pasamos los nodos ya creados
+        calculateCircularPosition(
+          acc,
           agentNode.position
         );
 
@@ -300,11 +364,10 @@ const createInitialNodes = (
       (integration, index) =>
         nodeFactory.createIntegrationItemNode(
           integration.id,
-          nodePositioning.calculateTangentialPosition(
+          calculateTangentialPosition(
             index,
             defaultIntegrations.length,
-            { x: 100, y: 100 }, // posición del nodo de integración
-            agentNode.position
+            { x: 100, y: 100 }
           ),
           integration.type
         )
@@ -360,11 +423,6 @@ const DiagramFlow = ({
   <div className="relative w-full h-full">
     <div
       className="absolute inset-0"
-      // style={{
-      //   backgroundSize: '20px 20px',
-      //   backgroundImage:
-      //     "radial-gradient(to right, #DEDEDE 0.8px, transparent 0.8px), radial-gradient(to bottom, #DEDEDE 0.8px, transparent 0.8px)",
-      // }}
     />
     <ReactFlow
       className="relative bg-diagram-gradient"
@@ -382,12 +440,15 @@ const DiagramFlow = ({
         funcion: FuncionNode,
         "integration-item": IntegrationItemNode,
       }}
-      edgeTypes={edgeTypes}
+      edgeTypes={{
+        auth: AuthEdge,
+        default: CustomEdge,
+      }}
       defaultEdgeOptions={{
         type: "default",
       }}
       style={{
-        backgroundImage: 'radial-gradient(#DEDEDE 0.6px, transparent 0.8px)', 
+        backgroundImage: 'radial-gradient(#DEDEDE 0.6px, transparent 0.8px)',
         backgroundSize: '10px 10px'
       }}
       fitView
@@ -534,3 +595,49 @@ interface DiagramProps {
 export default function Diagram({ onAgentIdChange }: DiagramProps) {
   return <ZoomTransition onAgentIdChange={onAgentIdChange} />;
 }
+
+const calculateCircularPosition = (
+  existingNodes: Node[],
+  centerPosition: { x: number; y: number }
+): Position2D => {
+  const spacing = 200; 
+  const verticalSpacing = 150; 
+
+  // Posicionamiento específico para las primeras 3 funciones
+  switch (existingNodes.length) {
+    case 0: 
+      return {
+        x: centerPosition.x,
+        y: centerPosition.y + verticalSpacing
+      };
+    case 1:
+      return {
+        x: centerPosition.x,
+        y: centerPosition.y - verticalSpacing
+      };
+    case 2:
+      return {
+        x: centerPosition.x + spacing,
+        y: centerPosition.y
+      };
+    default:
+      const col = Math.floor((existingNodes.length - 3) / 2);
+      const row = (existingNodes.length - 3) % 2;
+      return {
+        x: centerPosition.x + spacing + (col * spacing),
+        y: centerPosition.y + (row === 0 ? -verticalSpacing : verticalSpacing)
+      };
+  }
+};
+
+const calculateTangentialPosition = (
+  index: number,
+  total: number,
+  sourcePosition: Position2D
+): Position2D => {
+  const spacing = 150;
+  return {
+    x: sourcePosition.x - spacing,
+    y: sourcePosition.y - spacing / 2 + (index * (spacing / (total - 1 || 1)))
+  };
+};
