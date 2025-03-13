@@ -181,6 +181,12 @@ const useMenuPosition = () => {
   const handleMenuClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+
+    if (position !== null) {
+      setPosition(null);
+      return;
+    }
+
     const button = e.currentTarget as HTMLElement;
     const buttonRect = button.getBoundingClientRect();
 

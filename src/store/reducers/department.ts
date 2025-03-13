@@ -10,7 +10,9 @@ interface DepartmentState {
 }
 
 const initialState: DepartmentState = {
-  selectedDepartmentId: null,
+  selectedDepartmentId: localStorage.getItem("departmentSelect")
+    ? Number(localStorage.getItem("departmentSelect"))
+    : null,
   departments: [],
   loadingDepartments: true,
 };
@@ -31,9 +33,15 @@ const departmentSlice = createSlice({
   initialState,
   reducers: {
     setSelectedDepartmentId: (state, action: PayloadAction<number | null>) => {
+      if (action.payload === null) {
+        localStorage.removeItem("departmentSelect");
+      } else {
+        localStorage.setItem("departmentSelect", String(action.payload));
+      }
       state.selectedDepartmentId = action.payload;
     },
     clearSelectedDepartment: state => {
+      localStorage.removeItem("departmentSelect");
       state.selectedDepartmentId = null;
       state.departments = [];
     },
@@ -46,11 +54,17 @@ const departmentSlice = createSlice({
       .addCase(fetchDepartments.fulfilled, (state, action) => {
         state.departments = action.payload;
         state.loadingDepartments = false;
-        if (action.payload.length > 0 && !state.selectedDepartmentId) {
-          state.selectedDepartmentId = action.payload[0].id;
-        } else {
-          state.selectedDepartmentId = null;
-        }
+        const storedDepartmentId = localStorage.getItem("departmentSelect")
+          ? Number(localStorage.getItem("departmentSelect"))
+          : null;
+        const isValidDepartment = action.payload.some(
+          (d: IDepartment) => d.id === storedDepartmentId
+        );
+        state.selectedDepartmentId = isValidDepartment
+          ? storedDepartmentId
+          : action.payload.length > 0
+            ? action.payload[0].id
+            : null;
       })
       .addCase(fetchDepartments.rejected, state => {
         state.loadingDepartments = false;

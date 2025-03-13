@@ -360,11 +360,11 @@ const DiagramFlow = ({
   <div className="relative w-full h-full">
     <div
       className="absolute inset-0"
-      style={{
-        backgroundSize: "25px 25px",
-        backgroundImage:
-          "linear-gradient(to right, #f0f0f0 2px, transparent 2px), linear-gradient(to bottom, #f0f0f0 2px, transparent 2px)",
-      }}
+      // style={{
+      //   backgroundSize: '20px 20px',
+      //   backgroundImage:
+      //     "radial-gradient(to right, #DEDEDE 0.8px, transparent 0.8px), radial-gradient(to bottom, #DEDEDE 0.8px, transparent 0.8px)",
+      // }}
     />
     <ReactFlow
       className="relative bg-diagram-gradient"
@@ -385,6 +385,10 @@ const DiagramFlow = ({
       edgeTypes={edgeTypes}
       defaultEdgeOptions={{
         type: "default",
+      }}
+      style={{
+        backgroundImage: 'radial-gradient(#DEDEDE 0.6px, transparent 0.8px)', 
+        backgroundSize: '10px 10px'
       }}
       fitView
     ></ReactFlow>

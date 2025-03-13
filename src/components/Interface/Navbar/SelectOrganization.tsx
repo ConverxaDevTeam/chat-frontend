@@ -83,9 +83,9 @@ const SelectOrganization = ({ mobileResolution }: SelectOrganizationProps) => {
         handleSelectOrganization(0);
         setIsOpen(false);
       }}
-      className={`p-[6px] cursor-pointer hover:bg-app-c1 ${
+      className={`p-[6px] cursor-pointer hover:bg-[#E2E8F0] ${
         selectOrganizationId === 0 || selectOrganizationId === null
-          ? "bg-app-c1"
+          ? "bg-[#E2E8F0]"
           : ""
       }`}
     >

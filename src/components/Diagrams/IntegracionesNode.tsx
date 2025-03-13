@@ -50,7 +50,7 @@ const IntegracionesNode = ({
       child: (
         <div className="group relative">
           <img src="/mvp/circle-plus.svg" alt="Nueva Integración" />
-          <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-5 hidden group-hover:block bg-gray-800 text-white text-lm px-2 py-1 rounded whitespace-nowrap">
+          <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-5 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 bg-gray-800 text-white font-normal text-xs px-2 py-1 rounded whitespace-nowrap">
             Agregar integración
           </div>
         </div>

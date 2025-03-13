@@ -6,7 +6,6 @@ import { useDashboard } from "../../../hooks/useDashboard";
 import { useSelector } from "react-redux";
 import { RootState } from "@store";
 import { useMemo, useState } from "react";
-import { FiPlus } from "react-icons/fi";
 import {
   AnalyticType,
   StatisticsDisplayType,
@@ -145,10 +144,9 @@ const DashboardOrganization = () => {
   };
 
   return (
-    <div className="p-4 h-full">
-      <Button variant="primary" onClick={handleAddCard} className="w-[141px]">
-        <FiPlus size={18} />
-        <span>Crear tarjeta</span>
+    <div className="h-full">
+      <Button variant="primary" onClick={handleAddCard} className="w-[161px] h-[40px] flex items-center gap-1 px-4 py-2 bg-[#001130] text-white rounded-lg hover:bg-opacity-90">
+        + Crear tarjeta
       </Button>
       <ResponsiveGridLayout
         className="layout"
