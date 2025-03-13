@@ -18,6 +18,9 @@ interface NeumorphicButtonProps {
   withContainer?: boolean;
   width?: string;
   height?: string;
+  innerWidth?: string;
+  innerHeight?: string;
+  innerPadding?: string;
   externalProps?: ExternalNeumorphicButtonProps;
   internalProps?: InternalNeumorphicButtonProps;
 }
@@ -28,6 +31,8 @@ export const NeumorphicButton = ({
   withContainer = true,
   width = "128px",
   height = "128px",
+  innerWidth = "82px",
+  innerHeight = "82px",
   externalProps = {
     radius: "[32px]",
     className: "",
@@ -42,8 +47,7 @@ export const NeumorphicButton = ({
     <div
       onClick={onClick}
       className={`
-        w-[82px] h-[82px]
-        p-6
+        w-[${innerWidth}] h-[${innerHeight}]
         gap-2
         rounded-${internalProps?.radius}
         bg-${internalProps?.backgroundColor}
