@@ -13,6 +13,19 @@ interface Point {
   node?: Node;
 }
 
+function getBestPosition(source: Point, target: Point): Position {
+  const dx = target.x - source.x;
+  const dy = target.y - source.y;
+  const angle = Math.atan2(dy, dx);
+
+  const degrees = ((angle * 180) / Math.PI + 360) % 360;
+
+  if (degrees >= 315 || degrees < 45) return Position.Right;
+  if (degrees >= 45 && degrees < 135) return Position.Bottom;
+  if (degrees >= 135 && degrees < 225) return Position.Left;
+  return Position.Top;
+}
+
 function getNodeIntersection(source: Point, target: Point): Point {
   // Obtenemos las dimensiones del nodo
   const nodeWidth = source.node?.width || 0;
@@ -36,11 +49,6 @@ function getNodeIntersection(source: Point, target: Point): Point {
     y: intersectY,
     id: source.id,
   };
-}
-
-function getEdgePosition(): Position {
-  // Siempre retornamos el centro
-  return Position.Top;
 }
 
 function getControlPoints(
@@ -75,7 +83,7 @@ function getControlPoints(
     targetOffset *= 0.7;
   }
 
-  // Calculamos la dirección perpendicular (siempre hacia la izquierda)
+  // Calculamos la dirección perpendicular
   const normalX = -dy / length;
   const normalY = dx / length;
 
@@ -157,25 +165,28 @@ export default function CustomEdge({
   source,
   target,
 }: CustomEdgeProps) {
-  const sourcePoint = {
-    x: sourceX,
-    y: sourceY,
-    id: source,
+  const sourcePoint = { 
+    x: sourceX, 
+    y: sourceY, 
+    id: source, 
     node: sourceNode,
   };
-  const targetPoint = {
-    x: targetX,
-    y: targetY,
-    id: target,
+  const targetPoint = { 
+    x: targetX, 
+    y: targetY, 
+    id: target, 
     node: targetNode,
   };
 
+  // Determinamos las mejores posiciones basadas en la dirección
+  const sourcePos = getBestPosition(sourcePoint, targetPoint);
+  const targetPos = getBestPosition(targetPoint, sourcePoint);
+
+  // Calculamos los puntos de intersección
   const sourceIntersect = getNodeIntersection(sourcePoint, targetPoint);
   const targetIntersect = getNodeIntersection(targetPoint, sourcePoint);
 
-  const sourcePos = getEdgePosition();
-  const targetPos = getEdgePosition();
-
+  // Generamos el path del edge
   const { edgePath } = getEdgeParams(
     sourceIntersect.x,
     sourceIntersect.y,
@@ -186,21 +197,19 @@ export default function CustomEdge({
     curveParams
   );
 
-  // Solo pasamos las props seguras del DOM
-  const pathProps = {
-    d: edgePath,
-    fill: "none",
-    markerEnd,
-    style: {
-      strokeWidth: 1.5,
-      strokeDasharray: "2.5 2",
-      ...style,
-    },
-  };
-
   return (
-    <svg className="stroke-sofia-superDark">
-      <path {...pathProps} />
-    </svg>
+    
+    <path
+      d={edgePath}
+      className="react-flow__edge-path"
+      fill="none"
+      markerEnd={markerEnd}
+      style={{
+        strokeWidth: 1.5,
+        strokeDasharray: "2.5 2",
+        stroke: '#001130',
+        ...style,
+      }}
+    />
   );
 }
