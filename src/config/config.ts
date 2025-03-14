@@ -23,6 +23,8 @@ export const apiUrls = {
   createOrganization: () => `/api/organization`,
   deleteOrganization: (id: number) => `/api/organization/${id}`,
   editOrganization: (id: number) => `/api/organization/${id}`,
+  updateOrganizationAgentType: (id: number) =>
+    `/api/organization/${id}/agent-type`,
   myOrganizations: () => `/api/organization/my-organizations`,
   uploadOrganizationLogo: (id: number) => `/api/organization/${id}/logo`,
   deleteOrganizationLogo: (id: number) => `/api/organization/${id}/logo`,
