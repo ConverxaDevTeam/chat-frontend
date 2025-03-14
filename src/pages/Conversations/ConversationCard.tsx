@@ -145,13 +145,13 @@ const ConversationCard = ({
       </div>
       <div className="w-[calc(100%/19*2)]">
         {conversation.type === IntegrationType.CHAT_WEB && (
-          <img className="select-none" src="/img/icon-web.png" alt="Web" />
+          <img className="select-none" src="/img/icon-web.svg" alt="Web" />
         )}
         {conversation.type === IntegrationType.MESSENGER && (
-          <img className="select-none" src="/img/icon-fb.png" alt="Facebook" />
+          <img className="select-none" src="/img/icon-fb.svg" alt="Facebook" />
         )}
         {conversation.type === IntegrationType.WHATSAPP && (
-          <img className="select-none" src="/img/icon-wa.png" alt="WhatsApp" />
+          <img className="select-none" src="/img/icon-wa.svg" alt="WhatsApp" />
         )}
         {conversation.type === IntegrationType.SLACK && (
           <img

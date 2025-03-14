@@ -48,7 +48,7 @@ const Sidebar = ({
               : "rounded-2xl w-[260px]"
             }`}
         >
-          <div className="flex flex-col bg-[#F1F5F9] rounded-lg w-[calc(100%-24px)] h-[calc(100%-24px)] mt-[12px] ml-[12px] [box-shadow:0px_4px_8px_0px_rgba(201,_217,_232,_0.8)] relative">
+          <div className="flex flex-col bg-[#F1F5F9] rounded-lg w-[calc(100%-24px)] h-[calc(100%-24px)] mt-[12px] ml-[12px] [box-shadow:0px_4px_10px_0px_rgba(201,_217,_232,_0.8)] relative">
             <div 
               className="absolute -right-7 top-1/2 transform -translate-y-1/2 cursor-pointer rounded-full p-1"
               onClick={() => setSidebarMinimized(!sidebarMinimized)}

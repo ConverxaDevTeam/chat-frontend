@@ -19,7 +19,7 @@ interface IntegrationItemProps extends CustomTypeNodeProps<NodeData> {
 
 const getIntegrationIcon = (type: IntegrationType) => {
   const iconMap: Record<IntegrationType, string> = {
-    [IntegrationType.CHAT_WEB]: "/mvp/globe.svg",
+    [IntegrationType.CHAT_WEB]: "/mvp/icon-web-yellow.svg",
     [IntegrationType.WHATSAPP]: "/mvp/whatsapp.svg",
     [IntegrationType.WHATSAP_MANUAL]: "/mvp/whatsapp.svg",
     [IntegrationType.MESSENGER]: "/mvp/messenger.svg",
