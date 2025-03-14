@@ -37,10 +37,8 @@ import { useNodeSelection } from "./Diagrams/hooks/useNodeSelection";
 import { useContextMenu } from "./Diagrams/hooks/useContextMenu";
 import { useUnifiedNodeCreation } from "./Diagrams/hooks/useUnifiedNodeCreation";
 import { useEdges } from "./workspace/hooks/Diagrams";
-import { AuthEdge } from "./Diagrams/edges/AuthEdge";
 import { FunctionEditModal } from "./Diagrams/funcionComponents/FunctionEditModal";
 import { useFunctionSuccess } from "./Diagrams/hooks/useFunctionActions";
-import CustomEdge from "./Diagrams/edges/CustomEdge";
 import { CustomControls } from "./Diagrams/CustomControls";
 import { IntegrationType } from "@interfaces/integrations";
 import { useSelector } from "react-redux";
@@ -48,6 +46,7 @@ import { RootState } from "@store";
 import { getWorkspaceData } from "@services/department";
 import { useAlertContext } from "./Diagrams/components/AlertContext";
 import { useCounter } from "@hooks/CounterContext";
+import CustomBezierEdge from "./Diagrams/edges/CustomBezierEdge";
 
 // Tipos y interfaces
 interface ContextMenuState {
@@ -246,7 +245,7 @@ const edgeFactory = {
     target,
     sourceHandle,
     targetHandle,
-    type: "default",
+    type: 'customBezier',
   }),
 
   createAgentFunctionEdge: (
@@ -263,7 +262,7 @@ const edgeFactory = {
       target: functionNode.id,
       sourceHandle: `node-source-${sourcePos}`,
       targetHandle: `node-target-${targetPos}`,
-      type: "auth",
+      type: "customBezier",
       data: {
         functionId: functionNode.data.functionId,
         authenticatorId,
@@ -441,11 +440,13 @@ const DiagramFlow = ({
         "integration-item": IntegrationItemNode,
       }}
       edgeTypes={{
-        auth: AuthEdge,
-        default: CustomEdge,
+        auth: CustomBezierEdge,
+        default: CustomBezierEdge,
+        customBezier: CustomBezierEdge,
+
       }}
       defaultEdgeOptions={{
-        type: "default",
+        type: "customBezier",
       }}
       style={{
         backgroundImage: 'radial-gradient(#DEDEDE 0.6px, transparent 0.8px)',
