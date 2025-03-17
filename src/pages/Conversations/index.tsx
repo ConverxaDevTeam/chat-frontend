@@ -58,6 +58,12 @@ const Conversations = () => {
           </div>
           <div className="w-[calc(100%/19*2)]">
             <div className="flex gap-[10px] items-center">
+              <p>Departamento</p>
+              <RiArrowUpDownFill className="text-[#A6A8AB] cursor-pointer hover:text-sofia-superDark" />
+            </div>
+          </div>
+          <div className="w-[calc(100%/19*2)]">
+            <div className="flex gap-[10px] items-center">
               <p>Estatus</p>
               <RiArrowUpDownFill className="text-[#A6A8AB] cursor-pointer hover:text-sofia-superDark" />
             </div>
