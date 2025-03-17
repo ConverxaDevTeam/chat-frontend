@@ -72,9 +72,13 @@ const ImageCropModal: React.FC<ImageCropModalProps> = ({
       Cortar imagen
     </div>
   );
-
   return (
-    <Modal isShown={show} onClose={onClose} header={headerContent}>
+    <Modal
+      isShown={show}
+      onClose={onClose}
+      header={headerContent}
+      zindex={1010}
+    >
       <div className="w-[500px] p-6">
         <ReactCrop crop={crop} onChange={handleCropChange} aspect={1}>
           <img
