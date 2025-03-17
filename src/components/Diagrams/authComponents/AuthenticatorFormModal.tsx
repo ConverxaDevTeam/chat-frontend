@@ -236,9 +236,21 @@ const AuthenticatorFormModal = ({
     organizationId,
     onSubmit,
   });
+
+  // Inicializar los parámetros con valores por defecto o desde datos iniciales
+  const initialParams = [
+    { key: "username", value: "" },
+    { key: "password", value: "" },
+  ];
+
   const [params, setParams] = useState<Array<{ key: string; value: string }>>(
-    []
+    initialData && initialData.type === AutenticadorType.ENDPOINT
+      ? Object.entries(
+          (initialData as EndpointAuthenticatorType).config.params || {}
+        ).map(([key, value]) => ({ key, value: String(value) }))
+      : initialParams
   );
+
   const authenticatorType = useWatch({
     control,
     name: "type",
@@ -246,17 +258,41 @@ const AuthenticatorFormModal = ({
 
   // Inicialización con datos iniciales
   useEffect(() => {
-    if (initialData) {
-      reset(initialData);
-      if (initialData.type === AutenticadorType.ENDPOINT) {
-        const endpointData = initialData as EndpointAuthenticatorType;
-        const initialParams = Object.entries(
-          endpointData.config.params || {}
-        ).map(([key, value]) => ({ key, value }));
+    if (!initialData) return;
+    reset(initialData);
+
+    if (initialData.type !== AutenticadorType.ENDPOINT) return;
+    const endpointData = initialData as EndpointAuthenticatorType;
+    if (endpointData.config.params) {
+      const paramEntries = Object.entries(endpointData.config.params);
+      if (paramEntries.length > 0) {
+        setParams(
+          paramEntries.map(([key, value]) => ({
+            key,
+            value: String(value),
+          }))
+        );
+        // Asegurarse de que los parámetros estén correctamente configurados en el formulario
+        setValue("config.params", endpointData.config.params);
+      } else {
         setParams(initialParams);
+        // Configurar los parámetros por defecto en el formulario
+        const paramsObject = initialParams.reduce(
+          (acc, { key, value }) => ({ ...acc, [key]: value }),
+          {}
+        );
+        setValue("config.params", paramsObject);
       }
+    } else {
+      setParams(initialParams);
+      // Configurar los parámetros por defecto en el formulario
+      const paramsObject = initialParams.reduce(
+        (acc, { key, value }) => ({ ...acc, [key]: value }),
+        {}
+      );
+      setValue("config.params", paramsObject);
     }
-  }, [initialData, reset]);
+  }, [initialData, reset, setValue]);
 
   // Manejo de cambio de tipo
   useEffect(() => {
@@ -266,9 +302,24 @@ const AuthenticatorFormModal = ({
         values.field_name = "Authorization";
       }
       reset(values);
-      setParams([]);
+
+      // Reiniciar parámetros cuando cambia el tipo
+      if (authenticatorType === AutenticadorType.ENDPOINT) {
+        // Asegurarse de que los parámetros iniciales estén configurados
+        const newParams = initialParams.slice();
+        setParams(newParams);
+
+        // Actualizar los parámetros en el formulario
+        const paramsObject = newParams.reduce(
+          (acc, { key, value }) => ({ ...acc, [key]: value }),
+          {}
+        );
+        setValue("config.params", paramsObject);
+      } else {
+        setParams([]);
+      }
     }
-  }, [authenticatorType, organizationId, reset, initialData]);
+  }, [authenticatorType, organizationId, reset, initialData, setValue]);
 
   const onUpdateParam = useCallback(
     (index: number, field: "key" | "value", value: string) => {
