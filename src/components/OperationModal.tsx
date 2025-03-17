@@ -31,13 +31,18 @@ const OperationModal: React.FC<OperationModalProps> = ({ isShown, title, text, t
                 }
             }}
         >
-            <div className="bg-white flex flex-col justify-center items-center rounded-xl p-6 w-[500px] shadow-lg text-center transform transition-all duration-300 ease-in-out animate-modal-open">
+            <div className="bg-white flex flex-col justify-center items-center rounded-[4px] p-6 w-[500px] shadow-lg text-center transform transition-all duration-300 ease-in-out animate-modal-open">
                 {imageData && (
                     <img
                         src={imageData.src}
                         alt={imageData.alt}
                         className="w-[53px] h-[80px]"
                     />
+                )}
+                {type === "loading" && (
+                    <div className="w-16 h-16 mb-4">
+                        <div className="w-full h-full rounded-full border-4 border-gray-200 border-t-sofia-electricGreen animate-spin"></div>
+                    </div>
                 )}
                 <h2 className="text-xl gap-2 font-semibold text-center mb-2">
                     {title}
@@ -51,9 +56,6 @@ const OperationModal: React.FC<OperationModalProps> = ({ isShown, title, text, t
                     >
                         Ok
                     </button>
-                )}
-                {type === "loading" && (
-                    <div className="mt-4">Cargando...</div>
                 )}
             </div>
         </div>,

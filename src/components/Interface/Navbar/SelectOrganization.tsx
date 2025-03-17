@@ -64,7 +64,13 @@ const SelectOrganization = ({ mobileResolution }: SelectOrganizationProps) => {
     if (organizationId === selectOrganizationId) {
       return;
     }
-    navigate("/dashboard");
+    
+    if (organizationId === 0) {
+      navigate('/dashboard');
+    } else {
+      navigate(0);
+    }
+
     dispatch(
       setOrganizationId(organizationId === 0 ? null : Number(organizationId))
     );

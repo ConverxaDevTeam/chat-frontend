@@ -132,6 +132,11 @@ const ConversationCard = ({
       </div>
       <div className="w-[calc(100%/19*2)]">
         <p className="text-sofia-superDark text-[14px]">
+          {conversation.department}
+        </p>
+      </div>
+      <div className="w-[calc(100%/19*2)]">
+        <p className="text-sofia-superDark text-[14px]">
           {lastMessage.type === MessageType.AGENT ? "Respondido" : "Pendiente"}
         </p>
       </div>
