@@ -192,8 +192,8 @@ const edgeFactory = {
       id: `e${functionNode.id}`,
       source: "agent",
       target: functionNode.id,
-      sourceHandle: `node-source-${sourcePos}`,
-      targetHandle: `node-target-${targetPos}`,
+      sourceHandle: `node-source-${Position.Top}`,
+      targetHandle: `node-target-${Position.Top}`,
       type: "auth",
       data: {
         functionId: functionNode.data.functionId,
