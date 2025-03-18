@@ -40,8 +40,10 @@ import {
   useUnifiedNodeCreation,
 } from "./Diagrams/hooks/useUnifiedNodeCreation";
 import { useEdges } from "./workspace/hooks/Diagrams";
+import { AuthEdge } from "./Diagrams/edges/AuthEdge";
 import { FunctionEditModal } from "./Diagrams/funcionComponents/FunctionEditModal";
 import { useFunctionSuccess } from "./Diagrams/hooks/useFunctionActions";
+import CustomEdge from "./Diagrams/edges/CustomEdge";
 import { CustomControls } from "./Diagrams/CustomControls";
 import { IntegrationType } from "@interfaces/integrations";
 import { useSelector } from "react-redux";
@@ -49,7 +51,6 @@ import { RootState } from "@store";
 import { getWorkspaceData } from "@services/department";
 import { useAlertContext } from "./Diagrams/components/AlertContext";
 import { useCounter } from "@hooks/CounterContext";
-import CustomBezierEdge from "./Diagrams/edges/CustomBezierEdge";
 
 // Tipos y interfaces
 interface ContextMenuState {
@@ -180,7 +181,7 @@ const edgeFactory = {
     target,
     sourceHandle,
     targetHandle,
-    type: 'customBezier',
+    type: "default",
   }),
 
   createAgentFunctionEdge: (
@@ -191,8 +192,8 @@ const edgeFactory = {
       id: `e${functionNode.id}`,
       source: "agent",
       target: functionNode.id,
-      sourceHandle: `node-source-${Position.Top}`,
-      targetHandle: `node-target-${Position.Top}`,
+      sourceHandle: `node-source-${sourcePos}`,
+      targetHandle: `node-target-${targetPos}`,
       type: "auth",
       data: {
         functionId: functionNode.data.functionId,
@@ -378,12 +379,11 @@ const DiagramFlow = ({
         "integration-item": IntegrationItemNode,
       }}
       edgeTypes={{
-        auth: CustomBezierEdge,
-        default: CustomBezierEdge,
-        customBezier: CustomBezierEdge,
+        auth: AuthEdge,
+        default: CustomEdge,
       }}
       defaultEdgeOptions={{
-        type: "customBezier",
+        type: "default",
       }}
       style={{
         backgroundImage: 'radial-gradient(#DEDEDE 0.6px, transparent 0.8px)', 
