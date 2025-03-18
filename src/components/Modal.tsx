@@ -8,6 +8,7 @@ interface ModalProps {
   header?: JSX.Element;
   footer?: JSX.Element;
   modalRef?: React.RefObject<HTMLDivElement>;
+  zindex?: number;
 }
 
 const ModalHeader: React.FC<{
@@ -33,6 +34,7 @@ const Modal: React.FC<ModalProps> = ({
   header,
   footer,
   modalRef,
+  zindex = 999,
 }) => {
   const modal = document.getElementById("modal");
   if (!modal) return null;
@@ -48,8 +50,7 @@ const Modal: React.FC<ModalProps> = ({
         <div
           ref={modalRef}
           className="fixed w-full h-full flex justify-center items-center top-0 left-0 bg-[#212121] bg-opacity-75"
-          style={{ zIndex: 999 }}
-
+          style={{ zIndex: zindex }}
           onClick={handleBackgroundClick}
         >
           <div className="bg-white rounded-xl p-6 w-auto max-w-full relative">
