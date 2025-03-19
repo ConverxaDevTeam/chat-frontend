@@ -146,7 +146,19 @@ const ConversationCard = ({
         </p>
       </div>
       <div className="w-[calc(100%/19*5)] py-[8px] pr-[16px]">
-        <MessagePreview type={lastMessage.type} text={lastMessage.text} />
+        <div className="relative">
+          <div className="h-[48px] overflow-hidden">
+            <p className="line-clamp-2 text-[14px]">
+              <MessagePreview type={lastMessage.type} text={lastMessage.text} />
+            </p>
+          </div>
+          <button 
+            onClick={() => navigate(`/conversation/detail/${conversation.id}`)}
+            className="text-xs font-medium hover:underline my-2 text-gray-500"
+          >
+            Leer más
+          </button>
+        </div>
       </div>
       <div className="w-[calc(100%/19*2)]">
         {conversation.type === IntegrationType.CHAT_WEB && (
