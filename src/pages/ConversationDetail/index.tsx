@@ -21,7 +21,7 @@ import { ConversationListItem } from "@interfaces/conversation";
 import { ConversationContextMenu } from "@components/ChatWindow/ConversationContextMenu";
 import { alertError } from "@utils/alerts";
 import { ChatHeader } from "@components/ChatWindow/ChatHeader";
-import { UserInfoPanel } from "@components/ChatWindow/UserInfoPanel";
+// import { UserInfoPanel } from "@components/ChatWindow/UserInfoPanel";
 
 // Hooks
 const useConversationList = (
@@ -263,7 +263,7 @@ const ConversationDetail = () => {
           selectedId={Number(id)}
         />
       </div>
-    <div className="w-full h-full grid grid-cols-[minmax(0,1fr)] md:grid-cols-[345px,minmax(0,1fr)] xl:grid-cols-[345px,minmax(0,1fr),248px]">
+    <div className="w-full h-full grid grid-cols-[minmax(0,1fr)] md:grid-cols-[345px,minmax(0,1fr)] xl:grid-cols-[345px,minmax(0,1fr)]">
       {showContextMenu.show && conversation && (
         <ConversationContextMenu
           x={showContextMenu.x}
@@ -333,9 +333,9 @@ const ConversationDetail = () => {
       </div>
 
       {/* Right Column - User Info */}
-      <div className="hidden xl:block ml-4">
+      {/* <div className="hidden xl:block ml-4">
         <UserInfoPanel conversation={conversation} />
-      </div>
+      </div> */}
       </div>
     </div>
   );

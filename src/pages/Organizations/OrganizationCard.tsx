@@ -1,6 +1,9 @@
-import { getInitials } from "@utils/format";
 import { useRoleAuth } from "@hooks/useRoleAuth";
-import { IOrganization } from "@interfaces/organization.interface";
+import { IOrganization, AgentType } from "@interfaces/organization.interface";
+import { getInitials } from "@utils/format";
+import { InlineInputGroup } from "@components/forms/inlineInputGroup";
+import { useState, useEffect } from "react";
+import { updateOrganizationAgentType } from "@services/organizations";
 
 interface OrganizationCardProps {
   organization: IOrganization;
@@ -15,6 +18,22 @@ const OrganizationCard = ({
 }: OrganizationCardProps) => {
   const { isSuperAdmin } = useRoleAuth();
   const hasDeletePermission = isSuperAdmin;
+  const [agentType, setAgentType] = useState<AgentType>(
+    organization.agentType || AgentType.SOFIA_ASISTENTE
+  );
+
+  const handleAgentTypeChange = async (
+    e: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    const newAgentType = e.target.value as AgentType;
+    setAgentType(newAgentType);
+    await updateOrganizationAgentType(organization.id, newAgentType);
+  };
+
+  useEffect(() => {
+    setAgentType(organization.agentType || AgentType.SOFIA_ASISTENTE);
+  }, [organization.agentType]);
+
   return (
     <tr className="h-[60px] border-b-[1px] border-[#DBEAF2] hover:bg-gray-50">
       <td className="py-2.5 px-6">
@@ -32,16 +51,15 @@ const OrganizationCard = ({
               </p>
             )}
           </div>
-          <span className="font-medium text-gray-900">
-            {organization.name}
-          </span>
+          <span className="font-medium text-gray-900">{organization.name}</span>
         </div>
       </td>
-      <td className="py-2.5 px-6 text-sm text-gray-600">
-        {organization.id}
-      </td>
+      <td className="py-2.5 px-6 text-sm text-gray-600">{organization.id}</td>
       <td className="py-2.5 px-6">
-        <p className="text-sm text-gray-600 truncate max-w-[200px]" title={organization.description}>
+        <p
+          className="text-sm text-gray-600 truncate max-w-[200px]"
+          title={organization.description}
+        >
           {organization.description}
         </p>
       </td>
@@ -68,6 +86,22 @@ const OrganizationCard = ({
           </button>
         </div>
       </td>
+      {isSuperAdmin && (
+        <td className="py-2.5 px-6">
+          <div className="w-full mt-4 flex justify-center">
+            <InlineInputGroup label="Agente">
+              <select
+                className="w-full p-2 border rounded-lg focus:outline-none text-[14px] bg-white"
+                value={agentType}
+                onChange={handleAgentTypeChange}
+              >
+                <option value={AgentType.SOFIA_ASISTENTE}>Sofia</option>
+                <option value={AgentType.CLAUDE}>Claude</option>
+              </select>
+            </InlineInputGroup>
+          </div>
+        </td>
+      )}
     </tr>
   );
 };

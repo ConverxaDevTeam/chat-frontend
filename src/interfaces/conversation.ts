@@ -50,6 +50,7 @@ export interface ConversationListItem {
   message_created_at: string;
   need_human: boolean;
   type: IntegrationType;
+  department: string;
 }
 
 export interface ConversationListResponse {
