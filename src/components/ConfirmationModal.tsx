@@ -37,7 +37,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
       style={{ zIndex: 999 }}
       onClick={handleBackgroundClick}
     >
-      <div className="bg-white rounded-xl p-6 w-[500px] shadow-xl">
+      <div className="bg-white rounded-[4px] p-6 w-[500px] shadow-xl">
         <div className="flex justify-center mb-3">
           <img
             src="/mvp/triangle-alert.svg"

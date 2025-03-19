@@ -75,28 +75,28 @@ export const contextMenuOptions = ({
   const choices: ContextMenuOption[] = [];
   if (itemType === IntegrationType.SLACK) {
     choices.push({
-      child: <img src="/mvp/pencil.svg" alt="slack" />,
+      child: <img src="/mvp/pencil.svg" alt="slack" className="w-4 h-4" />,
       onClick: () => setIsSlackModalOpen(true),
       tooltip: "Editar integración Slack"
     });
   }
   if (itemType === IntegrationType.MESSENGER_MANUAL) {
     choices.push({
-      child: <img src="/mvp/settings.svg" alt="messenger" />,
+      child: <img src="/mvp/settings.svg" alt="messenger" className="w-4 h-4"/>,
       onClick: () => setMessengerManualModalOpen(true),
       tooltip: "Configurar Messenger"
     });
   }
   if (itemType === IntegrationType.WHATSAP_MANUAL) {
     choices.push({
-      child: <img src="/mvp/settings.svg" alt="whatsapp" />,
+      child: <img src="/mvp/settings.svg" alt="whatsapp" className="w-4 h-4"/>,
       onClick: () => setWhatsAppManualModalOpen(true),
       tooltip: "Configurar WhatsApp"
     });
   }
   if (itemType === IntegrationType.CHAT_WEB) {
     choices.push({
-      child: <img src="/mvp/globe.svg" alt="Webchat" />,
+      child: <img src="/mvp/globe.svg" alt="Webchat" className="w-4 h-4"/>,
       onClick: () => setIsModalOpen(true),
       tooltip: "Configurar Webchat"
     });
