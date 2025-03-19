@@ -4,8 +4,11 @@ import ConversationCard from "./ConversationCard";
 import { RiArrowUpDownFill } from "react-icons/ri";
 import { ConversationListItem } from "@interfaces/conversation";
 import { useAppSelector } from "@store/hooks";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const Conversations = () => {
+  const navigate = useNavigate();
   const organizationId = useAppSelector(
     state => state.auth.selectOrganizationId
   );
@@ -33,11 +36,20 @@ const Conversations = () => {
     );
   };
 
+  const handleViewAllChats = () => {
+    if (conversations.length > 0) {
+      navigate(`/conversation/detail/${conversations[0].id}`);
+    } else {
+      toast.info("No hay conversaciones disponibles");
+    }
+  };
+
   return (
     <div className="w-full flex flex-col">
       <button
         type="button"
         className="bg-sofia-electricOlive rounded-[8px] w-[161px] h-[34px] mb-[10px]"
+        onClick={handleViewAllChats}
       >
         <p className="text-[14px] text-sofia-superDark">Ver todos los chats</p>
       </button>
@@ -103,12 +115,6 @@ const Conversations = () => {
           ))}
         </div>
       </div>
-      <button
-        type="button"
-        className="bg-sofia-superDark rounded-[8px] w-[114px] h-[34px] ml-auto"
-      >
-        <p className="text-[14px] text-white">Exportar todos</p>
-      </button>
     </div>
     </div>
   );
