@@ -31,8 +31,7 @@ const UserCard = ({ userData, onEdit, onDelete }: UserCardProps) => {
             </p>
             <div className="flex flex-col items-center w-full">
               <p className="text-[12px] font-poppinsMedium text-app-dark bg-app-electricGreen px-[8px] py-[3px] rounded-full cursor-pointer">
-                Rol:{" Agente"}
-                {userData.userOrganizations?.map(
+                Rol: {userData.userOrganizations?.map(
                   organization => organization.role
                 )}
               </p>
