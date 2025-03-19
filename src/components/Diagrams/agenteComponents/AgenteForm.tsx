@@ -5,6 +5,7 @@ import { TextArea } from "@components/forms/textArea";
 import { useState } from "react";
 import { agentService } from "@services/agent";
 import GuideConfig from "@components/GuideConfig";
+import { useAlertContext } from "@components/Diagrams/components/AlertContext";
 
 interface AgentFormValues {
   name: string;
@@ -28,6 +29,7 @@ export const AgenteForm = ({
   onSuccess,
 }: AgenteFormProps) => {
   const [isLoading, setIsLoading] = useState(false);
+  const { handleOperation } = useAlertContext();
 
   const {
     register,
@@ -44,14 +46,27 @@ export const AgenteForm = ({
     if (!agentId) throw new Error("Agent ID is required");
 
     setIsLoading(true);
+    
     try {
-      const agentData = {
-        name: formData.name,
-        config: {
-          instruccion: formData.description,
+      await handleOperation(
+        async () => {
+          const agentData = {
+            name: formData.name,
+            config: {
+              instruccion: formData.description,
+            },
+          };
+          await agentService.update(agentId, agentData);
         },
-      };
-      await agentService.update(agentId, agentData);
+        {
+          title: "Actualizar agente",
+          loadingTitle: "Actualizando agente",
+          successTitle: "Éxito",
+          successText: "El agente ha sido actualizado correctamente",
+          errorTitle: "Error"
+        }
+      );
+      
       onSuccess?.();
     } catch (error) {
       console.error("Error updating agent:", error);

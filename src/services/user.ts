@@ -10,6 +10,7 @@ interface User {
   first_name: string;
   last_name: string;
   email: string;
+  role: OrganizationRoleType;
 }
 
 const handleAxiosError = (error: unknown): string => {
@@ -38,6 +39,12 @@ export const getUserMyOrganization = async (organizationId: number) => {
         first_name: user.first_name,
         last_name: user.last_name,
         email: user.email,
+        userOrganizations: [
+          {
+            role: user.role,
+            organization: null
+          }
+        ]
       }));
     } else {
       alertError(response.data.message);
