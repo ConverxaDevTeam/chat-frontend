@@ -42,13 +42,14 @@ const Sidebar = ({
           style={{
             height: windowHeight - (mobileResolution ? 20 : 32),
           }}
-          className={`bg-custom-gradient rounded-2xl border-[1px] border-[#B8CCE0] border-inherit fixed bg-app-c2 ${mobileResolution ? "border-r-[2px] border-y-[2px] " : "border-[2px]"
+          className={`bg-custom-gradient rounded-[4px] border-[1px] border-[#B8CCE0] border-inherit fixed bg-app-c2 ${mobileResolution ? "border-r-[2px] border-y-[2px] " : "border-[2px]"
             } border-app-c3 ${sidebarMinimized || mobileResolution
               ? `w-[80px]`
-              : "rounded-2xl w-[260px]"
+              : "rounded-[4px] w-[260px]"
             }`}
         >
-          <div className="flex flex-col bg-[#F1F5F9] rounded-lg w-[calc(100%-24px)] h-[calc(100%-24px)] mt-[12px] ml-[12px] [box-shadow:0px_4px_10px_0px_rgba(201,_217,_232,_0.8)] relative">
+          <div className="flex flex-col bg-[#F1F5F9] rounded-[4px] w-[calc(100%-24px)] h-[calc(100%-24px)] mt-[12px] ml-[12px] [box-shadow:0px_4px_10px_0px_rgba(201,_217,_232,_0.8)] relative">
+            {!mobileResolution && (
             <div 
               className="absolute -right-7 top-1/2 transform -translate-y-1/2 cursor-pointer rounded-full p-1"
               onClick={() => setSidebarMinimized(!sidebarMinimized)}
@@ -59,18 +60,19 @@ const Sidebar = ({
                 <img src="/mvp/circle-chevron-left.svg" alt="Minimizar sidebar" className="w-6 h-6" />
               )}
             </div>
-            <div className="flex h-[107px] justify-center">
+            )}
+            <div className="flex h-[107px] p-[10px] justify-start">
               {sidebarMinimized || mobileResolution ? (
                 <img
-                  className="select-none h-[24px] mt-[30px] cursor-pointer"
-                  src="/mvp/icon.png"
+                  className="select-none h-[24px] mt-[20px] cursor-pointer"
+                  src="/mvp/logo.svg"
                   onClick={() => setSidebarMinimized(false)}
                   alt="Logo"
                 />
               ) : (
                 <img
-                  className="select-none h-[24px] mt-[30px] cursor-pointer"
-                  src="/mvp/logo.png"
+                  className="select-none h-[24px] mt-[20px] cursor-pointer"
+                  src="/mvp/logo-sofia.svg"
                   onClick={() => setSidebarMinimized(true)}
                   alt="Logo"
                 />
