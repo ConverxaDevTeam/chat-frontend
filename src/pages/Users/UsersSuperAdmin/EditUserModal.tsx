@@ -57,6 +57,7 @@ const EditUserModal = ({
   const handleDeleteRole = async (roleId?: number) => {
     if (!roleId) return;
     await deleteRole(roleId);
+    toast.success("Rol eliminado exitosamente");
     refreshUserRoles();
   };
 
