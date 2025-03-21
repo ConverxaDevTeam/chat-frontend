@@ -136,80 +136,98 @@ export const MessageForm = ({
         onSubmit={handleSubmit(handleFormSubmit)}
         className="flex items-center gap-[16px] w-full min-w-0"
       >
-        <button
-          type="button"
-          onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-          className="hover:bg-gray-100 rounded-full transition-colors shrink-0"
-        >
-          <img src="/mvp/smile.svg" alt="sofia" className="w-[22px] h-[22px]" />
-        </button>
-
-        <div className="flex-1 relative min-w-0">
-          <div className="flex items-center gap-[10px] h-[44px] px-4 py-2.5 border border-[#343E4F] rounded-lg bg-white min-w-0">
-            <input
-              {...register("message", {
-                required: selectedImages.length === 0,
-              })}
-              type="text"
-              disabled={showHitl && conversation?.user?.id !== user?.id}
-              placeholder="Escribe un mensaje..."
-              className="w-full text-[14px] text-black bg-white focus:outline-none"
-            />
-            <label
-              htmlFor="image-upload"
-              className="hover:bg-gray-100 rounded-full transition-colors cursor-pointer"
-            >
-              <input
-                type="file"
-                id="image-upload"
-                multiple
-                accept="image/*"
-                onChange={handleImageSelect}
-                className="hidden"
-              />
-              <img
-                src="/mvp/paperclip.svg"
-                alt="sofia"
-                className="w-[24px] h-[24px]"
-              />
-            </label>
-            {showEmojiPicker && (
-              <div className="absolute bottom-full left-0 mb-2 w-full">
-                <EmojiPicker onEmojiClick={onEmojiClick} />
-              </div>
-            )}
-            {selectedImages.length > 0 && (
-              <ImagePreview images={selectedImages} onRemove={removeImage} />
-            )}
-          </div>
-        </div>
         {!showHitl || conversation?.user?.id === user?.id ? (
-          <SendMessageButton
-            type="submit"
-            disabled={isSubmitting}
-            className="w-[38px] h-[38px] flex items-center justify-center hover:bg-sofia-electricOlive-700 rounded-full transition-colors disabled:opacity-50"
-            style={{
-              backgroundColor: config.button_text,
-            }}
+          <button
+            type="button"
+            aria-label="Mostrar emoticonos"
+            onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+            className="hover:bg-gray-100 rounded-full transition-colors shrink-0"
           >
             <img
-              src="/mvp/send-horizontal.svg"
+              src="/mvp/smile.svg"
               alt="sofia"
-              className="w-6 h-6"
+              className="w-[22px] h-[22px]"
             />
-          </SendMessageButton>
+          </button>
+        ) : null}
+        {showHitl && conversation?.user?.id !== user?.id ? (
+          <div className="w-full">
+            <HitlButton
+              onClick={handleHitlAction}
+              disabled={isLoading}
+              className="w-full p-3 bg-sofia-electricOlive hover:bg-sofia-electricOlive-700 rounded-lg transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+              type="button"
+              isLoading={isLoading}
+              isAssigned={!!conversation?.user}
+              currentUserHasConversation={conversation?.user?.id === user?.id}
+            >
+              <img src="/mvp/headset.svg" alt="sofia" className="w-6 h-6" />
+              <span>
+                {conversation?.user
+                  ? "Reasignar conversación"
+                  : "Asignar conversación"}
+              </span>
+            </HitlButton>
+          </div>
         ) : (
-          <HitlButton
-            onClick={handleHitlAction}
-            disabled={isLoading}
-            className="p-2 bg-sofia-electricOlive hover:bg-sofia-electricOlive-700 rounded-full transition-colors disabled:opacity-50"
-            type="button"
-            isLoading={isLoading}
-            isAssigned={!!conversation?.user}
-            currentUserHasConversation={conversation?.user?.id === user?.id}
-          >
-            <img src="/mvp/headset.svg" alt="sofia" className="w-6 h-6" />
-          </HitlButton>
+          <>
+            <div className="flex-1 relative min-w-0">
+              <div className="flex items-center gap-[10px] h-[44px] px-4 py-2.5 border border-[#343E4F] rounded-lg bg-white min-w-0">
+                <input
+                  {...register("message", {
+                    required: selectedImages.length === 0,
+                  })}
+                  type="text"
+                  disabled={showHitl && conversation?.user?.id !== user?.id}
+                  placeholder="Escribe un mensaje..."
+                  className="w-full text-[14px] text-black bg-white focus:outline-none"
+                />
+                <label
+                  htmlFor="image-upload"
+                  className="hover:bg-gray-100 rounded-full transition-colors cursor-pointer"
+                >
+                  <input
+                    type="file"
+                    id="image-upload"
+                    multiple
+                    accept="image/*"
+                    onChange={handleImageSelect}
+                    className="hidden"
+                  />
+                  <img
+                    src="/mvp/paperclip.svg"
+                    alt="sofia"
+                    className="w-[24px] h-[24px]"
+                  />
+                </label>
+                {showEmojiPicker && (
+                  <div className="absolute bottom-full left-0 mb-2 w-full">
+                    <EmojiPicker onEmojiClick={onEmojiClick} />
+                  </div>
+                )}
+                {selectedImages.length > 0 && (
+                  <ImagePreview
+                    images={selectedImages}
+                    onRemove={removeImage}
+                  />
+                )}
+              </div>
+            </div>
+            <SendMessageButton
+              type="submit"
+              disabled={isSubmitting}
+              className="w-[38px] h-[38px] flex items-center justify-center hover:bg-sofia-electricOlive-700 rounded-full transition-colors disabled:opacity-50"
+              style={{
+                backgroundColor: config.button_text,
+              }}
+            >
+              <img
+                src="/mvp/send-horizontal.svg"
+                alt="sofia"
+                className="w-6 h-6"
+              />
+            </SendMessageButton>
+          </>
         )}
       </form>
     </div>
