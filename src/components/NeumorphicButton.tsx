@@ -10,6 +10,8 @@ interface InternalNeumorphicButtonProps {
   radius?: string;
   backgroundColor?: string;
   className?: string;
+  width?: string;
+  height?: string;
 }
 
 interface NeumorphicButtonProps {
@@ -36,13 +38,18 @@ export const NeumorphicButton = ({
     radius: "[24px]",
     backgroundColor: "[#F1F5F9]",
     className: "",
+    width: "82px",
+    height: "82px",
   },
 }: NeumorphicButtonProps) => {
   const innerButton = (
     <div
       onClick={onClick}
+      style={{
+        width: internalProps?.width || "82px",
+        height: internalProps?.height || "82px",
+      }}
       className={`
-        w-[82px] h-[82px]
         p-6
         gap-2
         rounded-${internalProps?.radius}
