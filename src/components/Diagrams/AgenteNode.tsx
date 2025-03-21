@@ -85,11 +85,15 @@ const AgenteNode = (props: CustomTypeNodeProps<AgentData>) => {
         {...props}
         data={{
           ...data,
-          name: "Agente",
           description: "Agente conversacional",
           style: NodeStyle.CENTRAL,
         }}
-        icon={<img src="/icon.svg" alt="Agente" />}
+        icon={
+          <div className="flex flex-col items-center">
+            <img src="/icon.svg" alt="Agente" className="w-10 h-10" />
+            <span className="text-[10px]">Agente</span>
+          </div>
+        }
         contextMenuOptions={contextMenuOptions}
         contextMenuVersion="v2"
         allowedConnections={["source", "target"]}
