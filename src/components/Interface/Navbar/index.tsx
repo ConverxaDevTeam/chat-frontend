@@ -193,6 +193,14 @@ const NotificationsMenu = ({
   const { selectOrganizationId } = useSelector(
     (state: RootState) => state.auth
   );
+  const notificationCount = useSelector((state: RootState) => state.notifications.count);
+
+  const handleBellClick = async () => {
+    if (!selectOrganizationId) return;
+    const notifications = await getNotifications(selectOrganizationId);
+    setContextMenuState({ notifications });
+    setContextMenu({ notifications });
+  };
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -205,13 +213,6 @@ const NotificationsMenu = ({
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [setContextMenu]);
-
-  const handleBellClick = async () => {
-    if (!selectOrganizationId) return;
-    const notifications = await getNotifications(selectOrganizationId);
-    setContextMenuState({ notifications });
-    setContextMenu({ notifications });
-  };
 
   const filteredNotifications =
     (contextMenu || contextMenuState)?.notifications.filter(
@@ -234,12 +235,19 @@ const NotificationsMenu = ({
 
   return (
     <div className="relative">
-      <img
-        src="/mvp/bell.svg"
-        alt="Bell"
-        className="w-5 h-5"
-        onClick={handleBellClick}
-      />
+      <div className="flex items-center">
+        <img
+          src="/mvp/bell.svg"
+          alt="Bell"
+          className="w-5 h-5"
+          onClick={handleBellClick}
+        />
+        {notificationCount > 0 && (
+          <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full px-1">
+            {notificationCount}
+          </span>
+        )}
+      </div>
       {(contextMenu || contextMenuState) && (
         <div
           ref={menuRef}
@@ -289,16 +297,18 @@ const UserActions = ({
     <div
       className={`flex gap-[8px] items-center ${mobileResolution ? "self-end" : ""}`}
     >
-      <p className={`text-sofia-superDark font-normal text-[14px] ${
+      <p
+        className={`text-sofia-superDark font-normal text-[14px] ${
           mobileResolution ? "" : "mr-3"
-        }`}>
+        }`}
+      >
         {user?.email}
       </p>
       <div
         className={`
           bg-[#F1F5F9] rounded-[8px] shadow-[1px_1px_2px_0px_#B8CCE0,-1px_-1px_2px_0px_#FFFFFF,1px_1px_2px_0px_#B8CCE0_inset,-1px_-1px_2px_0px_#FFFFFF_inset] relative flex justify-between items-center gap-2 p-3 cursor-pointer h-[36px] ${
-          mobileResolution ? "w-full" : "w-[148px]"
-        }`}
+            mobileResolution ? "w-full" : "w-[148px]"
+          }`}
       >
         <NotificationsMenu
           contextMenu={contextMenu}
@@ -352,10 +362,14 @@ const Navbar = ({ mobileResolution }: NavbarProps) => {
         className={`flex flex-col gap-4 lg:gap-0 lg:flex-row justify-between items-start lg:items-center`}
       >
         <div className="flex flex-col md:flex-col lg:flex-row items-start lg:items-center gap-4 w-full">
-          <div className={`${mobileResolution ? "" : "block"} order-1 lg:order-none`}>
+          <div
+            className={`${mobileResolution ? "" : "block"} order-1 lg:order-none`}
+          >
             <Breadcrumb breadcrumbItems={breadcrumbItems} />
           </div>
-          <div className={`flex gap-[24px] items-center w-full md:w-auto order-1 lg:order-none`}>
+          <div
+            className={`flex gap-[24px] items-center w-full md:w-auto order-1 lg:order-none`}
+          >
             <SelectOrganization mobileResolution={mobileResolution} />
             <SelectDepartment mobileResolution={mobileResolution} />
           </div>
