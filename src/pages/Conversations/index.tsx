@@ -55,67 +55,67 @@ const Conversations = () => {
       </button>
       <div className="w-full overflow-x-auto">
         <div className="w-full min-w-[900px] border-spacing-0 mb-[16px]">
-        <div className="h-[36px] text-[16px] flex">
-          <div className="w-[calc(100%/19*2)]">
-            <div className="flex gap-[10px] items-center pl-[16px]">
-              <p>Usuario</p>
-              <RiArrowUpDownFill className="text-[#A6A8AB] cursor-pointer hover:text-sofia-superDark" />
+          <div className="h-[36px] text-[16px] flex">
+            <div className="w-[calc(100%/19*2)]">
+              <div className="flex gap-[10px] items-center pl-[16px]">
+                <p>Usuario</p>
+                <RiArrowUpDownFill className="text-[#A6A8AB] cursor-pointer hover:text-sofia-superDark" />
+              </div>
+            </div>
+            <div className="w-[calc(100%/19*2)]">
+              <div className="flex gap-[10px] items-center">
+                <p>ID</p>
+                <RiArrowUpDownFill className="text-[#A6A8AB] cursor-pointer hover:text-sofia-superDark" />
+              </div>
+            </div>
+            <div className="w-[calc(100%/19*2)]">
+              <div className="flex gap-[10px] items-center">
+                <p>Departamento</p>
+                <RiArrowUpDownFill className="text-[#A6A8AB] cursor-pointer hover:text-sofia-superDark" />
+              </div>
+            </div>
+            <div className="w-[calc(100%/19*2)]">
+              <div className="flex gap-[10px] items-center">
+                <p>Estatus</p>
+                <RiArrowUpDownFill className="text-[#A6A8AB] cursor-pointer hover:text-sofia-superDark" />
+              </div>
+            </div>
+            <div className="hidden md:table-cell w-[calc(100%/19*2)]">
+              <div className="flex gap-[10px] items-center">
+                <p>Iniciado</p>
+                <RiArrowUpDownFill className="text-[#A6A8AB] cursor-pointer hover:text-sofia-superDark" />
+              </div>
+            </div>
+            <div className="w-[calc(100%/19*5)]">
+              <div className="flex gap-[10px] items-center">
+                <p>Último mensaje</p>
+                <RiArrowUpDownFill className="text-[#A6A8AB] cursor-pointer hover:text-sofia-superDark" />
+              </div>
+            </div>
+            <div className="w-[calc(100%/19*2)]">
+              <div className="flex gap-[10px] items-center">
+                <p>Canal</p>
+                <RiArrowUpDownFill className="text-[#A6A8AB] cursor-pointer hover:text-sofia-superDark" />
+              </div>
+            </div>
+            <div className="w-[calc(100%/19*4)]">
+              <div className="flex gap-[10px] items-center">
+                <p>Asistencia humana</p>
+                <RiArrowUpDownFill className="text-[#A6A8AB] cursor-pointer hover:text-sofia-superDark" />
+              </div>
             </div>
           </div>
-          <div className="w-[calc(100%/19*2)]">
-            <div className="flex gap-[10px] items-center">
-              <p>ID</p>
-              <RiArrowUpDownFill className="text-[#A6A8AB] cursor-pointer hover:text-sofia-superDark" />
-            </div>
+          <div className="bg-custom-gradient rounded-[8px] border-[2px] border-[#B8CCE0] border-inherit bg-app-c2">
+            {conversations.map(conversation => (
+              <ConversationCard
+                key={conversation.id}
+                conversation={conversation}
+                onUpdateConversation={handleUpdateConversation}
+              />
+            ))}
           </div>
-          <div className="w-[calc(100%/19*2)]">
-            <div className="flex gap-[10px] items-center">
-              <p>Departamento</p>
-              <RiArrowUpDownFill className="text-[#A6A8AB] cursor-pointer hover:text-sofia-superDark" />
-            </div>
-          </div>
-          <div className="w-[calc(100%/19*2)]">
-            <div className="flex gap-[10px] items-center">
-              <p>Estatus</p>
-              <RiArrowUpDownFill className="text-[#A6A8AB] cursor-pointer hover:text-sofia-superDark" />
-            </div>
-          </div>
-          <div className="hidden md:table-cell w-[calc(100%/19*2)]">
-            <div className="flex gap-[10px] items-center">
-              <p>Iniciado</p>
-              <RiArrowUpDownFill className="text-[#A6A8AB] cursor-pointer hover:text-sofia-superDark" />
-            </div>
-          </div>
-          <div className="w-[calc(100%/19*5)]">
-            <div className="flex gap-[10px] items-center">
-              <p>Último mensaje</p>
-              <RiArrowUpDownFill className="text-[#A6A8AB] cursor-pointer hover:text-sofia-superDark" />
-            </div>
-          </div>
-          <div className="w-[calc(100%/19*2)]">
-            <div className="flex gap-[10px] items-center">
-              <p>Canal</p>
-              <RiArrowUpDownFill className="text-[#A6A8AB] cursor-pointer hover:text-sofia-superDark" />
-            </div>
-          </div>
-          <div className="w-[calc(100%/19*4)]">
-            <div className="flex gap-[10px] items-center">
-              <p>Asistencia humana</p>
-              <RiArrowUpDownFill className="text-[#A6A8AB] cursor-pointer hover:text-sofia-superDark" />
-            </div>
-          </div>
-        </div>
-        <div className="bg-custom-gradient rounded-[8px] border-[2px] border-[#B8CCE0] border-inherit bg-app-c2">
-          {conversations.map(conversation => (
-            <ConversationCard
-              key={conversation.id}
-              conversation={conversation}
-              onUpdateConversation={handleUpdateConversation}
-            />
-          ))}
         </div>
       </div>
-    </div>
     </div>
   );
 };
