@@ -10,6 +10,8 @@ import { SendMessageButton } from "../SendMessageButton";
 import { HitlButton } from "../HitlButton";
 import { ImagePreview } from "./ImagePreview";
 import { ConfigWebChat } from "@pages/Workspace/components/CustomizeChat";
+import { useDispatch } from "react-redux";
+import { decrementNotificationCount } from '@/store/reducers/notifications';
 
 interface ImagePreview {
   file: File;
@@ -72,6 +74,7 @@ export const MessageForm = ({
 }: MessageFormProps) => {
   const [selectedImages, setSelectedImages] = useState<ImagePreview[]>([]);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const dispatch = useDispatch();
 
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
@@ -123,6 +126,7 @@ export const MessageForm = ({
     userId: user?.id || 0,
     currentUserId: user?.id || 0,
     onUpdateConversation: () => {
+      dispatch(decrementNotificationCount());
       onUpdateConversation?.();
     },
   });

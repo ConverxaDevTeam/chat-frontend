@@ -1,6 +1,6 @@
 import SelectDepartment from "./SelectDepartment";
 import { RootState } from "@store";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
 import {
   getNotifications,
@@ -14,6 +14,7 @@ import {
 } from "@interfaces/notification.interface";
 import SelectOrganization from "./SelectOrganization";
 import { formatDateWithWeekday } from "@utils/format";
+import { setNotificationCount } from "@/store/reducers/notifications";
 
 interface NavbarProps {
   windowWidth: number;
@@ -196,10 +197,13 @@ const NotificationsMenu = ({
   const notificationCount = useSelector(
     (state: RootState) => state.notifications.count
   );
+  const dispatch = useDispatch();
 
   const handleBellClick = async () => {
     if (!selectOrganizationId) return;
     const notifications = await getNotifications(selectOrganizationId);
+    const unreadCount = notifications.filter(n => !n.isRead).length;
+    dispatch(setNotificationCount(unreadCount));
     setContextMenuState({ notifications });
     setContextMenu({ notifications });
   };
