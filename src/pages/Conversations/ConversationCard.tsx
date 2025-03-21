@@ -43,7 +43,11 @@ const HitlButton = ({
         conversation.id
       );
       if (updatedConversation) {
-        onUpdateConversation(updatedConversation);
+        onUpdateConversation({
+          ...conversation,
+          user_id: updatedConversation.user_id,
+          need_human: updatedConversation.need_human,
+        });
         toast.success(
           conversation.user_id === user?.id
             ? "Conversación desasignada exitosamente"
@@ -67,7 +71,11 @@ const HitlButton = ({
               conversation.id
             );
             if (reassignedConversation) {
-              onUpdateConversation(reassignedConversation);
+              onUpdateConversation({
+                ...conversation,
+                user_id: reassignedConversation.user_id,
+                need_human: reassignedConversation.need_human,
+              });
               toast.success("Conversación reasignada exitosamente");
             }
           } catch (reassignError) {
@@ -152,7 +160,7 @@ const ConversationCard = ({
               <MessagePreview type={lastMessage.type} text={lastMessage.text} />
             </p>
           </div>
-          <button 
+          <button
             onClick={() => navigate(`/conversation/detail/${conversation.id}`)}
             className="text-xs font-medium hover:underline my-2 text-gray-500"
           >
