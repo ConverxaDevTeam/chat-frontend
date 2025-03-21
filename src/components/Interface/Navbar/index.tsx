@@ -14,7 +14,10 @@ import {
 } from "@interfaces/notification.interface";
 import SelectOrganization from "./SelectOrganization";
 import { formatDateWithWeekday } from "@utils/format";
-import { setNotificationCount, decrementNotificationCount } from "@/store/reducers/notifications";
+import {
+  setNotificationCount,
+  decrementNotificationCount,
+} from "@/store/reducers/notifications";
 
 interface NavbarProps {
   windowWidth: number;
@@ -124,6 +127,7 @@ const NotificationItem = ({
   notification: Notification;
   onClose: () => void;
 }) => {
+  const dispatch = useDispatch();
   const handleMarkNotificationAsRead = async (notificationId: number) => {
     await markNotificationAsRead(notificationId);
   };
