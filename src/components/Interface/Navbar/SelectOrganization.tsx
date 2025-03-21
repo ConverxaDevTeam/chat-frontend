@@ -65,9 +65,13 @@ const SelectOrganization = ({ mobileResolution }: SelectOrganizationProps) => {
       return;
     }
     
-    if (organizationId === 0) {
+    if (organizationId === 0 ) {
       navigate('/dashboard');
-    } else {
+    } 
+    else if (window.location.pathname.includes('/organizations')) {
+      navigate('/dashboard');
+    } 
+    else {
       navigate(0);
     }
 

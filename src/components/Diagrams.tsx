@@ -108,7 +108,7 @@ const nodeFactory = {
       "agent",
       position,
       {
-        name: "Node B",
+        name: "",
         description: "This is Node B",
         agentId,
       },
