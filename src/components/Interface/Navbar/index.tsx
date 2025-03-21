@@ -193,7 +193,9 @@ const NotificationsMenu = ({
   const { selectOrganizationId } = useSelector(
     (state: RootState) => state.auth
   );
-  const notificationCount = useSelector((state: RootState) => state.notifications.count);
+  const notificationCount = useSelector(
+    (state: RootState) => state.notifications.count
+  );
 
   const handleBellClick = async () => {
     if (!selectOrganizationId) return;
@@ -243,7 +245,7 @@ const NotificationsMenu = ({
           onClick={handleBellClick}
         />
         {notificationCount > 0 && (
-          <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full px-1">
+          <span className="absolute -top-1 -right-1 bg-sofia-error text-white text-[10px] rounded-full w-[12px] h-[12px] flex items-center justify-center">
             {notificationCount}
           </span>
         )}
