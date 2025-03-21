@@ -14,7 +14,7 @@ import {
 } from "@interfaces/notification.interface";
 import SelectOrganization from "./SelectOrganization";
 import { formatDateWithWeekday } from "@utils/format";
-import { setNotificationCount } from "@/store/reducers/notifications";
+import { setNotificationCount, decrementNotificationCount } from "@/store/reducers/notifications";
 
 interface NavbarProps {
   windowWidth: number;
@@ -131,6 +131,7 @@ const NotificationItem = ({
   const handleClick = async () => {
     if (!notification.isRead && notification.type === NotificationType.USER) {
       await handleMarkNotificationAsRead(notification.id);
+      dispatch(decrementNotificationCount());
     }
     if (notification.link) window.location.href = notification.link;
     onClose();
