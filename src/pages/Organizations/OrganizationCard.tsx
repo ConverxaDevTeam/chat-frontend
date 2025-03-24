@@ -87,13 +87,15 @@ const OrganizationCard = ({
         </td>
         <td className="py-2.5 px-6 first:rounded-tr-[8px] last:rounded-br-[8px]">
           <div className="flex justify-end gap-2">
-            <Button
-              onClick={() => setShowPasswordModal(true)}
-              variant="primary"
-              className="whitespace-nowrap text-xs"
-            >
-              Cambiar Contraseña
-            </Button>
+            {isSuperAdmin && (
+              <Button
+                onClick={() => setShowPasswordModal(true)}
+                variant="primary"
+                className="whitespace-nowrap text-xs"
+              >
+                Cambiar Contraseña
+              </Button>
+            )}
             {hasDeletePermission && (
               <button
                 onClick={onDelete}
@@ -110,10 +112,10 @@ const OrganizationCard = ({
             </button>
           </div>
         </td>
-        {isSuperAdmin && (
-          <td className="py-2.5 px-6">
-            <div className="w-full mt-4 flex justify-center">
-              <InlineInputGroup label="Agente">
+        <td className="py-2.5 px-6">
+          {isSuperAdmin && (
+            <div className="flex items-center">
+              <InlineInputGroup label="Agente:">
                 <select
                   className="w-full p-2 border rounded-lg focus:outline-none text-[14px] bg-white"
                   value={agentType}
@@ -124,8 +126,8 @@ const OrganizationCard = ({
                 </select>
               </InlineInputGroup>
             </div>
-          </td>
-        )}
+          )}
+        </td>
       </tr>
     </>
   );
