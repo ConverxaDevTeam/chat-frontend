@@ -42,10 +42,40 @@ export const getUserMyOrganization = async (organizationId: number) => {
         userOrganizations: [
           {
             role: user.role,
-            organization: null
-          }
-        ]
+            organization: null,
+          },
+        ],
       }));
+    } else {
+      alertError(response.data.message);
+      return [];
+    }
+  } catch (error) {
+    handleAxiosError(error);
+    return [];
+  }
+};
+
+export const getOrganizationUsers = async (organizationId: number) => {
+  try {
+    const response = await axiosInstance.get(
+      `/api/user/organization/${organizationId}/users`
+    );
+    if (response.data.ok) {
+      return response.data.users.map(
+        (user: { id: number; email: string; name: string; role: string }) => ({
+          id: user.id,
+          email: user.email,
+          first_name: user.name.split(" ")[0] || "",
+          last_name: user.name.split(" ").slice(1).join(" ") || "",
+          userOrganizations: [
+            {
+              role: user.role as OrganizationRoleType,
+              organization: null,
+            },
+          ],
+        })
+      );
     } else {
       alertError(response.data.message);
       return [];
