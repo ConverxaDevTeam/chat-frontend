@@ -21,7 +21,7 @@ const UserCard = ({ userData, onEdit, onDelete }: UserCardProps) => {
           </div>
 
           <div className="flex flex-col h-full items-center justify-between flex-1">
-          <div className="flex flex-row gap-2">
+            <div className="flex flex-row gap-2">
               <p className="text-[12px] 2xl:text-[12px] font-semibold text-app-gray">
                 {userData.email} | ID: {userData.id}
               </p>
@@ -31,7 +31,8 @@ const UserCard = ({ userData, onEdit, onDelete }: UserCardProps) => {
             </p>
             <div className="flex flex-col items-center w-full">
               <p className="text-[12px] font-poppinsMedium text-app-dark bg-app-electricGreen px-[8px] py-[3px] rounded-full cursor-pointer">
-                Rol: {userData.userOrganizations?.map(
+                Rol:{" "}
+                {userData.userOrganizations?.map(
                   organization => organization.role
                 )}
               </p>
@@ -41,12 +42,14 @@ const UserCard = ({ userData, onEdit, onDelete }: UserCardProps) => {
         <div className="flex flex-col sm:flex-row justify-center gap-2 sm:gap-4 mt-4">
           <button
             onClick={onDelete}
-            className="w-full px-4 py-1 text-gray-500 border-2 rounded-md text-sm font-semibold">
+            className="w-full px-4 py-1 text-gray-500 border-2 rounded-md text-sm font-semibold"
+          >
             Eliminar
           </button>
           <button
             onClick={onEdit}
-            className="w-full px-4 py-1 bg-sofia-electricGreen text-gray-900 rounded-md text-sm font-semibold hover:bg-opacity-50 transition-all">
+            className="w-full px-4 py-1 bg-sofia-electricGreen text-gray-900 rounded-md text-sm font-semibold hover:bg-opacity-50 transition-all"
+          >
             Editar
           </button>
         </div>
