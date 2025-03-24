@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@store";
 import { onWebSocketEvent } from "@services/websocket.service";
 import { toast } from "react-toastify";
@@ -9,6 +9,7 @@ import {
   MessageReceivedNotification,
   NotificationType,
 } from "@interfaces/notifications.interface";
+import { incrementNotificationCount } from "../store/reducers/notifications";
 
 const renderMessageRecivedNotification = (
   conversationId: number,
@@ -36,6 +37,7 @@ const renderMessageRecivedNotification = (
 const NotificationHandler = () => {
   const socket = useSelector((state: RootState) => state.auth.socket);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (!socket) return;
@@ -47,6 +49,7 @@ const NotificationHandler = () => {
 
       switch (type) {
         case NotificationType.MESSAGE_RECEIVED:
+          dispatch(incrementNotificationCount());
           renderMessageRecivedNotification(
             data.conversationId,
             message,
@@ -69,7 +72,7 @@ const NotificationHandler = () => {
         socket.off("notification", handleNotification);
       }
     };
-  }, [socket, navigate]);
+  }, [socket, navigate, dispatch]);
   return null;
 };
 
