@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { toast } from "react-toastify";
-import { changeUserPassword, getUserMyOrganization } from "@services/user";
+import { changeUserPassword, getOrganizationUsers } from "@services/user";
 import { IUserApi } from "../Users/UsersOrganization";
 import { OrganizationRoleType } from "@utils/interfaces";
 import { Input } from "@components/forms/input";
@@ -37,7 +37,7 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await getUserMyOrganization(organizationId);
+        const response = await getOrganizationUsers(organizationId);
         if (response) {
           setUsers(response);
         } else {
