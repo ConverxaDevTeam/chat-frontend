@@ -31,7 +31,8 @@ const ButtonExportConversation = ({
     (state: RootState) => state.auth
   );
 
-  function generatePDF() {
+  function generatePDF(e: React.MouseEvent) {
+    e.stopPropagation();
     const imageUrl = "/logo.png";
 
     fetch(imageUrl)
