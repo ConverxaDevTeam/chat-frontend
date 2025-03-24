@@ -26,6 +26,7 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
   const [users, setUsers] = useState<IUserApi[]>([]);
   const [loading, setLoading] = useState(false);
   const [loadingUsers, setLoadingUsers] = useState(true);
+  const [showPassword, setShowPassword] = useState(false);
 
   const {
     control,
@@ -144,25 +145,46 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
         </div>
         <div>
           <InputGroup label="Nueva Contraseña" errors={errors.newPassword}>
-            <Controller
-              name="newPassword"
-              control={control}
-              rules={{
-                required: "Este campo es obligatorio",
-                minLength: {
-                  value: 6,
-                  message: "La contraseña debe tener al menos 6 caracteres",
-                },
-              }}
-              render={({ field }) => (
-                <Input
-                  type="password"
-                  placeholder="Nueva Contraseña"
-                  {...field}
-                  className="w-full"
-                />
-              )}
-            />
+            <div className="relative w-full">
+              <Controller
+                name="newPassword"
+                control={control}
+                rules={{
+                  required: "Este campo es obligatorio",
+                  minLength: {
+                    value: 6,
+                    message: "La contraseña debe tener al menos 6 caracteres",
+                  },
+                }}
+                render={({ field }) => (
+                  <Input
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Nueva Contraseña"
+                    {...field}
+                    className="w-full pr-10"
+                  />
+                )}
+              />
+              <button
+                type="button"
+                className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? (
+                  <img
+                    src="/mvp/eye-closed.svg"
+                    alt="Ocultar contraseña"
+                    className="h-5 w-5"
+                  />
+                ) : (
+                  <img
+                    src="/mvp/eye-open.svg"
+                    alt="Mostrar contraseña"
+                    className="h-5 w-5"
+                  />
+                )}
+              </button>
+            </div>
           </InputGroup>
         </div>
         <div className="flex justify-end space-x-3 pt-4">
