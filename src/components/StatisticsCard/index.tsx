@@ -276,16 +276,30 @@ export const StatisticsCard = ({
   onDeleteCard,
 }: StatisticsCardProps) => {
   const [isEditing, setIsEditing] = useState(false);
+  const [localTitle, setLocalTitle] = useState(title);
   const containerRef = useRef<HTMLDivElement>(null);
   const metricsRef = useRef<HTMLDivElement>(null);
   const timeMenu = useMenuPosition();
   const optionsMenu = useMenuPosition();
   const isWide = useCardWidth(containerRef);
+  const titleTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    setLocalTitle(title);
+  }, [title]);
 
   const data = useAnalyticData(analyticTypes, displayType, timeRange);
 
   const handleTitleChange = (newTitle: string) => {
-    onUpdateCard?.({ id, title: newTitle });
+    setLocalTitle(newTitle);
+    
+    if (titleTimeoutRef.current) {
+      clearTimeout(titleTimeoutRef.current);
+    }
+    
+    titleTimeoutRef.current = setTimeout(() => {
+      onUpdateCard?.({ id, title: newTitle });
+    }, 500);
   };
 
   const handleTimeRangeChange = (newTimeRange: TimeRange) => {
@@ -334,13 +348,23 @@ export const StatisticsCard = ({
     >
       <div className="flex justify-between items-start gap-2 w-full">
         <CardHeader
-          title={title}
+          title={localTitle}
           isEditing={isEditing}
           onTitleChange={handleTitleChange}
           onStartEdit={() => setIsEditing(true)}
-          onFinishEdit={() => setIsEditing(false)}
+          onFinishEdit={() => {
+            setIsEditing(false);
+            if (localTitle !== title) {
+              onUpdateCard?.({ id, title: localTitle });
+            }
+          }}
           onKeyDown={(e: React.KeyboardEvent) => {
-            if (e.key === "Enter") setIsEditing(false);
+            if (e.key === "Enter") {
+              setIsEditing(false);
+              if (localTitle !== title) {
+                onUpdateCard?.({ id, title: localTitle });
+              }
+            }
           }}
         />
         <div className="flex items-center gap-1 flex-shrink-0">
