@@ -190,3 +190,24 @@ export const deleteRole = async (roleId: number) => {
     return false;
   }
 };
+
+export const changeUserPassword = async (
+  userId: number,
+  newPassword: string
+) => {
+  try {
+    const response = await axiosInstance.post(
+      `/api/user/change-password/${userId}`,
+      { newPassword }
+    );
+    if (response.data.ok) {
+      return true;
+    } else {
+      alertError(response.data.message || "Error al cambiar la contraseña");
+      return false;
+    }
+  } catch (error) {
+    handleAxiosError(error);
+    return false;
+  }
+};
