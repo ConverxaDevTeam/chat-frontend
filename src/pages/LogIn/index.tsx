@@ -38,7 +38,11 @@ const LogIn = () => {
     <div className="flex flex-col w-full h-full bg-sofia-background">
       <div className="flex flex-col w-[446px] bg-custom-gradient p-[12px] rounded-2xl border-[1px] border-[#B8CCE0] border-inherit m-auto">
         <div className="bg-[#F1F5F9] rounded-lg px-[32px] pt-[53px] pb-[40px] [box-shadow:0px_4px_8px_0px_rgba(201,_217,_232,_0.8)]">
-          <img className="mx-auto mb-[48px]" src="/mvp/logo-sofia.svg" alt="logo" />
+          <img
+            className="mx-auto mb-[48px]"
+            src="/mvp/logo-sofia.svg"
+            alt="logo"
+          />
           <h2 className="font-semibold text-[30px] text-sofia-superDark mb-[16px] text-center">
             Inicia sesión
           </h2>
@@ -90,7 +94,7 @@ const LogIn = () => {
               </div>
               <Link
                 to="/reset-password"
-                className="text-[14px] font-medium text-sofia-superDark hover:text-sofia-electricGreen"
+                className="text-[14px] font-medium text-sofia-superDark hover:text-sofia-electricGreen hover:underline"
               >
                 Olvidé mi contraseña
               </Link>
@@ -107,16 +111,13 @@ const LogIn = () => {
                 {error}
               </p>
             )}
-            <p className="text-[14px] text-[#535862] font-normal text-center">
-              ¿Aun no tienes un cuenta? <strong>Creala aquí</strong>
-            </p>
           </form>
         </div>
       </div>
 
       <p className="mx-auto text-[12px] mb-[38px] font-normal text-center text-sofia-superDark">
         Version 2.0
-        <br /> SOF.IA LLM © 2024 Derechos Reservados
+        <br /> SOF.IA LLM &copy; 2024 Derechos Reservados
       </p>
     </div>
   );
