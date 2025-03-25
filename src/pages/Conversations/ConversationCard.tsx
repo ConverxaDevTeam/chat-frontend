@@ -37,13 +37,18 @@ const HitlButton = ({
 }: HitlButtonProps) => {
   const user = useSelector((state: RootState) => state.auth.user);
 
-  const handleHitlAction = async () => {
+  const handleHitlAction = async (e: React.MouseEvent) => {
+    e.stopPropagation();
     try {
       const updatedConversation = await assignConversationToHitl(
         conversation.id
       );
       if (updatedConversation) {
-        onUpdateConversation(updatedConversation);
+        onUpdateConversation({
+          ...conversation,
+          user_id: updatedConversation.user_id,
+          need_human: updatedConversation.need_human,
+        });
         toast.success(
           conversation.user_id === user?.id
             ? "Conversación desasignada exitosamente"
@@ -67,7 +72,11 @@ const HitlButton = ({
               conversation.id
             );
             if (reassignedConversation) {
-              onUpdateConversation(reassignedConversation);
+              onUpdateConversation({
+                ...conversation,
+                user_id: reassignedConversation.user_id,
+                need_human: reassignedConversation.need_human,
+              });
               toast.success("Conversación reasignada exitosamente");
             }
           } catch (reassignError) {
@@ -118,8 +127,15 @@ const ConversationCard = ({
     ? { type: conversation.message_type, text: conversation.message_text }
     : { type: MessageType.USER, text: "Sin mensajes" };
 
+  const handleRowClick = () => {
+    navigate(`/conversation/detail/${conversation.id}`);
+  };
+
   return (
-    <div className="min-h-[60px] text-[14px] border-b-[1px] border-b-[#DBEAF2] hover:bg-gray-50 flex items-center">
+    <div 
+      className="min-h-[60px] text-[14px] border-b-[1px] border-b-[#DBEAF2] hover:bg-gray-50 flex items-center cursor-pointer"
+      onClick={handleRowClick}
+    >
       <div className="pl-[16px] w-[calc(100%/19*2)]">
         <p className="text-sofia-superDark font-semibold text-[14px]">
           Usuario
@@ -152,8 +168,11 @@ const ConversationCard = ({
               <MessagePreview type={lastMessage.type} text={lastMessage.text} />
             </p>
           </div>
-          <button 
-            onClick={() => navigate(`/conversation/detail/${conversation.id}`)}
+          <button
+            onClick={(e) => {
+              e.stopPropagation(); 
+              navigate(`/conversation/detail/${conversation.id}`);
+            }}
             className="text-xs font-medium hover:underline my-2 text-gray-500"
           >
             Leer más
@@ -186,7 +205,10 @@ const ConversationCard = ({
         <div className="flex items-center gap-[18px]">
           <button
             type="button"
-            onClick={() => navigate(`/conversation/detail/${conversation.id}`)}
+            onClick={(e) => {
+              e.stopPropagation(); 
+              navigate(`/conversation/detail/${conversation.id}`);
+            }}
             className="bg-sofia-electricOlive rounded-[4px] w-[64px] h-[24px]"
           >
             <p className="text-[12px] text-sofia-superDark">Ver Chat</p>

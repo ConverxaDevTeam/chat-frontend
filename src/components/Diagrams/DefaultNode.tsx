@@ -234,11 +234,13 @@ const DefaultNode: React.FC<CustomNodeProps> = ({
                 <NeumorphicButton
                   externalProps={{
                     radius: "full",
-                    className: "pb-5",
+                    className: "bg-[#DBEAF3] shadow-[0px_0px_3px_0px_rgba(148,163,184,0.50),0px_0px_3px_0px_#C9D9E8,-2px_-2px_10px_0px_rgba(201,217,232,0.80)_inset]",
                   }}
                   internalProps={{
                     radius: "full",
-                    className: "bg-node-gradient",
+                    className: "bg-[#F4FAFF] shadow-[0px_2px_16px_0px_rgba(148,163,184,0.50),4px_4px_16px_0px_#C9D9E8,-2px_-2px_10px_0px_rgba(201,217,232,0.80)_inset]",
+                    width: "91px",
+                    height: "91px",
                   }}
                   height="140px"
                   width="140px"

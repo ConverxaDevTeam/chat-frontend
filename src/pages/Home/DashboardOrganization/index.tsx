@@ -5,7 +5,7 @@ import { StatisticsCard } from "../../../components/StatisticsCard";
 import { useDashboard } from "../../../hooks/useDashboard";
 import { useSelector } from "react-redux";
 import { RootState } from "@store";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useRef, useEffect } from "react";
 import {
   AnalyticType,
   StatisticsDisplayType,
@@ -45,28 +45,28 @@ const DEFAULT_CARD = {
   layout: {
     lg: {
       h: 8,
-      i: "0",
+      i: 0,
       w: 12,
       x: 0,
       y: 23,
     },
     md: {
       h: 5,
-      i: "0",
+      i: 0,
       w: 7,
       x: 0,
       y: 18,
     },
     sm: {
       h: 4,
-      i: "0",
+      i: 0,
       w: 5,
       x: 0,
       y: 7,
     },
     xs: {
       h: 4,
-      i: "0",
+      i: 0,
       w: 12,
       x: 0,
       y: 4,
@@ -90,6 +90,9 @@ const DashboardOrganization = () => {
   const [currentBreakpoint, setCurrentBreakpoint] = useState(
     getBreakpoint(window.innerWidth)
   );
+  
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const [tarjetaAgregada, setTarjetaAgregada] = useState(false);
 
   // @ts-expect-error - Los tipos de @types/react-grid-layout están desactualizados
   const layouts: Layouts = useMemo(() => {
@@ -132,7 +135,7 @@ const DashboardOrganization = () => {
       state.length > 0
         ? Math.max(...state.map(card => card.layout.lg.y + card.layout.lg.h))
         : 0;
-
+    
     const newCard = {
       ...DEFAULT_CARD,
       layout: {
@@ -141,10 +144,24 @@ const DashboardOrganization = () => {
     };
 
     addCard(newCard);
+    setTarjetaAgregada(true);
   };
+  
+  useEffect(() => {
+    if (tarjetaAgregada && containerRef.current) {
+      setTimeout(() => {
+        containerRef.current?.scrollTo({
+          top: containerRef.current.scrollHeight,
+          behavior: 'smooth'
+        });
+        
+        setTarjetaAgregada(false);
+      }, 200);
+    }
+  }, [tarjetaAgregada, state.length]);
 
   return (
-    <div className="h-full">
+    <div className="h-full overflow-auto" ref={containerRef}>
       <Button variant="primary" onClick={handleAddCard} className="w-[161px] h-[40px] flex items-center gap-1 px-4 py-2 bg-[#001130] text-white rounded-lg hover:bg-opacity-90">
         + Crear tarjeta
       </Button>
