@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import { apiUrls } from "../../config/config";
 import { Input } from "@components/forms/input";
 import { InputGroup } from "@components/forms/inputGroup";
+import { Link } from "react-router-dom";
 
 type RequestResetForm = {
   email: string;
@@ -66,13 +67,21 @@ export const RequestResetPassword = () => {
             >
               {isLoading ? "Enviando..." : "Enviar Código"}
             </button>
+            <div className="text-center">
+              <Link
+                to="/"
+                className="text-[14px] font-medium text-sofia-superDark hover:text-sofia-electricGreen hover:underline"
+              >
+                Volver a inicio de sesión
+              </Link>
+            </div>
           </form>
         </div>
       </div>
 
       <p className="mx-auto text-[12px] mb-[38px] font-normal text-center text-sofia-superDark">
         Version 2.0
-        <br /> SOF.IA LLM © 2024 Derechos Reservados
+        <br /> SOF.IA LLM &copy; 2024 Derechos Reservados
       </p>
     </div>
   );
