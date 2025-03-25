@@ -8,6 +8,7 @@ import DefaultNode from "./DefaultNode";
 import { ContextMenuOption } from "./DiagramContextMenu";
 import { ActionButtons, ActionType } from "./agenteComponents/AgentInfo";
 import { useHumanCommunication } from "./hooks/useHumanCommunication";
+import InfoTooltip from "../../components/Common/InfoTooltip";
 
 const AgenteNode = (props: CustomTypeNodeProps<AgentData>) => {
   const { data, selected } = props;
@@ -20,7 +21,9 @@ const AgenteNode = (props: CustomTypeNodeProps<AgentData>) => {
       child: (
         <div className="flex items-center gap-[10px]">
           <img src="/mvp/square-pen.svg" alt="Editar" className="w-4 h-4" />
-          <span className="text-[#001126] text-[14px] font-[500] leading-normal">Editar agente</span>
+          <span className="text-[#001126] text-[14px] font-[500] leading-normal">
+            Editar agente
+          </span>
         </div>
       ),
       onClick: () => setEventOpen(ActionType.EDIT_AGENT),
@@ -29,7 +32,9 @@ const AgenteNode = (props: CustomTypeNodeProps<AgentData>) => {
       child: (
         <div className="flex items-center gap-[10px]">
           <img src="/mvp/parentheses.svg" alt="Agregar" className="w-4 h-4" />
-          <span className="text-[#001126] text-[14px] font-[500] leading-normal">Agregar función</span>
+          <span className="text-[#001126] text-[14px] font-[500] leading-normal">
+            Agregar función
+          </span>
         </div>
       ),
       onClick: () => setEventOpen(ActionType.ADD_FUNCTION),
@@ -37,8 +42,14 @@ const AgenteNode = (props: CustomTypeNodeProps<AgentData>) => {
     {
       child: (
         <div className="flex items-center gap-[10px]">
-          <img src="/mvp/square-library.svg" alt="Documento" className="w-4 h-4" />
-          <span className="text-[#001126] text-[14px] font-[500] leading-normal">Agregar documento</span>
+          <img
+            src="/mvp/square-library.svg"
+            alt="Documento"
+            className="w-4 h-4"
+          />
+          <span className="text-[#001126] text-[14px] font-[500] leading-normal">
+            Agregar documento
+          </span>
         </div>
       ),
       onClick: () => setEventOpen(ActionType.ADD_DOCUMENT),
@@ -48,21 +59,16 @@ const AgenteNode = (props: CustomTypeNodeProps<AgentData>) => {
         <div className="relative flex items-center gap-[10px]">
           <img
             src="/mvp/bot.svg"
-            alt={humanCommunication ? "Desactivar comunicación" : "Activar comunicación"}
+            alt={
+              humanCommunication
+                ? "Desactivar comunicación"
+                : "Activar comunicación"
+            }
             className="w-4 h-4"
           />
           <span className="text-[#001126] text-[14px] font-[500] leading-normal flex items-center gap-[5px]">
             Comunicación humana
-            <div className="group relative inline-flex">
-              <img src="/mvp/Vector.svg" alt="Vector" className="cursor-pointer" />
-              <div className={`
-                absolute left-1/2 bottom-full -translate-x-1/2 mb-2 group-hover:flex hidden z-10
-                bg-[#F6F6F6] border border-[#001126] text-[#001126] text-[12px] px-2 py-1.5 rounded w-[178px] h-auto
-                font-[400] whitespace-normal tracking-[0.17px] leading-[143%] text-left
-              `}>
-                El agente ahora podrá escalar conversaciones a un humano
-              </div>
-            </div>
+            <InfoTooltip text="El agente ahora podrá escalar conversaciones a un humano" />
           </span>
           <label className="relative inline-flex items-center cursor-pointer">
             <input
