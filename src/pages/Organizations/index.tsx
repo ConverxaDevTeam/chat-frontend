@@ -1,13 +1,13 @@
 import Loading from "@components/Loading";
 import Modal from "@components/Modal";
 import { getOrganizations, deleteOrganization } from "@services/organizations";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import OrganizationCard from "./OrganizationCard";
 import ModalCreateOrganization from "./ModalCreateUser";
 import { useForm } from "react-hook-form";
 import { getUserMyOrganization } from "@services/user";
 import { IUserApi } from "../Users/UsersOrganization";
-import { FiChevronLeft, FiChevronRight, FiPlus } from "react-icons/fi";
+import { FiPlus } from "react-icons/fi";
 import { useAlertContext } from "@components/Diagrams/components/AlertContext";
 import { IOrganization } from "@interfaces/organization.interface";
 
@@ -26,14 +26,6 @@ const OrganizationList = ({
   onEdit,
   onDelete,
 }: OrganizationListProps) => {
-  const [currentPage, setCurrentPage] = useState(1);
-  const ITEMS_PER_PAGE = 10;
-
-  const totalPages = Math.ceil(organizations.length / ITEMS_PER_PAGE);
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const endIndex = startIndex + ITEMS_PER_PAGE;
-  const currentOrganizations = organizations.slice(startIndex, endIndex);
-
   return (
     <div className="flex flex-col gap-4">
       <div className="w-full">
@@ -59,7 +51,7 @@ const OrganizationList = ({
               </tr>
             </thead>
             <tbody className="relative before:content-[''] before:absolute before:-z-10 before:inset-0 before:rounded-[8px] before:border-[2px] before:border-[#DBEAF2] before:border-inherit">
-              {currentOrganizations.map(organization => (
+              {organizations.map(organization => (
                 <OrganizationCard
                   key={organization.id}
                   organization={organization}
@@ -71,35 +63,6 @@ const OrganizationList = ({
           </table>
         </div>
       </div>
-      {totalPages > 1 && (
-        <div className="flex justify-between items-center py-3 px-4">
-          <div className="flex items-center gap-2">
-            <p className="text-sm text-gray-700">
-              Mostrando{" "}
-              <span className="font-medium">
-                {startIndex + 1} - {Math.min(endIndex, organizations.length)}
-              </span>{" "}
-              de <span className="font-medium">{organizations.length}</span>
-            </p>
-          </div>
-          <div className="flex gap-2">
-            <button
-              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-              disabled={currentPage === 1}
-              className="p-2 text-gray-600 hover:bg-gray-100 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <img src="/mvp/chevron-left.svg" alt="Anterior" className="w-5 h-5" />
-            </button>
-            <button
-              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-              disabled={currentPage === totalPages}
-              className="p-2 text-gray-600 hover:bg-gray-100 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <img src="/mvp/chevron-right.svg" alt="Siguiente" className="w-5 h-5" />
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
@@ -251,11 +214,12 @@ const useHandles = (
   };
 };
 
-const ITEMS_PER_PAGE = 8;
+const ITEMS_PER_PAGE = 10;
 
 const Organizations = () => {
   const { organizations, loading, getAllOrganizations } = useOrganizations();
   const [currentPage, setCurrentPage] = useState<number>(1);
+  const [searchTerm, setSearchTerm] = useState<string>("");
   const { users, getUsers } = useUsers();
   const { isModalOpen, setIsModalOpen } = useModals();
   const {
@@ -277,17 +241,30 @@ const Organizations = () => {
     }
   }, [selectedOrg, isModalOpen, reset]);
 
+  const filteredOrganizations = useMemo(() => {
+    if (!searchTerm.trim()) return organizations;
+
+    return organizations.filter(org =>
+      org.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      org.id.toString().includes(searchTerm)
+    );
+  }, [organizations, searchTerm]);
+
   useEffect(() => {
-    const newTotalPages = Math.ceil(organizations.length / ITEMS_PER_PAGE);
+    setCurrentPage(1);
+  }, [searchTerm]);
+
+  useEffect(() => {
+    const newTotalPages = Math.ceil(filteredOrganizations.length / ITEMS_PER_PAGE);
     if (currentPage > newTotalPages) {
       setCurrentPage(newTotalPages === 0 ? 1 : newTotalPages);
     }
-  }, [organizations, currentPage]);
+  }, [filteredOrganizations, currentPage]);
 
-  const totalPages = Math.ceil(organizations.length / ITEMS_PER_PAGE);
+  const totalPages = Math.ceil(filteredOrganizations.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const endIndex = startIndex + ITEMS_PER_PAGE;
-  const currentOrganizations = organizations.slice(startIndex, endIndex);
+  const currentOrganizations = filteredOrganizations.slice(startIndex, endIndex);
 
   const goToPage = (pageNumber: number) => {
     if (pageNumber >= 1 && pageNumber <= totalPages) {
@@ -309,62 +286,84 @@ const Organizations = () => {
       />
 
       <div className="flex flex-1 flex-col gap-[20px] overflow-auto w-full">
-        <button
-          type="button"
-          onClick={() => {
-            setSelectedOrg(null);
-            setIsModalOpen(true);
-          }}
-          className="flex items-center gap-1 px-4 w-[190px] h-[40px] text-white rounded-lg leading-[24px] bg-[#001130] hover:bg-opacity-90"
-        >
-          <FiPlus /> Crear organización
-        </button>
+        <div className="flex justify-between items-center">
+          <button
+            type="button"
+            onClick={() => {
+              setSelectedOrg(null);
+              setIsModalOpen(true);
+            }}
+            className="flex items-center gap-1 px-4 w-[190px] h-[40px] text-white rounded-lg leading-[24px] bg-[#001130] hover:bg-opacity-90"
+          >
+            <FiPlus /> Crear organización
+          </button>
+
+          <div className="relative w-full max-w-md">
+            <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+              <img src="/mvp/magnifying-glass.svg" alt="Buscar" className="w-5 h-5 text-gray-500" />
+            </div>
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full py-2 pl-10 pr-4 text-sm text-gray-900 bg-white border border-gray-300 rounded-lg focus:ring-[#001130] focus:border-[#001130]"
+              placeholder="Buscar organización..."
+            />
+            {searchTerm && (
+              <button
+                onClick={() => setSearchTerm("")}
+                className="absolute inset-y-0 right-0 flex items-center pr-3"
+              >
+                <span className="text-gray-500 text-lg font-bold">×</span>
+              </button>
+            )}
+          </div>
+        </div>
+
         {loading ? (
           <Loading />
         ) : (
-          <OrganizationList
-            organizations={currentOrganizations}
-            onEdit={organization => {
-              setSelectedOrg(organization);
-              setIsModalOpen(true);
-            }}
-            onDelete={handleDelete}
-          />
+          <>
+            {filteredOrganizations.length === 0 ? (
+              <div className="text-center py-8 text-gray-500">
+                No se encontraron organizaciones que coincidan con tu búsqueda.
+              </div>
+            ) : (
+              <>
+                <OrganizationList
+                  organizations={currentOrganizations}
+                  onEdit={organization => {
+                    setSelectedOrg(organization);
+                    setIsModalOpen(true);
+                  }}
+                  onDelete={handleDelete}
+                />
+
+                {totalPages > 1 && (
+                  <div className="flex justify-center items-center py-3 px-4">
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => goToPage(currentPage - 1)}
+                        disabled={currentPage === 1}
+                        className="p-2 text-gray-600 hover:bg-gray-100 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        <img src="/mvp/chevron-left.svg" alt="Anterior" className="w-5 h-5" />
+                      </button>
+                      <button
+                        onClick={() => goToPage(currentPage + 1)}
+                        disabled={currentPage === totalPages}
+                        className="p-2 text-gray-600 hover:bg-gray-100 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        <img src="/mvp/chevron-right.svg" alt="Siguiente" className="w-5 h-5" />
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
+          </>
         )}
       </div>
-      {totalPages > 1 && (
-        <div className="flex items-center justify-center gap-2 mt-4">
-          <button
-            className="px-3 py-1 border rounded disabled:opacity-50"
-            onClick={() => goToPage(currentPage - 1)}
-            disabled={currentPage === 1}
-          >
-            <FiChevronLeft />
-          </button>
-
-          {Array.from({ length: totalPages }, (_, index) => index + 1).map(
-            pageNum => (
-              <button
-                key={pageNum}
-                onClick={() => goToPage(pageNum)}
-                className={`px-3 py-1 border rounded ${
-                  pageNum === currentPage ? "bg-gray-300" : ""
-                }`}
-              >
-                {pageNum}
-              </button>
-            )
-          )}
-
-          <button
-            className="px-3 py-1 border rounded disabled:opacity-50"
-            onClick={() => goToPage(currentPage + 1)}
-            disabled={currentPage === totalPages}
-          >
-            <FiChevronRight />
-          </button>
-        </div>
-      )}
     </>
   );
 };
