@@ -29,8 +29,10 @@ const CorsTagList = ({
         <button
           onClick={() => onRemove(cor)}
           className="flex-none w-4 h-4 hover:text-sofia-electricGreen"
+          aria-label="Eliminar dominio"
+          title="Eliminar dominio"
         >
-          <img src="/mvp/trash.svg" alt="Eliminar" />
+          <img src="/mvp/trash.svg" alt="Eliminar dominio" />
         </button>
       </div>
     ))}
@@ -46,23 +48,33 @@ const CorsInput = ({
   onChange: (value: string) => void;
   onAdd: () => void;
 }) => (
-  <div className="grid grid-cols-[1fr_auto] gap-[10px] items-end">
-    <InputGroup label="Dominio">
+  <div className="w-full">
+    <InputGroup label="">
+    <div className="relative w-full">
       <Input
         type="text"
         value={value}
         placeholder="https://tu-dominio.com"
         onChange={e => onChange(e.target.value)}
-        className="text-sofia-superDark text-xs font-normal"
+        onKeyDown={e => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            onAdd();
+          }
+        }}
+        className="text-sofia-superDark text-xs font-normal pr-14 w-full"
       />
+      <button
+        type="button"
+        onClick={onAdd}
+        className="absolute right-2 top-1/2 transform -translate-y-1/2 flex items-center justify-center w-10 h-10" 
+        aria-label="Agregar dominio"
+        title="Agregar dominio"
+        >
+          <img src="/mvp/plus.svg" alt="Agregar dominio" />
+      </button>
+    </div>
     </InputGroup>
-    <button
-      type="button"
-      onClick={onAdd}
-      className="flex h-[55px] p-[15px] items-center gap-[11px] rounded-lg bg-sofia-electricOlive text-sofia-superDark text-center text-sm font-semibold"
-    >
-      Agregar
-    </button>
   </div>
 );
 
@@ -83,8 +95,9 @@ const ScriptViewer = ({
         type="button"
         className="flex-none text-gray-500 hover:text-gray-700 w-[24px] h-[24px]"
         aria-label="Copiar script"
+        title="Copiar script"
       >
-        <img src="/mvp/copy.svg" alt="Copiar" />
+        <img src="/mvp/copy.svg" alt="Copiar script" />
       </button>
     </div>
   </InputGroup>
