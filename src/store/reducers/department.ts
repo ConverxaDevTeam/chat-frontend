@@ -45,6 +45,40 @@ const departmentSlice = createSlice({
       state.selectedDepartmentId = null;
       state.departments = [];
     },
+    addDepartment: (state, action: PayloadAction<IDepartment>) => {
+      state.departments = [...state.departments, action.payload];
+      localStorage.setItem("departmentSelect", String(action.payload.id));
+    },
+    removeDepartment: (state, action: PayloadAction<number>) => {
+      state.departments = state.departments.filter(
+        (dept) => dept.id !== action.payload
+      );
+      
+      if (state.selectedDepartmentId === action.payload) {
+        state.selectedDepartmentId = state.departments.length > 0 
+          ? state.departments[0].id 
+          : null;
+        
+        if (state.selectedDepartmentId) {
+          localStorage.setItem("departmentSelect", String(state.selectedDepartmentId));
+        } else {
+          localStorage.removeItem("departmentSelect");
+        }
+      }
+    },
+    updateDepartmentInStore: (state, action: PayloadAction<IDepartment>) => {
+      const index = state.departments.findIndex(
+        (dept) => dept.id === action.payload.id
+      );
+      
+      if (index !== -1) {
+        state.departments = [
+          ...state.departments.slice(0, index),
+          action.payload,
+          ...state.departments.slice(index + 1)
+        ];
+      }
+    },
   },
   extraReducers: builder => {
     builder
@@ -79,6 +113,11 @@ const departmentSlice = createSlice({
   },
 });
 
-export const { setSelectedDepartmentId, clearSelectedDepartment } =
-  departmentSlice.actions;
+export const { 
+  setSelectedDepartmentId, 
+  clearSelectedDepartment, 
+  addDepartment, 
+  removeDepartment,
+  updateDepartmentInStore
+} = departmentSlice.actions;
 export default departmentSlice.reducer;

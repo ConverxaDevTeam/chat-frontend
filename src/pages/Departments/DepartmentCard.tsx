@@ -4,6 +4,8 @@ import { toast } from "react-toastify";
 import CardItem from "../../components/Card/CardItem";
 import { deleteDepartment } from "@services/department";
 import { useAlertContext } from "@components/Diagrams/components/AlertContext";
+import { useAppDispatch } from "@store/hooks";
+import { removeDepartment } from "@store/reducers/department";
 
 interface DepartmentCardProps {
   department: IDepartment;
@@ -17,6 +19,7 @@ const DepartmentCard: FC<DepartmentCardProps> = ({
   onDelete,
 }) => {
   const { showConfirmation } = useAlertContext();
+  const dispatch = useAppDispatch();
 
   const handleDelete = async () => {
     const confirmed = await showConfirmation({
@@ -29,6 +32,8 @@ const DepartmentCard: FC<DepartmentCardProps> = ({
     if (confirmed) {
       try {
         await deleteDepartment(department.id);
+        
+        dispatch(removeDepartment(department.id));
         onDelete(department.id);
         toast.success("Departamento eliminado exitosamente");
       } catch (error: unknown) {
@@ -46,7 +51,6 @@ const DepartmentCard: FC<DepartmentCardProps> = ({
   };
 
   return (
-
     <div className="bg-[#F1F5F9] rounded-xl p-5 flex flex-col justify-between border-2 border-[#DBEAF2] w-full min-h-[250px]">
       <div className="text-center">
         <CardItem label="">
