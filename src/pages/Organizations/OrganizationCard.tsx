@@ -91,22 +91,22 @@ const OrganizationCard = ({
               <Button
                 onClick={() => setShowPasswordModal(true)}
                 variant="primary"
-                className="whitespace-nowrap text-xs"
+                className="whitespace-nowrap font-size-[12px] font-medium flex-initial w-auto min-w-min"
               >
-                Cambiar Contraseña
+                Cambiar contraseña
               </Button>
             )}
             {hasDeletePermission && (
               <button
                 onClick={onDelete}
-                className="px-3 py-1 text-gray-500 bg-white border border-gray-200 rounded-[4px] font-size-[12px] font-medium hover:bg-gray-50 transition-all"
+                className="px-3 py-1 text-gray-500 bg-white border border-gray-200 rounded-lg font-size-[12px] font-medium hover:bg-gray-50 transition-all"
               >
                 Eliminar
               </button>
             )}
             <button
               onClick={onEdit}
-              className="px-3 py-1 text-white bg-[#001130] rounded-[4px] font-size-[12px] font-medium hover:bg-opacity-90 transition-all"
+              className="px-3 py-1 text-white bg-[#001130] rounded-lg font-size-[12px] font-medium hover:bg-opacity-90 transition-all"
             >
               Editar
             </button>
