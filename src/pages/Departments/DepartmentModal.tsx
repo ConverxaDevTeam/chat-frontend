@@ -3,6 +3,8 @@ import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { IDepartment } from "../../interfaces/departments";
 import { createDepartment, updateDepartment } from "@services/department";
+import { useAppDispatch } from "@store/hooks";
+import { addDepartment, updateDepartmentInStore } from "@store/reducers/department";
 
 interface DepartmentModalProps {
   isOpen: boolean;
@@ -24,6 +26,7 @@ const DepartmentModal: FC<DepartmentModalProps> = ({
   department,
   organizationId,
 }) => {
+  const dispatch = useAppDispatch();
   const {
     register,
     handleSubmit,
@@ -51,6 +54,12 @@ const DepartmentModal: FC<DepartmentModalProps> = ({
       const result = department
         ? await updateDepartment(department.id, data.name, data.description)
         : await createDepartment(organizationId, data.name, data.description);
+
+      if (!department) {
+        dispatch(addDepartment(result));
+      } else {
+        dispatch(updateDepartmentInStore(result));
+      }
 
       onSuccess({ ...department, ...result });
       toast.success(
