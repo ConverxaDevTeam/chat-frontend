@@ -6,6 +6,8 @@ import { MessageType } from "@utils/interfaces";
 import ReactMarkdown from "react-markdown";
 import { ConfigWebChat } from "@pages/Workspace/components/CustomizeChat";
 import { getContrastingTextColor } from "@services/chat.service";
+import ImageModal from "./ImageModal";
+import { useState } from "react";
 
 interface MessageCardProps {
   userName: string;
@@ -79,7 +81,8 @@ const MessageHeader = ({
 
 const renderContent = (
   message: ConversationResponseMessage,
-  textColor: string
+  textColor: string,
+  onImageClick: (imageUrl: string) => void,
 ) => {
   return (
     <div className="flex flex-col gap-2">
@@ -88,7 +91,8 @@ const renderContent = (
           key={index}
           src={imageUrl}
           alt={`Image ${index + 1}`}
-          className="rounded-lg w-[200px] h-[200px] object-cover"
+          className="rounded-lg w-[200px] h-[200px] object-cover cursor-pointer"
+          onClick={() => onImageClick(imageUrl)}
           onLoad={() => {
             if (imageUrl.startsWith("blob:")) {
               URL.revokeObjectURL(imageUrl);
@@ -136,6 +140,13 @@ const MessageCard = ({
   userName,
   config = defaultConfig,
 }: MessageCardProps) => {
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedImage, setSelectedImage] = useState("");
+
+  const handleImageClick = (imageUrl: string) => {
+    setSelectedImage(imageUrl);
+    setModalOpen(true);
+  };
   if (message.type === MessageType.AGENT || message.type === MessageType.HITL) {
     const textColor = getContrastingTextColor(config.bg_assistant);
     return (
@@ -156,9 +167,14 @@ const MessageCard = ({
               borderRadius: config.message_radius + "px",
             }}
           >
-            {renderContent(message, textColor)}
+            {renderContent(message, textColor, handleImageClick)}
           </div>
         </div>
+        <ImageModal
+        isOpen={modalOpen}
+        imageUrl={selectedImage}
+        onClose={() => setModalOpen(false)}
+      />
       </MessageContainer>
     );
   }
@@ -175,12 +191,17 @@ const MessageCard = ({
             borderRadius: config.message_radius + "px",
           }}
         >
-          {renderContent(message, textColor)}
+          {renderContent(message, textColor, handleImageClick)}
         </div>
       </div>
       <div className="flex flex-col gap-1">
         <Avatar avatar={null} secret={userName} className="w-[40px] h-[40px]" />
       </div>
+      <ImageModal
+      isOpen={modalOpen}
+      imageUrl={selectedImage}
+      onClose={() => setModalOpen(false)}
+    />
     </MessageContainer>
   );
 };

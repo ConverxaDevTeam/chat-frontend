@@ -2,6 +2,7 @@ import { AppDispatch, RootState } from "@store";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState, useRef } from "react";
 import { setOrganizationId } from "@store/actions/auth";
+import { fetchNotifications } from "@store/reducers/notifications";
 import { useNavigate } from "react-router-dom";
 import { joinRoom, leaveRoom } from "@services/websocket.service";
 import Select from "@components/Select";
@@ -60,14 +61,24 @@ const SelectOrganization = ({ mobileResolution }: SelectOrganizationProps) => {
     };
   }, []);
 
+  useEffect(() => {
+    if (selectOrganizationId !== null) {
+      dispatch(fetchNotifications(selectOrganizationId));
+    }
+  }, [selectOrganizationId]);
+
   const handleSelectOrganization = (organizationId: unknown) => {
     if (organizationId === selectOrganizationId) {
       return;
     }
-    
-    if (organizationId === 0) {
+
+    if (organizationId === 0 ) {
       navigate('/dashboard');
-    } else {
+    } 
+    else if (window.location.pathname.includes('/organizations')) {
+      navigate("/dashboard");
+    } 
+    else {
       navigate(0);
     }
 

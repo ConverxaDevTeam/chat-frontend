@@ -10,6 +10,8 @@ import { SendMessageButton } from "../SendMessageButton";
 import { HitlButton } from "../HitlButton";
 import { ImagePreview } from "./ImagePreview";
 import { ConfigWebChat } from "@pages/Workspace/components/CustomizeChat";
+import { useDispatch } from "react-redux";
+import { decrementNotificationCount } from "@/store/reducers/notifications";
 
 interface ImagePreview {
   file: File;
@@ -61,17 +63,8 @@ const defaultConfig: ConfigWebChat = {
   button_text: "#BAF88F",
 };
 
-export const MessageForm = ({
-  form: { register, handleSubmit, isSubmitting },
-  onSubmit,
-  onUpdateConversation,
-  conversation,
-  user,
-  config = defaultConfig,
-  showHitl = true,
-}: MessageFormProps) => {
+const useImageUpload = () => {
   const [selectedImages, setSelectedImages] = useState<ImagePreview[]>([]);
-  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
 
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
@@ -96,10 +89,16 @@ export const MessageForm = ({
     setSelectedImages([]);
   };
 
-  const handleFormSubmit = (data: FormInputs) => {
-    onSubmit({ ...data, images: selectedImages.map(img => img.file) });
-    clearImages();
+  return {
+    selectedImages,
+    handleImageSelect,
+    removeImage,
+    clearImages,
   };
+};
+
+const useEmojiPicker = () => {
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
 
   const onEmojiClick = (emojiData: { emoji: string }) => {
     const input = document.querySelector(
@@ -118,11 +117,128 @@ export const MessageForm = ({
     setShowEmojiPicker(false);
   };
 
+  return {
+    showEmojiPicker,
+    setShowEmojiPicker,
+    onEmojiClick,
+  };
+};
+
+const InputSection = ({
+  register,
+  showHitl,
+  conversation,
+  user,
+  imageUpload,
+  emojiPicker,
+}: {
+  register: UseFormRegister<FormInputs>;
+  showHitl?: boolean;
+  conversation?: { user?: { id: number } };
+  user?: { id: number };
+  imageUpload: ReturnType<typeof useImageUpload>;
+  emojiPicker: ReturnType<typeof useEmojiPicker>;
+}) => (
+  <div className="flex-1 relative min-w-0">
+    <div className="flex items-center gap-[10px] h-[44px] px-4 py-2.5 border border-[#343E4F] rounded-lg bg-white min-w-0">
+      <input
+        {...register("message", {
+          required: imageUpload.selectedImages.length === 0,
+        })}
+        type="text"
+        disabled={showHitl && conversation?.user?.id !== user?.id}
+        placeholder="Escribe un mensaje..."
+        className="w-full text-[14px] text-black bg-white focus:outline-none"
+      />
+      <label
+        htmlFor="image-upload"
+        className="hover:bg-gray-100 rounded-full transition-colors cursor-pointer"
+      >
+        <input
+          type="file"
+          id="image-upload"
+          multiple
+          accept="image/*"
+          onChange={imageUpload.handleImageSelect}
+          className="hidden"
+        />
+        <img src="/mvp/paperclip.svg" alt="sofia" className="w-6 h-6" />
+      </label>
+      {emojiPicker.showEmojiPicker && (
+        <div className="absolute bottom-full left-0 mb-2 w-full">
+          <EmojiPicker onEmojiClick={emojiPicker.onEmojiClick} />
+        </div>
+      )}
+      {imageUpload.selectedImages.length > 0 && (
+        <ImagePreview
+          images={imageUpload.selectedImages}
+          onRemove={imageUpload.removeImage}
+        />
+      )}
+    </div>
+  </div>
+);
+
+const HitlSection = ({
+  handleHitlAction,
+  isLoading,
+  conversation,
+  user,
+}: {
+  handleHitlAction: () => void;
+  isLoading: boolean;
+  conversation?: { user?: { id: number } };
+  user?: { id: number };
+}) => (
+  <div className="w-full">
+    <HitlButton
+      onClick={handleHitlAction}
+      disabled={isLoading}
+      className="w-full p-3 bg-sofia-electricOlive hover:bg-sofia-electricOlive-700 rounded-lg transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+      type="button"
+      isLoading={isLoading}
+      isAssigned={!!conversation?.user}
+      currentUserHasConversation={conversation?.user?.id === user?.id}
+    >
+      <img src="/mvp/headset.svg" alt="sofia" className="w-6 h-6" />
+      <span>
+        {conversation?.user ? (
+          <span>Reasignar conversación</span>
+        ) : (
+          <span>Asignar conversación</span>
+        )}
+      </span>
+    </HitlButton>
+  </div>
+);
+
+export const MessageForm = ({
+  form: { register, handleSubmit, isSubmitting },
+  onSubmit,
+  onUpdateConversation,
+  conversation,
+  user,
+  config = defaultConfig,
+  showHitl = true,
+}: MessageFormProps) => {
+  const imageUpload = useImageUpload();
+  const emojiPicker = useEmojiPicker();
+  const dispatch = useDispatch();
+
+  const handleFormSubmit = (data: FormInputs) => {
+    onSubmit({
+      ...data,
+      images: imageUpload.selectedImages.map(img => img.file),
+    });
+    imageUpload.clearImages();
+  };
+
   const { handleHitlAction, isLoading } = useHitl({
     conversationId: conversation?.id || 0,
     userId: user?.id || 0,
     currentUserId: user?.id || 0,
     onUpdateConversation: () => {
+      dispatch(decrementNotificationCount());
       onUpdateConversation?.();
     },
   });
@@ -136,80 +252,54 @@ export const MessageForm = ({
         onSubmit={handleSubmit(handleFormSubmit)}
         className="flex items-center gap-[16px] w-full min-w-0"
       >
-        <button
-          type="button"
-          onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-          className="hover:bg-gray-100 rounded-full transition-colors shrink-0"
-        >
-          <img src="/mvp/smile.svg" alt="sofia" className="w-[22px] h-[22px]" />
-        </button>
-
-        <div className="flex-1 relative min-w-0">
-          <div className="flex items-center gap-[10px] h-[44px] px-4 py-2.5 border border-[#343E4F] rounded-lg bg-white min-w-0">
-            <input
-              {...register("message", {
-                required: selectedImages.length === 0,
-              })}
-              type="text"
-              disabled={showHitl && conversation?.user?.id !== user?.id}
-              placeholder="Escribe un mensaje..."
-              className="w-full text-[14px] text-black bg-white focus:outline-none"
-            />
-            <label
-              htmlFor="image-upload"
-              className="hover:bg-gray-100 rounded-full transition-colors cursor-pointer"
-            >
-              <input
-                type="file"
-                id="image-upload"
-                multiple
-                accept="image/*"
-                onChange={handleImageSelect}
-                className="hidden"
-              />
-              <img
-                src="/mvp/paperclip.svg"
-                alt="sofia"
-                className="w-[24px] h-[24px]"
-              />
-            </label>
-            {showEmojiPicker && (
-              <div className="absolute bottom-full left-0 mb-2 w-full">
-                <EmojiPicker onEmojiClick={onEmojiClick} />
-              </div>
-            )}
-            {selectedImages.length > 0 && (
-              <ImagePreview images={selectedImages} onRemove={removeImage} />
-            )}
-          </div>
-        </div>
         {!showHitl || conversation?.user?.id === user?.id ? (
-          <SendMessageButton
-            type="submit"
-            disabled={isSubmitting}
-            className="w-[38px] h-[38px] flex items-center justify-center hover:bg-sofia-electricOlive-700 rounded-full transition-colors disabled:opacity-50"
-            style={{
-              backgroundColor: config.button_text,
-            }}
+          <button
+            type="button"
+            aria-label="Mostrar emoticonos"
+            onClick={() =>
+              emojiPicker.setShowEmojiPicker(!emojiPicker.showEmojiPicker)
+            }
+            className="hover:bg-gray-100 rounded-full transition-colors shrink-0"
           >
             <img
-              src="/mvp/send-horizontal.svg"
+              src="/mvp/smile.svg"
               alt="sofia"
-              className="w-6 h-6"
+              className="w-[22px] h-[22px]"
             />
-          </SendMessageButton>
-        ) : (
-          <HitlButton
-            onClick={handleHitlAction}
-            disabled={isLoading}
-            className="p-2 bg-sofia-electricOlive hover:bg-sofia-electricOlive-700 rounded-full transition-colors disabled:opacity-50"
-            type="button"
+          </button>
+        ) : null}
+        {showHitl && conversation?.user?.id !== user?.id ? (
+          <HitlSection
+            handleHitlAction={handleHitlAction}
             isLoading={isLoading}
-            isAssigned={!!conversation?.user}
-            currentUserHasConversation={conversation?.user?.id === user?.id}
-          >
-            <img src="/mvp/headset.svg" alt="sofia" className="w-6 h-6" />
-          </HitlButton>
+            conversation={conversation}
+            user={user}
+          />
+        ) : (
+          <>
+            <InputSection
+              register={register}
+              showHitl={showHitl}
+              conversation={conversation}
+              user={user}
+              imageUpload={imageUpload}
+              emojiPicker={emojiPicker}
+            />
+            <SendMessageButton
+              type="submit"
+              disabled={isSubmitting}
+              className="w-[38px] h-[38px] flex items-center justify-center hover:bg-sofia-electricOlive-700 rounded-full transition-colors disabled:opacity-50"
+              style={{
+                backgroundColor: config.button_text,
+              }}
+            >
+              <img
+                src="/mvp/send-horizontal.svg"
+                alt="sofia"
+                className="w-6 h-6"
+              />
+            </SendMessageButton>
+          </>
         )}
       </form>
     </div>
