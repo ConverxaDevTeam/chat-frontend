@@ -5,7 +5,9 @@ import {
   AnalyticType,
   StatisticsDisplayType,
   analyticOptions,
+  AnalyticDescription,
 } from "../../services/analyticTypes";
+import InfoTooltip from "../Common/InfoTooltip";
 
 interface Option {
   id: AnalyticType | StatisticsDisplayType;
@@ -62,7 +64,13 @@ const DataOptionsModal = ({
           onClick={e => handleOptionClick(option.id, e)}
           onMouseDown={e => e.stopPropagation()}
         >
-          {option.label}
+          <div className="flex items-center gap-2">
+            {option.label}
+            <InfoTooltip
+              text={AnalyticDescription[option.id]}
+              width={"220px"}
+            />
+          </div>
         </button>
       ))}
     </ContextMenu>
@@ -104,9 +112,7 @@ const StatisticsTypeModal = ({
         <button
           key={option.id}
           className={`flex w-full items-center gap-2 px-2 py-[2px] text-[14px] text-sofia-superDark rounded-md hover:bg-sofia-lightBlue/10 transition-colors ${
-            selectedDisplayType === option.id
-              ? "bg-sofia-darkBlue"
-              : ""
+            selectedDisplayType === option.id ? "bg-sofia-darkBlue" : ""
           }`}
           onClick={e => handleTypeClick(option.id as StatisticsDisplayType, e)}
           onMouseDown={e => e.stopPropagation()}
@@ -206,8 +212,12 @@ const OptionsMenu = ({
   onDeleteCard,
 }: OptionsMenuProps) => (
   <ContextMenu x={x} y={y} onClose={onClose} bodyClassname="w-full">
-    <MenuButton onClick={onDataOptionClick} iconUrl="mvp/list.svg">Datos a mostrar</MenuButton>
-    <MenuButton onClick={onStatisticsTypeClick} iconUrl="mvp/estadistica.svg">Tipo de estadística</MenuButton>
+    <MenuButton onClick={onDataOptionClick} iconUrl="mvp/list.svg">
+      Datos a mostrar
+    </MenuButton>
+    <MenuButton onClick={onStatisticsTypeClick} iconUrl="mvp/estadistica.svg">
+      Tipo de estadística
+    </MenuButton>
     <div data-divider />
     <LegendToggle
       showLegend={showLegend}
@@ -219,7 +229,10 @@ const OptionsMenu = ({
       }}
     />
     <div data-divider />
-    <MenuButton onClick={onDeleteCard ? onDeleteCard : e => e.preventDefault()} iconUrl="mvp/trash.svg">
+    <MenuButton
+      onClick={onDeleteCard ? onDeleteCard : e => e.preventDefault()}
+      iconUrl="mvp/trash.svg"
+    >
       Eliminar Tarjeta
     </MenuButton>
   </ContextMenu>
@@ -454,15 +467,15 @@ export const OptionsSelector = ({
   const handleOptionsButtonClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     e.preventDefault();
-    
+
     if (menuPosition) {
       onMenuClose();
     } else {
-      handleClick(e); 
+      handleClick(e);
     }
   };
 
-  useTouchEvents(buttonRef, handleClick); 
+  useTouchEvents(buttonRef, handleClick);
 
   return (
     <>
