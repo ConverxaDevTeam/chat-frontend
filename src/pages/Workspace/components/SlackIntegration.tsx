@@ -64,7 +64,7 @@ const SlackIntegration: React.FC<SlackIntegrationProps> = ({
   return (
     <RawModal isShown={isOpen} onClose={onClose}>
       <div
-        className={`flex flex-col w-[470px] ${loading ? "min-h-[300px]" : ""} bg-white p-[24px] rounded-[4px] justify-center`}
+        className={`flex flex-col w-[470px] ${loading ? "min-h-[300px] bg-transparent" : "bg-white"} p-[24px] rounded-[4px] justify-center`}
       >
         {loading ? (
           <Loading />
