@@ -66,7 +66,7 @@ const CreateUserModal = ({
     <Modal
       isShown={isOpen}
       onClose={onClose}
-      header={<h2 className="text-xl font-bold w-[550px]">Nuevo Usuario</h2>}
+      header={<h2 className="text-xl font-bold w-[550px]">Nuevo usuario</h2>}
     >
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <InputGroup label="Email" errors={errors.email}>

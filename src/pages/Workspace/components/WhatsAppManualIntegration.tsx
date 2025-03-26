@@ -113,13 +113,13 @@ const WhatsAppManualIntegration: React.FC<WhatsAppManualIntegrationProps> = ({
   return (
     <RawModal isShown={isOpen} onClose={onClose}>
       <div
-        className={`flex flex-col w-[500px] ${loading ? "min-h-[300px]" : ""} bg-white p-[24px] rounded-[4px] justify-center`}
+        className={`flex flex-col w-[500px] ${loading ? "min-h-[300px] bg-transparent" : "bg-white"} p-[24px] rounded-[4px] justify-center`}
       >
         {loading ? (
           <Loading />
         ) : (
           <form onSubmit={handleSubmit} className="flex flex-col gap-[8px]">
-            <div className="w-full flex justify-between items-center mb-[24px]">
+            <div className="w-full flex justify-between items-center mb-3">
               <p className="text-sofia-superDark font-semibold text-[24px]">
                 Integración manual de WhatsApp
               </p>
@@ -130,6 +130,7 @@ const WhatsAppManualIntegration: React.FC<WhatsAppManualIntegrationProps> = ({
                 onClick={onClose}
               />
             </div>
+            <hr className="border-t border-gray-300 -mx-6 mb-[24px]" />
             <label className="text-sofia-superDark font-bold text-[14px]">
               Webhook de Integración
             </label>
