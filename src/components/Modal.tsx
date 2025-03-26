@@ -53,11 +53,11 @@ const Modal: React.FC<ModalProps> = ({
           style={{ zIndex: zindex }}
           onClick={handleBackgroundClick}
         >
-          <div className="bg-white rounded-xl p-6 w-auto max-w-full relative">
+          <div className="bg-white rounded-[4px] p-6 w-auto max-w-full relative">
             {header && (
               <Fragment>
                 <ModalHeader handleClose={onClose}>{header}</ModalHeader>
-                <hr className="border-t border-gray-300 mb-4" />
+                <hr className="border-t border-gray-300 mb-4 -mx-6" />
               </Fragment>
             )}
             <div className="w-full space-y-4 flex flex-col max-h-[calc(100vh-200px)] overflow-y-auto">

@@ -218,13 +218,13 @@ const FormActions = ({
     <button
       type="button"
       onClick={() => close(false)}
-      className="w-full px-3 py-1 text-gray-500 border-2 rounded-md text-sm font-semibold"
+      className="w-full px-3 py-1  text-gray-500 border-2 rounded-md text-sm font-semibold"
     >
       Cancelar
     </button>
     <button
       type="submit"
-      className="w-full px-3 py-3 bg-sofia-electricGreen text-gray-900 rounded-md text-sm font-semibold hover:bg-opacity-50 transition-all"
+      className="w-full px-3 py-3 bg-[#001130] text-white rounded-md text-sm font-semibold hover:bg-opacity-50 transition-all"
     >
       <span className="hidden sm:block">
         {isEditMode ? "Editar organización" : "Crear organización"}
@@ -427,7 +427,7 @@ const ModalCreateOrganization = ({
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="bg-white rounded-xl p-2 w-[550px]"
+      className="bg-white rounded-[4px] p-1 w-[550px]"
     >
       <h2 className="text-2xl font-bold text-gray-800 mb-6">
         {isEditMode ? "Editar organización" : "Crear organización"}
