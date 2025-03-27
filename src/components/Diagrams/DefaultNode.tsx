@@ -131,6 +131,7 @@ const DefaultNode: React.FC<CustomNodeProps> = ({
   >();
 
   const [showContextMenu, setShowContextMenu] = useState(false);
+  const [menuWasClosed, setMenuWasClosed] = useState(false);
   const { name } = data;
   const style: NodeStyle = data.style || NodeStyle.NEUMORPHIC;
 
@@ -146,8 +147,20 @@ const DefaultNode: React.FC<CustomNodeProps> = ({
   ]);
 
   useEffect(() => {
-    setShowContextMenu(!!selected);
-  }, [selected]);
+    if (selected && !menuWasClosed) {
+      setShowContextMenu(true);
+    } else if (!selected) {
+      setShowContextMenu(false);
+      setMenuWasClosed(false);
+    }
+  }, [selected, menuWasClosed]);
+
+  const handleNodeClick = () => {
+    if (selected && menuWasClosed) {
+      setShowContextMenu(true);
+      setMenuWasClosed(false);
+    }
+  };
 
   useEffect(() => {
     if (timeoutRef.current) {
@@ -180,12 +193,15 @@ const DefaultNode: React.FC<CustomNodeProps> = ({
       contextMenuVersion={contextMenuVersion}
       menuPosition={menuPosition}
       showContextMenu={showContextMenu}
-      handleCloseContextMenu={() => setShowContextMenu(false)}
+      handleCloseContextMenu={() => {
+        setShowContextMenu(false);
+        setMenuWasClosed(true); 
+      }}
     />
   );
 
   return (
-    <div className="relative" ref={ref}>
+    <div className="relative" ref={ref} onClick={handleNodeClick}>
       {style !== NodeStyle.SMALL && (
         <div
           className={`
