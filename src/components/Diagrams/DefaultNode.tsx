@@ -11,9 +11,6 @@ interface CustomNodeProps extends NodeProps {
   data: NodeData;
   allowedConnections: ("source" | "target")[];
   icon?: React.ReactNode;
-  children?: React.ReactNode;
-  width?: number;
-  headerActions?: React.ReactNode;
   contextMenuOptions?: ContextMenuOption[];
   contextMenuVersion?: "v1" | "v2";
 }
@@ -54,30 +51,26 @@ const NodeHandles: React.FC<{
 );
 
 interface NodeContentProps {
-  children?: React.ReactNode;
-  name: string;
-  description: string;
-  icon?: React.ReactNode;
   isSelected: boolean;
-  headerActions?: React.ReactNode;
+  icon: React.ReactNode;
   contextMenuOptions?: ContextMenuOption[];
   contextMenuVersion?: "v1" | "v2";
   menuPosition?: {
     x: number;
     y: number;
   };
+  showContextMenu: boolean;
+  handleCloseContextMenu: () => void;
 }
 
 const NodeContent: React.FC<NodeContentProps> = ({
-  children,
   isSelected,
-  name,
-  description,
   icon,
-  headerActions,
   contextMenuOptions,
   contextMenuVersion = "v1",
   menuPosition,
+  showContextMenu,
+  handleCloseContextMenu,
 }) => {
   const renderIcon = () => {
     return (
@@ -87,11 +80,11 @@ const NodeContent: React.FC<NodeContentProps> = ({
     );
   };
 
-  if (!isSelected) {
+  if (!isSelected || (isSelected && !showContextMenu)) {
     return renderIcon();
   }
 
-  if (contextMenuOptions) {
+  if (contextMenuOptions && showContextMenu) {
     return (
       <Fragment>
         {renderIcon()}
@@ -100,35 +93,21 @@ const NodeContent: React.FC<NodeContentProps> = ({
             options={contextMenuOptions}
             x={menuPosition?.x ?? 0}
             y={menuPosition?.y ?? 0}
-            onClose={() => {}}
+            onClose={handleCloseContextMenu}
           />
         ) : (
           <DiagramContextMenuV2
             options={contextMenuOptions}
             x={menuPosition?.x ?? 0}
             y={menuPosition?.y ?? 0}
-            onClose={() => {}}
+            onClose={handleCloseContextMenu}
           />
         )}
       </Fragment>
     );
   }
 
-  return (
-    <div className="mt-4 text-center text-black max-w-[600px]">
-      <div className="flex items-center justify-between mb-2">
-        <div className="flex items-center gap-2">
-          {icon}
-          <span className="font-semibold text-lg">{name}</span>
-        </div>
-        {headerActions}
-      </div>
-      <div className="text-sm overflow-hidden truncate max-h-[4.5rem]">
-        {description}
-      </div>
-      <div className="mt-4 bg-transparent rounded-md">{children}</div>
-    </div>
-  );
+  return renderIcon();
 };
 
 const DefaultNode: React.FC<CustomNodeProps> = ({
@@ -136,8 +115,6 @@ const DefaultNode: React.FC<CustomNodeProps> = ({
   selected,
   allowedConnections = [],
   icon,
-  children,
-  headerActions,
   contextMenuOptions,
   contextMenuVersion,
   ...props
@@ -153,7 +130,8 @@ const DefaultNode: React.FC<CustomNodeProps> = ({
     | undefined
   >();
 
-  const { name, description } = data;
+  const [showContextMenu, setShowContextMenu] = useState(false);
+  const { name } = data;
   const style: NodeStyle = data.style || NodeStyle.NEUMORPHIC;
 
   useEffect(() => {
@@ -166,6 +144,10 @@ const DefaultNode: React.FC<CustomNodeProps> = ({
     ref.current?.getBoundingClientRect().left,
     ref.current?.getBoundingClientRect().top,
   ]);
+
+  useEffect(() => {
+    setShowContextMenu(!!selected);
+  }, [selected]);
 
   useEffect(() => {
     if (timeoutRef.current) {
@@ -192,17 +174,14 @@ const DefaultNode: React.FC<CustomNodeProps> = ({
 
   const nodeContent = (
     <NodeContent
-      name={name}
-      description={description}
       icon={icon}
       isSelected={selected ?? false}
-      headerActions={headerActions}
       contextMenuOptions={contextMenuOptions}
       contextMenuVersion={contextMenuVersion}
       menuPosition={menuPosition}
-    >
-      {children}
-    </NodeContent>
+      showContextMenu={showContextMenu}
+      handleCloseContextMenu={() => setShowContextMenu(false)}
+    />
   );
 
   return (

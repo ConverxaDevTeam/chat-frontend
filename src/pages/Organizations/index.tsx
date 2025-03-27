@@ -7,7 +7,7 @@ import ModalCreateOrganization from "./ModalCreateUser";
 import { useForm } from "react-hook-form";
 import { getUserMyOrganization } from "@services/user";
 import { IUserApi } from "../Users/UsersOrganization";
-import { FiPlus } from "react-icons/fi";
+import { FiPlus, FiSearch, FiX } from "react-icons/fi";
 import { useAlertContext } from "@components/Diagrams/components/AlertContext";
 import { IOrganization } from "@interfaces/organization.interface";
 
@@ -220,6 +220,7 @@ const Organizations = () => {
   const { organizations, loading, getAllOrganizations } = useOrganizations();
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [searchTerm, setSearchTerm] = useState<string>("");
+  const [isSearchOpen, setIsSearchOpen] = useState<boolean>(false);
   const { users, getUsers } = useUsers();
   const { isModalOpen, setIsModalOpen } = useModals();
   const {
@@ -298,25 +299,40 @@ const Organizations = () => {
             <FiPlus /> Crear organización
           </button>
 
-          <div className="relative w-full max-w-md">
-            <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-              <img src="/mvp/magnifying-glass.svg" alt="Buscar" className="w-5 h-5 text-gray-500" />
-            </div>
-            <input
-              type="text"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full py-2 pl-10 pr-4 text-sm text-gray-900 bg-white border border-gray-300 rounded-lg focus:ring-[#001130] focus:border-[#001130]"
-              placeholder="Buscar organización..."
-            />
-            {searchTerm && (
-              <button
-                onClick={() => setSearchTerm("")}
-                className="absolute inset-y-0 right-0 flex items-center pr-3"
+          <div className="flex items-center">
+            {!isSearchOpen && (
+              <button 
+                onClick={() => setIsSearchOpen(true)}
+                className="p-2 lg:hidden"
               >
-                <span className="text-gray-500 text-lg font-bold">×</span>
+                <FiSearch className="w-5 h-5 text-gray-500" />
               </button>
             )}
+            
+            <div className={`relative ${isSearchOpen ? 'flex' : 'hidden'} lg:flex`}>
+              <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                <img src="/mvp/magnifying-glass.svg" alt="Buscar" className="w-5 h-5 text-gray-500" />
+              </div>
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-[300px] py-2 pl-10 pr-4 text-sm text-gray-900 bg-white border border-gray-300 rounded-lg focus:ring-[#001130] focus:border-[#001130]"
+                placeholder="Buscar organización..."
+              />
+              <button
+                onClick={() => {
+                  if (searchTerm) {
+                    setSearchTerm("");
+                  } else if (isSearchOpen) {
+                    setIsSearchOpen(false);
+                  }
+                }}
+                className="absolute inset-y-0 right-0 flex items-center pr-3"
+              >
+                <FiX className="w-4 h-4 text-gray-500" />
+              </button>
+            </div>
           </div>
         </div>
 
