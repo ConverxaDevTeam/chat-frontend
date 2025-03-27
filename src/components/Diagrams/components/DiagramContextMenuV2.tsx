@@ -20,7 +20,10 @@ export const DiagramContextMenuV2: React.FC<DiagramContextMenuV2Props> = ({
       {options.map((option, index) => (
         <button
           key={index}
-          onClick={option.onClick}
+          onClick={() => {
+            option.onClick();
+            onClose();
+          }}
           className="flex w-full items-center rounded-lg hover:bg-sofia-electricOlive/10 transition-colors gap-[10px] whitespace-nowrap"
         >
           {option.child}{" "}
