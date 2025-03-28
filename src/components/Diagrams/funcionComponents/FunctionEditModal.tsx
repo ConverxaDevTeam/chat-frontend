@@ -4,7 +4,6 @@ import {
   FunctionData,
   HttpRequestFunction,
 } from "@interfaces/functions.interface";
-import GuideConfig from "@components/GuideConfig";
 
 interface FunctionEditModalProps {
   isShown: boolean;
@@ -35,8 +34,7 @@ export const FunctionEditModal = ({
 
   return (
     <Modal isShown={isShown} onClose={onClose}>
-      <div className="flex gap-[24px] w-[587px]">
-        <GuideConfig />
+      <div className="flex gap-[18px] w-[487px] p-[8px]">
         <div className="flex-1 flex flex-col gap-[16px]">
           <FunctionForm
             functionId={functionId}
