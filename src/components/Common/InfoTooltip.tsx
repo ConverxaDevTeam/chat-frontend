@@ -16,7 +16,7 @@ const InfoTooltip: React.FC<InfoTooltipProps> = ({
       <img src={iconSrc} alt="Info" className="cursor-pointer" />
       <div
         className={`
-          absolute left-1/2 bottom-full -translate-x-1/2 mb-2 group-hover:flex hidden z-10
+          absolute z-10 left-full top-0 ml-2 group-hover:flex hidden 
           bg-[#F6F6F6] border border-[#001126] text-[#001126] text-[12px] px-2 py-1.5 rounded
           font-[400] whitespace-normal tracking-[0.17px] leading-[143%] text-left
         `}
