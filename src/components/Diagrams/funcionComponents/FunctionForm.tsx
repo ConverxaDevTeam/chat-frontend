@@ -18,6 +18,7 @@ import {
   BodyType,
 } from "@interfaces/functions.interface";
 import { Button } from "@components/common/Button";
+import InfoTooltip from "@components/Common/InfoTooltip";
 
 // Tipos y constantes
 interface FunctionFormValues {
@@ -104,8 +105,9 @@ interface FormFieldProps {
   validation?: Record<string, unknown>;
   type?: FieldType;
   options?: { value: string; label: string }[];
-  value?: string;
   rows?: number;
+  helpText?: React.ReactNode;
+  tooltip?: React.ReactNode;
 }
 
 const RenderField = ({
@@ -150,9 +152,12 @@ const FormField = ({
   type = "input",
   options = [],
   rows = 2,
+  helpText,
+  tooltip,
 }: FormFieldProps & { errors: FieldErrors<FunctionFormValues> }) => {
   return (
-    <InputGroup label={label} errors={errors[name]}>
+    <InputGroup label={label} errors={errors[name]} tooltip={tooltip}>
+      {helpText}
       <RenderField
         register={register}
         control={control}
@@ -176,10 +181,10 @@ interface SubmitButtonProps {
 }
 
 const SubmitButton = ({ isLoading, isCreating, onCancel }: SubmitButtonProps) => (
-  <div className="flex gap-2">
+  <div className="flex gap-2 -mt-5">
     <Button
       type="button"
-      className="w-full"
+      variant="cancel"
       onClick={onCancel}
     >
       Cancelar
@@ -187,7 +192,6 @@ const SubmitButton = ({ isLoading, isCreating, onCancel }: SubmitButtonProps) =>
     <Button
       type="submit"
       variant="primary"
-      className="w-full"
       disabled={isLoading}
     >
       {isLoading
@@ -227,6 +231,11 @@ export const FunctionForm = (props: FunctionFormProps) => {
       validation: { required: "La descripción es obligatoria" },
       type: "textarea",
       rows: 3,
+      helpText: (
+        <p className="text-gray-700 text-[12px] font-[500] leading-[16px] -mt-2">
+          ¿Tienes duda de cómo comenzar? Visita nuestro <a target="_blank" rel="noopener noreferrer" className="underline">knowledge base</a>
+        </p>
+      ),
     },
     {
       name: "url",
@@ -234,6 +243,12 @@ export const FunctionForm = (props: FunctionFormProps) => {
       placeholder: "URL del endpoint",
       validation: { required: "La URL es obligatoria" },
       type: "input",
+      tooltip: (
+        <InfoTooltip 
+          text="Dirección web completa del servicio al que se conectará el agente. Debe incluir http:// o https:// al inicio." 
+          width="220px"
+        />
+      ),
     },
     {
       name: "method",
@@ -242,6 +257,17 @@ export const FunctionForm = (props: FunctionFormProps) => {
       validation: { required: "El tipo de operación es obligatorio" },
       type: "select",
       options: HTTP_METHODS,
+      helpText: (
+        <p className="text-gray-700 text-[12px] font-[500] leading-[16px] -mt-2">
+          Selecciona cómo el agente se comunicará con la URL. Usa GET para leer datos y POST para enviarlos
+        </p>
+      ),
+      tooltip: (
+        <InfoTooltip 
+          text="GET: Para obtener datos. POST: Para enviar datos. PUT: Para actualizar recursos. DELETE: Para eliminar recursos." 
+          width="220px"
+        />
+      ),
     },
     {
       name: "bodyType",
@@ -253,6 +279,12 @@ export const FunctionForm = (props: FunctionFormProps) => {
         { value: BodyType.JSON, label: "JSON" },
         { value: BodyType.FORM_DATA, label: "Form Data" },
       ],
+      tooltip: (
+        <InfoTooltip 
+          text="JSON: Para enviar datos estructurados en formato JSON. Form Data: Para enviar datos como un formulario, útil para archivos." 
+          width="220px"
+        />
+      ),
     },
   ] as const satisfies Array<{
     name: keyof FunctionFormValues;
@@ -262,11 +294,13 @@ export const FunctionForm = (props: FunctionFormProps) => {
     type: string;
     rows?: number;
     options?: { value: string; label: string }[];
+    helpText?: React.ReactNode;
+    tooltip?: React.ReactNode;
   }>;
 
   return (
     <form onSubmit={onSubmit} className="grid gap-[42px] flex-1">
-      <div className="overflow-y-auto grid gap-[24px]">
+      <div className="overflow-y-auto grid gap-[18px]">
         {formFields.map(field => (
           <FormField
             key={field.name}
