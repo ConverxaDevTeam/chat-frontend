@@ -16,12 +16,14 @@ export interface IUserApi {
   last_name: string | null;
   email_verified: boolean;
   last_login: string | null;
-  userOrganizations: [
-    {
-      role: OrganizationRoleType;
-      organization: null;
-    },
-  ];
+  userOrganizations: {
+    id?: number;
+    role: OrganizationRoleType;
+    organization: {
+      id?: number;
+      name?: string;
+    } | null;
+  }[];
 }
 
 const UsersOrganization = () => {
