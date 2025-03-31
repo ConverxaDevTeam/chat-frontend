@@ -33,19 +33,19 @@ const OrganizationList = ({
           <table className="w-full border-collapse">
             <thead>
               <tr>
-                <th className="py-2.5 px-6 text-left font-size-[16px] font-bold text-gray-900">
+                <th className="py-2.5 px-6 text-left font-size-[16px] text-sofia-superDark font-normal">
                   Organización
                 </th>
-                <th className="py-2.5 px-6 text-left font-size-[16px] font-bold text-gray-900">
+                <th className="py-2.5 px-6 text-left font-size-[16px] text-sofia-superDark font-normal">
                   ID
                 </th>
-                <th className="py-2.5 px-6 text-left font-size-[16px] font-bold text-gray-900">
+                <th className="py-2.5 px-6 text-left font-size-[16px] text-sofia-superDark font-normal">
                   Descripción
                 </th>
-                <th className="py-2.5 px-6 text-center font-size-[16px] font-bold text-gray-900">
+                <th className="py-2.5 px-6 text-center font-size-[16px] text-sofia-superDark font-normal">
                   Usuarios
                 </th>
-                <th className="py-2.5 px-6 text-right font-size-[16px] font-bold text-gray-900">
+                <th className="py-2.5 px-6 text-right font-size-[16px] text-sofia-superDark font-normal">
                   Acciones
                 </th>
               </tr>
@@ -294,7 +294,7 @@ const Organizations = () => {
               setSelectedOrg(null);
               setIsModalOpen(true);
             }}
-            className="flex items-center gap-1 px-4 w-[190px] h-[40px] text-white rounded-lg leading-[24px] bg-[#001130] hover:bg-opacity-90"
+            className="flex items-center gap-1 px-4 w-[190px] h-[41px] text-white rounded-lg leading-[24px] bg-[#001130] hover:bg-opacity-90"
           >
             <FiPlus /> Crear organización
           </button>

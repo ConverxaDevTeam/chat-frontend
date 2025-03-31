@@ -6,6 +6,7 @@ import { Input } from "@components/forms/input";
 import { useState } from "react";
 import { TestResponseModal } from "./TestResponseModal";
 import { getErrorResponse } from "@utils/format";
+import { Button } from "@components/common/Button";
 
 interface TestFunctionModalProps {
   isShown: boolean;
@@ -149,7 +150,7 @@ export const TestFunctionModal = ({
       <Modal
         isShown={isShown}
         onClose={onClose}
-        header={<h2 className="text-xl font-semibold">Probar Función</h2>}
+        header={<h2 className="text-xl font-semibold">Probar función</h2>}
       >
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 w-[475px]">
           {params.length === 0 ? (
@@ -161,19 +162,21 @@ export const TestFunctionModal = ({
           )}
           {params.length > 0 && (
             <div className="flex justify-center gap-2 mt-4">
-              <button
+              <Button
                 type="button"
                 onClick={onClose}
-                className="w-full px-4 py-2 text-gray-500 border-2 rounded-md text-sm font-semibold"
+                className="w-full px-4 py-2 text-gray-500 border-2"
+                variant="cancel"
               >
                 Cancelar
-              </button>
-              <button
+              </Button>
+              <Button
                 type="submit"
-                className="w-full px-4 py-2 bg-sofia-electricGreen text-gray-900 rounded-md text-sm font-semibold hover:bg-opacity-50 transition-all"
+                className="w-full px-4 py-2 text-gray-900 hover:bg-opacity-50 transition-all"
+                variant="primary"
               >
                 Probar
-              </button>
+              </Button>
             </div>
           )}
         </form>

@@ -71,16 +71,16 @@ const OrganizationCard = ({
             </span>
           </div>
         </td>
-        <td className="py-2.5 px-6 text-sm text-gray-600">{organization.id}</td>
+        <td className="py-2.5 px-6 text-sm font-medium">{organization.id}</td>
         <td className="py-2.5 px-6">
           <p
-            className="text-sm text-gray-600 truncate max-w-[200px]"
+            className="text-sm font-medium text-gray-600 truncate max-w-[200px]"
             title={organization.description}
           >
             {organization.description}
           </p>
         </td>
-        <td className="py-2.5 px-6 text-center">
+        <td className="py-2.5 px-6 text-center font-size-[16px]">
           <span className="text-sm font-medium text-gray-600 px-3 py-0.5 rounded-[4px]">
             {organization.users}
           </span>
