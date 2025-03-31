@@ -42,6 +42,12 @@ const OrganizationList = ({
                 <th className="py-2.5 px-6 text-left font-size-[16px] text-sofia-superDark font-normal">
                   Descripción
                 </th>
+                <th className="py-2.5 px-6 text-left font-size-[16px] text-sofia-superDark font-normal">
+                  Email
+                </th>
+                <th className="py-2.5 px-6 text-left font-size-[16px] text-sofia-superDark font-normal">
+                  Departamentos
+                </th>
                 <th className="py-2.5 px-6 text-center font-size-[16px] text-sofia-superDark font-normal">
                   Usuarios
                 </th>
