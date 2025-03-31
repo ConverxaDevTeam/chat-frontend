@@ -14,6 +14,8 @@ import {
   OrganizationType,
 } from "@interfaces/organization.interface";
 import { toast } from "react-toastify";
+import { getDepartments } from "@services/department";
+import { IDepartment } from "@interfaces/departments";
 
 interface ModalCreateOrganizationProps {
   close: (value: boolean) => void;
@@ -346,6 +348,68 @@ const useUsers = (organization: IOrganization | null | undefined) => {
   return { loadingUsers, getUserOptions };
 };
 
+const DepartmentsList = ({ organizationId }: { organizationId: number }) => {
+  const [departments, setDepartments] = useState<IDepartment[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    const fetchDepartments = async () => {
+      try {
+        setLoading(true);
+        const data = await getDepartments(organizationId);
+        setDepartments(data);
+      } catch (error) {
+        console.error("Error al obtener departamentos:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDepartments();
+  }, [organizationId]);
+
+  if (loading) {
+    return <div className="py-4 text-center">Cargando departamentos...</div>;
+  }
+
+  if (departments.length === 0) {
+    return (
+      <div className="py-4 text-center text-gray-500">
+        Esta organización no tiene departamentos.
+      </div>
+    );
+  }
+
+  return (
+    <div className="mt-4">
+      <h3 className="text-gray-700 font-semibold mb-3">Departamentos</h3>
+      <div 
+        className="max-h-[200px] overflow-y-auto border rounded-lg" 
+        style={{
+          scrollbarWidth: 'thin',
+          scrollbarColor: 'rgba(0, 0, 0, 0.1) transparent',
+        }}
+      >
+        <table className="w-full">
+          <thead className="bg-gray-50 border-b sticky top-0">
+            <tr>
+              <th className="py-2 px-4 text-left text-sm font-medium text-gray-700">Nombre</th>
+              <th className="py-2 px-4 text-left text-sm font-medium text-gray-700">Descripción</th>
+            </tr>
+          </thead>
+          <tbody>
+            {departments.map((department) => (
+              <tr key={department.id} className="border-b hover:bg-gray-50">
+                <td className="py-2 px-4 text-sm text-gray-600">{department.name}</td>
+                <td className="py-2 px-4 text-sm font-medium text-gray-600">{department.description || "-"}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+};
 
 const ModalCreateOrganization = ({
   close,
@@ -446,6 +510,7 @@ const ModalCreateOrganization = ({
         errors={errors}
         description={description}
       />
+      {organization && <DepartmentsList organizationId={organization.id} />}
       <FormActions close={close} isEditMode={isEditMode} />
       {loadingUsers && <Loading />}
     </form>
