@@ -80,6 +80,18 @@ const OrganizationCard = ({
             {organization.description}
           </p>
         </td>
+        <td className="py-2.5 px-6">
+          <p className="text-sm font-medium text-gray-600 truncate max-w-[200px]" 
+            title={organization.email || organization.owner?.user.email || ''}>
+            {organization.email || organization.owner?.user.email || '-'}
+          </p>
+        </td>
+        <td className="py-2.5 px-6">
+          <p className="text-sm font-medium text-gray-600 truncate max-w-[200px]" 
+            title={organization.departments !== undefined ? organization.departments.toString() : ''}>
+            {organization.departments !== undefined ? organization.departments : '-'}
+          </p>
+        </td>
         <td className="py-2.5 px-6 text-center font-size-[16px]">
           <span className="text-sm font-medium text-gray-600 px-3 py-0.5 rounded-[4px]">
             {organization.users}
@@ -99,14 +111,14 @@ const OrganizationCard = ({
             {hasDeletePermission && (
               <button
                 onClick={onDelete}
-                className="px-3 py-1 text-gray-500 bg-white border border-gray-200 rounded-lg font-size-[12px] font-medium hover:bg-gray-50 transition-all"
+                className="px-3 py-1 text-gray-500 bg-white border border-gray-200 rounded-[4px] font-size-[12px] font-medium hover:bg-gray-50 transition-all"
               >
                 Eliminar
               </button>
             )}
             <button
               onClick={onEdit}
-              className="px-3 py-1 text-white bg-[#001130] rounded-lg font-size-[12px] font-medium hover:bg-opacity-90 transition-all"
+              className="px-3 py-1 text-white bg-[#001130] rounded-[4px] font-size-[12px] font-medium hover:bg-opacity-90 transition-all"
             >
               Editar
             </button>
@@ -117,7 +129,7 @@ const OrganizationCard = ({
             <div className="flex items-center">
               <InlineInputGroup label="Agente:">
                 <select
-                  className="w-full p-2 border rounded-lg focus:outline-none text-[14px] bg-white"
+                  className="w-full p-2 border rounded-[4px] focus:outline-none text-[14px] bg-white"
                   value={agentType}
                   onChange={handleAgentTypeChange}
                 >
