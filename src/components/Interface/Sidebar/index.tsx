@@ -120,21 +120,45 @@ const Sidebar = ({
               <div
                 className={`mt-[18px] mb-[38px] flex h-[35px] items-center gap-[16px] ${sidebarMinimized || mobileResolution ? "w-full justify-center" : "w-full pl-[12px]"}`}
               >
-                <img
-                  className="w-6 h-6 fill-current cursor-pointer"
-                  src="/mvp/exit.svg"
-                  title="Cerrar sesión"
-                  onClick={() => dispatch(logOutAsync())}
-                  alt="Logo"
-                />
-                {!(sidebarMinimized || mobileResolution) && (
-                  <p
-                    title="Cerrar sesión"
-                    onClick={() => dispatch(logOutAsync())}
-                    className="font-normal text-[#001126] transition-all duration-300 ease-in-out cursor-pointer"
-                  >
-                    Cerrar sesión
-                  </p>
+                {(sidebarMinimized || mobileResolution) ? (
+                  <div className="group relative flex justify-center items-center">
+                    <img
+                      className="w-6 h-6 fill-current cursor-pointer"
+                      src="/mvp/exit.svg"
+                      onClick={() => dispatch(logOutAsync())}
+                      alt="Cerrar sesión"
+                    />
+                    <div
+                      className={`
+                        absolute z-50 left-full group-hover:flex hidden 
+                        bg-[#F6F6F6] border border-[#001126] text-[#001126] text-[12px] px-2 py-1.5 rounded
+                        font-[400] whitespace-nowrap tracking-[0.17px] leading-[143%] text-left
+                        shadow-md items-center
+                      `}
+                      style={{ 
+                        marginLeft: '10px',
+                        top: '50%',
+                        transform: 'translateY(-50%)'
+                      }}
+                    >
+                      Cerrar sesión
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <img
+                      className="w-6 h-6 fill-current cursor-pointer"
+                      src="/mvp/exit.svg"
+                      onClick={() => dispatch(logOutAsync())}
+                      alt="Cerrar sesión"
+                    />
+                    <p
+                      onClick={() => dispatch(logOutAsync())}
+                      className="font-normal text-[#001126] transition-all duration-300 ease-in-out cursor-pointer"
+                    >
+                      Cerrar sesión
+                    </p>
+                  </>
                 )}
               </div>
             </div>
