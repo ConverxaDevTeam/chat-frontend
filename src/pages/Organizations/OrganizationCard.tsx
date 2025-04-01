@@ -71,16 +71,28 @@ const OrganizationCard = ({
             </span>
           </div>
         </td>
-        <td className="py-2.5 px-6 text-sm text-gray-600">{organization.id}</td>
+        <td className="py-2.5 px-6 text-sm font-medium">{organization.id}</td>
         <td className="py-2.5 px-6">
           <p
-            className="text-sm text-gray-600 truncate max-w-[200px]"
+            className="text-sm font-medium text-gray-600 truncate max-w-[200px]"
             title={organization.description}
           >
             {organization.description}
           </p>
         </td>
-        <td className="py-2.5 px-6 text-center">
+        <td className="py-2.5 px-6">
+          <p className="text-sm font-medium text-gray-600 truncate max-w-[200px]" 
+            title={organization.email || organization.owner?.user.email || ''}>
+            {organization.email || organization.owner?.user.email || '-'}
+          </p>
+        </td>
+        <td className="py-2.5 px-6">
+          <p className="text-sm font-medium text-gray-600 truncate max-w-[200px]" 
+            title={organization.departments !== undefined ? organization.departments.toString() : ''}>
+            {organization.departments !== undefined ? organization.departments : '-'}
+          </p>
+        </td>
+        <td className="py-2.5 px-6 text-center font-size-[16px]">
           <span className="text-sm font-medium text-gray-600 px-3 py-0.5 rounded-[4px]">
             {organization.users}
           </span>
@@ -91,9 +103,9 @@ const OrganizationCard = ({
               <Button
                 onClick={() => setShowPasswordModal(true)}
                 variant="primary"
-                className="whitespace-nowrap text-xs"
+                className="whitespace-nowrap font-size-[12px] font-medium flex-initial w-auto min-w-min"
               >
-                Cambiar Contraseña
+                Cambiar contraseña
               </Button>
             )}
             {hasDeletePermission && (
@@ -117,7 +129,7 @@ const OrganizationCard = ({
             <div className="flex items-center">
               <InlineInputGroup label="Agente:">
                 <select
-                  className="w-full p-2 border rounded-lg focus:outline-none text-[14px] bg-white"
+                  className="w-full p-2 border rounded-[4px] focus:outline-none text-[14px] bg-white"
                   value={agentType}
                   onChange={handleAgentTypeChange}
                 >

@@ -3,6 +3,8 @@ import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { IDepartment } from "../../interfaces/departments";
 import { createDepartment, updateDepartment } from "@services/department";
+import { useAppDispatch } from "@store/hooks";
+import { addDepartment, updateDepartmentInStore } from "@store/reducers/department";
 
 interface DepartmentModalProps {
   isOpen: boolean;
@@ -24,6 +26,7 @@ const DepartmentModal: FC<DepartmentModalProps> = ({
   department,
   organizationId,
 }) => {
+  const dispatch = useAppDispatch();
   const {
     register,
     handleSubmit,
@@ -52,6 +55,12 @@ const DepartmentModal: FC<DepartmentModalProps> = ({
         ? await updateDepartment(department.id, data.name, data.description)
         : await createDepartment(organizationId, data.name, data.description);
 
+      if (!department) {
+        dispatch(addDepartment(result));
+      } else {
+        dispatch(updateDepartmentInStore(result));
+      }
+
       onSuccess({ ...department, ...result });
       toast.success(
         `Departamento ${department ? "actualizado" : "creado"} exitosamente`
@@ -79,7 +88,7 @@ const DepartmentModal: FC<DepartmentModalProps> = ({
       className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
       onClick={handleBackgroundClick}
     >
-      <div className="bg-white rounded-xl p-6 w-full max-w-md relative">
+      <div className="bg-white rounded-[4px] p-6 w-full max-w-md relative">
         <button
           type="button"
           onClick={handleClose}
@@ -90,7 +99,7 @@ const DepartmentModal: FC<DepartmentModalProps> = ({
         <h2 className="text-xl font-bold mb-4">
           {department ? "Editar" : "Nuevo"} departamento
         </h2>
-        <hr className="border-t border-gray-300 mb-4" />
+        <hr className="border-t border-gray-300 mb-4 -mx-6" />
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           {department && (
             <div>
@@ -111,7 +120,7 @@ const DepartmentModal: FC<DepartmentModalProps> = ({
             </label>
             <input
               {...register("name", { required: "Nombre es requerido" })}
-              className="w-full p-3 border rounded-lg focus:outline-none  focus:ring-2 focus:ring-blue-500 mb-2"
+              className="w-full p-3 border rounded-lg focus:outline-none  focus:ring-1 mb-2"
               placeholder="Nombre del departamento"
             />
             {errors.name && (
@@ -134,7 +143,7 @@ const DepartmentModal: FC<DepartmentModalProps> = ({
           <div className="flex justify-end gap-2">
             <button
               type="submit"
-              className="w-full px-4 py-3 mt-5 bg-sofia-electricGreen text-gray-900 rounded-md text-sm font-semibold hover:bg-opacity-50 transition-all"
+              className="w-full p-4 mt-5 bg-[#001130] text-white rounded-[4px] text-base font-semibold transition-all leading-none"
             >
               {department ? "Actualizar" : "Crear"}
             </button>

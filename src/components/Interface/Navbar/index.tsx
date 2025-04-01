@@ -250,8 +250,7 @@ const NotificationsMenu = ({
         <img
           src="/mvp/bell.svg"
           alt="Bell"
-          className="w-5 h-5"
-          onClick={handleBellClick}
+            onClick={handleBellClick}
         />
         {notificationCount > 0 && (
           <span className="absolute -top-1 -right-1 bg-sofia-error text-white text-[10px] rounded-full w-[12px] h-[12px] flex items-center justify-center">

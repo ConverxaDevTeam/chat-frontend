@@ -74,45 +74,50 @@ const ModalAddUser = ({ close, getAllUsers, editUser, users = [] }: ModalAddUser
   };
 
   return (
-    <div className="bg-white w-rounded-xl max-w-md relative w-[550px]">
-      <button
-        type="button"
-        onClick={() => close(false)}
-        className="absolute top-2 right-2 text-gray-900 hover:text-gray-600 font-semibold"
-      >
-        <img src="/mvp/vector-x.svg" alt="Cerrar" />
-      </button>
-      <h2 className="text-xl font-bold mb-4">
-        {editUser ? "Editar Usuario" : "Agregar Usuario"}
-      </h2>
-      <hr className="border-t border-gray-300 mb-4" />
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label
-            className="block text-gray-700 font-semibold mb-2"
-            htmlFor="email"
-          >
-            Correo electrónico
-          </label>
-          <input
-            className="w-full p-3 border text-gray-700 rounded-lg"
-            id="email"
-            type="email"
-            name="email"
-            value={data.email}
-            required
-            onChange={handleChange}
-          />
-        </div>
-        <div className="flex justify-end gap-3 mt-2">
-          <button
-            type="submit"
-            className="w-full px-4 py-3 mt-5 bg-sofia-electricGreen text-gray-900 rounded-md text-sm font-semibold hover:bg-opacity-50 transition-all"
-          >
-            {editUser ? "Actualizar" : "Agregar usuario"}
-          </button>
-        </div>
-      </form>
+    <div
+      className="fixed inset-0 bg-opacity-50 flex items-center justify-center z-50"
+      onClick={(e) => e.target === e.currentTarget && close(false)}
+    >
+      <div className="bg-white rounded-[4px] p-6 w-full max-w-md relative">
+        <button
+          type="button"
+          onClick={() => close(false)}
+          className="absolute top-7 right-7 text-gray-900 hover:text-gray-600 font-semibold"
+        >
+          <img src="/mvp/vector-x.svg" alt="Cerrar" />
+        </button>
+        <h2 className="text-xl font-bold mb-4">
+          {editUser ? "Editar usuario" : "Agregar usuario"}
+        </h2>
+        <hr className="border-t border-gray-300 mb-4 -mx-6" />
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label
+              className="block text-gray-700 font-semibold mb-2"
+              htmlFor="email"
+            >
+              Correo electrónico
+            </label>
+            <input
+              className="w-full p-3 border text-gray-700 rounded-lg focus:outline-none focus:ring-1"
+              id="email"
+              type="email"
+              name="email"
+              value={data.email}
+              required
+              onChange={handleChange}
+            />
+          </div>
+          <div className="flex justify-end gap-2">
+            <button
+              type="submit"
+              className="w-full p-4 mt-5 bg-[#001130] text-white rounded-[4px] text-base font-semibold transition-all leading-none"
+            >
+              {editUser ? "Actualizar" : "Agregar usuario"}
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 };

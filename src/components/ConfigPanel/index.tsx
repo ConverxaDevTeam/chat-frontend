@@ -24,7 +24,7 @@ const ConfigPanel: FC<ConfigPanelProps> = ({
   isLoading,
 }) => (
   <div
-    className={`bg-sofia-blancoPuro shadow-lg rounded-2xl overflow-hidden py-[38px]`}
+    className={`${isLoading ? 'bg-transparent' : 'bg-sofia-blancoPuro'} shadow-lg rounded-2xl overflow-hidden py-[38px]`}
   >
     {isLoading ? (
       <div className="w-full min-h-[400px] flex justify-center items-center">

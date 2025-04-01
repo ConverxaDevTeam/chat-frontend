@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { FaUpload, FaTrash, FaPlus } from "react-icons/fa";
+import { FaUpload } from "react-icons/fa";
 import { KnowledgeBase } from "@interfaces/agents";
 import { toast } from "react-toastify";
 import {
@@ -11,7 +11,8 @@ import {
 import { useAlertContext } from "../components/AlertContext";
 import Modal from "@components/Modal";
 import { useRef } from "react";
-import GuideConfig from "@components/GuideConfig";
+import { Button } from "@components/common/Button";
+import InfoTooltip from "@components/Common/InfoTooltip";
 
 interface KnowledgeBaseModalProps {
   isShown: boolean;
@@ -64,7 +65,7 @@ const FileList = ({
               onClick={() => onDelete(file.id!)}
               className="text-red-500 hover:text-red-700"
             >
-              <FaTrash />
+              <img src="/mvp/trash.svg" alt="Eliminar" className="w-5 h-5" />
             </button>
           </div>
         ))}
@@ -263,7 +264,7 @@ const UploadForm = ({
       <div className="flex flex-col items-center">
         <FaUpload className="text-4xl text-gray-400 mb-2" />
         <p className="text-gray-600 mb-2">Arrastra y suelta archivos aquí o</p>
-        <label className="cursor-pointer bg-[#D0FBF8] text-sofia-superDark px-4 py-2 rounded hover:bg-opacity-70">
+        <label className="cursor-pointer bg-[#F4FAFF] border border-[#DBEAF2] text-sofia-superDark px-4 py-2 rounded hover:bg-opacity-70">
           + Subir archivo
           <input
             type="file"
@@ -340,15 +341,14 @@ const KnowledgeBaseModal = ({
 
   return (<>
     <Modal isShown={isShown} onClose={onClose}>
-      <div className="flex gap-[24px] w-[587px]">
-        <GuideConfig />
+      <div className="flex gap-[24px] w-[487px]">
         <div className="flex-1 flex flex-col gap-[16px]">
           {showUploadForm ? (
             <div>
               <div className="mb-4">
                 <button
                   onClick={() => setShowUploadForm(false)}
-                  className="flex items-center justify-center px-4 py-2 text-sm text-sofia-superDark bg-[#D0FBF8] rounded-lg hover:bg-opacity-70 transition-colors duration-200"
+                  className="flex items-center justify-center px-4 py-2 text-sm text-sofia-superDark bg-[#F4FAFF] border border-[#DBEAF2] rounded-[4px] hover:bg-opacity-70 transition-colors duration-200"
                 >
                   Volver al listado
                 </button>
@@ -362,26 +362,26 @@ const KnowledgeBaseModal = ({
           ) : (
             <>
               <div className="grid grid-cols-1 gap-2 mb-4">
-                <div className="w-full text-sm text-amber-600 bg-amber-50 px-4 py-3 rounded-lg">
-                  <p>
-                    ⚠️ Los archivos que no se utilicen en una conversación se
+                <div className="w-full text-[16px] text-sofia-superDark bg-[#FFF9D9] px-4 py-3 rounded-[4px]">
+                  <p className="flex items-center gap-2">
+                    <img src="/mvp/triangle-alert-black.svg" alt="Alerta" className="inline-block w-5 h-5" />
+                    Los archivos que no se utilicen en una conversación se
                     eliminarán automáticamente después de 7 días.
                   </p>
                 </div>
-                <p className="text-sofia-superDark text-[14px] font-bold">
+                <p className="text-sofia-superDark text-[16px] font-bold flex items-center gap-2">
                   Base de conocimientos
+                  <InfoTooltip 
+                    text="Sube documentos para que el agente pueda utilizarlos como referencia al responder preguntas. Formatos soportados: c, cpp, cs, css, doc, docx, go, html, java, js, json, md, pdf, php, pptx, py, rb, sh, tex, ts, txt." 
+                    width="237px"
+                  />
                 </p>
-                <p className="text-sofia-navyBlue text-[10px]">
+                <p className="text-sofia-navyBlue text-[12px]">
                   Añade archivos con información que el agente utilizará para
                   responder preguntas. Puedes subir guías, documentos de soporte
                   u otros recursos relevantes
                 </p>
-                <button
-                  onClick={() => setShowUploadForm(true)}
-                  className="w-full flex items-center justify-center px-4 py-2 text-sm text-sofia-superDark bg-[#D0FBF8] rounded-lg hover:bg-opacity-70 transition-colors duration-200"
-                >
-                  <FaPlus className="mr-2" /> Agregar Archivos
-                </button>
+                
               </div>
               <FileList
                 files={files.slice(
@@ -395,14 +395,30 @@ const KnowledgeBaseModal = ({
                 onPageChange={setCurrentPage}
                 isLoading={isLoading}
               />
-              <div className="flex gap-[16px] mt-auto justify-end">
-                <button
+              <div>
+              <button
+                  onClick={() => setShowUploadForm(true)}
+                  className="w-full h-[48px] mt-[9px] flex items-center justify-center px-4 py-2 text-sm text-sofia-superDark border-[#DBEAF2] border-[1px] bg-[#F4FAFF] rounded-[4px] hover:bg-opacity-70 transition-colors duration-200"
+                >
+                  <img src="/mvp/plus.svg" className="inline-block w-5 h-5 mr-2" /> Subir archivos
+                </button>
+              </div>
+              <div className="flex gap-[16px] justify-end">
+                <Button
                   type="button"
                   onClick={onClose}
-                  className="w-[115px] h-[48px] text-sofia-navyBlue border-sofia-navyBlue border-[1px] font-semibold rounded-[8px]"
+                  className="w-full"
+                  variant="cancel"
                 >
                   Cancelar
-                </button>
+                </Button>
+                <Button
+                  type="button"
+                  onClick={onClose}
+                  variant="primary"
+                >
+                  Guardar
+                </Button>
               </div>
             </>
           )}

@@ -112,7 +112,18 @@ export const getGlobalUsers = async () => {
   try {
     const response = await axiosInstance.get(apiUrls.getGlobalUsers());
     if (response.data.ok) {
-      return response.data.users;
+      const usersWithDetails = await Promise.all(
+        response.data.users.map(async (user: any) => {
+          try {
+            const detailedUser = await getGlobalUser(user.id);
+            return detailedUser || user;
+          } catch (error) {
+            return user;
+          }
+        })
+      );
+      
+      return usersWithDetails;
     } else {
       alertError(response.data.message);
       return [];

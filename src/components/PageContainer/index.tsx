@@ -33,7 +33,7 @@ const PageContainer = ({
 
         <div className="rounded-lg overflow-hidden">
           {loading ? (
-            <div className="flex justify-center items-center p-4">
+            <div className="flex justify-center items-center p-4 bg-transparent">
               <Loading />
             </div>
           ) : (
