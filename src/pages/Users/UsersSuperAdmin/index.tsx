@@ -12,6 +12,7 @@ import TablePagination from "./components/TablePagination";
 import UserFilter from "./components/UserFilter";
 import usePagination from "./hooks/usePagination";
 import useUserFilter from "./hooks/useUserFilter";
+import ButtonExportAllUsers from "./ButtonExportAllUsers";
 
 interface Column {
   key: keyof IUserApi | "actions" | "organizations";
@@ -194,14 +195,17 @@ const UsersSuperAdmin = () => {
           >
             + Nuevo usuario
           </button>
-          <UserFilter
-            searchTerm={searchTerm}
-            setSearchTerm={setSearchTerm}
-            isSearchOpen={isSearchOpen}
-            setIsSearchOpen={setIsSearchOpen}
-            selectedRole={selectedRole}
-            selectRole={selectRole}
-          />
+          <div className="flex items-center gap-2">
+            <ButtonExportAllUsers users={filteredUsers} />
+            <UserFilter
+              searchTerm={searchTerm}
+              setSearchTerm={setSearchTerm}
+              isSearchOpen={isSearchOpen}
+              setIsSearchOpen={setIsSearchOpen}
+              selectedRole={selectedRole}
+              selectRole={selectRole}
+            />
+          </div>
         </div>
 
         {loading ? (
