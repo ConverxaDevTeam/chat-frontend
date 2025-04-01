@@ -16,6 +16,24 @@ export enum AnalyticType {
   FUNCTIONS_PER_SESSION = "FUNCTIONS_PER_SESSION",
 }
 
+export enum AnalyticDescription {
+  TOTAL_USERS = "Usuarios que enviaron mensajes por día",
+  NEW_USERS = "Usuarios creados por día",
+  MESSAGES_BY_WHATSAPP = "Mensajes enviados por WhatsApp por día",
+  MESSAGES_BY_FACEBOOK = "Mensajes enviados por Facebook por día",
+  MESSAGES_BY_WEB = "Mensajes enviados por Web por día",
+  TOTAL_MESSAGES = "Total de mensajes enviados por día",
+  IA_MESSAGES = "Mensajes enviados por la IA por día",
+  HITL_MESSAGES = "Mensajes enviados por agentes humanos por día",
+  FUNCTION_CALLS = "Llamadas a funciones realizadas por día",
+  RECURRING_USERS = "Usuarios con sesiones antes del período y con mensajes por día",
+  SESSIONS = "Sesiones de chat creadas por día",
+  IA_MESSAGES_PER_SESSION = "Promedio de mensajes de IA por sesión por día",
+  HITL_MESSAGES_PER_SESSION = "Promedio de mensajes de agentes humanos por sesión por día",
+  SESSIONS_PER_USER = "Promedio de sesiones por usuario por día",
+  FUNCTIONS_PER_SESSION = "Promedio de llamadas a funciones por sesión por día",
+}
+
 export enum StatisticsDisplayType {
   PIE = "PIE",
   BAR = "BAR",
@@ -113,20 +131,24 @@ export const timeRangeLabels: Record<TimeRange, string> = {
 };
 
 export const timeRangeOptions = [
-  { id: TimeRange.LAST_7_DAYS, label: timeRangeLabels[TimeRange.LAST_7_DAYS], icon: "chevron-left.svg" },
+  {
+    id: TimeRange.LAST_7_DAYS,
+    label: timeRangeLabels[TimeRange.LAST_7_DAYS],
+    icon: "chevron-left.svg",
+  },
   {
     id: TimeRange.LAST_30_DAYS,
     label: timeRangeLabels[TimeRange.LAST_30_DAYS],
-    icon: "chevrons.svg"
+    icon: "chevrons.svg",
   },
   {
     id: TimeRange.LAST_6_MONTHS,
     label: timeRangeLabels[TimeRange.LAST_6_MONTHS],
-    icon: "calendar.svg"
+    icon: "calendar.svg",
   },
-  { 
-    id: TimeRange.LAST_YEAR, 
+  {
+    id: TimeRange.LAST_YEAR,
     label: timeRangeLabels[TimeRange.LAST_YEAR],
-    icon: "calendar-days.svg"
-  }
+    icon: "calendar-days.svg",
+  },
 ];
