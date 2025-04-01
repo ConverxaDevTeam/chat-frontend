@@ -45,23 +45,51 @@ const ItemSidebar = ({
         active ? "bg-sofia-electricGreen" : "text-app-gray"
       } ${active && (sidebarMinimized || mobileResolution) ? "w-full justify-center" : "w-full pl-[12px]"}`}
     >
-      <img
-        className={`w-6 h-6 fill-current z-10 ${active ? "" : "cursor-pointer"}`}
-        src={`/mvp/${link.img}`}
-        onClick={() => {
-          navigate(link.to);
-        }}
-        alt="Logo"
-      />
-      {!(sidebarMinimized || mobileResolution) && (
-        <Link
-          to={link.to}
-          className={`z-10 font-normal text-[#001126] transition-all duration-300 ease-in-out ${
-            active ? "cursor-default" : "cursor-pointer"
-          }`}
-        >
-          {link.text}
-        </Link>
+      {(sidebarMinimized || mobileResolution) ? (
+        <div className="group relative flex justify-center items-center w-full">
+          <img
+            className={`w-6 h-6 fill-current z-10 ${active ? "" : "cursor-pointer"}`}
+            src={`/mvp/${link.img}`}
+            onClick={() => {
+              navigate(link.to);
+            }}
+            alt={link.text}
+          />
+          <div
+            className={`
+              absolute z-50 left-full group-hover:flex hidden 
+              bg-[#F6F6F6] border border-[#001126] text-[#001126] text-[12px] px-2 py-1.5 rounded
+              font-[400] whitespace-nowrap tracking-[0.17px] leading-[143%] text-left
+              shadow-md items-center pointer-events-none
+            `}
+            style={{ 
+              marginLeft: '10px',
+              top: '50%',
+              transform: 'translateY(-50%)'
+            }}
+          >
+            {link.text}
+          </div>
+        </div>
+      ) : (
+        <>
+          <img
+            className={`w-6 h-6 fill-current z-10 ${active ? "" : "cursor-pointer"}`}
+            src={`/mvp/${link.img}`}
+            onClick={() => {
+              navigate(link.to);
+            }}
+            alt={link.text}
+          />
+          <Link
+            to={link.to}
+            className={`z-10 font-normal text-[#001126] transition-all duration-300 ease-in-out ${
+              active ? "cursor-default" : "cursor-pointer"
+            }`}
+          >
+            {link.text}
+          </Link>
+        </>
       )}
     </li>
   );
