@@ -10,6 +10,7 @@ import { IUserApi } from "../Users/UsersOrganization";
 import { FiPlus, FiSearch, FiX } from "react-icons/fi";
 import { useAlertContext } from "@components/Diagrams/components/AlertContext";
 import { IOrganization } from "@interfaces/organization.interface";
+import ButtonExportAllOrganizations from "./ButtonExportAllOrganizations";
 
 type EditFormData = {
   owner_id: number;
@@ -305,7 +306,8 @@ const Organizations = () => {
             <FiPlus /> Crear organización
           </button>
 
-          <div className="flex items-center">
+          <div className="flex items-center gap-2">
+            <ButtonExportAllOrganizations organizations={filteredOrganizations} />
             {!isSearchOpen && (
               <button 
                 onClick={() => setIsSearchOpen(true)}
