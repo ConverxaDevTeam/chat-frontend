@@ -2,11 +2,11 @@ import { useRoleAuth } from "@hooks/useRoleAuth";
 import { IOrganization, AgentType } from "@interfaces/organization.interface";
 import { getInitials } from "@utils/format";
 import { InlineInputGroup } from "@components/forms/inlineInputGroup";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { updateOrganizationAgentType } from "@services/organizations";
 import Modal from "@components/Modal";
 import ChangePasswordModal from "./ChangePasswordModal";
-import { Button } from "@components/common/Button";
+import ContextMenu from "@components/ContextMenu";
 
 interface OrganizationCardProps {
   organization: IOrganization;
@@ -25,6 +25,9 @@ const OrganizationCard = ({
     organization.agentType || AgentType.SOFIA_ASISTENTE
   );
   const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [showContextMenu, setShowContextMenu] = useState(false);
+  const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
 
   const handleAgentTypeChange = async (
     e: React.ChangeEvent<HTMLSelectElement>
@@ -38,6 +41,22 @@ const OrganizationCard = ({
     setAgentType(organization.agentType || AgentType.SOFIA_ASISTENTE);
   }, [organization.agentType]);
 
+  const handleOpenMenu = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const rect = menuButtonRef.current?.getBoundingClientRect();
+    if (rect) {
+      setMenuPosition({ 
+        x: rect.right, 
+        y: rect.top 
+      });
+      setShowContextMenu(true);
+    }
+  };
+
+  const handleCloseMenu = () => {
+    setShowContextMenu(false);
+  };
+
   return (
     <>
       <Modal
@@ -49,6 +68,42 @@ const OrganizationCard = ({
           close={setShowPasswordModal}
         />
       </Modal>
+
+      {showContextMenu && (
+        <ContextMenu
+          x={menuPosition.x}
+          y={menuPosition.y}
+          onClose={handleCloseMenu}
+        >
+          <button
+            onClick={onEdit}
+            className="flex items-center gap-2 w-full text-left"
+          >
+            <img src="/mvp/pencil.svg" alt="Editar" className="w-4 h-4" />
+            <span>Editar</span>
+          </button>
+          
+          {hasDeletePermission && (
+            <button
+              onClick={onDelete}
+              className="flex items-center gap-2 w-full text-left"
+            >
+              <img src="/mvp/trash.svg" alt="Eliminar" className="w-4 h-4" />
+              <span>Eliminar</span>
+            </button>
+          )}
+          
+          {isSuperAdmin && (
+            <button
+              onClick={() => setShowPasswordModal(true)}
+              className="flex items-center gap-2 w-full text-left"
+            >
+              <img src="/mvp/lock.svg" alt="Cambiar contraseña" className="w-4 h-4" />
+              <span>Cambiar contraseña</span>
+            </button>
+          )}
+        </ContextMenu>
+      )}
 
       <tr className="h-[60px] border-b-[1px] border-[#DBEAF2] hover:bg-gray-50">
         <td className="py-2.5 px-6">
@@ -98,29 +153,13 @@ const OrganizationCard = ({
           </span>
         </td>
         <td className="py-2.5 px-6 first:rounded-tr-[8px] last:rounded-br-[8px]">
-          <div className="flex justify-end gap-2">
-            {isSuperAdmin && (
-              <Button
-                onClick={() => setShowPasswordModal(true)}
-                variant="primary"
-                className="whitespace-nowrap font-size-[12px] font-medium flex-initial w-auto min-w-min"
-              >
-                Cambiar contraseña
-              </Button>
-            )}
-            {hasDeletePermission && (
-              <button
-                onClick={onDelete}
-                className="px-3 py-1 text-gray-500 bg-white border border-gray-200 rounded-[4px] font-size-[12px] font-medium hover:bg-gray-50 transition-all"
-              >
-                Eliminar
-              </button>
-            )}
+          <div className="flex justify-end">
             <button
-              onClick={onEdit}
-              className="px-3 py-1 text-white bg-[#001130] rounded-[4px] font-size-[12px] font-medium hover:bg-opacity-90 transition-all"
+              ref={menuButtonRef}
+              onClick={handleOpenMenu}
+              className="p-2 rounded-full hover:bg-gray-100 transition-colors"
             >
-              Editar
+              <img src="/mvp/three-dots.svg" alt="Opciones" className="w-5 h-5" />
             </button>
           </div>
         </td>
