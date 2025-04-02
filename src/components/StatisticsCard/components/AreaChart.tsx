@@ -6,9 +6,10 @@ import { baseChartOptions } from "../constants/chartOptions";
 interface AreaChartProps {
   data: ChartData<"line">;
   series: Array<{ color: string }>;
+  showLegend?: boolean;
 }
 
-export const AreaChart = ({ data, series }: AreaChartProps) => {
+export const AreaChart = ({ data, series, showLegend }: AreaChartProps) => {
   return (
     <div className="h-full w-full flex items-center justify-center">
       <div className="h-[90%] w-[90%]">
@@ -35,6 +36,30 @@ export const AreaChart = ({ data, series }: AreaChartProps) => {
             ...baseChartOptions,
             maintainAspectRatio: false,
             responsive: true,
+            plugins: {
+              legend: {
+                display: showLegend,
+                position: 'top',
+                align: 'center',
+                labels: {
+                  font: {
+                    family: "'Quicksand', sans-serif",
+                    size: 10
+                  },
+                  color: '#001126',
+                  padding: 8,
+                  usePointStyle: true,
+                  pointStyle: 'circle',
+                  boxWidth: 6,
+                  boxHeight: 6
+                }
+              },
+            },
+            layout: {
+              padding: {
+                top: showLegend ? 10 : 0
+              }
+            }
           }}
         />
       </div>

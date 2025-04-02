@@ -117,9 +117,10 @@ interface ChartViewProps {
     }>;
   };
   displayType: StatisticsDisplayType;
+  showLegend?: boolean;
 }
 
-const ChartView = ({ data, displayType }: ChartViewProps) => {
+const ChartView = ({ data, displayType, showLegend }: ChartViewProps) => {
   if (!data.chartData) return null;
 
   const chartSeries = data.series.map(s => ({ color: s.color || "#000000" }));
@@ -130,6 +131,7 @@ const ChartView = ({ data, displayType }: ChartViewProps) => {
         <AreaChart
           data={data.chartData as ChartData<"line">}
           series={chartSeries}
+          showLegend={showLegend}
         />
       );
     case StatisticsDisplayType.BAR:
@@ -137,6 +139,7 @@ const ChartView = ({ data, displayType }: ChartViewProps) => {
         <BarChart
           data={data.chartData as ChartData<"bar">}
           series={chartSeries}
+          showLegend={showLegend}
         />
       );
     case StatisticsDisplayType.PIE:
@@ -144,6 +147,7 @@ const ChartView = ({ data, displayType }: ChartViewProps) => {
         <PieChart
           data={data.chartData as ChartData<"pie">}
           series={chartSeries}
+          showLegend={showLegend}
         />
       );
     default:
@@ -240,7 +244,7 @@ const CardContent: React.FC<{
         metricsRef={metricsRef}
       />
     ) : data?.chartData ? (
-      <ChartView data={data} displayType={displayType} />
+      <ChartView data={data} displayType={displayType} showLegend={showLegend} />
     ) : null}
   </div>
 );
