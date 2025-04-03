@@ -7,22 +7,22 @@ const Loading = () => {
 
   useEffect(() => {
     let animation: ReturnType<typeof lottie.loadAnimation> | null = null;
-    
+
     if (lottieContainerRef.current) {
       animation = lottie.loadAnimation({
         container: lottieContainerRef.current,
-        renderer: 'svg',
+        renderer: "svg",
         loop: true,
         autoplay: true,
-        path: '/animations/Loading_sofia.json',
+        path: "/animations/Loading_sofia.json",
         rendererSettings: {
-          preserveAspectRatio: 'xMidYMid slice'
-        }
+          preserveAspectRatio: "xMidYMid slice",
+        },
       });
-      
+
       animation.setSpeed(50);
     }
-    
+
     return () => {
       if (animation) {
         animation.destroy();
