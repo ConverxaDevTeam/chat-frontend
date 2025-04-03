@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { deleteGlobalUser, getGlobalUsers } from "@services/user";
 import Table from "@components/Card/Table";
 import TableHeader from "@components/Card/TableHeader";
@@ -12,6 +12,8 @@ import TablePagination from "./components/TablePagination";
 import UserFilter from "./components/UserFilter";
 import usePagination from "./hooks/usePagination";
 import useUserFilter from "./hooks/useUserFilter";
+import ButtonExportAllUsers from "./ButtonExportAllUsers";
+import ContextMenu from "@components/ContextMenu";
 
 interface Column {
   key: keyof IUserApi | "actions" | "organizations";
@@ -40,6 +42,26 @@ const UserRow = ({
   onDelete: (userId: number) => void;
   onEdit: (userId: number) => void;
 }) => {
+  const [showContextMenu, setShowContextMenu] = useState(false);
+  const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+
+  const handleOpenMenu = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const rect = menuButtonRef.current?.getBoundingClientRect();
+    if (rect) {
+      setMenuPosition({ 
+        x: rect.left - 130, 
+        y: rect.top 
+      });
+      setShowContextMenu(true);
+    }
+  };
+
+  const handleCloseMenu = () => {
+    setShowContextMenu(false);
+  };
+
   const organizationNames = user.userOrganizations
     .filter(org => org.organization)
     .map(org => org.organization?.name)
@@ -50,49 +72,68 @@ const UserRow = ({
   const rolesString = uniqueRoles.join(", ");
     
   return (
-    <tr className="h-[60px] text-[14px] border-b-[1px] hover:bg-gray-50">
-      <td className="px-4 py-2">{user.email}</td>
-      <td className="px-4 py-2">{user.first_name || "-"}</td>
-      <td className="px-4 py-2">{user.last_name || "-"}</td>
-      <td className="px-4 py-2">
-        {organizationNames || "-"}
-      </td>
-      <td className="px-4 py-2">
-        {rolesString}
-      </td>
-      <td className="px-4 py-2">
-        <span
-          className={`px-2 py-1 rounded-full text-xs ${
-            user.email_verified
-              ? "bg-green-100 text-green-800"
-              : "bg-red-100 text-red-800"
-          }`}
+    <>
+      {showContextMenu && (
+        <ContextMenu
+          x={menuPosition.x}
+          y={menuPosition.y}
+          onClose={handleCloseMenu}
         >
-          {user.email_verified ? "Verificado" : "No Verificado"}
-        </span>
-      </td>
-      <td className="px-4 py-2">
-        {user.last_login
-          ? new Date(user.last_login).toLocaleDateString()
-          : "Nunca"}
-      </td>
-      <td className="px-4 py-2">
-        <div className="flex gap-2">
           <button
-            className="text-blue-600 hover:text-blue-800"
             onClick={() => onEdit(user.id)}
+            className="flex items-center gap-2 w-full text-left"
           >
-            Editar
+            <img src="/mvp/pencil.svg" alt="Editar" className="w-4 h-4" />
+            <span>Editar</span>
           </button>
           <button
-            className="text-red-600 hover:text-red-800"
             onClick={() => onDelete(user.id)}
+            className="flex items-center gap-2 w-full text-left"
           >
-            Eliminar
+            <img src="/mvp/trash.svg" alt="Eliminar" className="w-4 h-4" />
+            <span>Eliminar</span>
           </button>
-        </div>
-      </td>
-    </tr>
+        </ContextMenu>
+      )}
+      <tr className="h-[60px] text-[14px] border-b-[1px] hover:bg-gray-50">
+        <td className="px-4 py-2">{user.email}</td>
+        <td className="px-4 py-2">{user.first_name || "-"}</td>
+        <td className="px-4 py-2">{user.last_name || "-"}</td>
+        <td className="px-4 py-2">
+          {organizationNames || "-"}
+        </td>
+        <td className="px-4 py-2">
+          {rolesString}
+        </td>
+        <td className="px-4 py-2">
+          <span
+            className={`px-2 py-1 rounded-full text-xs ${
+              user.email_verified
+                ? "bg-green-100 text-green-800"
+                : "bg-red-100 text-red-800"
+            }`}
+          >
+            {user.email_verified ? "Verificado" : "No Verificado"}
+          </span>
+        </td>
+        <td className="px-4 py-2">
+          {user.last_login
+            ? new Date(user.last_login).toLocaleDateString()
+            : "Nunca"}
+        </td>
+        <td className="px-4 py-2">
+          <div className="flex justify-center">
+            <button
+              ref={menuButtonRef}
+              onClick={handleOpenMenu}
+              className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+            >
+              <img src="/mvp/three-dots.svg" alt="Opciones" className="w-5 h-5" />
+            </button>
+          </div>
+        </td>
+      </tr>
+    </>
   );
 };
 
@@ -194,14 +235,17 @@ const UsersSuperAdmin = () => {
           >
             + Nuevo usuario
           </button>
-          <UserFilter
-            searchTerm={searchTerm}
-            setSearchTerm={setSearchTerm}
-            isSearchOpen={isSearchOpen}
-            setIsSearchOpen={setIsSearchOpen}
-            selectedRole={selectedRole}
-            selectRole={selectRole}
-          />
+          <div className="flex items-center gap-2">
+            <ButtonExportAllUsers users={filteredUsers} />
+            <UserFilter
+              searchTerm={searchTerm}
+              setSearchTerm={setSearchTerm}
+              isSearchOpen={isSearchOpen}
+              setIsSearchOpen={setIsSearchOpen}
+              selectedRole={selectedRole}
+              selectRole={selectRole}
+            />
+          </div>
         </div>
 
         {loading ? (

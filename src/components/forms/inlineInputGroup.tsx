@@ -21,7 +21,7 @@ export const InlineInputGroup = ({
   return (
     <div className="flex items-center gap-2 w-full">
       <label className="text-sofia-superDark text-[14px] font-[600] leading-[16px] whitespace-nowrap">
-        {label}:
+        {label}
       </label>
       <div className="flex-1">{children}</div>
       {errorMessages.length > 0 && (

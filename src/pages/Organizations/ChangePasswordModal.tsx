@@ -127,13 +127,13 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
 
   return (
     <div className="w-[400px] max-w-full">
-      <h2 className="text-xl font-bold mb-4">Cambiar Contraseña de Usuario</h2>
+      <h2 className="text-xl font-bold mb-4">Cambiar contraseña de usuario</h2>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div>
           {loadingUsers ? (
             <div className="w-full h-10 bg-gray-200 animate-pulse rounded-md"></div>
           ) : (
-            <InputGroup label="Seleccionar Usuario" errors={errors.userId}>
+            <InputGroup label="Seleccionar usuario" errors={errors.userId}>
               <Select
                 name="userId"
                 control={control}
@@ -144,7 +144,7 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
           )}
         </div>
         <div>
-          <InputGroup label="Nueva Contraseña" errors={errors.newPassword}>
+          <InputGroup label="Nueva contraseña" errors={errors.newPassword}>
             <div className="relative w-full">
               <Controller
                 name="newPassword"
@@ -159,7 +159,7 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
                 render={({ field }) => (
                   <Input
                     type={showPassword ? "text" : "password"}
-                    placeholder="Nueva Contraseña"
+                    placeholder="Nueva contraseña"
                     {...field}
                     className="w-full pr-10"
                   />
@@ -188,14 +188,14 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
           </InputGroup>
         </div>
         <div className="flex justify-end space-x-3 pt-4">
-          <button
+          <Button
             type="button"
             onClick={() => close(false)}
-            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none"
+            variant="cancel"
             disabled={loading}
           >
             Cancelar
-          </button>
+          </Button>
           <Button type="submit" variant="primary" disabled={loading}>
             {loading ? "Guardando..." : "Guardar"}
           </Button>
