@@ -6,7 +6,6 @@ import {
   Control,
   FieldError,
 } from "react-hook-form";
-import { FiX } from "react-icons/fi";
 import {
   FunctionTemplate,
   FunctionTemplateCategory,
@@ -19,6 +18,7 @@ import { Button } from "@components/common/Button";
 import { TextArea } from "@components/forms/textArea";
 import { functionTemplateService } from "@services/template.service";
 import ConfigPanel from "@components/ConfigPanel";
+import Modal from "@components/Modal";
 
 interface FormValues {
   name: string;
@@ -416,7 +416,7 @@ const TabContent: React.FC<TabContentProps> = ({
   }
 };
 
-const useTabNavigation = () => {
+const useTabNavigation = (isOpen: boolean) => {
   const [activeTab, setActiveTab] = useState("info");
   const tabs = [
     {
@@ -430,6 +430,14 @@ const useTabNavigation = () => {
       icon: <img src="/mvp/square-code.svg" className="w-5 h-5" />,
     },
   ];
+
+  // Reiniciar a la primera pestaña cuando se abre el modal
+  useEffect(() => {
+    if (isOpen) {
+      setActiveTab("info");
+    }
+  }, [isOpen]);
+
   const goToNextTab = () => {
     const currentIndex = tabs.findIndex(tab => tab.id === activeTab);
     if (currentIndex < tabs.length - 1) {
@@ -506,21 +514,6 @@ const ActionButtons: React.FC<ActionButtonsProps> = ({
   </div>
 );
 
-// Componente para el encabezado del modal
-interface ModalHeaderProps {
-  title: string;
-  onClose: () => void;
-}
-
-const ModalHeader: React.FC<ModalHeaderProps> = ({ title, onClose }) => (
-  <div className="flex justify-between items-center border-b px-5 py-3">
-    <h2 className="text-xl font-semibold text-gray-800">{title}</h2>
-    <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
-      <FiX size={20} />
-    </button>
-  </div>
-);
-
 const FunctionTemplateModal: React.FC<FunctionTemplateModalProps> = ({
   isOpen,
   onClose,
@@ -540,7 +533,7 @@ const FunctionTemplateModal: React.FC<FunctionTemplateModalProps> = ({
     goToPreviousTab,
     isFirstTab,
     isLastTab,
-  } = useTabNavigation();
+  } = useTabNavigation(isOpen);
   const { categoryOptions, applicationOptions } = useSelectOptions(
     categories,
     applications
@@ -551,41 +544,51 @@ const FunctionTemplateModal: React.FC<FunctionTemplateModalProps> = ({
   const title = `${initialData ? "Editar" : "Crear"} Template de Función`;
   const handleFormSubmit = handleSubmit(processSubmit);
 
-  return (
-    <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
-      <div className="bg-white rounded-lg shadow-lg w-full max-w-3xl max-h-screen overflow-y-auto">
-        <ModalHeader title={title} onClose={onClose} />
-        <div className="p-5">
-          <ConfigPanel
-            tabs={tabs}
+  // Preparar el contenido del modal
+  const modalContent = (
+    <div className="w-full">
+      <ConfigPanel
+        tabs={tabs}
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+        actions={
+          <ActionButtons
+            isFirstTab={isFirstTab}
+            isLastTab={isLastTab}
+            goToPreviousTab={goToPreviousTab}
+            goToNextTab={goToNextTab}
+            onSubmit={handleFormSubmit}
+          />
+        }
+      >
+        <div className="w-full max-w-md mx-auto">
+          <TabContent
             activeTab={activeTab}
-            onTabChange={setActiveTab}
-            actions={
-              <ActionButtons
-                isFirstTab={isFirstTab}
-                isLastTab={isLastTab}
-                goToPreviousTab={goToPreviousTab}
-                goToNextTab={goToNextTab}
-                onSubmit={handleFormSubmit}
-              />
-            }
-          >
-            <div className="w-full max-w-md mx-auto">
-              <TabContent
-                activeTab={activeTab}
-                register={register}
-                control={control}
-                errors={errors}
-                categoryOptions={categoryOptions}
-                applicationOptions={applicationOptions}
-                previewImage={previewImage}
-                onImageChange={handleImageChange}
-              />
-            </div>
-          </ConfigPanel>
+            register={register}
+            control={control}
+            errors={errors}
+            categoryOptions={categoryOptions}
+            applicationOptions={applicationOptions}
+            previewImage={previewImage}
+            onImageChange={handleImageChange}
+          />
         </div>
-      </div>
+      </ConfigPanel>
     </div>
+  );
+
+  // Preparar el header del modal
+  const modalHeader = <div>{title}</div>;
+
+  return (
+    <Modal
+      isShown={isOpen}
+      onClose={onClose}
+      header={modalHeader}
+      zindex={1000}
+    >
+      {modalContent}
+    </Modal>
   );
 };
 
