@@ -1,33 +1,26 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import {
-  useForm,
-  SubmitHandler,
   UseFormRegister,
   Control,
   FieldError,
+  FieldErrors,
 } from "react-hook-form";
-import {
-  FunctionTemplate,
-  FunctionTemplateCategory,
-  FunctionTemplateApplication,
-} from "@interfaces/template.interface";
+import { FunctionTemplate } from "@interfaces/template.interface";
 import { Input } from "@components/forms/input";
 import { InputGroup } from "@components/forms/inputGroup";
 import { Select } from "@components/forms/select";
 import { Button } from "@components/common/Button";
 import { TextArea } from "@components/forms/textArea";
-import { functionTemplateService } from "@services/template.service";
 import ConfigPanel from "@components/ConfigPanel";
 import Modal from "@components/Modal";
-
-interface FormValues {
-  name: string;
-  description: string;
-  categoryId: string;
-  applicationId: string;
-  url: string;
-  tags: string;
-}
+import {
+  useImageUpload,
+  useTemplateData,
+  useSelectOptions,
+  useTemplateForm,
+  useTabNavigation,
+  FormValues,
+} from "./FunctionTemplateHooks";
 
 interface TemplateNameFieldProps {
   register: UseFormRegister<FormValues>;
@@ -166,131 +159,11 @@ const TemplateImageUploader: React.FC<TemplateImageUploaderProps> = ({
   </InputGroup>
 );
 
-// Custom hooks
-const useImageUpload = (isOpen: boolean, initialImage?: string) => {
-  const [previewImage, setPreviewImage] = useState<string | null>(null);
-
-  // Reiniciar la imagen cuando se cierra el modal o se carga una imagen inicial
-  useEffect(() => {
-    if (isOpen) {
-      setPreviewImage(initialImage || null);
-    } else {
-      setPreviewImage(null);
-    }
-  }, [isOpen, initialImage]);
-
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => setPreviewImage(reader.result as string);
-      reader.readAsDataURL(file);
-    }
-  };
-
-  return { previewImage, handleImageChange, setPreviewImage };
-};
-
-const useTemplateForm = (
-  onSubmit: (template: FunctionTemplate) => Promise<void>,
-  isOpen: boolean,
-  initialData?: FunctionTemplate
-) => {
-  const {
-    register,
-    handleSubmit,
-    control,
-    formState: { errors },
-    reset,
-    setValue,
-  } = useForm<FormValues>();
-
-  // Cargar datos iniciales cuando se edita un template
-  useEffect(() => {
-    if (isOpen) {
-      if (initialData) {
-        // Si hay datos iniciales, cargarlos en el formulario
-        setValue("name", initialData.name);
-        setValue("description", initialData.description);
-        setValue("categoryId", String(initialData.categoryId));
-        setValue("applicationId", String(initialData.applicationId));
-        setValue("url", initialData.url);
-        setValue("tags", initialData.tags?.join(", ") || "");
-      } else {
-        // Si no hay datos iniciales, reiniciar el formulario
-        reset({
-          name: "",
-          description: "",
-          categoryId: "",
-          applicationId: "",
-          url: "",
-          tags: "",
-        });
-      }
-    }
-  }, [isOpen, initialData, reset, setValue]);
-
-  const processSubmit: SubmitHandler<FormValues> = async data => {
-    const tagsArray = data.tags
-      .split(",")
-      .map(tag => tag.trim())
-      .filter(tag => tag !== "");
-
-    const templateData: FunctionTemplate = {
-      id: initialData?.id || 0,
-      name: data.name,
-      description: data.description,
-      categoryId: parseInt(data.categoryId),
-      applicationId: parseInt(data.applicationId),
-      url: data.url,
-      params: initialData?.params || [],
-      tags: tagsArray,
-      organizationId: initialData?.organizationId || 0,
-    };
-
-    await onSubmit(templateData);
-  };
-
-  return { register, handleSubmit, control, errors, processSubmit, reset };
-};
-
-const useTemplateData = (isOpen: boolean) => {
-  const [categories, setCategories] = useState<FunctionTemplateCategory[]>([]);
-  const [applications, setApplications] = useState<
-    FunctionTemplateApplication[]
-  >([]);
-
-  useEffect(() => {
-    if (isOpen) {
-      const fetchData = async () => {
-        try {
-          const [categoriesData, applicationsData] = await Promise.all([
-            functionTemplateService.getCategories(),
-            functionTemplateService.getApplications(),
-          ]);
-          setCategories(categoriesData);
-          setApplications(applicationsData);
-        } catch (error) {
-          console.error("Error al cargar datos:", error);
-        }
-      };
-      fetchData();
-    }
-  }, [isOpen]);
-
-  return { categories, applications };
-};
-
 // Componentes para las pestañas
 interface BasicInfoContentProps {
   register: UseFormRegister<FormValues>;
   control: Control<FormValues>;
-  errors: {
-    name?: FieldError;
-    description?: FieldError;
-    categoryId?: FieldError;
-    applicationId?: FieldError;
-  };
+  errors: FieldErrors<FormValues>;
   categoryOptions: Array<{ value: string; label: string }>;
   applicationOptions: Array<{ value: string; label: string }>;
   previewImage: string | null;
@@ -339,10 +212,7 @@ const BasicInfoContent: React.FC<BasicInfoContentProps> = ({
 
 interface ConfigContentProps {
   register: UseFormRegister<FormValues>;
-  errors: {
-    url?: FieldError;
-    tags?: FieldError;
-  };
+  errors: FieldErrors<FormValues>;
 }
 
 const ConfigContent: React.FC<ConfigContentProps> = ({ register, errors }) => (
@@ -359,14 +229,7 @@ interface TabContentProps {
   activeTab: string;
   register: UseFormRegister<FormValues>;
   control: Control<FormValues>;
-  errors: {
-    name?: FieldError;
-    description?: FieldError;
-    categoryId?: FieldError;
-    applicationId?: FieldError;
-    url?: FieldError;
-    tags?: FieldError;
-  };
+  errors: FieldErrors<FormValues>;
   categoryOptions: Array<{ value: string; label: string }>;
   applicationOptions: Array<{ value: string; label: string }>;
   previewImage: string | null;
@@ -414,74 +277,6 @@ const TabContent: React.FC<TabContentProps> = ({
     default:
       return null;
   }
-};
-
-const useTabNavigation = (isOpen: boolean) => {
-  const [activeTab, setActiveTab] = useState("info");
-  const tabs = [
-    {
-      id: "info",
-      label: "Información básica",
-      icon: <img src="/mvp/settings.svg" className="w-5 h-5" />,
-    },
-    {
-      id: "config",
-      label: "Configuración",
-      icon: <img src="/mvp/square-code.svg" className="w-5 h-5" />,
-    },
-  ];
-
-  // Reiniciar a la primera pestaña cuando se abre el modal
-  useEffect(() => {
-    if (isOpen) {
-      setActiveTab("info");
-    }
-  }, [isOpen]);
-
-  const goToNextTab = () => {
-    const currentIndex = tabs.findIndex(tab => tab.id === activeTab);
-    if (currentIndex < tabs.length - 1) {
-      setActiveTab(tabs[currentIndex + 1].id);
-    }
-  };
-
-  const goToPreviousTab = () => {
-    const currentIndex = tabs.findIndex(tab => tab.id === activeTab);
-    if (currentIndex > 0) {
-      setActiveTab(tabs[currentIndex - 1].id);
-    }
-  };
-
-  const isFirstTab = activeTab === tabs[0].id;
-  const isLastTab = activeTab === tabs[tabs.length - 1].id;
-
-  return {
-    activeTab,
-    setActiveTab,
-    tabs,
-    goToNextTab,
-    goToPreviousTab,
-    isFirstTab,
-    isLastTab,
-  };
-};
-
-// Hook para manejar las opciones de categorías y aplicaciones
-const useSelectOptions = (
-  categories: FunctionTemplateCategory[],
-  applications: FunctionTemplateApplication[]
-) => {
-  const categoryOptions = categories.map(category => ({
-    value: String(category.id),
-    label: category.name,
-  }));
-
-  const applicationOptions = applications.map(app => ({
-    value: String(app.id),
-    label: app.name,
-  }));
-
-  return { categoryOptions, applicationOptions };
 };
 
 // Componente para los botones de acción
