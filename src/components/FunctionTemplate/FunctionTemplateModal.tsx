@@ -167,8 +167,17 @@ const TemplateImageUploader: React.FC<TemplateImageUploaderProps> = ({
 );
 
 // Custom hooks
-const useImageUpload = () => {
+const useImageUpload = (isOpen: boolean, initialImage?: string) => {
   const [previewImage, setPreviewImage] = useState<string | null>(null);
+
+  // Reiniciar la imagen cuando se cierra el modal o se carga una imagen inicial
+  useEffect(() => {
+    if (isOpen) {
+      setPreviewImage(initialImage || null);
+    } else {
+      setPreviewImage(null);
+    }
+  }, [isOpen, initialImage]);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -179,18 +188,47 @@ const useImageUpload = () => {
     }
   };
 
-  return { previewImage, handleImageChange };
+  return { previewImage, handleImageChange, setPreviewImage };
 };
 
 const useTemplateForm = (
-  onSubmit: (template: FunctionTemplate) => Promise<void>
+  onSubmit: (template: FunctionTemplate) => Promise<void>,
+  isOpen: boolean,
+  initialData?: FunctionTemplate
 ) => {
   const {
     register,
     handleSubmit,
     control,
     formState: { errors },
+    reset,
+    setValue,
   } = useForm<FormValues>();
+
+  // Cargar datos iniciales cuando se edita un template
+  useEffect(() => {
+    if (isOpen) {
+      if (initialData) {
+        // Si hay datos iniciales, cargarlos en el formulario
+        setValue("name", initialData.name);
+        setValue("description", initialData.description);
+        setValue("categoryId", String(initialData.categoryId));
+        setValue("applicationId", String(initialData.applicationId));
+        setValue("url", initialData.url);
+        setValue("tags", initialData.tags?.join(", ") || "");
+      } else {
+        // Si no hay datos iniciales, reiniciar el formulario
+        reset({
+          name: "",
+          description: "",
+          categoryId: "",
+          applicationId: "",
+          url: "",
+          tags: "",
+        });
+      }
+    }
+  }, [isOpen, initialData, reset, setValue]);
 
   const processSubmit: SubmitHandler<FormValues> = async data => {
     const tagsArray = data.tags
@@ -199,21 +237,21 @@ const useTemplateForm = (
       .filter(tag => tag !== "");
 
     const templateData: FunctionTemplate = {
-      id: 0,
+      id: initialData?.id || 0,
       name: data.name,
       description: data.description,
       categoryId: parseInt(data.categoryId),
       applicationId: parseInt(data.applicationId),
       url: data.url,
-      params: [],
+      params: initialData?.params || [],
       tags: tagsArray,
-      organizationId: 0,
+      organizationId: initialData?.organizationId || 0,
     };
 
     await onSubmit(templateData);
   };
 
-  return { register, handleSubmit, control, errors, processSubmit };
+  return { register, handleSubmit, control, errors, processSubmit, reset };
 };
 
 const useTemplateData = (isOpen: boolean) => {
@@ -489,9 +527,10 @@ const FunctionTemplateModal: React.FC<FunctionTemplateModalProps> = ({
   onSubmit,
   initialData,
 }) => {
-  const { previewImage, handleImageChange } = useImageUpload();
+  // No hay campo de imagen en la interfaz FunctionTemplate
+  const { previewImage, handleImageChange } = useImageUpload(isOpen);
   const { register, handleSubmit, control, errors, processSubmit } =
-    useTemplateForm(onSubmit);
+    useTemplateForm(onSubmit, isOpen, initialData);
   const { categories, applications } = useTemplateData(isOpen);
   const {
     activeTab,
