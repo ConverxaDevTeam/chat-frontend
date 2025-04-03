@@ -11,8 +11,8 @@ import { functionTemplateService } from "@services/template.service";
 export interface FormValues {
   name: string;
   description: string;
-  categoryId: number;
-  applicationId: number;
+  categoryId: number | undefined;
+  applicationId: number | undefined;
   tags: string[];
   authenticatorId?: number;
   url: string;
@@ -106,8 +106,8 @@ export const useTemplateForm = (
     defaultValues: {
       name: "",
       description: "",
-      categoryId: 0,
-      applicationId: 0,
+      categoryId: undefined,
+      applicationId: undefined,
       tags: [],
       url: "",
       params: [],
@@ -132,8 +132,8 @@ export const useTemplateForm = (
         reset({
           name: "",
           description: "",
-          categoryId: 0,
-          applicationId: 0,
+          categoryId: undefined,
+          applicationId: undefined,
           tags: [],
           url: "",
           params: [],
@@ -144,9 +144,28 @@ export const useTemplateForm = (
 
   const processSubmit: SubmitHandler<FormValues> = async data => {
     try {
+      // Procesar tags si es un string
+      let processedTags = data.tags;
+      if (typeof data.tags === "string") {
+        // Convertir string separado por comas a array
+        processedTags = (data.tags as unknown as string)
+          .split(",")
+          .map(tag => tag.trim())
+          .filter(tag => tag.length > 0);
+      }
+
+      // Asegurarse de que categoryId y applicationId sean números válidos
+      const categoryId =
+        data.categoryId !== undefined ? Number(data.categoryId) : 0;
+      const applicationId =
+        data.applicationId !== undefined ? Number(data.applicationId) : 0;
+
       // Si estamos editando, mantener el ID y otros campos
       const templateData: FunctionTemplate = {
         ...data,
+        categoryId,
+        applicationId,
+        tags: processedTags as string[],
         id: initialData?.id || 0,
         organizationId: initialData?.organizationId || 1,
       };
@@ -172,6 +191,11 @@ export const useTabNavigation = (isOpen: boolean) => {
       id: "config",
       label: "Configuración",
       icon: <img src="/mvp/square-code.svg" className="w-5 h-5" />,
+    },
+    {
+      id: "params",
+      label: "Parámetros",
+      icon: <img src="/mvp/list.svg" className="w-5 h-5" />,
     },
   ];
 

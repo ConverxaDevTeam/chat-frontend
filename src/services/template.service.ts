@@ -131,7 +131,30 @@ let nextTemplateId = templates.length + 1;
 export const functionTemplateService = {
   // Obtener todos los templates
   getTemplates: async (organizationId: number): Promise<FunctionTemplate[]> => {
-    return templates.filter(t => t.organizationId === organizationId);
+    return templates
+      .filter(t => t.organizationId === organizationId)
+      .map(template => {
+        // Asegurarse de que cada template tenga los objetos completos de categoría y aplicación
+        const category =
+          template.category ||
+          (template.categoryId
+            ? mockCategories.find(c => c.id === Number(template.categoryId))
+            : undefined);
+
+        const application =
+          template.application ||
+          (template.applicationId
+            ? mockApplications.find(
+                a => a.id === Number(template.applicationId)
+              )
+            : undefined);
+
+        return {
+          ...template,
+          category,
+          application,
+        };
+      });
   },
 
   // Obtener un template por ID
