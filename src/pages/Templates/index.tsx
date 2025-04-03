@@ -7,8 +7,8 @@ import { FunctionTemplate } from "@interfaces/template.interface";
 import { functionTemplateService } from "@services/template.service";
 import { Input } from "@components/forms/input";
 import { Button } from "@components/common/Button";
-import FunctionTemplateCard from "@components/FunctionTemplateCard";
-import FunctionTemplateModal from "@components/FunctionTemplateModal";
+import FunctionTemplateCard from "@components/FunctionTemplate/FunctionTemplateCard";
+import FunctionTemplateModal from "@components/FunctionTemplate/FunctionTemplateModal";
 
 const TemplatesPage = () => {
   const { selectOrganizationId } = useSelector(
