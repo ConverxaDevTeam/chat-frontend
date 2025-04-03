@@ -6,9 +6,10 @@ import { createChartGradient } from "../utils/chartUtils";
 interface BarChartProps {
   data: ChartData<"bar">;
   series: Array<{ color: string }>;
+  showLegend?: boolean;
 }
 
-export const BarChart = ({ data, series }: BarChartProps) => {
+export const BarChart = ({ data, series, showLegend }: BarChartProps) => {
   return (
     <div className="h-full w-full flex items-center justify-center">
       <div className="h-[90%] w-[90%]">
@@ -35,6 +36,30 @@ export const BarChart = ({ data, series }: BarChartProps) => {
             ...baseChartOptions,
             maintainAspectRatio: false,
             responsive: true,
+            plugins: {
+              legend: {
+                display: showLegend,
+                position: 'top',
+                align: 'center',
+                labels: {
+                  font: {
+                    family: "'Quicksand', sans-serif",
+                    size: 10
+                  },
+                  color: '#001126',
+                  padding: 8,
+                  usePointStyle: true,
+                  pointStyle: 'circle',
+                  boxWidth: 6,
+                  boxHeight: 6
+                }
+              },
+            },
+            layout: {
+              padding: {
+                top: showLegend ? 10 : 0
+              }
+            }
           }}
         />
       </div>

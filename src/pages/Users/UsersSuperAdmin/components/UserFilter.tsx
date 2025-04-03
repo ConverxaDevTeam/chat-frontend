@@ -58,7 +58,7 @@ const UserFilter: React.FC<UserFilterProps> = ({
           ref={buttonRef}
           onClick={handleOpenMenu}
           className={`inline-flex items-center justify-between px-3 py-2 text-sm rounded-md border w-full md:w-auto ${
-            selectedRole ? ' border-gray-300 bg-white text-gray-700' : 'bg-white border-gray-300 text-gray-700'
+            selectedRole ? ' bg-[#FCFCFC] border border-[#DBEAF2] text-gray-700' : 'bg-[#FCFCFC] border-[#DBEAF2] text-gray-700'
           }`}
           aria-label="Filtrar por rol"
           aria-expanded={menuPosition !== null}
@@ -142,20 +142,20 @@ const UserFilter: React.FC<UserFilterProps> = ({
           aria-label="Abrir búsqueda"
           aria-expanded={isSearchOpen}
         >
-          <img src="/mvp/magnifying-glass.svg" alt="Buscar" className="w-5 h-5 text-gray-500" />
+          <img src="/mvp/magnifying-glass-gray.svg" alt="Buscar" className="w-5 h-5 text-gray-500" />
         </button>
       )}
       <div className={`relative ${isSearchOpen ? 'flex' : 'hidden'} md:flex w-full md:w-auto`}>
         <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none" aria-hidden="true">
-          <img src="/mvp/magnifying-glass.svg" alt="" className="w-5 h-5 text-gray-500" />
+          <img src="/mvp/magnifying-glass-gray.svg" alt="" className="w-5 h-5 text-gray-500" />
         </div>
         <input
           type="text"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full md:w-[300px] py-2 pl-10 pr-4 text-sm text-gray-900 bg-white border border-gray-300 rounded-[4px]"
-          placeholder="Buscar usuario..."
-          aria-label="Buscar usuario"
+          className="w-full md:w-[300px] py-2 pl-10 pr-4 text-sm bg-[#FCFCFC] border border-[#DBEAF2] rounded-[4px] focus:ring-[#DBEAF2] focus:border-[#DBEAF4]"
+          placeholder="Búsqueda"
+          aria-label="Búsqueda"
           id="searchInput"
         />
         <button

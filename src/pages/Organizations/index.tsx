@@ -10,6 +10,7 @@ import { IUserApi } from "../Users/UsersOrganization";
 import { FiPlus, FiSearch, FiX } from "react-icons/fi";
 import { useAlertContext } from "@components/Diagrams/components/AlertContext";
 import { IOrganization } from "@interfaces/organization.interface";
+import ButtonExportAllOrganizations from "./ButtonExportAllOrganizations";
 
 type EditFormData = {
   owner_id: number;
@@ -305,7 +306,8 @@ const Organizations = () => {
             <FiPlus /> Crear organización
           </button>
 
-          <div className="flex items-center">
+          <div className="flex items-center gap-2">
+            <ButtonExportAllOrganizations organizations={filteredOrganizations} />
             {!isSearchOpen && (
               <button 
                 onClick={() => setIsSearchOpen(true)}
@@ -317,14 +319,14 @@ const Organizations = () => {
             
             <div className={`relative ${isSearchOpen ? 'flex' : 'hidden'} lg:flex`}>
               <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                <img src="/mvp/magnifying-glass.svg" alt="Buscar" className="w-5 h-5 text-gray-500" />
+                <img src="/mvp/magnifying-glass-gray.svg" alt="Buscar" className="w-5 h-5 text-gray-500" />
               </div>
               <input
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-[300px] py-2 pl-10 pr-4 text-sm text-gray-900 bg-white border border-gray-300 rounded-lg focus:ring-[#001130] focus:border-[#001130]"
-                placeholder="Buscar organización..."
+                className="w-[300px] py-2 pl-10 pr-4 text-sm bg-[#FCFCFC] border-[1px] border-[#DBEAF2] rounded-[4px] focus:ring-[#DBEAF2] focus:border-[#DBEAF4]"
+                placeholder="Búsqueda"
               />
               <button
                 onClick={() => {
