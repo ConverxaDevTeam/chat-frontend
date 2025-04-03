@@ -63,6 +63,13 @@ export const sidebarAdminLinks = [
     img: "house.svg",
   },
   {
+    to: "/templateCreation",
+    text: "Function Templates",
+    active: ["/templateCreation"],
+    img: "file-code.svg",
+    role: [OrganizationRoleType.ADMIN],
+  },
+  {
     to: "/users",
     text: "Usuarios",
     active: ["/users"],
