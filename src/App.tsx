@@ -10,6 +10,7 @@ import Organizations from "@pages/Organizations";
 import Users from "@pages/Users";
 import Workspace from "@pages/Workspace";
 import Departments from "@pages/Departments";
+import TemplateCreation from "@pages/TemplateCreation";
 import { AppDispatch, RootState } from "@store";
 import { verifySessionAsync } from "@store/actions/auth";
 import { Fragment, useEffect } from "react";
@@ -66,6 +67,7 @@ const App = (): JSX.Element => {
             <Route path="conversations" element={<Conversations />} />
             <Route path="workspace" element={<Workspace />} />
             <Route path="departments" element={<Departments />} />
+            <Route path="templateCreation" element={<TemplateCreation />} />
             <Route
               path="conversation/detail/:id"
               element={<ConversationDetail />}
