@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from "react";
-import { FiPlus, FiGrid, FiSettings } from "react-icons/fi";
+import React, { useState, useEffect, useRef } from "react";
+import { FiPlus, FiGrid } from "react-icons/fi";
 import { toast } from "react-toastify";
 import { FunctionTemplate } from "@interfaces/template.interface";
 import { functionTemplateService } from "@services/template.service";
 import FunctionTemplateModal from "@components/FunctionTemplate/FunctionTemplateModal";
-import FunctionTemplateCard from "@components/FunctionTemplate/FunctionTemplateCard";
 import { Button } from "@components/common/Button";
 import { useSelector } from "react-redux";
 import { RootState } from "@store";
 import Loading from "@components/Loading";
+import ContextMenu from "@components/ContextMenu";
 
 // Tipos
 type TemplateHandlers = {
@@ -105,7 +105,7 @@ const EmptyState: React.FC<{ onOpenModal: () => void }> = ({ onOpenModal }) => (
   <div className="bg-white rounded-lg text-center">
     <div className="flex flex-col items-center justify-center py-10">
       <div className="mb-4">
-        <FiSettings className="text-gray-500" size={24} />
+        <FiGrid className="text-gray-500" size={24} />
       </div>
       <p className="text-gray-600 mb-5">No hay templates disponibles</p>
       <Button
@@ -119,22 +119,224 @@ const EmptyState: React.FC<{ onOpenModal: () => void }> = ({ onOpenModal }) => (
   </div>
 );
 
-// Componente para la cuadrícula de templates
-const TemplateGrid: React.FC<{
+// Hook para manejar el menú contextual
+const useContextMenu = (
+  handlers: TemplateHandlers,
+  template: FunctionTemplate
+) => {
+  const [showContextMenu, setShowContextMenu] = useState(false);
+  const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+
+  const handleOpenMenu = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const rect = menuButtonRef.current?.getBoundingClientRect();
+    if (rect) {
+      setMenuPosition({ x: rect.right, y: rect.top });
+      setShowContextMenu(true);
+    }
+  };
+
+  const handleCloseMenu = () => setShowContextMenu(false);
+
+  const handleEdit = () => {
+    handlers.onEdit(template.id, template);
+    handleCloseMenu();
+  };
+
+  const handleDelete = async () => {
+    if (window.confirm("¿Estás seguro de eliminar este template?")) {
+      await handlers.onDelete(template.id);
+    }
+    handleCloseMenu();
+  };
+
+  return {
+    showContextMenu,
+    menuPosition,
+    menuButtonRef,
+    handleOpenMenu,
+    handleCloseMenu,
+    handleEdit,
+    handleDelete,
+  };
+};
+
+// Componente para el menú contextual
+const TemplateContextMenu: React.FC<{
+  show: boolean;
+  position: { x: number; y: number };
+  onClose: () => void;
+  onEdit: () => void;
+  onDelete: () => void;
+}> = ({ show, position, onClose, onEdit, onDelete }) => {
+  if (!show) return null;
+  return (
+    <ContextMenu x={position.x} y={position.y} onClose={onClose}>
+      <button
+        onClick={onEdit}
+        className="flex items-center gap-2 w-full text-left"
+      >
+        <img src="/mvp/pencil.svg" alt="Editar" className="w-4 h-4" />
+        <span>Editar</span>
+      </button>
+      <button
+        onClick={onDelete}
+        className="flex items-center gap-2 w-full text-left"
+      >
+        <img src="/mvp/trash.svg" alt="Eliminar" className="w-4 h-4" />
+        <span>Eliminar</span>
+      </button>
+    </ContextMenu>
+  );
+};
+
+// Componente para mostrar etiquetas
+const TagsList: React.FC<{ tags: string[] }> = ({ tags }) => {
+  if (!Array.isArray(tags) || tags.length === 0) {
+    return <span className="text-gray-500 text-xs">Sin etiquetas</span>;
+  }
+  return (
+    <div className="flex flex-wrap gap-1">
+      {tags.slice(0, 2).map((tag, i) => (
+        <div
+          key={i}
+          className="bg-gray-100 text-gray-600 px-2 py-1 rounded text-xs"
+        >
+          {tag}
+        </div>
+      ))}
+      {tags.length > 2 && (
+        <div className="bg-gray-100 text-gray-600 px-2 py-1 rounded text-xs">
+          +{tags.length - 2}
+        </div>
+      )}
+    </div>
+  );
+};
+
+// Componente para la fila de template
+const TemplateRow: React.FC<{
+  template: FunctionTemplate;
+  handlers: TemplateHandlers;
+}> = ({ template, handlers }) => {
+  // Depuración: Verificar los datos de categoría y aplicación
+  console.log("Template row data:", {
+    id: template.id,
+    name: template.name,
+    categoryId: template.categoryId,
+    category: template.category,
+    applicationId: template.applicationId,
+    application: template.application,
+  });
+  const {
+    showContextMenu,
+    menuPosition,
+    menuButtonRef,
+    handleOpenMenu,
+    handleCloseMenu,
+    handleEdit,
+    handleDelete,
+  } = useContextMenu(handlers, template);
+
+  return (
+    <>
+      <TemplateContextMenu
+        show={showContextMenu}
+        position={menuPosition}
+        onClose={handleCloseMenu}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+      />
+
+      <tr className="h-[60px] border-b-[1px] border-[#DBEAF2] hover:bg-gray-50">
+        <td className="py-2.5 px-6">
+          <span className="font-medium text-gray-900">{template.name}</span>
+        </td>
+        <td className="py-2.5 px-6">
+          <p
+            className="text-sm font-medium text-gray-600 truncate max-w-[200px]"
+            title={template.description}
+          >
+            {template.description}
+          </p>
+        </td>
+        <td className="py-2.5 px-6">
+          <span className="bg-blue-100 text-blue-800 py-1 px-2 rounded text-xs">
+            {template.category?.name || "Sin categoría"}
+          </span>
+        </td>
+        <td className="py-2.5 px-6">
+          <span className="bg-purple-100 text-purple-800 py-1 px-2 rounded text-xs">
+            {template.application?.name || "Sin aplicación"}
+          </span>
+        </td>
+        <td className="py-2.5 px-6">
+          <TagsList tags={template.tags} />
+        </td>
+        <td className="py-2.5 px-6 first:rounded-tr-[8px] last:rounded-br-[8px]">
+          <div className="flex justify-end">
+            <button
+              ref={menuButtonRef}
+              onClick={handleOpenMenu}
+              className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+            >
+              <img
+                src="/mvp/three-dots.svg"
+                alt="Opciones"
+                className="w-5 h-5"
+              />
+            </button>
+          </div>
+        </td>
+      </tr>
+    </>
+  );
+};
+
+// Componente para la tabla de templates
+const TemplateTable: React.FC<{
   templates: FunctionTemplate[];
   handlers: TemplateHandlers;
-}> = ({ templates, handlers }) => (
-  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-    {templates.map(template => (
-      <FunctionTemplateCard
-        key={template.id}
-        template={template}
-        onDelete={handlers.onDelete}
-        onEdit={handlers.onEdit}
-      />
-    ))}
-  </div>
-);
+}> = ({ templates, handlers }) => {
+  return (
+    <div className="overflow-x-auto">
+      <table className="w-full bg-white rounded-[8px] shadow-sm">
+        <thead className="bg-gray-50 border-b-[1px] border-[#DBEAF2]">
+          <tr>
+            <th className="py-3 px-6 text-left font-medium text-gray-500 text-sm">
+              Nombre
+            </th>
+            <th className="py-3 px-6 text-left font-medium text-gray-500 text-sm">
+              Descripción
+            </th>
+            <th className="py-3 px-6 text-left font-medium text-gray-500 text-sm">
+              Categoría
+            </th>
+            <th className="py-3 px-6 text-left font-medium text-gray-500 text-sm">
+              Aplicación
+            </th>
+            <th className="py-3 px-6 text-left font-medium text-gray-500 text-sm">
+              Etiquetas
+            </th>
+            <th className="py-3 px-6 text-right font-medium text-gray-500 text-sm">
+              Acciones
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {templates.map(template => (
+            <TemplateRow
+              key={template.id}
+              template={template}
+              handlers={handlers}
+            />
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+};
 
 // Hook para manejar operaciones de templates
 const useTemplateOperations = (
@@ -198,7 +400,7 @@ const useConditionalRendering = (
       return <EmptyState onOpenModal={() => handlers.onOpenModal()} />;
     }
 
-    return <TemplateGrid templates={templates} handlers={handlers} />;
+    return <TemplateTable templates={templates} handlers={handlers} />;
   };
 
   return { renderContent };

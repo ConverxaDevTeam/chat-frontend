@@ -1,11 +1,9 @@
 import React from "react";
+import { UseFormRegister, Control, FieldError } from "react-hook-form";
 import {
-  UseFormRegister,
-  Control,
-  FieldError,
-  FieldErrors,
-} from "react-hook-form";
-import { FunctionTemplate } from "@interfaces/template.interface";
+  FunctionTemplate,
+  FunctionTemplateParamType,
+} from "@interfaces/template.interface";
 import { Input } from "@components/forms/input";
 import { InputGroup } from "@components/forms/inputGroup";
 import { Select } from "@components/forms/select";
@@ -21,6 +19,7 @@ import {
   useTabNavigation,
   FormValues,
 } from "./FunctionTemplateHooks";
+import { useFieldArray, Controller } from "react-hook-form";
 
 interface TemplateNameFieldProps {
   register: UseFormRegister<FormValues>;
@@ -55,11 +54,21 @@ interface TemplateImageUploaderProps {
   onImageChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
+interface ConfigContentProps {
+  register: UseFormRegister<FormValues>;
+}
+
 interface FunctionTemplateModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (template: FunctionTemplate) => Promise<void>;
   initialData?: FunctionTemplate;
+}
+
+interface TemplateParamEditorProps {
+  onRemove: () => void;
+  index: number;
+  control: Control<FormValues>;
 }
 
 // Componentes atómicos
@@ -159,11 +168,60 @@ const TemplateImageUploader: React.FC<TemplateImageUploaderProps> = ({
   </InputGroup>
 );
 
-// Componentes para las pestañas
+interface ParamsContentProps {
+  control: Control<FormValues>;
+}
+
+const ParamsContent: React.FC<ParamsContentProps> = ({ control }) => {
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "params",
+  });
+
+  const addNewParam = () => {
+    const name = `param_${fields.length + 1}`;
+    const id = name.replace(/\s+/g, "-").toLowerCase();
+    append({
+      id,
+      name,
+      title: "",
+      description: "",
+      type: FunctionTemplateParamType.STRING,
+      required: false,
+    });
+  };
+
+  return (
+    <div className="space-y-4 py-4">
+      <h3 className="text-lg font-medium text-gray-700 mb-2">Parámetros</h3>
+      {fields.map((field, index) => (
+        <TemplateParamEditor
+          key={field.id}
+          onRemove={() => remove(index)}
+          index={index}
+          control={control}
+        />
+      ))}
+      <Button variant="default" onClick={addNewParam}>
+        Agregar parámetro
+      </Button>
+    </div>
+  );
+};
+
+const ConfigContent: React.FC<ConfigContentProps> = ({ register }) => (
+  <div className="space-y-6 py-4">
+    <h3 className="text-lg font-medium text-gray-700 mb-2">
+      Configuración del endpoint
+    </h3>
+    <TemplateUrlField register={register} />
+    <TemplateTagsField register={register} />
+  </div>
+);
+
 interface BasicInfoContentProps {
   register: UseFormRegister<FormValues>;
   control: Control<FormValues>;
-  errors: FieldErrors<FormValues>;
   categoryOptions: Array<{ value: string; label: string }>;
   applicationOptions: Array<{ value: string; label: string }>;
   previewImage: string | null;
@@ -173,7 +231,6 @@ interface BasicInfoContentProps {
 const BasicInfoContent: React.FC<BasicInfoContentProps> = ({
   register,
   control,
-  errors,
   categoryOptions,
   applicationOptions,
   previewImage,
@@ -183,15 +240,14 @@ const BasicInfoContent: React.FC<BasicInfoContentProps> = ({
     <h3 className="text-lg font-medium text-gray-700 mb-2">
       Datos principales
     </h3>
-    <TemplateNameField register={register} error={errors.name} />
-    <TemplateDescriptionField register={register} error={errors.description} />
+    <TemplateNameField register={register} />
+    <TemplateDescriptionField register={register} />
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       <TemplateSelectField
         control={control}
         name="categoryId"
         label="Categoría"
         options={categoryOptions}
-        error={errors.categoryId}
         placeholder="Seleccionar categoría"
       />
       <TemplateSelectField
@@ -199,7 +255,6 @@ const BasicInfoContent: React.FC<BasicInfoContentProps> = ({
         name="applicationId"
         label="Aplicación"
         options={applicationOptions}
-        error={errors.applicationId}
         placeholder="Seleccionar aplicación"
       />
     </div>
@@ -210,26 +265,10 @@ const BasicInfoContent: React.FC<BasicInfoContentProps> = ({
   </div>
 );
 
-interface ConfigContentProps {
-  register: UseFormRegister<FormValues>;
-  errors: FieldErrors<FormValues>;
-}
-
-const ConfigContent: React.FC<ConfigContentProps> = ({ register, errors }) => (
-  <div className="space-y-6 py-4">
-    <h3 className="text-lg font-medium text-gray-700 mb-2">
-      Configuración del endpoint
-    </h3>
-    <TemplateUrlField register={register} error={errors.url} />
-    <TemplateTagsField register={register} />
-  </div>
-);
-
 interface TabContentProps {
   activeTab: string;
   register: UseFormRegister<FormValues>;
   control: Control<FormValues>;
-  errors: FieldErrors<FormValues>;
   categoryOptions: Array<{ value: string; label: string }>;
   applicationOptions: Array<{ value: string; label: string }>;
   previewImage: string | null;
@@ -240,7 +279,6 @@ const TabContent: React.FC<TabContentProps> = ({
   activeTab,
   register,
   control,
-  errors,
   categoryOptions,
   applicationOptions,
   previewImage,
@@ -250,30 +288,20 @@ const TabContent: React.FC<TabContentProps> = ({
     case "info":
       return (
         <BasicInfoContent
-          register={register}
-          control={control}
-          errors={{
-            name: errors.name,
-            description: errors.description,
-            categoryId: errors.categoryId,
-            applicationId: errors.applicationId,
+          {...{
+            register,
+            control,
+            categoryOptions,
+            applicationOptions,
+            previewImage,
+            onImageChange,
           }}
-          categoryOptions={categoryOptions}
-          applicationOptions={applicationOptions}
-          previewImage={previewImage}
-          onImageChange={onImageChange}
         />
       );
     case "config":
-      return (
-        <ConfigContent
-          register={register}
-          errors={{
-            url: errors.url,
-            tags: errors.tags,
-          }}
-        />
-      );
+      return <ConfigContent register={register} />;
+    case "params":
+      return <ParamsContent control={control} />;
     default:
       return null;
   }
@@ -309,6 +337,80 @@ const ActionButtons: React.FC<ActionButtonsProps> = ({
   </div>
 );
 
+const TemplateParamEditor: React.FC<TemplateParamEditorProps> = ({
+  onRemove,
+  index,
+  control,
+}) => {
+  return (
+    <div className="border rounded p-4 mb-4">
+      <div className="mb-4">
+        <Controller
+          name={`params.${index}.name`}
+          control={control}
+          render={({ field }) => (
+            <InputGroup label="Nombre del parámetro">
+              <Input {...field} placeholder="Ingrese el nombre" />
+            </InputGroup>
+          )}
+        />
+      </div>
+      <div className="mb-4">
+        <Controller
+          name={`params.${index}.title`}
+          control={control}
+          render={({ field }) => (
+            <InputGroup label="Título">
+              <Input {...field} placeholder="Ingrese el título" />
+            </InputGroup>
+          )}
+        />
+      </div>
+      <div className="mb-4">
+        <Controller
+          name={`params.${index}.description`}
+          control={control}
+          render={({ field }) => (
+            <InputGroup label="Descripción">
+              <TextArea
+                register={{
+                  ...field,
+                  name: `params.${index}.description`,
+                  onChange: async e => field.onChange(e),
+                  onBlur: async () => field.onBlur(),
+                }}
+                placeholder="Ingrese la descripción"
+              />
+            </InputGroup>
+          )}
+        />
+      </div>
+      <div className="mb-4">
+        <Controller
+          name={`params.${index}.type`}
+          control={control}
+          render={() => (
+            <InputGroup label="Tipo">
+              <Select
+                name={`params.${index}.type`}
+                control={control}
+                options={[
+                  { value: "string", label: "Texto" },
+                  { value: "number", label: "Número" },
+                  { value: "boolean", label: "Booleano" },
+                ]}
+              />
+            </InputGroup>
+          )}
+        />
+      </div>
+      <Button variant="cancel" onClick={onRemove} className="mt-4">
+        Eliminar parámetro
+      </Button>
+    </div>
+  );
+};
+
 const FunctionTemplateModal: React.FC<FunctionTemplateModalProps> = ({
   isOpen,
   onClose,
@@ -317,8 +419,11 @@ const FunctionTemplateModal: React.FC<FunctionTemplateModalProps> = ({
 }) => {
   // No hay campo de imagen en la interfaz FunctionTemplate
   const { previewImage, handleImageChange } = useImageUpload(isOpen);
-  const { register, handleSubmit, control, errors, processSubmit } =
-    useTemplateForm(onSubmit, isOpen, initialData);
+  const { register, handleSubmit, control, processSubmit } = useTemplateForm(
+    onSubmit,
+    isOpen,
+    initialData
+  );
   const { categories, applications } = useTemplateData(isOpen);
   const {
     activeTab,
@@ -361,7 +466,6 @@ const FunctionTemplateModal: React.FC<FunctionTemplateModalProps> = ({
             activeTab={activeTab}
             register={register}
             control={control}
-            errors={errors}
             categoryOptions={categoryOptions}
             applicationOptions={applicationOptions}
             previewImage={previewImage}
