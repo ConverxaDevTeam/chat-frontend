@@ -4,11 +4,16 @@ import { RootState } from "@store";
 import { FiPlus, FiSearch, FiFilter } from "react-icons/fi";
 import { toast } from "react-toastify";
 import { FunctionTemplate } from "@interfaces/template.interface";
-import { functionTemplateService } from "@services/template.service";
 import { Input } from "@components/forms/input";
 import { Button } from "@components/common/Button";
 import FunctionTemplateCard from "@components/FunctionTemplate/FunctionTemplateCard";
 import FunctionTemplateModal from "@components/FunctionTemplate/FunctionTemplateModal";
+import {
+  createTemplate,
+  deleteTemplate,
+  getTemplates,
+  updateTemplate,
+} from "@services/template.service";
 
 const TemplatesPage = () => {
   const { selectOrganizationId } = useSelector(
@@ -27,8 +32,7 @@ const TemplatesPage = () => {
 
     try {
       setIsLoading(true);
-      const data =
-        await functionTemplateService.getTemplates(selectOrganizationId);
+      const data = await getTemplates(selectOrganizationId);
       setTemplates(data);
       setFilteredTemplates(data);
     } catch (error) {
@@ -64,7 +68,7 @@ const TemplatesPage = () => {
 
   const handleCreateTemplate = async (template: FunctionTemplate) => {
     try {
-      await functionTemplateService.createTemplate({
+      await createTemplate({
         ...template,
         organizationId: selectOrganizationId || 0,
       });
@@ -78,7 +82,7 @@ const TemplatesPage = () => {
 
   const handleDeleteTemplate = async (id: number) => {
     try {
-      await functionTemplateService.deleteTemplate(id);
+      await deleteTemplate(id);
       toast.success("Template eliminado correctamente");
       fetchTemplates();
     } catch (error) {
@@ -91,7 +95,7 @@ const TemplatesPage = () => {
     template: Partial<FunctionTemplate>
   ) => {
     try {
-      await functionTemplateService.updateTemplate(id, template);
+      await updateTemplate(id, template);
       toast.success("Template actualizado correctamente");
       fetchTemplates();
     } catch (error) {

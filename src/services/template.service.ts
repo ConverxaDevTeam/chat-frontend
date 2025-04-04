@@ -119,134 +119,155 @@ const mockTemplates: FunctionTemplate[] = [
   },
 ];
 
+// Estado compartido (mutable)
 let templates = [...mockTemplates];
 let nextTemplateId = templates.length + 1;
 
-export const functionTemplateService = {
-  // Obtener todos los templates
-  getTemplates: async (organizationId: number): Promise<FunctionTemplate[]> => {
-    return templates
-      .filter(t => t.organizationId === organizationId)
-      .map(template => {
-        // Asegurarse de que cada template tenga los objetos completos de categoría y aplicación
-        const category =
-          template.category ||
-          (template.categoryId
-            ? mockCategories.find(c => c.id === Number(template.categoryId))
-            : undefined);
+/**
+ * Obtener todos los templates para una organización
+ */
+export const getTemplates = async (
+  organizationId: number
+): Promise<FunctionTemplate[]> => {
+  return templates
+    .filter(t => t.organizationId === organizationId)
+    .map(template => {
+      // Asegurarse de que cada template tenga los objetos completos de categoría y aplicación
+      const category =
+        template.category ||
+        (template.categoryId
+          ? mockCategories.find(c => c.id === Number(template.categoryId))
+          : undefined);
 
-        const application =
-          template.application ||
-          (template.applicationId
-            ? mockApplications.find(
-                a => a.id === Number(template.applicationId)
-              )
-            : undefined);
+      const application =
+        template.application ||
+        (template.applicationId
+          ? mockApplications.find(a => a.id === Number(template.applicationId))
+          : undefined);
 
-        return {
-          ...template,
-          category,
-          application,
-        };
-      });
-  },
+      return {
+        ...template,
+        category,
+        application,
+      };
+    });
+};
 
-  // Obtener un template por ID
-  getTemplateById: async (id: number): Promise<FunctionTemplate | null> => {
-    const template = templates.find(t => t.id === id);
-    return template || null;
-  },
+/**
+ * Obtener un template por ID
+ */
+export const getTemplateById = async (
+  id: number
+): Promise<FunctionTemplate | null> => {
+  const template = templates.find(t => t.id === id);
+  return template || null;
+};
 
-  // Crear un template
-  createTemplate: async (
-    template: CreateFunctionTemplateDto
-  ): Promise<FunctionTemplate> => {
-    const category = mockCategories.find(c => c.id === template.categoryId);
-    const application = mockApplications.find(
-      a => a.id === template.applicationId
+/**
+ * Crear un nuevo template
+ */
+export const createTemplate = async (
+  template: CreateFunctionTemplateDto
+): Promise<FunctionTemplate> => {
+  const category = mockCategories.find(c => c.id === template.categoryId);
+  const application = mockApplications.find(
+    a => a.id === template.applicationId
+  );
+
+  const newTemplate: FunctionTemplate = {
+    ...template,
+    id: nextTemplateId++,
+    category,
+    application,
+    method: template.method || "GET",
+    bodyType: template.bodyType || "json",
+  };
+
+  templates.push(newTemplate);
+  return newTemplate;
+};
+
+/**
+ * Actualizar un template existente
+ */
+export const updateTemplate = async (
+  id: number,
+  updateData: UpdateFunctionTemplateDto
+): Promise<FunctionTemplate | null> => {
+  const index = templates.findIndex(t => t.id === id);
+  if (index === -1) return null;
+
+  const updatedTemplate: FunctionTemplate = {
+    ...templates[index],
+    ...updateData,
+  };
+
+  // Actualizar category y application si fueron modificados
+  if (updateData.categoryId) {
+    updatedTemplate.category = mockCategories.find(
+      c => c.id === updateData.categoryId
     );
+  }
 
-    const newTemplate: FunctionTemplate = {
-      ...template,
-      id: nextTemplateId++,
-      category,
-      application,
-      method: template.method || "GET",
-      bodyType: template.bodyType || "json",
-    };
+  if (updateData.applicationId) {
+    updatedTemplate.application = mockApplications.find(
+      a => a.id === updateData.applicationId
+    );
+  }
 
-    templates.push(newTemplate);
-    return newTemplate;
-  },
+  templates[index] = updatedTemplate;
+  return updatedTemplate;
+};
 
-  // Actualizar un template
-  updateTemplate: async (
-    id: number,
-    updateData: UpdateFunctionTemplateDto
-  ): Promise<FunctionTemplate | null> => {
-    const index = templates.findIndex(t => t.id === id);
-    if (index === -1) return null;
+/**
+ * Eliminar un template
+ */
+export const deleteTemplate = async (id: number): Promise<boolean> => {
+  const initialLength = templates.length;
+  templates = templates.filter(t => t.id !== id);
+  return templates.length !== initialLength;
+};
 
-    const updatedTemplate: FunctionTemplate = {
-      ...templates[index],
-      ...updateData,
-    };
+/**
+ * Obtener todas las categorías disponibles
+ */
+export const getCategories = async (): Promise<FunctionTemplateCategory[]> => {
+  return [...mockCategories];
+};
 
-    // Actualizar category y application si fueron modificados
-    if (updateData.categoryId) {
-      updatedTemplate.category = mockCategories.find(
-        c => c.id === updateData.categoryId
-      );
-    }
+/**
+ * Obtener todas las aplicaciones disponibles
+ */
+export const getApplications = async (): Promise<
+  FunctionTemplateApplication[]
+> => {
+  return [...mockApplications];
+};
 
-    if (updateData.applicationId) {
-      updatedTemplate.application = mockApplications.find(
-        a => a.id === updateData.applicationId
-      );
-    }
+/**
+ * Crear una nueva categoría
+ */
+export const createCategory = async (
+  category: Omit<FunctionTemplateCategory, "id">
+): Promise<FunctionTemplateCategory> => {
+  const newCategory: FunctionTemplateCategory = {
+    ...category,
+    id: mockCategories.length + 1,
+  };
+  mockCategories.push(newCategory);
+  return newCategory;
+};
 
-    templates[index] = updatedTemplate;
-    return updatedTemplate;
-  },
-
-  // Eliminar un template
-  deleteTemplate: async (id: number): Promise<boolean> => {
-    const initialLength = templates.length;
-    templates = templates.filter(t => t.id !== id);
-    return initialLength > templates.length;
-  },
-
-  // Obtener categorías
-  getCategories: async (): Promise<FunctionTemplateCategory[]> => {
-    return mockCategories;
-  },
-
-  // Obtener aplicaciones
-  getApplications: async (): Promise<FunctionTemplateApplication[]> => {
-    return mockApplications;
-  },
-
-  // Crear una categoría (para futuro backend)
-  createCategory: async (
-    category: Omit<FunctionTemplateCategory, "id">
-  ): Promise<FunctionTemplateCategory> => {
-    const newCategory: FunctionTemplateCategory = {
-      ...category,
-      id: mockCategories.length + 1,
-    };
-    mockCategories.push(newCategory);
-    return newCategory;
-  },
-
-  // Crear una aplicación (para futuro backend)
-  createApplication: async (
-    application: Omit<FunctionTemplateApplication, "id">
-  ): Promise<FunctionTemplateApplication> => {
-    const newApplication: FunctionTemplateApplication = {
-      ...application,
-      id: mockApplications.length + 1,
-    };
-    mockApplications.push(newApplication);
-    return newApplication;
-  },
+/**
+ * Crear una nueva aplicación
+ */
+export const createApplication = async (
+  application: Omit<FunctionTemplateApplication, "id">
+): Promise<FunctionTemplateApplication> => {
+  const newApplication: FunctionTemplateApplication = {
+    ...application,
+    id: mockApplications.length + 1,
+  };
+  mockApplications.push(newApplication);
+  return newApplication;
 };
