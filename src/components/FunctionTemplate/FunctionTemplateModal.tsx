@@ -3,13 +3,12 @@ import { FunctionTemplate } from "@interfaces/template.interface";
 import ConfigPanel from "@components/ConfigPanel";
 import Modal from "@components/Modal";
 import {
-  useImageUpload,
   useTemplateData,
   useSelectOptions,
   useTemplateForm,
   useTabNavigation,
 } from "./FunctionTemplateHooks";
-import { ActionButtons } from "./FunctionTemplateComponents";
+import { ActionButtons } from "./FunctionTemplateBasicComponents";
 import { TabContent } from "./FunctionTemplateTabContent";
 
 interface FunctionTemplateModalProps {
@@ -25,8 +24,7 @@ const FunctionTemplateModal: React.FC<FunctionTemplateModalProps> = ({
   onSubmit,
   initialData,
 }) => {
-  // No hay campo de imagen en la interfaz FunctionTemplate
-  const { previewImage, handleImageChange } = useImageUpload(isOpen);
+  // No se utiliza imagen en este formulario
   const { register, handleSubmit, control, processSubmit } = useTemplateForm(
     onSubmit,
     isOpen,
@@ -76,8 +74,6 @@ const FunctionTemplateModal: React.FC<FunctionTemplateModalProps> = ({
             control={control}
             categoryOptions={categoryOptions}
             applicationOptions={applicationOptions}
-            previewImage={previewImage}
-            onImageChange={handleImageChange}
           />
         </div>
       </ConfigPanel>
