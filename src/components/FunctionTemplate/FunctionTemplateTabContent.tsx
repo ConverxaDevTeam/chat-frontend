@@ -52,7 +52,7 @@ export const ConfigContent: React.FC<ConfigContentProps> = ({
           width="220px"
         />
       }
-      helpText="Introduce la URL completa del endpoint que utilizará esta función"
+      helpText="Introduce la URL completa del endpoint que utilizará esta función, para parametros en la url agregar :<nombre del parametro>. Para dominio dinamico escribir :Dominio/ en lugar del dominio"
     />
     <TemplateSelectField
       control={control}
