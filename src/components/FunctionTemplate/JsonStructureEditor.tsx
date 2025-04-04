@@ -173,18 +173,26 @@ export const JsonStructureEditor = ({
   const [editingField, setEditingField] =
     useState<FunctionTemplateParam | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentPath, setCurrentPath] = useState<string[]>([]);
 
   // Actualizar los campos cuando cambia el valor externo
   useEffect(() => {
     setFields(value);
   }, [value]);
 
-  const addField = (e?: React.MouseEvent) => {
+  const addField = (
+    e?: React.MouseEvent,
+    parentField?: FunctionTemplateParam
+  ) => {
     if (e) {
       e.preventDefault();
       e.stopPropagation();
     }
-    console.log("[JsonStructureEditor] addField called");
+    console.log(
+      "[JsonStructureEditor] addField called",
+      parentField ? `to parent: ${parentField.name}` : "to root"
+    );
+
     const newField: FunctionTemplateParam = {
       id: `temp-${Date.now()}`,
       name: "",
@@ -193,8 +201,60 @@ export const JsonStructureEditor = ({
       type: ParamType.STRING,
       required: false,
     };
+
     setEditingField(newField);
+
+    if (parentField) {
+      // Si hay un campo padre, establecer la ruta para la anidación
+      const path = findFieldPath(fields, parentField.id);
+      if (path) {
+        console.log(
+          "[JsonStructureEditor] Setting path for nested field:",
+          path
+        );
+        setCurrentPath(path);
+      }
+    } else {
+      // Si no hay campo padre, estamos en el nivel raíz
+      setCurrentPath([]);
+    }
+
     setIsModalOpen(true);
+  };
+
+  // Función auxiliar para encontrar la ruta a un campo por ID
+  const findFieldPath = (
+    fieldArray: FunctionTemplateParam[],
+    fieldId: string,
+    currentPath: string[] = []
+  ): string[] | null => {
+    console.log(
+      "Finding path for ID:",
+      fieldId,
+      "in current path:",
+      currentPath
+    );
+
+    for (const field of fieldArray) {
+      if (field.id === fieldId) {
+        const foundPath = [...currentPath, field.id];
+        console.log("Found path:", foundPath);
+        return foundPath;
+      }
+
+      if (field.properties && field.properties.length > 0) {
+        const nestedPath = findFieldPath(field.properties, fieldId, [
+          ...currentPath,
+          field.id,
+        ]);
+
+        if (nestedPath) {
+          return nestedPath;
+        }
+      }
+    }
+
+    return null;
   };
 
   const editField = (field: FunctionTemplateParam, e?: React.MouseEvent) => {
@@ -204,36 +264,296 @@ export const JsonStructureEditor = ({
     }
     console.log("[JsonStructureEditor] editField called", field);
     setEditingField({ ...field });
+
+    // Buscar la ruta del campo para edición
+    const parentPath = findParentPath(fields, field.id);
+    setCurrentPath(parentPath || []);
+
     setIsModalOpen(true);
   };
 
-  const deleteField = (fieldId: string, e?: React.MouseEvent) => {
+  // Función para encontrar la ruta del padre de un campo
+  const findParentPath = (
+    fieldArray: FunctionTemplateParam[],
+    fieldId: string,
+    currentPath: string[] = []
+  ): string[] | null => {
+    // Verificar si el campo está en el nivel actual
+    const fieldIndex = fieldArray.findIndex(f => f.id === fieldId);
+    if (fieldIndex !== -1) {
+      return currentPath;
+    }
+
+    // Buscar en campos anidados
+    for (const field of fieldArray) {
+      if (field.properties && field.properties.length > 0) {
+        const childPath = [...currentPath, field.id];
+        const result = findParentPath(field.properties, fieldId, childPath);
+        if (result) {
+          return result;
+        }
+      }
+    }
+
+    return null;
+  };
+
+  const deleteField = (
+    fieldId: string,
+    e?: React.MouseEvent,
+    parentPath: string[] = []
+  ) => {
     if (e) {
       e.preventDefault();
       e.stopPropagation();
     }
-    console.log("[JsonStructureEditor] deleteField called", fieldId);
-    const updatedFields = fields.filter(f => f.id !== fieldId);
-    setFields(updatedFields);
-    setValue(`params.${paramIndex}.properties`, updatedFields);
+    console.log(
+      "[JsonStructureEditor] deleteField called",
+      fieldId,
+      "parentPath:",
+      parentPath
+    );
+
+    if (parentPath.length === 0) {
+      // Eliminar del nivel principal
+      const updatedFields = fields.filter(f => f.id !== fieldId);
+      setFields(updatedFields);
+      setValue(`params.${paramIndex}.properties`, updatedFields);
+    } else {
+      // Eliminar de un nivel anidado usando la función recursiva
+      const updatedFields = deleteNestedField(
+        [...fields],
+        parentPath,
+        0,
+        fieldId
+      );
+
+      setFields(updatedFields);
+      setValue(`params.${paramIndex}.properties`, updatedFields);
+    }
+  };
+
+  // Función recursiva para eliminar un campo en cualquier nivel de anidación
+  const deleteNestedField = (
+    fields: FunctionTemplateParam[],
+    path: string[],
+    currentIndex: number,
+    fieldToDelete: string
+  ): FunctionTemplateParam[] => {
+    console.log("deleteNestedField called with:", {
+      pathLength: path.length,
+      currentIndex,
+      currentPathSegment: path[currentIndex],
+      remainingPath: path.slice(currentIndex),
+      fieldToDelete,
+    });
+
+    // Si estamos en el último nivel del camino, eliminamos el campo
+    if (currentIndex >= path.length - 1) {
+      console.log(
+        "Reached target level, deleting field:",
+        fieldToDelete,
+        "from parent:",
+        path[currentIndex]
+      );
+      // Estamos en el nivel del objeto padre, ahora eliminamos de sus propiedades
+      const parentFieldId = path[currentIndex];
+      const parentFieldIndex = fields.findIndex(f => f.id === parentFieldId);
+
+      if (parentFieldIndex === -1) {
+        console.log("Parent field not found:", parentFieldId);
+        return fields;
+      }
+
+      const parentField = { ...fields[parentFieldIndex] };
+      if (!parentField.properties) {
+        return fields; // No hay propiedades para eliminar
+      }
+
+      // Eliminar el campo de las propiedades del padre
+      console.log("Removing field:", fieldToDelete, "from parent properties");
+      parentField.properties = parentField.properties.filter(
+        f => f.id !== fieldToDelete
+      );
+
+      const updatedFields = [...fields];
+      updatedFields[parentFieldIndex] = parentField;
+      return updatedFields;
+    }
+
+    // Buscar el campo en el camino actual
+    const fieldId = path[currentIndex];
+    const fieldIndex = fields.findIndex(f => f.id === fieldId);
+
+    // Si no encontramos el campo, devolvemos los campos sin cambios
+    if (fieldIndex === -1) {
+      console.log("Field not found in path:", fieldId);
+      return fields;
+    }
+
+    // Obtener el campo actual y asegurarnos de que tiene propiedades
+    const currentField = { ...fields[fieldIndex] };
+    if (!currentField.properties) {
+      return fields; // No hay propiedades para eliminar
+    }
+
+    // Eliminar recursivamente en las propiedades del campo
+    currentField.properties = deleteNestedField(
+      currentField.properties,
+      path,
+      currentIndex + 1,
+      fieldToDelete
+    );
+
+    // Crear una nueva lista de campos con el campo actualizado
+    const updatedFields = [...fields];
+    updatedFields[fieldIndex] = currentField;
+    return updatedFields;
   };
 
   const handleSaveField = (field: FunctionTemplateParam) => {
-    console.log("[JsonStructureEditor] handleSaveField called", field);
-    let updatedFields: FunctionTemplateParam[];
+    console.log(
+      "[JsonStructureEditor] handleSaveField called",
+      field,
+      "currentPath:",
+      currentPath
+    );
 
-    if (editingField && fields.some(f => f.id === editingField.id)) {
-      // Estamos editando un campo existente
-      updatedFields = fields.map(f => (f.id === editingField.id ? field : f));
+    if (currentPath.length === 0) {
+      // Estamos en el nivel raíz
+      let updatedFields: FunctionTemplateParam[];
+
+      if (editingField && fields.some(f => f.id === editingField.id)) {
+        // Estamos editando un campo existente
+        updatedFields = fields.map(f => (f.id === editingField.id ? field : f));
+      } else {
+        // Estamos creando un nuevo campo
+        updatedFields = [...fields, field];
+      }
+
+      setFields(updatedFields);
+      setValue(`params.${paramIndex}.properties`, updatedFields);
     } else {
-      // Estamos creando un nuevo campo
-      updatedFields = [...fields, field];
+      // Estamos en un nivel anidado
+      console.log("Updating nested field with path:", currentPath);
+
+      // Actualizar el campo anidado
+      const updatedFields = updateNestedField(
+        [...fields],
+        currentPath,
+        0,
+        field,
+        editingField?.id
+      );
+
+      console.log("Updated fields:", updatedFields);
+      setFields(updatedFields);
+      setValue(`params.${paramIndex}.properties`, updatedFields);
     }
 
-    setFields(updatedFields);
-    setValue(`params.${paramIndex}.properties`, updatedFields);
     setEditingField(null);
     setIsModalOpen(false);
+    setCurrentPath([]);
+  };
+
+  // Función recursiva para actualizar un campo anidado
+  const updateNestedField = (
+    fields: FunctionTemplateParam[],
+    path: string[],
+    currentIndex: number,
+    newField: FunctionTemplateParam,
+    originalFieldId?: string
+  ): FunctionTemplateParam[] => {
+    console.log("updateNestedField called with:", {
+      pathLength: path.length,
+      currentIndex,
+      currentPathSegment: path[currentIndex],
+      remainingPath: path.slice(currentIndex),
+      originalFieldId,
+      newFieldId: newField.id,
+    });
+
+    // Si hemos llegado al final del camino, actualizamos el campo en este nivel
+    if (currentIndex >= path.length - 1) {
+      console.log("Reached target level, updating field at path:", path);
+      // Estamos en el nivel del objeto padre, ahora actualizamos sus propiedades
+      const parentFieldId = path[currentIndex];
+      const parentFieldIndex = fields.findIndex(f => f.id === parentFieldId);
+
+      if (parentFieldIndex === -1) {
+        console.log("Parent field not found:", parentFieldId);
+        return fields;
+      }
+
+      const parentField = { ...fields[parentFieldIndex] };
+      if (!parentField.properties) {
+        parentField.properties = [];
+      }
+
+      // Verificar si estamos editando un campo existente o creando uno nuevo
+      const isNew = !originalFieldId;
+
+      if (isNew) {
+        // Crear un nuevo campo
+        console.log("Creating new field in parent:", parentFieldId);
+        parentField.properties = [...parentField.properties, newField];
+      } else {
+        // Actualizar un campo existente
+        console.log(
+          "Updating existing field:",
+          originalFieldId,
+          "to",
+          newField.id
+        );
+        const existingFieldIndex = parentField.properties.findIndex(
+          f => f.id === originalFieldId
+        );
+
+        if (existingFieldIndex !== -1) {
+          const updatedProperties = [...parentField.properties];
+          updatedProperties[existingFieldIndex] = newField;
+          parentField.properties = updatedProperties;
+        } else {
+          // Si no se encuentra, agregarlo como nuevo
+          console.log("Field not found, adding as new:", newField.id);
+          parentField.properties = [...parentField.properties, newField];
+        }
+      }
+
+      const updatedFields = [...fields];
+      updatedFields[parentFieldIndex] = parentField;
+      return updatedFields;
+    }
+
+    // Buscar el campo en el camino actual
+    const fieldId = path[currentIndex];
+    const fieldIndex = fields.findIndex(f => f.id === fieldId);
+
+    // Si no encontramos el campo, devolvemos los campos sin cambios
+    if (fieldIndex === -1) {
+      console.log("Field not found in path:", fieldId);
+      return fields;
+    }
+
+    // Obtener el campo actual y asegurarnos de que tiene propiedades
+    const currentField = { ...fields[fieldIndex] };
+    if (!currentField.properties) {
+      currentField.properties = [];
+    }
+
+    // Actualizar recursivamente las propiedades del campo
+    currentField.properties = updateNestedField(
+      currentField.properties,
+      path,
+      currentIndex + 1,
+      newField,
+      originalFieldId
+    );
+
+    // Crear una nueva lista de campos con el campo actualizado
+    const updatedFields = [...fields];
+    updatedFields[fieldIndex] = currentField;
+    return updatedFields;
   };
 
   const closeModal = (e?: React.MouseEvent) => {
@@ -244,7 +564,58 @@ export const JsonStructureEditor = ({
     console.log("[JsonStructureEditor] closeModal called");
     setEditingField(null);
     setIsModalOpen(false);
+    setCurrentPath([]);
     // No llamamos a onCloseMainModal aquí para evitar cerrar el modal principal
+  };
+
+  // Renderizar los campos de forma recursiva
+  const renderFields = (
+    fieldList: FunctionTemplateParam[],
+    parentPath: string[] = []
+  ) => {
+    return fieldList.map(field => (
+      <div key={field.id} className="space-y-1">
+        <div className="flex items-center justify-between p-2 bg-gray-50 rounded hover:bg-gray-100">
+          <span className="text-sm font-medium">
+            {field.name || "Sin nombre"}
+            {field.required && <span className="text-red-500 ml-1">*</span>}
+            <span className="text-xs text-gray-500 ml-2">({field.type})</span>
+          </span>
+          <div className="flex items-center gap-1">
+            {field.type === ParamType.OBJECT && (
+              <button
+                type="button"
+                onClick={e => addField(e, field)}
+                className="hover:bg-gray-200 rounded p-1"
+              >
+                <IoMdAdd className="w-5 h-5 text-green-600" />
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={e => editField(field, e)}
+              className="hover:bg-gray-200 rounded p-1"
+            >
+              <IoMdInformationCircle className="w-5 h-5 text-gray-600" />
+            </button>
+            <button
+              type="button"
+              onClick={e => deleteField(field.id, e, parentPath)}
+              className="hover:bg-gray-200 rounded p-1"
+            >
+              <IoMdTrash className="w-5 h-5 text-red-500" />
+            </button>
+          </div>
+        </div>
+        {field.type === ParamType.OBJECT &&
+          field.properties &&
+          field.properties.length > 0 && (
+            <div className="pl-4 border-l border-gray-300 ml-4 space-y-1">
+              {renderFields(field.properties, [...parentPath, field.id])}
+            </div>
+          )}
+      </div>
+    ));
   };
 
   return (
@@ -260,53 +631,15 @@ export const JsonStructureEditor = ({
         </Button>
       </div>
 
-      {fields.length === 0 ? (
-        <div className="text-center py-4 text-gray-500">
-          No hay campos definidos. Haz clic en "Añadir Campo" para comenzar.
-        </div>
-      ) : (
-        <div className="space-y-2">
-          {fields.map(field => (
-            <div
-              key={field.id}
-              className="flex items-center justify-between p-2 bg-gray-50 rounded-md"
-            >
-              <div className="flex items-center gap-2">
-                <span className="font-medium">{field.name}</span>
-                <span className="text-xs text-gray-500">({field.type})</span>
-                {field.required && (
-                  <span className="text-xs bg-red-100 text-red-800 px-2 py-0.5 rounded-full">
-                    Requerido
-                  </span>
-                )}
-              </div>
-              <div className="flex gap-2">
-                <button
-                  onClick={e => editField(field, e)}
-                  className="text-blue-600 hover:text-blue-800"
-                >
-                  <IoMdInformationCircle size={18} />
-                </button>
-                <button
-                  onClick={e => deleteField(field.id, e)}
-                  className="text-red-600 hover:text-red-800"
-                >
-                  <IoMdTrash size={18} />
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {isModalOpen && editingField && (
-        <JsonFieldFormModal
-          isShown={isModalOpen}
-          onClose={closeModal}
-          field={editingField}
-          onSubmit={handleSaveField}
-        />
-      )}
+      <div className="max-h-56 overflow-y-auto w-full">
+        {fields.length === 0 ? (
+          <div className="text-center py-4 text-gray-500">
+            No hay campos definidos. Haz clic en "Añadir Campo" para comenzar.
+          </div>
+        ) : (
+          <div className="space-y-1">{renderFields(fields)}</div>
+        )}
+      </div>
 
       {fields.length === 0 && (
         <div className="flex justify-center mt-4">
@@ -318,6 +651,15 @@ export const JsonStructureEditor = ({
             <IoMdAdd /> Añadir primer campo
           </Button>
         </div>
+      )}
+
+      {isModalOpen && editingField && (
+        <JsonFieldFormModal
+          isShown={isModalOpen}
+          onClose={closeModal}
+          field={editingField}
+          onSubmit={handleSaveField}
+        />
       )}
     </div>
   );
