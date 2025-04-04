@@ -81,17 +81,7 @@ const LogIn = () => {
                 required
               />
             </div>
-            <div className="flex items-center justify-between mb-[24px]">
-              <div className="flex items-center gap-[8px]">
-                <input
-                  type="checkbox"
-                  className="w-[16px] h-[16px]"
-                  id="remember"
-                />
-                <p className="text-[14px] font-medium text-[#414651]">
-                  Recordar contraseña
-                </p>
-              </div>
+            <div className="flex items-center justify-end mb-[24px]">
               <Link
                 to="/reset-password"
                 className="text-[14px] font-medium text-sofia-superDark hover:text-sofia-electricGreen hover:underline"
