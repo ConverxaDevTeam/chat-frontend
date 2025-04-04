@@ -1,9 +1,15 @@
 import React, { useState } from "react";
-import { UseFormRegister, Control, FieldError, useForm, useFieldArray } from "react-hook-form";
+import {
+  UseFormRegister,
+  Control,
+  FieldError,
+  useForm,
+  useFieldArray,
+} from "react-hook-form";
 import { ParamType } from "@interfaces/function-params.interface";
-import { 
-  FunctionTemplateCategory, 
-  FunctionTemplateApplication 
+import {
+  FunctionTemplateCategory,
+  FunctionTemplateApplication,
 } from "@interfaces/template.interface";
 import { Input } from "@components/forms/input";
 import { InputGroup } from "@components/forms/inputGroup";
@@ -12,7 +18,6 @@ import { Button } from "@components/common/Button";
 import { TextArea } from "@components/forms/textArea";
 import Modal from "@components/Modal";
 import { toast } from "react-toastify";
-import { createCategory, createApplication } from "@services/template.service";
 
 import { FormValues } from "./FunctionTemplateHooks";
 import { ParamEditorModal } from "./ParamEditorModal";
@@ -41,6 +46,7 @@ interface TemplateSelectFieldProps {
   placeholder?: string;
   tooltip?: React.ReactNode;
   helpText?: React.ReactNode;
+  onMenuOpen?: () => Promise<void> | void;
 }
 
 interface TemplateUrlFieldProps {
@@ -125,21 +131,32 @@ export const TemplateSelectField: React.FC<TemplateSelectFieldProps> = ({
   placeholder,
   tooltip,
   helpText,
-}) => (
-  <InputGroup label={label} errors={error} tooltip={tooltip}>
-    {helpText && (
-      <p className="text-gray-700 text-[12px] font-[500] leading-[16px] -mt-2 mb-2">
-        {helpText}
-      </p>
-    )}
-    <Select
-      name={name}
-      control={control}
-      options={options}
-      placeholder={placeholder}
-    />
-  </InputGroup>
-);
+  onMenuOpen,
+}) => {
+  // Implementar la lógica para manejar el evento onMenuOpen
+  const handleFocus = () => {
+    if (onMenuOpen) {
+      onMenuOpen();
+    }
+  };
+
+  return (
+    <InputGroup label={label} errors={error} tooltip={tooltip}>
+      {helpText && (
+        <p className="text-gray-700 text-[12px] font-[500] leading-[16px] -mt-2 mb-2">
+          {helpText}
+        </p>
+      )}
+      <Select
+        name={name}
+        control={control}
+        options={options}
+        placeholder={placeholder}
+        onFocus={handleFocus}
+      />
+    </InputGroup>
+  );
+};
 
 export const TemplateUrlField: React.FC<TemplateUrlFieldProps> = ({
   register,
@@ -354,7 +371,9 @@ interface CategoryModalProps {
 interface ApplicationModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (application: Omit<FunctionTemplateApplication, "id">) => Promise<void>;
+  onSave: (
+    application: Omit<FunctionTemplateApplication, "id">
+  ) => Promise<void>;
 }
 
 interface AddButtonProps {
@@ -373,15 +392,22 @@ export const AddButton: React.FC<AddButtonProps> = ({ onClick }) => (
 );
 
 // Modal para agregar categoría
-export const CategoryModal: React.FC<CategoryModalProps> = ({ isOpen, onClose, onSave }) => {
-  const { register, handleSubmit, formState: { errors }, reset } = useForm<Omit<FunctionTemplateCategory, "id">>(
-    {
-      defaultValues: {
-        name: "",
-        description: "",
-      },
-    }
-  );
+export const CategoryModal: React.FC<CategoryModalProps> = ({
+  isOpen,
+  onClose,
+  onSave,
+}) => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm<Omit<FunctionTemplateCategory, "id">>({
+    defaultValues: {
+      name: "",
+      description: "",
+    },
+  });
 
   const onSubmit = async (data: Omit<FunctionTemplateCategory, "id">) => {
     try {
@@ -417,7 +443,9 @@ export const CategoryModal: React.FC<CategoryModalProps> = ({ isOpen, onClose, o
 
         <div className="flex justify-end space-x-2 pt-4">
           <Button onClick={onClose}>Cancelar</Button>
-          <Button variant="primary" type="submit">Guardar</Button>
+          <Button variant="primary" type="submit">
+            Guardar
+          </Button>
         </div>
       </form>
     </div>
@@ -436,19 +464,26 @@ export const CategoryModal: React.FC<CategoryModalProps> = ({ isOpen, onClose, o
 };
 
 // Modal para agregar aplicación
-export const ApplicationModal: React.FC<ApplicationModalProps> = ({ isOpen, onClose, onSave }) => {
+export const ApplicationModal: React.FC<ApplicationModalProps> = ({
+  isOpen,
+  onClose,
+  onSave,
+}) => {
   const [previewImage, setPreviewImage] = useState<string | null>(null);
-  const { register, handleSubmit, formState: { errors }, reset } = useForm<Omit<FunctionTemplateApplication, "id">>(
-    {
-      defaultValues: {
-        name: "",
-        description: "",
-        image: "",
-        domain: "",
-        isDynamicDomain: false,
-      },
-    }
-  );
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm<Omit<FunctionTemplateApplication, "id">>({
+    defaultValues: {
+      name: "",
+      description: "",
+      image: "",
+      domain: "",
+      isDynamicDomain: false,
+    },
+  });
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -467,7 +502,7 @@ export const ApplicationModal: React.FC<ApplicationModalProps> = ({ isOpen, onCl
       if (previewImage) {
         data.image = previewImage;
       }
-      
+
       await onSave(data);
       reset();
       setPreviewImage(null);
@@ -541,7 +576,9 @@ export const ApplicationModal: React.FC<ApplicationModalProps> = ({ isOpen, onCl
 
         <div className="flex justify-end space-x-2 pt-4">
           <Button onClick={onClose}>Cancelar</Button>
-          <Button variant="primary" type="submit">Guardar</Button>
+          <Button variant="primary" type="submit">
+            Guardar
+          </Button>
         </div>
       </form>
     </div>
