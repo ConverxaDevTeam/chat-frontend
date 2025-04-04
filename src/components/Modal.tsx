@@ -40,9 +40,13 @@ const Modal: React.FC<ModalProps> = ({
   if (!modal) return null;
 
   const handleBackgroundClick = (e: React.MouseEvent) => {
+    // Solo cerrar si se hace clic directamente en el fondo
     if (e.target === e.currentTarget) {
       onClose();
     }
+    // Detener la propagación para evitar que los clics en modales anidados
+    // cierren los modales padres
+    e.stopPropagation();
   };
 
   return isShown
@@ -53,7 +57,10 @@ const Modal: React.FC<ModalProps> = ({
           style={{ zIndex: zindex }}
           onClick={handleBackgroundClick}
         >
-          <div className="bg-white rounded-[4px] p-6 w-auto max-w-full relative">
+          <div
+            className="bg-white rounded-[4px] p-6 w-auto max-w-full relative"
+            onClick={e => e.stopPropagation()}
+          >
             {header && (
               <Fragment>
                 <ModalHeader handleClose={onClose}>{header}</ModalHeader>

@@ -1,9 +1,7 @@
 import React, { useState } from "react";
 import { UseFormRegister, Control, FieldError } from "react-hook-form";
-import {
-  FunctionTemplate,
-  FunctionTemplateParamType,
-} from "@interfaces/template.interface";
+import { FunctionTemplate } from "@interfaces/template.interface";
+import { ParamType } from "@interfaces/function-params.interface";
 import { Input } from "@components/forms/input";
 import { InputGroup } from "@components/forms/inputGroup";
 import { Select } from "@components/forms/select";
@@ -241,7 +239,7 @@ const ParamsContent: React.FC<ParamsContentProps> = ({ control }) => {
       name,
       title: "",
       description: "",
-      type: FunctionTemplateParamType.STRING,
+      type: ParamType.STRING,
       required: false,
     });
     // Abrir el modal para editar el nuevo parámetro
