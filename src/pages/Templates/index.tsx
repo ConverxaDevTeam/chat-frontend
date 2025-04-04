@@ -6,14 +6,8 @@ import { toast } from "react-toastify";
 import { FunctionTemplate } from "@interfaces/template.interface";
 import { Input } from "@components/forms/input";
 import { Button } from "@components/common/Button";
-import FunctionTemplateCard from "@components/FunctionTemplate/FunctionTemplateCard";
 import FunctionTemplateModal from "@components/FunctionTemplate/FunctionTemplateModal";
-import {
-  createTemplate,
-  deleteTemplate,
-  getTemplates,
-  updateTemplate,
-} from "@services/template.service";
+import { createTemplate, getTemplates } from "@services/template.service";
 
 const TemplatesPage = () => {
   const { selectOrganizationId } = useSelector(
@@ -80,29 +74,6 @@ const TemplatesPage = () => {
     }
   };
 
-  const handleDeleteTemplate = async (id: number) => {
-    try {
-      await deleteTemplate(id);
-      toast.success("Template eliminado correctamente");
-      fetchTemplates();
-    } catch (error) {
-      toast.error("Error al eliminar el template");
-    }
-  };
-
-  const handleEditTemplate = async (
-    id: number,
-    template: Partial<FunctionTemplate>
-  ) => {
-    try {
-      await updateTemplate(id, template);
-      toast.success("Template actualizado correctamente");
-      fetchTemplates();
-    } catch (error) {
-      toast.error("Error al actualizar el template");
-    }
-  };
-
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
   };
@@ -161,16 +132,7 @@ const TemplatesPage = () => {
           </Button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredTemplates.map(template => (
-            <FunctionTemplateCard
-              key={template.id}
-              template={template}
-              onDelete={handleDeleteTemplate}
-              onEdit={handleEditTemplate}
-            />
-          ))}
-        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
       )}
 
       <FunctionTemplateModal
