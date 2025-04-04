@@ -6,7 +6,7 @@ import {
   FunctionTemplateApplication,
   FunctionTemplateParam,
 } from "@interfaces/template.interface";
-import { functionTemplateService } from "@services/template.service";
+import { getApplications, getCategories } from "@services/template.service";
 
 export interface FormValues {
   name: string;
@@ -59,8 +59,8 @@ export const useTemplateData = (isOpen: boolean) => {
       const fetchData = async () => {
         try {
           const [categoriesData, applicationsData] = await Promise.all([
-            functionTemplateService.getCategories(),
-            functionTemplateService.getApplications(),
+            getCategories(),
+            getApplications(),
           ]);
           setCategories(categoriesData);
           setApplications(applicationsData);

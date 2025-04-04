@@ -2,13 +2,18 @@ import React, { useState, useEffect, useRef } from "react";
 import { FiPlus, FiGrid } from "react-icons/fi";
 import { toast } from "react-toastify";
 import { FunctionTemplate } from "@interfaces/template.interface";
-import { functionTemplateService } from "@services/template.service";
 import FunctionTemplateModal from "@components/FunctionTemplate/FunctionTemplateModal";
 import { Button } from "@components/common/Button";
 import { useSelector } from "react-redux";
 import { RootState } from "@store";
 import Loading from "@components/Loading";
 import ContextMenu from "@components/ContextMenu";
+import {
+  createTemplate,
+  deleteTemplate,
+  getTemplates,
+  updateTemplate,
+} from "@services/template.service";
 
 // Tipos
 type TemplateHandlers = {
@@ -25,7 +30,7 @@ const useTemplates = (organizationId: number) => {
   const fetchTemplates = async () => {
     try {
       setIsLoading(true);
-      const data = await functionTemplateService.getTemplates(organizationId);
+      const data = await getTemplates(organizationId);
       setTemplates(data);
     } catch (error) {
       console.error("Error al cargar templates:", error);
@@ -353,13 +358,10 @@ const useTemplateOperations = (
 
       if (selectedTemplate) {
         templateData.id = selectedTemplate.id;
-        await functionTemplateService.updateTemplate(
-          templateData.id,
-          templateData
-        );
+        await updateTemplate(templateData.id, templateData);
         toast.success("Template actualizado correctamente");
       } else {
-        await functionTemplateService.createTemplate(templateData);
+        await createTemplate(templateData);
         toast.success("Template creado correctamente");
       }
 
@@ -373,7 +375,7 @@ const useTemplateOperations = (
 
   const handleDeleteTemplate = async (id: number) => {
     try {
-      await functionTemplateService.deleteTemplate(id);
+      await deleteTemplate(id);
       toast.success("Template eliminado correctamente");
       fetchTemplates();
     } catch (error) {
