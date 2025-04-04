@@ -11,6 +11,7 @@ import { Button } from "@components/common/Button";
 import { TextArea } from "@components/forms/textArea";
 import ConfigPanel from "@components/ConfigPanel";
 import Modal from "@components/Modal";
+import InfoTooltip from "@components/Common/InfoTooltip";
 import {
   useImageUpload,
   useTemplateData,
@@ -25,11 +26,15 @@ import { ParamEditorModal } from "./ParamEditorModal";
 interface TemplateNameFieldProps {
   register: UseFormRegister<FormValues>;
   error?: FieldError;
+  tooltip?: React.ReactNode;
+  helpText?: React.ReactNode;
 }
 
 interface TemplateDescriptionFieldProps {
   register: UseFormRegister<FormValues>;
   error?: FieldError;
+  tooltip?: React.ReactNode;
+  helpText?: React.ReactNode;
 }
 
 interface TemplateSelectFieldProps {
@@ -39,20 +44,28 @@ interface TemplateSelectFieldProps {
   options: Array<{ value: string; label: string }>;
   error?: FieldError;
   placeholder?: string;
+  tooltip?: React.ReactNode;
+  helpText?: React.ReactNode;
 }
 
 interface TemplateUrlFieldProps {
   register: UseFormRegister<FormValues>;
   error?: FieldError;
+  tooltip?: React.ReactNode;
+  helpText?: React.ReactNode;
 }
 
 interface TemplateTagsFieldProps {
   register: UseFormRegister<FormValues>;
+  tooltip?: React.ReactNode;
+  helpText?: React.ReactNode;
 }
 
 interface TemplateImageUploaderProps {
   previewImage: string | null;
   onImageChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  tooltip?: React.ReactNode;
+  helpText?: React.ReactNode;
 }
 
 interface ConfigContentProps {
@@ -70,11 +83,18 @@ interface FunctionTemplateModalProps {
 const TemplateNameField: React.FC<TemplateNameFieldProps> = ({
   register,
   error,
+  tooltip,
+  helpText,
 }) => (
-  <InputGroup label="Nombre" errors={error}>
+  <InputGroup label="Nombre" errors={error} tooltip={tooltip}>
+    {helpText && (
+      <p className="text-gray-700 text-[12px] font-[500] leading-[16px] -mt-2 mb-2">
+        {helpText}
+      </p>
+    )}
     <Input
-      {...register("name", { required: "El nombre es obligatorio" })}
-      placeholder="Nombre del template"
+      {...register("name", { required: "El nombre es requerido" })}
+      placeholder="Nombre de la plantilla"
       className="w-full"
     />
   </InputGroup>
@@ -83,13 +103,20 @@ const TemplateNameField: React.FC<TemplateNameFieldProps> = ({
 const TemplateDescriptionField: React.FC<TemplateDescriptionFieldProps> = ({
   register,
   error,
+  tooltip,
+  helpText,
 }) => (
-  <InputGroup label="Descripción" errors={error}>
+  <InputGroup label="Descripción" errors={error} tooltip={tooltip}>
+    {helpText && (
+      <p className="text-gray-700 text-[12px] font-[500] leading-[16px] -mt-2 mb-2">
+        {helpText}
+      </p>
+    )}
     <TextArea
       register={register("description", {
-        required: "La descripción es obligatoria",
+        required: "La descripción es requerida",
       })}
-      placeholder="Describe tu template"
+      placeholder="Descripción de la plantilla"
       className="w-full"
       rows={3}
     />
@@ -103,14 +130,20 @@ const TemplateSelectField: React.FC<TemplateSelectFieldProps> = ({
   options,
   error,
   placeholder,
+  tooltip,
+  helpText,
 }) => (
-  <InputGroup label={label} errors={error}>
+  <InputGroup label={label} errors={error} tooltip={tooltip}>
+    {helpText && (
+      <p className="text-gray-700 text-[12px] font-[500] leading-[16px] -mt-2 mb-2">
+        {helpText}
+      </p>
+    )}
     <Select
-      control={control}
       name={name}
+      control={control}
       options={options}
-      placeholder={placeholder || "Seleccionar..."}
-      rules={{ required: `Selecciona una ${label.toLowerCase()}` }}
+      placeholder={placeholder}
     />
   </InputGroup>
 );
@@ -118,8 +151,15 @@ const TemplateSelectField: React.FC<TemplateSelectFieldProps> = ({
 const TemplateUrlField: React.FC<TemplateUrlFieldProps> = ({
   register,
   error,
+  tooltip,
+  helpText,
 }) => (
-  <InputGroup label="URL del Endpoint" errors={error}>
+  <InputGroup label="URL del Endpoint" errors={error} tooltip={tooltip}>
+    {helpText && (
+      <p className="text-gray-700 text-[12px] font-[500] leading-[16px] -mt-2 mb-2">
+        {helpText}
+      </p>
+    )}
     <Input
       {...register("url", { required: "La URL es obligatoria" })}
       placeholder="https://api.example.com/endpoint"
@@ -128,8 +168,17 @@ const TemplateUrlField: React.FC<TemplateUrlFieldProps> = ({
   </InputGroup>
 );
 
-const TemplateTagsField: React.FC<TemplateTagsFieldProps> = ({ register }) => (
-  <InputGroup label="Tags (separados por comas)">
+const TemplateTagsField: React.FC<TemplateTagsFieldProps> = ({
+  register,
+  tooltip,
+  helpText,
+}) => (
+  <InputGroup label="Tags (separados por comas)" tooltip={tooltip}>
+    {helpText && (
+      <p className="text-gray-700 text-[12px] font-[500] leading-[16px] -mt-2 mb-2">
+        {helpText}
+      </p>
+    )}
     <Input
       {...register("tags")}
       placeholder="tag1, tag2, tag3"
@@ -141,8 +190,15 @@ const TemplateTagsField: React.FC<TemplateTagsFieldProps> = ({ register }) => (
 const TemplateImageUploader: React.FC<TemplateImageUploaderProps> = ({
   previewImage,
   onImageChange,
+  tooltip,
+  helpText,
 }) => (
-  <InputGroup label="Imagen (opcional)">
+  <InputGroup label="Imagen (opcional)" tooltip={tooltip}>
+    {helpText && (
+      <p className="text-gray-700 text-[12px] font-[500] leading-[16px] -mt-2 mb-2">
+        {helpText}
+      </p>
+    )}
     <div className="flex items-center space-x-4">
       {previewImage && (
         <div className="w-12 h-12 bg-gray-100 rounded overflow-hidden">
@@ -196,31 +252,74 @@ const ParamsContent: React.FC<ParamsContentProps> = ({ control }) => {
   };
 
   return (
-    <div className="space-y-4 py-4">
-      <h3 className="text-lg font-medium text-gray-700 mb-2">Parámetros</h3>
-      {fields.map((field, index) => (
-        <div key={field.id} className="border rounded p-4 mb-4">
-          <div className="flex justify-between items-center">
-            <div>
-              <h4 className="font-medium">{field.name}</h4>
-              <p className="text-sm text-gray-500 truncate">
-                {field.description}
+    <div className="py-4">
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="text-lg font-medium text-gray-700">Parámetros</h3>
+        <button
+          onClick={addNewParam}
+          className="flex items-center text-sofia-primary hover:text-sofia-primary-dark transition-colors"
+        >
+          <img
+            src="/mvp/circle-plus.svg"
+            alt="Agregar"
+            className="w-5 h-5 mr-1"
+          />
+          <span className="text-sm">Agregar parámetro</span>
+        </button>
+      </div>
+
+      <div className="grid grid-cols-1 gap-2 w-full">
+        {fields.map((field, index) => (
+          <div
+            key={field.id}
+            className="border border-gray-200 rounded-md p-3 flex justify-between items-center w-full hover:bg-gray-50 transition-colors"
+          >
+            <div className="flex-grow overflow-hidden">
+              <h4 className="font-medium truncate">{field.name}</h4>
+              <p className="text-xs text-gray-500 truncate">
+                {field.description || `Tipo: ${field.type}`}
               </p>
             </div>
-            <div className="flex space-x-2">
-              <Button onClick={() => setEditingParamIndex(index)}>
-                Editar
-              </Button>
-              <Button variant="cancel" onClick={() => remove(index)}>
-                Eliminar
-              </Button>
+            <div className="flex items-center space-x-1">
+              <button
+                onClick={() => setEditingParamIndex(index)}
+                className="p-1 rounded-full hover:bg-gray-200 transition-colors"
+                title="Editar parámetro"
+              >
+                <img
+                  src="/mvp/square-pen.svg"
+                  alt="Editar"
+                  className="w-4 h-4"
+                />
+              </button>
+              <button
+                onClick={() => remove(index)}
+                className="p-1 rounded-full hover:bg-gray-200 transition-colors"
+                title="Eliminar parámetro"
+              >
+                <img src="/mvp/trash.svg" alt="Eliminar" className="w-4 h-4" />
+              </button>
             </div>
           </div>
-        </div>
-      ))}
-      <Button variant="default" onClick={addNewParam}>
-        Agregar parámetro
-      </Button>
+        ))}
+
+        {fields.length === 0 && (
+          <div className="text-center py-6 border border-dashed border-gray-300 rounded-md">
+            <p className="text-gray-500">No hay parámetros configurados</p>
+            <button
+              onClick={addNewParam}
+              className="mt-2 text-sofia-primary hover:text-sofia-primary-dark transition-colors text-sm flex items-center mx-auto"
+            >
+              <img
+                src="/mvp/circle-plus.svg"
+                alt="Agregar"
+                className="w-4 h-4 mr-1"
+              />
+              Agregar el primer parámetro
+            </button>
+          </div>
+        )}
+      </div>
 
       {editingParamIndex !== null && (
         <ParamEditorModal
@@ -269,8 +368,18 @@ const BasicInfoContent: React.FC<BasicInfoContentProps> = ({
     <h3 className="text-lg font-medium text-gray-700 mb-2">
       Datos principales
     </h3>
-    <TemplateNameField register={register} />
-    <TemplateDescriptionField register={register} />
+    <TemplateNameField
+      register={register}
+      tooltip={<InfoTooltip text="Nombre identificativo de la función" />}
+      helpText="Introduce un nombre descriptivo para identificar esta función"
+    />
+    <TemplateDescriptionField
+      register={register}
+      tooltip={
+        <InfoTooltip text="Descripción detallada de la función y su propósito" />
+      }
+      helpText="Describe el propósito y funcionamiento de esta función"
+    />
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       <TemplateSelectField
         control={control}
@@ -278,6 +387,9 @@ const BasicInfoContent: React.FC<BasicInfoContentProps> = ({
         label="Categoría"
         options={categoryOptions}
         placeholder="Seleccionar categoría"
+        tooltip={
+          <InfoTooltip text="Categoría a la que pertenece esta función" />
+        }
       />
       <TemplateSelectField
         control={control}
@@ -285,11 +397,16 @@ const BasicInfoContent: React.FC<BasicInfoContentProps> = ({
         label="Aplicación"
         options={applicationOptions}
         placeholder="Seleccionar aplicación"
+        tooltip={<InfoTooltip text="Aplicación que utilizará esta función" />}
       />
     </div>
     <TemplateImageUploader
       previewImage={previewImage}
       onImageChange={onImageChange}
+      tooltip={
+        <InfoTooltip text="Imagen representativa de la función (opcional)" />
+      }
+      helpText="Añade una imagen que represente visualmente esta función"
     />
   </div>
 );
