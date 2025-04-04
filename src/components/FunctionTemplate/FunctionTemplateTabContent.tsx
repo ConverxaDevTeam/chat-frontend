@@ -1,16 +1,18 @@
-import React from "react";
-import { UseFormRegister, Control } from "react-hook-form";
-import InfoTooltip from "@components/Common/InfoTooltip";
+import React, { useState } from "react";
+import { Control, UseFormRegister } from "react-hook-form";
 import { FormValues } from "./FunctionTemplateHooks";
+import InfoTooltip from "@components/Common/InfoTooltip";
 import {
   TemplateNameField,
   TemplateDescriptionField,
   TemplateSelectField,
   TemplateUrlField,
   TemplateTagsField,
-  TemplateImageUploader,
   ParamsContent,
+  CategoryModal,
+  ApplicationModal,
 } from "./FunctionTemplateComponents";
+import * as templateService from "@services/template.service";
 
 interface ConfigContentProps {
   register: UseFormRegister<FormValues>;
@@ -22,8 +24,6 @@ interface BasicInfoContentProps {
   control: Control<FormValues>;
   categoryOptions: Array<{ value: string; label: string }>;
   applicationOptions: Array<{ value: string; label: string }>;
-  previewImage: string | null;
-  onImageChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 interface TabContentProps {
@@ -32,8 +32,6 @@ interface TabContentProps {
   control: Control<FormValues>;
   categoryOptions: Array<{ value: string; label: string }>;
   applicationOptions: Array<{ value: string; label: string }>;
-  previewImage: string | null;
-  onImageChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 export const ConfigContent: React.FC<ConfigContentProps> = ({
@@ -105,57 +103,138 @@ export const ConfigContent: React.FC<ConfigContentProps> = ({
 export const BasicInfoContent: React.FC<BasicInfoContentProps> = ({
   register,
   control,
-  categoryOptions,
-  applicationOptions,
-  previewImage,
-  onImageChange,
-}) => (
-  <div className="space-y-6 py-4 w-[450px]">
-    <h3 className="text-lg font-medium text-gray-700 mb-2">
-      Datos principales
-    </h3>
-    <TemplateNameField
-      register={register}
-      tooltip={<InfoTooltip text="Nombre identificativo de la función" />}
-      helpText="Introduce un nombre descriptivo para identificar esta función"
-    />
-    <TemplateDescriptionField
-      register={register}
-      tooltip={
-        <InfoTooltip text="Descripción detallada de la función y su propósito" />
-      }
-      helpText="Describe el propósito y funcionamiento de esta función"
-    />
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <TemplateSelectField
-        control={control}
-        name="categoryId"
-        label="Categoría"
-        options={categoryOptions}
-        placeholder="Seleccionar categoría"
-        tooltip={
-          <InfoTooltip text="Categoría a la que pertenece esta función" />
-        }
+  categoryOptions: initialCategoryOptions,
+  applicationOptions: initialApplicationOptions,
+}) => {
+  const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
+  const [isApplicationModalOpen, setIsApplicationModalOpen] = useState(false);
+  const [categoryOptions, setCategoryOptions] = useState(
+    initialCategoryOptions
+  );
+  const [applicationOptions, setApplicationOptions] = useState(
+    initialApplicationOptions
+  );
+
+  return (
+    <div className="space-y-6 py-4 w-[450px]">
+      <h3 className="text-lg font-medium text-gray-700 mb-2">
+        Datos principales
+      </h3>
+      <TemplateNameField
+        register={register}
+        tooltip={<InfoTooltip text="Nombre identificativo de la función" />}
+        helpText="Introduce un nombre descriptivo para identificar esta función"
       />
-      <TemplateSelectField
-        control={control}
-        name="applicationId"
-        label="Aplicación"
-        options={applicationOptions}
-        placeholder="Seleccionar aplicación"
-        tooltip={<InfoTooltip text="Aplicación que utilizará esta función" />}
+      <TemplateDescriptionField
+        register={register}
+        tooltip={
+          <InfoTooltip text="Descripción detallada de la función y su propósito" />
+        }
+        helpText="Describe el propósito y funcionamiento de esta función"
+      />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="flex items-center space-x-2">
+          <div className="flex-1">
+            <TemplateSelectField
+              control={control}
+              name="categoryId"
+              label="Categoría"
+              options={categoryOptions}
+              placeholder="Seleccionar categoría"
+              tooltip={
+                <InfoTooltip text="Categoría a la que pertenece esta función" />
+              }
+            />
+          </div>
+          <button
+            type="button"
+            onClick={() => setIsCategoryModalOpen(true)}
+            className="h-10 w-10 flex items-center justify-center text-gray-600 hover:text-gray-800"
+          >
+            <img
+              src="/mvp/circle-plus.svg"
+              alt="Añadir categoría"
+              className="w-5 h-5"
+            />
+          </button>
+        </div>
+        <div className="flex items-center space-x-2">
+          <div className="flex-1">
+            <TemplateSelectField
+              control={control}
+              name="applicationId"
+              label="Aplicación"
+              options={applicationOptions}
+              placeholder="Seleccionar aplicación"
+              tooltip={
+                <InfoTooltip text="Aplicación que utilizará esta función" />
+              }
+            />
+          </div>
+          <button
+            type="button"
+            onClick={() => setIsApplicationModalOpen(true)}
+            className="h-10 w-10 flex items-center justify-center text-gray-600 hover:text-gray-800"
+          >
+            <img
+              src="/mvp/circle-plus.svg"
+              alt="Añadir aplicación"
+              className="w-5 h-5"
+            />
+          </button>
+        </div>
+      </div>
+
+      <CategoryModal
+        isOpen={isCategoryModalOpen}
+        onClose={() => setIsCategoryModalOpen(false)}
+        onSave={async category => {
+          try {
+            // Crear la categoría usando el servicio
+            await templateService.createCategory(category);
+            // Actualizar la lista de categorías
+            const updatedCategories = await templateService.getCategories();
+            const formattedCategories = updatedCategories.map(cat => ({
+              value: cat.id.toString(),
+              label: cat.name,
+            }));
+            setCategoryOptions(formattedCategories);
+            // Cerrar el modal
+            setIsCategoryModalOpen(false);
+            return Promise.resolve();
+          } catch (error) {
+            console.error("Error al crear categoría:", error);
+            return Promise.reject(error);
+          }
+        }}
+      />
+
+      <ApplicationModal
+        isOpen={isApplicationModalOpen}
+        onClose={() => setIsApplicationModalOpen(false)}
+        onSave={async application => {
+          try {
+            // Crear la aplicación usando el servicio
+            await templateService.createApplication(application);
+            // Actualizar la lista de aplicaciones
+            const updatedApplications = await templateService.getApplications();
+            const formattedApplications = updatedApplications.map(app => ({
+              value: app.id.toString(),
+              label: app.name,
+            }));
+            setApplicationOptions(formattedApplications);
+            // Cerrar el modal
+            setIsApplicationModalOpen(false);
+            return Promise.resolve();
+          } catch (error) {
+            console.error("Error al crear aplicación:", error);
+            return Promise.reject(error);
+          }
+        }}
       />
     </div>
-    <TemplateImageUploader
-      previewImage={previewImage}
-      onImageChange={onImageChange}
-      tooltip={
-        <InfoTooltip text="Imagen representativa de la función (opcional)" />
-      }
-      helpText="Añade una imagen que represente visualmente esta función"
-    />
-  </div>
-);
+  );
+};
 
 export const TabContent: React.FC<TabContentProps> = ({
   activeTab,
@@ -163,8 +242,6 @@ export const TabContent: React.FC<TabContentProps> = ({
   control,
   categoryOptions,
   applicationOptions,
-  previewImage,
-  onImageChange,
 }) => {
   switch (activeTab) {
     case "info":
@@ -175,8 +252,6 @@ export const TabContent: React.FC<TabContentProps> = ({
             control,
             categoryOptions,
             applicationOptions,
-            previewImage,
-            onImageChange,
           }}
         />
       );
