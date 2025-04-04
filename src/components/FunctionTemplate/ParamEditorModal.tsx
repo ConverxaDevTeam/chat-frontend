@@ -1,18 +1,13 @@
-import { Controller, Control } from "react-hook-form";
+import { Controller, Control, useWatch } from "react-hook-form";
 import { InputGroup } from "@components/forms/inputGroup";
 import { Input } from "@components/forms/input";
-import Select from "@components/Select";
+import { Select } from "@components/forms/select";
 import { Button } from "@components/common/Button";
-import { FunctionTemplateParamType } from "@interfaces/template.interface";
 import { FormValues } from "./FunctionTemplateHooks";
 import Modal from "@components/Modal";
-
-interface SelectOption {
-  id: string;
-  name: string;
-  value: FunctionTemplateParamType;
-  label: string;
-}
+import { JsonStructureEditor } from "./JsonStructureEditor";
+import { ParamType } from "@interfaces/function-params.interface";
+import { useRef } from "react";
 
 type ParamEditorModalProps = {
   isOpen: boolean;
@@ -29,24 +24,26 @@ export const ParamEditorModal: React.FC<ParamEditorModalProps> = ({
   index,
   control,
 }) => {
-  const options: SelectOption[] = [
+  console.log("[ParamEditorModal] Rendering with isOpen:", isOpen);
+  const modalRef = useRef<HTMLDivElement>(null);
+  // Obtener las propiedades del parámetro actual usando useWatch
+  const properties = useWatch({ control, name: `params.${index}.properties` });
+  const options = [
     {
-      id: "text",
-      name: "text",
-      value: FunctionTemplateParamType.STRING,
+      value: ParamType.STRING,
       label: "Texto",
     },
     {
-      id: "number",
-      name: "number",
-      value: FunctionTemplateParamType.NUMBER,
+      value: ParamType.NUMBER,
       label: "Número",
     },
     {
-      id: "boolean",
-      name: "boolean",
-      value: FunctionTemplateParamType.BOOLEAN,
+      value: ParamType.BOOLEAN,
       label: "Booleano",
+    },
+    {
+      value: ParamType.OBJECT,
+      label: "Objeto",
     },
   ];
 
@@ -58,7 +55,10 @@ export const ParamEditorModal: React.FC<ParamEditorModalProps> = ({
   // Preparar el contenido del modal
   const modalContent = (
     <div className="w-full">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div
+        className="flex flex-col gap-[24px]"
+        onClick={e => e.stopPropagation()}
+      >
         <div className="mb-4">
           <Controller
             name={`params.${index}.name`}
@@ -114,13 +114,13 @@ export const ParamEditorModal: React.FC<ParamEditorModalProps> = ({
           <Controller
             name={`params.${index}.type`}
             control={control}
-            render={({ field: { onChange, value } }) => (
+            render={({ field }) => (
               <InputGroup label="Tipo">
                 <Select
+                  name={field.name}
+                  control={control}
                   options={options}
                   placeholder="Seleccionar tipo"
-                  value={value}
-                  onChange={onChange}
                 />
               </InputGroup>
             )}
@@ -137,13 +137,13 @@ export const ParamEditorModal: React.FC<ParamEditorModalProps> = ({
                   <input
                     type="checkbox"
                     id={`required-${index}`}
-                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+                    className="h-4 w-4 rounded border-gray-300 accent-sofia-electricOlive"
                     checked={value || false}
                     onChange={e => onChange(e.target.checked)}
                   />
                   <label
                     htmlFor={`required-${index}`}
-                    className="ml-2 text-sm text-gray-700"
+                    className="ml-2 text-sofia-superDark text-[14px] font-semibold leading-[16px]"
                   >
                     Este parámetro es obligatorio
                   </label>
@@ -152,27 +152,56 @@ export const ParamEditorModal: React.FC<ParamEditorModalProps> = ({
             )}
           />
         </div>
-      </div>
 
-      <div className="flex justify-between mt-6">
-        <Button variant="cancel" onClick={onRemove} type="button">
-          Eliminar parámetro
-        </Button>
-        <Button onClick={onClose} type="button" variant="primary">
-          Guardar
-        </Button>
+        {/* Mostrar el editor de estructura JSON si el tipo es OBJECT */}
+        {useWatch({ control, name: `params.${index}.type` }) ===
+          ParamType.OBJECT && (
+          <div className="mb-4">
+            <InputGroup label="Propiedades">
+              <JsonStructureEditor
+                value={properties || []}
+                setValue={(_, value) => {
+                  console.log(
+                    "[ParamEditorModal] Setting properties value:",
+                    value
+                  );
+                  control._formValues.params[index].properties = value;
+                }}
+                paramIndex={index}
+                control={control}
+              />
+            </InputGroup>
+          </div>
+        )}
+
+        <div className="flex justify-between mt-6">
+          <Button variant="cancel" onClick={onRemove} type="button">
+            Eliminar parámetro
+          </Button>
+          <Button onClick={onClose} type="button" variant="primary">
+            Guardar
+          </Button>
+        </div>
       </div>
     </div>
   );
 
+  const handleClose = () => {
+    console.log("[ParamEditorModal] handleClose called");
+    onClose();
+  };
+
   return (
     <Modal
       isShown={isOpen}
-      onClose={onClose}
+      onClose={handleClose}
       header={modalHeader}
-      zindex={1000}
+      zindex={2000}
+      modalRef={modalRef}
     >
-      {modalContent}
+      <form className="space-y-4 w-[550px]" onClick={e => e.stopPropagation()}>
+        {modalContent}
+      </form>
     </Modal>
   );
 };

@@ -1,3 +1,4 @@
+import { ParamType } from "@interfaces/function-params.interface";
 import {
   FunctionTemplate,
   FunctionTemplateApplication,
@@ -5,7 +6,6 @@ import {
   CreateFunctionTemplateDto,
   UpdateFunctionTemplateDto,
   FunctionTemplateParam,
-  FunctionTemplateParamType,
 } from "@interfaces/template.interface";
 
 // Mock data para usar temporalmente
@@ -61,7 +61,7 @@ const mockParams: FunctionTemplateParam[] = [
     name: "api_key",
     title: "API Key",
     description: "Clave de API para autenticación",
-    type: FunctionTemplateParamType.STRING,
+    type: ParamType.STRING,
     required: true,
   },
   {
@@ -69,25 +69,15 @@ const mockParams: FunctionTemplateParam[] = [
     name: "store_name",
     title: "Nombre de la Tienda",
     description: "Nombre de la tienda en Shopify",
-    type: FunctionTemplateParamType.STRING,
+    type: ParamType.STRING,
     required: true,
-  },
-  {
-    id: "3",
-    name: "environment",
-    title: "Entorno",
-    description: "Entorno de trabajo (producción o pruebas)",
-    type: FunctionTemplateParamType.ENUM,
-    enumValues: ["production", "development", "testing"],
-    required: true,
-    defaultValue: "development",
   },
   {
     id: "4",
     name: "include_orders",
     title: "Incluir Órdenes",
     description: "Incluir información de órdenes en las consultas",
-    type: FunctionTemplateParamType.BOOLEAN,
+    type: ParamType.BOOLEAN,
     required: false,
     defaultValue: true,
   },
@@ -106,7 +96,9 @@ const mockTemplates: FunctionTemplate[] = [
     tags: ["ecommerce", "productos", "inventario"],
     authenticatorId: 2,
     url: "https://{store_name}.myshopify.com/admin/api/2023-01/products.json",
-    params: [mockParams[0], mockParams[1], mockParams[3]],
+    method: "GET",
+    bodyType: "json",
+    params: [mockParams[0], mockParams[1], mockParams[2]],
     organizationId: 1,
   },
   {
@@ -120,6 +112,8 @@ const mockTemplates: FunctionTemplate[] = [
     tags: ["crm", "contactos", "clientes"],
     authenticatorId: 1,
     url: "https://api.hubspot.com/crm/v3/objects/contacts",
+    method: "GET",
+    bodyType: "json",
     params: [mockParams[0], mockParams[2]],
     organizationId: 1,
   },
@@ -177,6 +171,8 @@ export const functionTemplateService = {
       id: nextTemplateId++,
       category,
       application,
+      method: template.method || "GET",
+      bodyType: template.bodyType || "json",
     };
 
     templates.push(newTemplate);

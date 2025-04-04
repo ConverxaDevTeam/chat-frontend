@@ -1,4 +1,5 @@
 import { Autenticador } from "./autenticators.interface";
+import { ParamType } from "./function-params.interface";
 
 export interface FunctionTemplateCategory {
   id: number;
@@ -15,22 +16,16 @@ export interface FunctionTemplateApplication {
   isDynamicDomain: boolean;
 }
 
-export enum FunctionTemplateParamType {
-  STRING = "string",
-  NUMBER = "number",
-  BOOLEAN = "boolean",
-  ENUM = "enum",
-}
-
 export interface FunctionTemplateParam {
   id: string;
   name: string;
   title: string;
   description: string;
-  type: FunctionTemplateParamType;
+  type: ParamType;
   required: boolean;
   enumValues?: string[];
   defaultValue?: string | number | boolean;
+  properties?: FunctionTemplateParam[];
 }
 
 export interface FunctionTemplate {
@@ -59,6 +54,8 @@ export interface CreateFunctionTemplateDto {
   tags: string[];
   authenticatorId?: number;
   url: string;
+  method?: string;
+  bodyType?: string;
   params: FunctionTemplateParam[];
   organizationId: number;
 }
