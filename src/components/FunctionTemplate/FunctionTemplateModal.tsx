@@ -70,6 +70,7 @@ interface TemplateImageUploaderProps {
 
 interface ConfigContentProps {
   register: UseFormRegister<FormValues>;
+  control: Control<FormValues>;
 }
 
 interface FunctionTemplateModalProps {
@@ -252,7 +253,7 @@ const ParamsContent: React.FC<ParamsContentProps> = ({ control }) => {
   };
 
   return (
-    <div className="py-4">
+    <div className="py-4 w-[450px]">
       <div className="flex justify-between items-center mb-4">
         <h3 className="text-lg font-medium text-gray-700">Parámetros</h3>
         <button
@@ -268,58 +269,71 @@ const ParamsContent: React.FC<ParamsContentProps> = ({ control }) => {
         </button>
       </div>
 
-      <div className="grid grid-cols-1 gap-2 w-full">
-        {fields.map((field, index) => (
-          <div
-            key={field.id}
-            className="border border-gray-200 rounded-md p-3 flex justify-between items-center w-full hover:bg-gray-50 transition-colors"
+      {fields.length === 0 ? (
+        <div className="text-center py-6 bg-gray-50 rounded-md border border-gray-200">
+          <p className="text-gray-500 text-sm">
+            No hay parámetros configurados
+          </p>
+          <button
+            onClick={addNewParam}
+            className="mt-2 text-sofia-primary hover:text-sofia-primary-dark text-sm font-medium"
           >
-            <div className="flex-grow overflow-hidden">
-              <h4 className="font-medium truncate">{field.name}</h4>
-              <p className="text-xs text-gray-500 truncate">
-                {field.description || `Tipo: ${field.type}`}
-              </p>
-            </div>
-            <div className="flex items-center space-x-1">
-              <button
-                onClick={() => setEditingParamIndex(index)}
-                className="p-1 rounded-full hover:bg-gray-200 transition-colors"
-                title="Editar parámetro"
-              >
-                <img
-                  src="/mvp/square-pen.svg"
-                  alt="Editar"
-                  className="w-4 h-4"
-                />
-              </button>
-              <button
-                onClick={() => remove(index)}
-                className="p-1 rounded-full hover:bg-gray-200 transition-colors"
-                title="Eliminar parámetro"
-              >
-                <img src="/mvp/trash.svg" alt="Eliminar" className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
-        ))}
-
-        {fields.length === 0 && (
-          <div className="text-center py-6 border border-dashed border-gray-300 rounded-md">
-            <p className="text-gray-500">No hay parámetros configurados</p>
-            <button
-              onClick={addNewParam}
-              className="mt-2 text-sofia-primary hover:text-sofia-primary-dark transition-colors text-sm flex items-center mx-auto"
+            Agregar el primer parámetro
+          </button>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 gap-3 w-full">
+          {fields.map((field, index) => (
+            <div
+              key={field.id}
+              className="border border-gray-200 rounded-md p-3 flex justify-between items-center w-full hover:bg-gray-50 transition-colors shadow-sm"
             >
-              <img
-                src="/mvp/circle-plus.svg"
-                alt="Agregar"
-                className="w-4 h-4 mr-1"
-              />
-              Agregar el primer parámetro
-            </button>
-          </div>
-        )}
-      </div>
+              <div className="flex-grow overflow-hidden">
+                <h4 className="font-medium truncate">{field.name}</h4>
+                <div className="flex items-center mt-1">
+                  <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
+                    {field.type}
+                  </span>
+                  {field.required && (
+                    <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">
+                      Requerido
+                    </span>
+                  )}
+                </div>
+                {field.description && (
+                  <p className="text-xs text-gray-500 mt-1 truncate">
+                    {field.description}
+                  </p>
+                )}
+              </div>
+              <div className="flex items-center space-x-2 ml-2">
+                <button
+                  onClick={() => setEditingParamIndex(index)}
+                  className="p-1.5 rounded-full hover:bg-gray-200 transition-colors"
+                  title="Editar parámetro"
+                >
+                  <img
+                    src="/mvp/square-pen.svg"
+                    alt="Editar"
+                    className="w-4 h-4"
+                  />
+                </button>
+                <button
+                  onClick={() => remove(index)}
+                  className="p-1.5 rounded-full hover:bg-gray-200 transition-colors"
+                  title="Eliminar parámetro"
+                >
+                  <img
+                    src="/mvp/trash.svg"
+                    alt="Eliminar"
+                    className="w-4 h-4"
+                  />
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
 
       {editingParamIndex !== null && (
         <ParamEditorModal
@@ -329,7 +343,7 @@ const ParamsContent: React.FC<ParamsContentProps> = ({ control }) => {
             remove(editingParamIndex);
             handleCloseModal();
           }}
-          index={editingParamIndex}
+          index={editingParamIndex as number}
           control={control}
         />
       )}
@@ -337,13 +351,66 @@ const ParamsContent: React.FC<ParamsContentProps> = ({ control }) => {
   );
 };
 
-const ConfigContent: React.FC<ConfigContentProps> = ({ register }) => (
+const ConfigContent: React.FC<ConfigContentProps> = ({ register, control }) => (
   <div className="space-y-6 py-4">
     <h3 className="text-lg font-medium text-gray-700 mb-2">
       Configuración del endpoint
     </h3>
-    <TemplateUrlField register={register} />
-    <TemplateTagsField register={register} />
+    <TemplateUrlField
+      register={register}
+      tooltip={
+        <InfoTooltip
+          text="Dirección web completa del servicio al que se conectará la función. Debe incluir http:// o https:// al inicio."
+          width="220px"
+        />
+      }
+      helpText="Introduce la URL completa del endpoint que utilizará esta función"
+    />
+    <TemplateSelectField
+      control={control}
+      name="method"
+      label="Método HTTP"
+      options={[
+        { value: "GET", label: "GET" },
+        { value: "POST", label: "POST" },
+        { value: "PUT", label: "PUT" },
+        { value: "DELETE", label: "DELETE" },
+      ]}
+      placeholder="Seleccionar método"
+      tooltip={
+        <InfoTooltip
+          text="GET: Para obtener datos. POST: Para enviar datos. PUT: Para actualizar recursos. DELETE: Para eliminar recursos."
+          width="220px"
+        />
+      }
+      helpText="Selecciona cómo la función se comunicará con la URL. Usa GET para leer datos y POST para enviarlos"
+    />
+    <TemplateSelectField
+      control={control}
+      name="bodyType"
+      label="Tipo de Body"
+      options={[
+        { value: "JSON", label: "JSON" },
+        { value: "FORM_DATA", label: "Form Data" },
+      ]}
+      placeholder="Seleccionar tipo de body"
+      tooltip={
+        <InfoTooltip
+          text="JSON: Para enviar datos estructurados en formato JSON. Form Data: Para enviar datos como un formulario, útil para archivos."
+          width="220px"
+        />
+      }
+    />
+    <TemplateTagsField
+      register={register}
+      tooltip={
+        <InfoTooltip
+          text="Etiquetas para categorizar y facilitar la búsqueda de esta función"
+          width="220px"
+        />
+      }
+      helpText="Añade etiquetas separadas por comas para facilitar la búsqueda"
+    />
   </div>
 );
 
@@ -364,7 +431,7 @@ const BasicInfoContent: React.FC<BasicInfoContentProps> = ({
   previewImage,
   onImageChange,
 }) => (
-  <div className="space-y-6 py-4">
+  <div className="space-y-6 py-4 w-[450px]">
     <h3 className="text-lg font-medium text-gray-700 mb-2">
       Datos principales
     </h3>
@@ -445,7 +512,7 @@ const TabContent: React.FC<TabContentProps> = ({
         />
       );
     case "config":
-      return <ConfigContent register={register} />;
+      return <ConfigContent register={register} control={control} />;
     case "params":
       return <ParamsContent control={control} />;
     default:
