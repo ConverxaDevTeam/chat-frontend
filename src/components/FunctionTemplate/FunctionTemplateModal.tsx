@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { UseFormRegister, Control, FieldError } from "react-hook-form";
 import {
   FunctionTemplate,
@@ -19,7 +19,8 @@ import {
   useTabNavigation,
   FormValues,
 } from "./FunctionTemplateHooks";
-import { useFieldArray, Controller } from "react-hook-form";
+import { useFieldArray } from "react-hook-form";
+import { ParamEditorModal } from "./ParamEditorModal";
 
 interface TemplateNameFieldProps {
   register: UseFormRegister<FormValues>;
@@ -63,12 +64,6 @@ interface FunctionTemplateModalProps {
   onClose: () => void;
   onSubmit: (template: FunctionTemplate) => Promise<void>;
   initialData?: FunctionTemplate;
-}
-
-interface TemplateParamEditorProps {
-  onRemove: () => void;
-  index: number;
-  control: Control<FormValues>;
 }
 
 // Componentes atómicos
@@ -177,6 +172,9 @@ const ParamsContent: React.FC<ParamsContentProps> = ({ control }) => {
     control,
     name: "params",
   });
+  const [editingParamIndex, setEditingParamIndex] = useState<number | null>(
+    null
+  );
 
   const addNewParam = () => {
     const name = `param_${fields.length + 1}`;
@@ -189,22 +187,53 @@ const ParamsContent: React.FC<ParamsContentProps> = ({ control }) => {
       type: FunctionTemplateParamType.STRING,
       required: false,
     });
+    // Abrir el modal para editar el nuevo parámetro
+    setEditingParamIndex(fields.length);
+  };
+
+  const handleCloseModal = () => {
+    setEditingParamIndex(null);
   };
 
   return (
     <div className="space-y-4 py-4">
       <h3 className="text-lg font-medium text-gray-700 mb-2">Parámetros</h3>
       {fields.map((field, index) => (
-        <TemplateParamEditor
-          key={field.id}
-          onRemove={() => remove(index)}
-          index={index}
-          control={control}
-        />
+        <div key={field.id} className="border rounded p-4 mb-4">
+          <div className="flex justify-between items-center">
+            <div>
+              <h4 className="font-medium">{field.name}</h4>
+              <p className="text-sm text-gray-500 truncate">
+                {field.description}
+              </p>
+            </div>
+            <div className="flex space-x-2">
+              <Button onClick={() => setEditingParamIndex(index)}>
+                Editar
+              </Button>
+              <Button variant="cancel" onClick={() => remove(index)}>
+                Eliminar
+              </Button>
+            </div>
+          </div>
+        </div>
       ))}
       <Button variant="default" onClick={addNewParam}>
         Agregar parámetro
       </Button>
+
+      {editingParamIndex !== null && (
+        <ParamEditorModal
+          isOpen={editingParamIndex !== null}
+          onClose={handleCloseModal}
+          onRemove={() => {
+            remove(editingParamIndex);
+            handleCloseModal();
+          }}
+          index={editingParamIndex}
+          control={control}
+        />
+      )}
     </div>
   );
 };
@@ -337,79 +366,7 @@ const ActionButtons: React.FC<ActionButtonsProps> = ({
   </div>
 );
 
-const TemplateParamEditor: React.FC<TemplateParamEditorProps> = ({
-  onRemove,
-  index,
-  control,
-}) => {
-  return (
-    <div className="border rounded p-4 mb-4">
-      <div className="mb-4">
-        <Controller
-          name={`params.${index}.name`}
-          control={control}
-          render={({ field }) => (
-            <InputGroup label="Nombre del parámetro">
-              <Input {...field} placeholder="Ingrese el nombre" />
-            </InputGroup>
-          )}
-        />
-      </div>
-      <div className="mb-4">
-        <Controller
-          name={`params.${index}.title`}
-          control={control}
-          render={({ field }) => (
-            <InputGroup label="Título">
-              <Input {...field} placeholder="Ingrese el título" />
-            </InputGroup>
-          )}
-        />
-      </div>
-      <div className="mb-4">
-        <Controller
-          name={`params.${index}.description`}
-          control={control}
-          render={({ field }) => (
-            <InputGroup label="Descripción">
-              <TextArea
-                register={{
-                  ...field,
-                  name: `params.${index}.description`,
-                  onChange: async e => field.onChange(e),
-                  onBlur: async () => field.onBlur(),
-                }}
-                placeholder="Ingrese la descripción"
-              />
-            </InputGroup>
-          )}
-        />
-      </div>
-      <div className="mb-4">
-        <Controller
-          name={`params.${index}.type`}
-          control={control}
-          render={() => (
-            <InputGroup label="Tipo">
-              <Select
-                name={`params.${index}.type`}
-                control={control}
-                options={[
-                  { value: "string", label: "Texto" },
-                  { value: "number", label: "Número" },
-                  { value: "boolean", label: "Booleano" },
-                ]}
-              />
-            </InputGroup>
-          )}
-        />
-      </div>
-      <Button variant="cancel" onClick={onRemove} className="mt-4">
-        Eliminar parámetro
-      </Button>
-    </div>
-  );
-};
+// El componente TemplateParamEditor ya no es necesario porque ahora usamos ParamEditorModal
 
 const FunctionTemplateModal: React.FC<FunctionTemplateModalProps> = ({
   isOpen,
