@@ -174,11 +174,21 @@ export const ParamEditorModal: React.FC<ParamEditorModalProps> = ({
           </div>
         )}
 
-        <div className="flex justify-between mt-6">
-          <Button variant="cancel" onClick={onRemove} type="button">
+        <div className="flex justify-between mt-6 gap-4">
+          <Button
+            variant="cancel"
+            onClick={onRemove}
+            type="button"
+            className="w-1/3"
+          >
             Eliminar parámetro
           </Button>
-          <Button onClick={onClose} type="button" variant="primary">
+          <Button
+            onClick={onClose}
+            type="button"
+            variant="primary"
+            className="w-2/3"
+          >
             Guardar
           </Button>
         </div>
