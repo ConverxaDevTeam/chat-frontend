@@ -127,7 +127,38 @@ const JsonFieldFormModal = ({
           />
         </InputGroup>
 
-        <div className="flex items-center">
+        {formState.type === ParamType.OBJECT && (
+          <div className="flex flex-col items-start gap-4 self-stretch">
+            <div className="flex items-center gap-2">
+              <label className="text-sofia-superDark text-[16px] font-[600] leading-[16px]">
+                Estructura del Objeto
+              </label>
+            </div>
+            {formState.properties && formState.properties.length > 0 ? (
+              <div className="max-h-40 overflow-y-auto w-full border border-gray-200 rounded-md p-2">
+                {formState.properties.map(prop => (
+                  <div
+                    key={prop.id}
+                    className="flex justify-between items-center p-1 hover:bg-gray-50 rounded"
+                  >
+                    <span className="text-sm">
+                      {prop.name}{" "}
+                      <span className="text-xs text-gray-500">
+                        ({prop.type})
+                      </span>
+                    </span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-sm text-gray-500 p-2 border border-gray-200 rounded-md w-full">
+                No hay propiedades definidas
+              </div>
+            )}
+          </div>
+        )}
+
+        <div className="flex items-center mt-2">
           <input
             type="checkbox"
             id="required-field"
@@ -143,10 +174,14 @@ const JsonFieldFormModal = ({
           </label>
         </div>
 
-        <div className="flex justify-end mt-4">
+        <div className="flex justify-between mt-6 pt-4 border-t border-gray-200">
+          <Button onClick={handleClose} variant="cancel" className="px-6">
+            Cancelar
+          </Button>
           <Button
             onClick={e => handleSubmit(e as React.MouseEvent)}
             variant="primary"
+            className="px-8 w-2/3"
           >
             Guardar
           </Button>
@@ -619,19 +654,18 @@ export const JsonStructureEditor = ({
   };
 
   return (
-    <div className="border border-gray-200 rounded-md p-4">
+    <div className="border border-gray-200 rounded-md p-4 w-full">
       <div className="flex justify-between items-center mb-4">
         <h3 className="text-lg font-medium">Estructura del Objeto</h3>
-        <Button
-          onClick={e => addField(e as React.MouseEvent)}
-          variant="primary"
-          className="flex items-center gap-1 text-sm"
-        >
-          <IoMdAdd /> Añadir Campo
-        </Button>
       </div>
-
-      <div className="max-h-56 overflow-y-auto w-full">
+      <Button
+        onClick={e => addField(e as React.MouseEvent)}
+        variant="primary"
+        className="flex items-center gap-1 text-sm px-4 w-full"
+      >
+        <IoMdAdd /> Añadir Campo
+      </Button>
+      <div className="max-h-56 overflow-y-auto w-full mb-4">
         {fields.length === 0 ? (
           <div className="text-center py-4 text-gray-500">
             No hay campos definidos. Haz clic en "Añadir Campo" para comenzar.
@@ -640,18 +674,6 @@ export const JsonStructureEditor = ({
           <div className="space-y-1">{renderFields(fields)}</div>
         )}
       </div>
-
-      {fields.length === 0 && (
-        <div className="flex justify-center mt-4">
-          <Button
-            onClick={e => addField(e as React.MouseEvent)}
-            variant="primary"
-            className="flex items-center gap-1"
-          >
-            <IoMdAdd /> Añadir primer campo
-          </Button>
-        </div>
-      )}
 
       {isModalOpen && editingField && (
         <JsonFieldFormModal
