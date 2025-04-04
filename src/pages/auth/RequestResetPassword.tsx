@@ -39,7 +39,7 @@ export const RequestResetPassword = () => {
         <div className="bg-[#F1F5F9] rounded-lg px-[32px] pt-[53px] pb-[40px] [box-shadow:0px_4px_8px_0px_rgba(201,_217,_232,_0.8)]">
           <img className="mx-auto mb-[48px]" src="/mvp/logo.png" alt="logo" />
           <h2 className="font-semibold text-[30px] text-sofia-superDark mb-[16px] text-center">
-            Restablecer Contraseña
+            Restablecer contraseña
           </h2>
 
           <form onSubmit={requestForm.handleSubmit(handleRequestReset)}>
@@ -65,7 +65,7 @@ export const RequestResetPassword = () => {
               type="submit"
               disabled={isLoading}
             >
-              {isLoading ? "Enviando..." : "Enviar Código"}
+              {isLoading ? "Enviando..." : "Enviar código"}
             </button>
             <div className="text-center">
               <Link
