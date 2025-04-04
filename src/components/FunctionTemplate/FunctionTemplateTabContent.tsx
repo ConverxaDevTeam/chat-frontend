@@ -2,21 +2,23 @@ import React, { useCallback, useEffect, useState } from "react";
 import { Control, UseFormRegister } from "react-hook-form";
 import { FormValues } from "./FunctionTemplateHooks";
 import InfoTooltip from "@components/Common/InfoTooltip";
-import {
-  TemplateNameField,
-  TemplateDescriptionField,
-  TemplateSelectField,
-  TemplateUrlField,
-  TemplateTagsField,
-  ParamsContent,
-  CategoryModal,
-  ApplicationModal,
-} from "./FunctionTemplateComponents";
 import * as templateService from "@services/template.service";
 import {
   FunctionTemplateCategory,
   FunctionTemplateApplication,
 } from "@interfaces/template.interface";
+import {
+  TemplateUrlField,
+  TemplateSelectField,
+  TemplateTagsField,
+  TemplateNameField,
+  TemplateDescriptionField,
+} from "./FunctionTemplateBasicComponents";
+import {
+  CategoryModal,
+  ApplicationModal,
+} from "./FunctionTemplateModalComponents";
+import { ParamsContent } from "./FunctionTemplateParamComponents";
 
 interface ConfigContentProps {
   register: UseFormRegister<FormValues>;
@@ -254,12 +256,10 @@ export const TabContent: React.FC<TabContentProps> = ({
     case "info":
       return (
         <BasicInfoContent
-          {...{
-            register,
-            control,
-            categoryOptions,
-            applicationOptions,
-          }}
+          register={register}
+          control={control}
+          categoryOptions={categoryOptions}
+          applicationOptions={applicationOptions}
         />
       );
     case "config":
