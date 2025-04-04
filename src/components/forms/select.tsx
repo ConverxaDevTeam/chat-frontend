@@ -21,6 +21,7 @@ interface SelectProps<T extends FieldValues> {
   error?: FieldError;
   disabled?: boolean;
   onChange?: (value: string) => void;
+  onFocus?: () => void;
   className?: string;
 }
 
@@ -33,6 +34,7 @@ export const Select = <T extends FieldValues>({
   error,
   disabled = false,
   onChange,
+  onFocus,
   className = "",
 }: SelectProps<T>) => {
   const [touched, setTouched] = useState(false);
@@ -72,6 +74,9 @@ export const Select = <T extends FieldValues>({
                   field.onChange(e);
                   if (onChange) onChange(e.target.value);
                   setTouched(true);
+                }}
+                onFocus={() => {
+                  if (onFocus) onFocus();
                 }}
                 onBlur={() => {
                   field.onBlur();

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Control, UseFormRegister } from "react-hook-form";
 import { FormValues } from "./FunctionTemplateHooks";
 import InfoTooltip from "@components/Common/InfoTooltip";
@@ -13,6 +13,10 @@ import {
   ApplicationModal,
 } from "./FunctionTemplateComponents";
 import * as templateService from "@services/template.service";
+import {
+  FunctionTemplateCategory,
+  FunctionTemplateApplication,
+} from "@interfaces/template.interface";
 
 interface ConfigContentProps {
   register: UseFormRegister<FormValues>;
@@ -103,17 +107,58 @@ export const ConfigContent: React.FC<ConfigContentProps> = ({
 export const BasicInfoContent: React.FC<BasicInfoContentProps> = ({
   register,
   control,
-  categoryOptions: initialCategoryOptions,
-  applicationOptions: initialApplicationOptions,
+  categoryOptions: initialCategoryOptions = [],
+  applicationOptions: initialApplicationOptions = [],
 }) => {
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [isApplicationModalOpen, setIsApplicationModalOpen] = useState(false);
-  const [categoryOptions, setCategoryOptions] = useState(
-    initialCategoryOptions
-  );
-  const [applicationOptions, setApplicationOptions] = useState(
-    initialApplicationOptions
-  );
+  const [categoryOptions, setCategoryOptions] = useState<
+    Array<{ value: string; label: string }>
+  >(initialCategoryOptions);
+  const [applicationOptions, setApplicationOptions] = useState<
+    Array<{ value: string; label: string }>
+  >(initialApplicationOptions);
+
+  const loadCategories = useCallback(async () => {
+    const categories = await templateService.getCategories();
+    setCategoryOptions(
+      categories.map(category => ({
+        value: String(category.id),
+        label: category.name,
+      }))
+    );
+  }, []);
+
+  const loadApplications = useCallback(async () => {
+    const applications = await templateService.getApplications();
+    setApplicationOptions(
+      applications.map(application => ({
+        value: String(application.id),
+        label: application.name,
+      }))
+    );
+  }, []);
+
+  useEffect(() => {
+    loadCategories();
+    loadApplications();
+  }, [loadCategories, loadApplications]);
+
+  const handleCategorySave = async (
+    category: Omit<FunctionTemplateCategory, "id">
+  ) => {
+    await templateService.createCategory(category);
+    await loadCategories();
+    setIsCategoryModalOpen(false);
+  };
+
+  const handleApplicationSave = async (
+    application: Omit<FunctionTemplateApplication, "id">
+  ) => {
+    await templateService.createApplication(application);
+    await loadApplications();
+    setIsApplicationModalOpen(false);
+  };
 
   return (
     <div className="space-y-6 py-4 w-[450px]">
@@ -133,104 +178,66 @@ export const BasicInfoContent: React.FC<BasicInfoContentProps> = ({
         helpText="Describe el propósito y funcionamiento de esta función"
       />
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="flex items-center space-x-2">
-          <div className="flex-1">
-            <TemplateSelectField
-              control={control}
-              name="categoryId"
-              label="Categoría"
-              options={categoryOptions}
-              placeholder="Seleccionar categoría"
-              tooltip={
-                <InfoTooltip text="Categoría a la que pertenece esta función" />
-              }
-            />
+        <div className="flex flex-col gap-4">
+          <div className="flex items-center gap-2">
+            <h3 className="text-base font-semibold">Categoría</h3>
+            <button
+              type="button"
+              className="text-primary-500 hover:text-primary-600"
+              onClick={() => setIsCategoryModalOpen(true)}
+            >
+              <img
+                src="/mvp/plus.svg"
+                alt="Agregar categoría"
+                className="w-5 h-5"
+              />
+            </button>
           </div>
-          <button
-            type="button"
-            onClick={() => setIsCategoryModalOpen(true)}
-            className="h-10 w-10 flex items-center justify-center text-gray-600 hover:text-gray-800"
-          >
-            <img
-              src="/mvp/circle-plus.svg"
-              alt="Añadir categoría"
-              className="w-5 h-5"
-            />
-          </button>
+          <TemplateSelectField
+            control={control}
+            name="categoryId"
+            label=""
+            options={categoryOptions}
+            placeholder="Selecciona una categoría"
+            onMenuOpen={loadCategories}
+          />
         </div>
-        <div className="flex items-center space-x-2">
-          <div className="flex-1">
-            <TemplateSelectField
-              control={control}
-              name="applicationId"
-              label="Aplicación"
-              options={applicationOptions}
-              placeholder="Seleccionar aplicación"
-              tooltip={
-                <InfoTooltip text="Aplicación que utilizará esta función" />
-              }
-            />
+        <div className="flex flex-col gap-4">
+          <div className="flex items-center gap-2">
+            <h3 className="text-base font-semibold">Aplicación</h3>
+            <button
+              type="button"
+              className="text-primary-500 hover:text-primary-600"
+              onClick={() => setIsApplicationModalOpen(true)}
+            >
+              <img
+                src="/mvp/plus.svg"
+                alt="Agregar aplicación"
+                className="w-5 h-5"
+              />
+            </button>
           </div>
-          <button
-            type="button"
-            onClick={() => setIsApplicationModalOpen(true)}
-            className="h-10 w-10 flex items-center justify-center text-gray-600 hover:text-gray-800"
-          >
-            <img
-              src="/mvp/circle-plus.svg"
-              alt="Añadir aplicación"
-              className="w-5 h-5"
-            />
-          </button>
+          <TemplateSelectField
+            control={control}
+            name="applicationId"
+            label=""
+            options={applicationOptions}
+            placeholder="Selecciona una aplicación"
+            onMenuOpen={loadApplications}
+          />
         </div>
       </div>
 
       <CategoryModal
         isOpen={isCategoryModalOpen}
         onClose={() => setIsCategoryModalOpen(false)}
-        onSave={async category => {
-          try {
-            // Crear la categoría usando el servicio
-            await templateService.createCategory(category);
-            // Actualizar la lista de categorías
-            const updatedCategories = await templateService.getCategories();
-            const formattedCategories = updatedCategories.map(cat => ({
-              value: cat.id.toString(),
-              label: cat.name,
-            }));
-            setCategoryOptions(formattedCategories);
-            // Cerrar el modal
-            setIsCategoryModalOpen(false);
-            return Promise.resolve();
-          } catch (error) {
-            console.error("Error al crear categoría:", error);
-            return Promise.reject(error);
-          }
-        }}
+        onSave={handleCategorySave}
       />
 
       <ApplicationModal
         isOpen={isApplicationModalOpen}
         onClose={() => setIsApplicationModalOpen(false)}
-        onSave={async application => {
-          try {
-            // Crear la aplicación usando el servicio
-            await templateService.createApplication(application);
-            // Actualizar la lista de aplicaciones
-            const updatedApplications = await templateService.getApplications();
-            const formattedApplications = updatedApplications.map(app => ({
-              value: app.id.toString(),
-              label: app.name,
-            }));
-            setApplicationOptions(formattedApplications);
-            // Cerrar el modal
-            setIsApplicationModalOpen(false);
-            return Promise.resolve();
-          } catch (error) {
-            console.error("Error al crear aplicación:", error);
-            return Promise.reject(error);
-          }
-        }}
+        onSave={handleApplicationSave}
       />
     </div>
   );
