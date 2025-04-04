@@ -16,6 +16,8 @@ export interface FormValues {
   tags: string[];
   authenticatorId?: number;
   url: string;
+  method: string;
+  bodyType: string;
   params: FunctionTemplateParam[];
 }
 
@@ -110,6 +112,8 @@ export const useTemplateForm = (
       applicationId: undefined,
       tags: [],
       url: "",
+      method: "GET",
+      bodyType: "JSON",
       params: [],
     },
   });
@@ -126,6 +130,8 @@ export const useTemplateForm = (
         setValue("tags", initialData.tags || []);
         setValue("authenticatorId", initialData.authenticatorId);
         setValue("url", initialData.url);
+        setValue("method", initialData.method || "GET");
+        setValue("bodyType", initialData.bodyType || "JSON");
         setValue("params", initialData.params || []);
       } else {
         // Modo creación: reiniciar formulario

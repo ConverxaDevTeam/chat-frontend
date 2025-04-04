@@ -1,7 +1,6 @@
 import { Controller, Control } from "react-hook-form";
 import { InputGroup } from "@components/forms/inputGroup";
 import { Input } from "@components/forms/input";
-import { TextArea } from "@components/forms/textArea";
 import Select from "@components/Select";
 import { Button } from "@components/common/Button";
 import { FunctionTemplateParamType } from "@interfaces/template.interface";
@@ -52,7 +51,9 @@ export const ParamEditorModal: React.FC<ParamEditorModalProps> = ({
   ];
 
   // Preparar el header del modal
-  const modalHeader = <div>Editar Parámetro</div>;
+  const modalHeader = (
+    <h2 className="text-xl font-semibold">Editar Parámetro</h2>
+  );
 
   // Preparar el contenido del modal
   const modalContent = (
@@ -62,15 +63,12 @@ export const ParamEditorModal: React.FC<ParamEditorModalProps> = ({
           <Controller
             name={`params.${index}.name`}
             control={control}
-            render={({ field }) => (
+            render={({ field: { onChange, value } }) => (
               <InputGroup label="Nombre del parámetro">
                 <Input
                   placeholder="Ingrese el nombre"
-                  register={{
-                    ...field,
-                    onChange: async e => await field.onChange(e),
-                    onBlur: async () => await field.onBlur(),
-                  }}
+                  value={value || ""}
+                  onChange={e => onChange(e.target.value)}
                 />
               </InputGroup>
             )}
@@ -81,15 +79,12 @@ export const ParamEditorModal: React.FC<ParamEditorModalProps> = ({
           <Controller
             name={`params.${index}.title`}
             control={control}
-            render={({ field }) => (
+            render={({ field: { onChange, value } }) => (
               <InputGroup label="Título">
                 <Input
                   placeholder="Ingrese el título"
-                  register={{
-                    ...field,
-                    onChange: async e => await field.onChange(e),
-                    onBlur: async () => await field.onBlur(),
-                  }}
+                  value={value || ""}
+                  onChange={e => onChange(e.target.value)}
                 />
               </InputGroup>
             )}
@@ -100,16 +95,15 @@ export const ParamEditorModal: React.FC<ParamEditorModalProps> = ({
           <Controller
             name={`params.${index}.description`}
             control={control}
-            render={({ field }) => (
+            render={({ field: { onChange, value, ref } }) => (
               <InputGroup label="Descripción">
-                <TextArea
+                <textarea
                   placeholder="Ingrese la descripción"
-                  register={{
-                    ...field,
-                    onChange: async e => await field.onChange(e),
-                    onBlur: async () => await field.onBlur(),
-                  }}
+                  value={value || ""}
+                  onChange={e => onChange(e.target.value)}
+                  ref={ref}
                   rows={3}
+                  className="flex px-3 py-4 items-center gap-[11px] bg-[#FCFCFC] self-stretch rounded-[4px] border border-sofia-darkBlue text-sofia-superDark text-[14px] font-normal leading-normal w-full"
                 />
               </InputGroup>
             )}
@@ -120,13 +114,40 @@ export const ParamEditorModal: React.FC<ParamEditorModalProps> = ({
           <Controller
             name={`params.${index}.type`}
             control={control}
-            render={({ field }) => (
+            render={({ field: { onChange, value } }) => (
               <InputGroup label="Tipo">
                 <Select
                   options={options}
                   placeholder="Seleccionar tipo"
-                  {...field}
+                  value={value}
+                  onChange={onChange}
                 />
+              </InputGroup>
+            )}
+          />
+        </div>
+
+        <div className="mb-4">
+          <Controller
+            name={`params.${index}.required`}
+            control={control}
+            render={({ field: { onChange, value } }) => (
+              <InputGroup label="Requerido">
+                <div className="flex items-center">
+                  <input
+                    type="checkbox"
+                    id={`required-${index}`}
+                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+                    checked={value || false}
+                    onChange={e => onChange(e.target.checked)}
+                  />
+                  <label
+                    htmlFor={`required-${index}`}
+                    className="ml-2 text-sm text-gray-700"
+                  >
+                    Este parámetro es obligatorio
+                  </label>
+                </div>
               </InputGroup>
             )}
           />
@@ -134,10 +155,12 @@ export const ParamEditorModal: React.FC<ParamEditorModalProps> = ({
       </div>
 
       <div className="flex justify-between mt-6">
-        <Button variant="cancel" onClick={onRemove}>
+        <Button variant="cancel" onClick={onRemove} type="button">
           Eliminar parámetro
         </Button>
-        <Button onClick={onClose}>Guardar</Button>
+        <Button onClick={onClose} type="button" variant="primary">
+          Guardar
+        </Button>
       </div>
     </div>
   );

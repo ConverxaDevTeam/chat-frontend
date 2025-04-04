@@ -45,6 +45,8 @@ export interface FunctionTemplate {
   authenticatorId?: number;
   authenticator?: Autenticador;
   url: string;
+  method: string;
+  bodyType: string;
   params: FunctionTemplateParam[];
   organizationId: number;
 }
@@ -69,5 +71,7 @@ export interface UpdateFunctionTemplateDto {
   tags?: string[];
   authenticatorId?: number;
   url?: string;
+  method?: string;
+  bodyType?: string;
   params?: FunctionTemplateParam[];
 }
