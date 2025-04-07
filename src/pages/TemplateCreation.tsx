@@ -444,7 +444,7 @@ const TemplateCreation: React.FC = () => {
         onSubmit={templateData =>
           handleSubmit(templateData, selectedTemplate, handleCloseModal)
         }
-        initialData={selectedTemplate}
+        templateId={selectedTemplate?.id}
       />
     </div>
   );
