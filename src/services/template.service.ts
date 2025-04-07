@@ -21,7 +21,7 @@ export const getTemplates = async (
   try {
     // Definir el tipo correcto para la respuesta
     interface TemplateResponse {
-      items: FunctionTemplate[];
+      items: Array<FunctionTemplate & { tags: { name: string }[] }>;
       total: number;
       page: number;
       limit: number;
@@ -32,17 +32,14 @@ export const getTemplates = async (
       { params }
     );
 
-    // Extraer el array de items de la respuesta
-    if (
-      response.data &&
-      response.data.items &&
-      Array.isArray(response.data.items)
-    ) {
-      return response.data.items;
-    }
-    // Si no hay items o no es un array, devolver array vacío
-    console.warn("No se encontraron templates en la respuesta:", response.data);
-    return [];
+    return (
+      response.data?.items?.map(template => ({
+        ...template,
+        tags: template.tags.map(tag =>
+          typeof tag === "object" ? (tag as { name: string }).name : tag
+        ),
+      })) || []
+    );
   } catch (error) {
     console.error("Error al obtener templates:", error);
     return [];
