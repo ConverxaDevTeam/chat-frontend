@@ -43,8 +43,7 @@ export const getTemplates = async (
       })) || []
     );
   } catch (error) {
-    console.error("Error al obtener templates:", error);
-    return [];
+    throw handleServiceError(error, "Error al obtener templates");
   }
 };
 
@@ -55,12 +54,23 @@ export const getTemplateById = async (
   id: number
 ): Promise<FunctionTemplate | null> => {
   try {
-    const response = await axios.get<FunctionTemplate>(
+    const response = await axiosInstance.get<FunctionTemplate>(
       apiUrls.functionTemplates.byId(id)
     );
-    return response.data;
-  } catch {
-    return null;
+
+    // Convertir params de objeto a array
+    const template = response.data;
+    if (
+      template.params &&
+      typeof template.params === "object" &&
+      !Array.isArray(template.params)
+    ) {
+      template.params = Object.values(template.params);
+    }
+
+    return template;
+  } catch (error) {
+    throw handleServiceError(error, "Error al obtener template por ID");
   }
 };
 
@@ -70,36 +80,40 @@ export const getTemplateById = async (
 export const createTemplate = async (
   template: CreateFunctionTemplateDto
 ): Promise<FunctionTemplate> => {
-  const response = await axiosInstance.post<FunctionTemplate>(
-    apiUrls.functionTemplates.base(),
-    template
-  );
-  return response.data;
+  try {
+    const response = await axiosInstance.post<FunctionTemplate>(
+      apiUrls.functionTemplates.base(),
+      template
+    );
+    return response.data;
+  } catch (error) {
+    throw handleServiceError(error, "Error al crear template");
+  }
+};
+
+const handleServiceError = (error: unknown, defaultMessage: string): never => {
+  const errorMessage = axios.isAxiosError(error)
+    ? error.response?.data?.message || defaultMessage
+    : defaultMessage;
+  toast.error(errorMessage);
+  throw new Error(errorMessage);
 };
 
 /**
  * Actualizar un template existente
  */
 export const updateTemplate = async (
-  id: number,
-  updateData: UpdateFunctionTemplateDto
+  templateId: number,
+  template: UpdateFunctionTemplateDto
 ): Promise<FunctionTemplate> => {
   try {
-    const response = await axiosInstance.put<FunctionTemplate>(
-      apiUrls.functionTemplates.byId(id),
-      updateData
+    const { data } = await axiosInstance.put<FunctionTemplate>(
+      apiUrls.functionTemplates.byId(templateId),
+      template
     );
-    return response.data;
-  } catch (error: unknown) {
-    if (axios.isAxiosError(error)) {
-      const errorMessage =
-        error.response?.data?.message || "Error al actualizar el template";
-      toast.error(errorMessage);
-      throw new Error(errorMessage);
-    }
-    const unknownError = "Error desconocido al actualizar el template";
-    toast.error(unknownError);
-    throw new Error(unknownError);
+    return data;
+  } catch (error) {
+    throw handleServiceError(error, "Error al actualizar el template");
   }
 };
 
@@ -110,8 +124,8 @@ export const deleteTemplate = async (id: number): Promise<boolean> => {
   try {
     await axiosInstance.delete(apiUrls.functionTemplates.byId(id));
     return true;
-  } catch {
-    return false;
+  } catch (error) {
+    throw handleServiceError(error, "Error al eliminar template");
   }
 };
 
@@ -119,10 +133,14 @@ export const deleteTemplate = async (id: number): Promise<boolean> => {
  * Obtener todas las categorías disponibles
  */
 export const getCategories = async (): Promise<FunctionTemplateCategory[]> => {
-  const response = await axiosInstance.get<FunctionTemplateCategory[]>(
-    apiUrls.functionTemplates.categories()
-  );
-  return response.data;
+  try {
+    const response = await axiosInstance.get<FunctionTemplateCategory[]>(
+      apiUrls.functionTemplates.categories()
+    );
+    return response.data;
+  } catch (error) {
+    throw handleServiceError(error, "Error al obtener categorías");
+  }
 };
 
 /**
@@ -131,10 +149,14 @@ export const getCategories = async (): Promise<FunctionTemplateCategory[]> => {
 export const getApplications = async (): Promise<
   FunctionTemplateApplication[]
 > => {
-  const response = await axiosInstance.get<FunctionTemplateApplication[]>(
-    apiUrls.functionTemplates.applications()
-  );
-  return response.data;
+  try {
+    const response = await axiosInstance.get<FunctionTemplateApplication[]>(
+      apiUrls.functionTemplates.applications()
+    );
+    return response.data;
+  } catch (error) {
+    throw handleServiceError(error, "Error al obtener aplicaciones");
+  }
 };
 
 /**
@@ -143,11 +165,15 @@ export const getApplications = async (): Promise<
 export const createCategory = async (
   category: Omit<FunctionTemplateCategory, "id">
 ): Promise<FunctionTemplateCategory> => {
-  const response = await axiosInstance.post<FunctionTemplateCategory>(
-    apiUrls.functionTemplates.categories(),
-    category
-  );
-  return response.data;
+  try {
+    const response = await axiosInstance.post<FunctionTemplateCategory>(
+      apiUrls.functionTemplates.categories(),
+      category
+    );
+    return response.data;
+  } catch (error) {
+    throw handleServiceError(error, "Error al crear categoría");
+  }
 };
 
 /**
@@ -157,32 +183,29 @@ export const createApplication = async (
   application: Omit<FunctionTemplateApplication, "id">,
   imageFile?: File
 ): Promise<FunctionTemplateApplication> => {
-  // Si hay un archivo de imagen, usar FormData
-  if (imageFile) {
-    const formData = new FormData();
-    formData.append("name", application.name);
-    if (application.description) {
-      formData.append("description", application.description);
+  try {
+    if (imageFile) {
+      const formData = new FormData();
+      formData.append("name", application.name);
+      if (application.description)
+        formData.append("description", application.description);
+      if (application.domain) formData.append("domain", application.domain);
+      formData.append("isDynamicDomain", String(application.isDynamicDomain));
+      formData.append("image", imageFile);
+
+      const { data } = await axiosInstance.post<FunctionTemplateApplication>(
+        apiUrls.functionTemplates.applications(),
+        formData
+      );
+      return data;
     }
-    if (application.domain) formData.append("domain", application.domain);
-    formData.append("isDynamicDomain", String(application.isDynamicDomain));
-    formData.append("image", imageFile);
-    const response = await axios.post<FunctionTemplateApplication>(
-      apiUrls.functionTemplates.applications(),
-      formData,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      }
-    );
-    return response.data;
-  } else {
-    // Si no hay imagen, enviar como JSON normal (aunque no debería ocurrir ya que la imagen es requerida)
-    const response = await axiosInstance.post<FunctionTemplateApplication>(
+
+    const { data } = await axios.post<FunctionTemplateApplication>(
       apiUrls.functionTemplates.applications(),
       application
     );
-    return response.data;
+    return data;
+  } catch (error) {
+    throw handleServiceError(error, "Error al crear la aplicación");
   }
 };
