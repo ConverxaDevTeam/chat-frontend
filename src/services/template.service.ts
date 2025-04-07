@@ -2,6 +2,7 @@ import { toast } from "react-toastify";
 import axios from "axios";
 import {
   FunctionTemplate,
+  FunctionTemplateParam,
   FunctionTemplateApplication,
   FunctionTemplateCategory,
   CreateFunctionTemplateDto,
@@ -58,16 +59,24 @@ export const getTemplateById = async (
       apiUrls.functionTemplates.byId(id)
     );
 
-    // Convertir params de objeto a array
-    const template = response.data;
-    if (
-      template.params &&
-      typeof template.params === "object" &&
-      !Array.isArray(template.params)
-    ) {
-      template.params = Object.values(template.params);
-    }
+    // Función recursiva para convertir params de objeto a array
+    const convertParamsToArray = (
+      params:
+        | Record<string, FunctionTemplateParam>
+        | FunctionTemplateParam[]
+        | undefined
+    ): FunctionTemplateParam[] => {
+      if (!params || Array.isArray(params)) return params || [];
 
+      const paramsArray = Object.values(params);
+      return paramsArray.map((param: FunctionTemplateParam) => ({
+        ...param,
+        properties: convertParamsToArray(param.properties),
+      }));
+    };
+
+    const template = response.data;
+    template.params = convertParamsToArray(template.params);
     return template;
   } catch (error) {
     throw handleServiceError(error, "Error al obtener template por ID");
