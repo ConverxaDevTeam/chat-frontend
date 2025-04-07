@@ -22,7 +22,8 @@ interface ApplicationModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: (
-    application: Omit<FunctionTemplateApplication, "id">
+    application: Omit<FunctionTemplateApplication, "id">,
+    imageFile: File
   ) => Promise<void>;
 }
 
@@ -105,6 +106,8 @@ export const ApplicationModal: React.FC<ApplicationModalProps> = ({
   onSave,
 }) => {
   const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imageError, setImageError] = useState<string | null>(null);
   const {
     register,
     handleSubmit,
@@ -123,6 +126,7 @@ export const ApplicationModal: React.FC<ApplicationModalProps> = ({
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      setImageFile(file);
       const reader = new FileReader();
       reader.onloadend = () => {
         setPreviewImage(reader.result as string);
@@ -133,14 +137,18 @@ export const ApplicationModal: React.FC<ApplicationModalProps> = ({
 
   const onSubmit = async (data: Omit<FunctionTemplateApplication, "id">) => {
     try {
-      // Agregar la imagen al objeto si existe
-      if (previewImage) {
-        data.image = previewImage;
+      // Validar que exista una imagen
+      if (!imageFile) {
+        setImageError("La imagen es requerida");
+        return;
       }
-
-      await onSave(data);
+      // Enviar los datos con el archivo de imagen
+      await onSave(data, imageFile);
+      // Resetear el formulario
       reset();
       setPreviewImage(null);
+      setImageFile(null);
+      setImageError(null);
       onClose();
       toast.success("Aplicación creada exitosamente");
     } catch (error) {
@@ -189,7 +197,10 @@ export const ApplicationModal: React.FC<ApplicationModalProps> = ({
           </label>
         </div>
 
-        <InputGroup label="Imagen (recomendado)">
+        <InputGroup
+          label="Imagen"
+          errors={imageError ? { message: imageError } : undefined}
+        >
           <div className="flex items-center space-x-4">
             {previewImage && (
               <div className="w-12 h-12 bg-gray-100 rounded overflow-hidden">

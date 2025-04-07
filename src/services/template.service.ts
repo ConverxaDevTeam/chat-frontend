@@ -147,11 +147,35 @@ export const createCategory = async (
  * Crear una nueva aplicación
  */
 export const createApplication = async (
-  application: Omit<FunctionTemplateApplication, "id">
+  application: Omit<FunctionTemplateApplication, "id">,
+  imageFile?: File
 ): Promise<FunctionTemplateApplication> => {
-  const response = await axiosInstance.post<FunctionTemplateApplication>(
-    apiUrls.functionTemplates.applications(),
-    application
-  );
-  return response.data;
+  // Si hay un archivo de imagen, usar FormData
+  if (imageFile) {
+    const formData = new FormData();
+    formData.append("name", application.name);
+    if (application.description) {
+      formData.append("description", application.description);
+    }
+    if (application.domain) formData.append("domain", application.domain);
+    formData.append("isDynamicDomain", String(application.isDynamicDomain));
+    formData.append("image", imageFile);
+    const response = await axiosInstance.post<FunctionTemplateApplication>(
+      apiUrls.functionTemplates.applications(),
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+    return response.data;
+  } else {
+    // Si no hay imagen, enviar como JSON normal (aunque no debería ocurrir ya que la imagen es requerida)
+    const response = await axiosInstance.post<FunctionTemplateApplication>(
+      apiUrls.functionTemplates.applications(),
+      application
+    );
+    return response.data;
+  }
 };

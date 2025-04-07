@@ -155,9 +155,10 @@ export const BasicInfoContent: React.FC<BasicInfoContentProps> = ({
   };
 
   const handleApplicationSave = async (
-    application: Omit<FunctionTemplateApplication, "id">
+    application: Omit<FunctionTemplateApplication, "id">,
+    imageFile: File
   ) => {
-    await templateService.createApplication(application);
+    await templateService.createApplication(application, imageFile);
     await loadApplications();
     setIsApplicationModalOpen(false);
   };
