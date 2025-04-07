@@ -77,6 +77,20 @@ export const getTemplateById = async (
 
     const template = response.data;
     template.params = convertParamsToArray(template.params);
+
+    // Convertir tags a array de strings (extraer name de cada objeto)
+    if (template.tags) {
+      const tagsArray = Array.isArray(template.tags)
+        ? template.tags
+        : Object.values(template.tags);
+
+      template.tags = tagsArray
+        .map((tag: unknown) => (tag as { name: string }).name || "")
+        .filter(Boolean);
+    } else {
+      template.tags = [];
+    }
+
     return template;
   } catch (error) {
     throw handleServiceError(error, "Error al obtener template por ID");
