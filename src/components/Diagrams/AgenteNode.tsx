@@ -56,6 +56,21 @@ const AgenteNode = (props: CustomTypeNodeProps<AgentData>) => {
     },
     {
       child: (
+        <div className="flex items-center gap-[10px]">
+          <img
+            src="/mvp/layout-grid-plus.svg"
+            alt="Agregar aplicación"
+            className="w-4 h-4"
+          />
+          <span className="text-[#001126] text-[14px] font-[500] leading-normal">
+            Agregar aplicación
+          </span>
+        </div>
+      ),
+      onClick: () => setEventOpen(ActionType.ADD_APPLICATION),
+    },
+    {
+      child: (
         <div className="relative flex items-center gap-[10px]">
           <img
             src="/mvp/bot.svg"
