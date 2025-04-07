@@ -72,3 +72,10 @@ export interface UpdateFunctionTemplateDto {
   bodyType?: string;
   params?: FunctionTemplateParam[];
 }
+
+export interface PaginatedTemplateResponse {
+  data: FunctionTemplate[];
+  total: number;
+  page: number;
+  limit: number;
+}
