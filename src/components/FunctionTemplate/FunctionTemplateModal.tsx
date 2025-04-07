@@ -10,7 +10,7 @@ import {
 } from "./FunctionTemplateHooks";
 import { ActionButtons } from "./FunctionTemplateBasicComponents";
 import { TabContent } from "./FunctionTemplateTabContent";
-import { getTemplateById } from "@services/template.service"; // Assuming getTemplateById is defined in a template service file
+import { getTemplateById } from "@services/template.service";
 
 interface FunctionTemplateModalProps {
   isOpen: boolean;
@@ -25,27 +25,15 @@ const FunctionTemplateModal: React.FC<FunctionTemplateModalProps> = ({
   onSubmit,
   templateId,
 }) => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [initialData, setInitialData] = useState<Partial<FunctionTemplate>>({});
+  const [initialData, setInitialData] = useState<FunctionTemplate | null>(null);
 
   useEffect(() => {
-    const loadTemplateData = async () => {
-      if (!templateId) {
-        setInitialData({});
-        return;
-      }
-
-      try {
-        setIsLoading(true);
-        const template = await getTemplateById(templateId);
-        if (template) setInitialData(template);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    loadTemplateData();
-  }, [templateId]);
+    if (isOpen && templateId) {
+      getTemplateById(templateId).then(setInitialData);
+    } else {
+      setInitialData(null);
+    }
+  }, [isOpen, templateId]);
 
   // No se utiliza imagen en este formulario
   const { register, handleSubmit, control, processSubmit } = useTemplateForm(
@@ -113,7 +101,7 @@ const FunctionTemplateModal: React.FC<FunctionTemplateModalProps> = ({
       header={modalHeader}
       zindex={1000}
     >
-      {isLoading ? <div>Cargando...</div> : modalContent}
+      {modalContent}
     </Modal>
   );
 };
