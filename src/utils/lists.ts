@@ -53,6 +53,17 @@ export const sidebarLinks = [
     img: "share-android.svg",
     role: [OrganizationRoleType.OWNER],
   },
+  {
+    to: "/templateUsage",
+    text: "Usar Templates",
+    active: ["/templateUsage"],
+    img: "file-code.svg",
+    role: [
+      OrganizationRoleType.OWNER,
+      OrganizationRoleType.ADMIN,
+      OrganizationRoleType.USER,
+    ],
+  },
 ];
 
 export const sidebarAdminLinks = [
