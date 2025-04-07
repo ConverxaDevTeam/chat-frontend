@@ -173,7 +173,6 @@ export const useTemplateForm = (
         applicationId,
         tags: processedTags as string[],
         id: initialData?.id || 0,
-        organizationId: initialData?.organizationId || 1,
       };
 
       await onSubmit(templateData);

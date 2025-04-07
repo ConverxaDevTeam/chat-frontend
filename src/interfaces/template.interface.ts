@@ -11,7 +11,7 @@ export interface FunctionTemplateApplication {
   id: number;
   name: string;
   description?: string;
-  image?: string;
+  image: string;
   domain?: string;
   isDynamicDomain: boolean;
 }
@@ -43,7 +43,6 @@ export interface FunctionTemplate {
   method: string;
   bodyType: string;
   params: FunctionTemplateParam[];
-  organizationId: number;
 }
 
 export interface CreateFunctionTemplateDto {
@@ -57,7 +56,6 @@ export interface CreateFunctionTemplateDto {
   method?: string;
   bodyType?: string;
   params: FunctionTemplateParam[];
-  organizationId: number;
 }
 
 export interface UpdateFunctionTemplateDto {
