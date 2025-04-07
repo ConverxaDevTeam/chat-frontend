@@ -1,3 +1,5 @@
+import { toast } from "react-toastify";
+import axios from "axios";
 import {
   FunctionTemplate,
   FunctionTemplateApplication,
@@ -53,7 +55,7 @@ export const getTemplateById = async (
   id: number
 ): Promise<FunctionTemplate | null> => {
   try {
-    const response = await axiosInstance.get<FunctionTemplate>(
+    const response = await axios.get<FunctionTemplate>(
       apiUrls.functionTemplates.byId(id)
     );
     return response.data;
@@ -81,15 +83,23 @@ export const createTemplate = async (
 export const updateTemplate = async (
   id: number,
   updateData: UpdateFunctionTemplateDto
-): Promise<FunctionTemplate | null> => {
+): Promise<FunctionTemplate> => {
   try {
-    const response = await axiosInstance.patch<FunctionTemplate>(
+    const response = await axiosInstance.put<FunctionTemplate>(
       apiUrls.functionTemplates.byId(id),
       updateData
     );
     return response.data;
-  } catch {
-    return null;
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error)) {
+      const errorMessage =
+        error.response?.data?.message || "Error al actualizar el template";
+      toast.error(errorMessage);
+      throw new Error(errorMessage);
+    }
+    const unknownError = "Error desconocido al actualizar el template";
+    toast.error(unknownError);
+    throw new Error(unknownError);
   }
 };
 
@@ -157,7 +167,7 @@ export const createApplication = async (
     if (application.domain) formData.append("domain", application.domain);
     formData.append("isDynamicDomain", String(application.isDynamicDomain));
     formData.append("image", imageFile);
-    const response = await axiosInstance.post<FunctionTemplateApplication>(
+    const response = await axios.post<FunctionTemplateApplication>(
       apiUrls.functionTemplates.applications(),
       formData,
       {
