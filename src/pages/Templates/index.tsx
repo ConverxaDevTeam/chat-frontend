@@ -26,7 +26,7 @@ const TemplatesPage = () => {
 
     try {
       setIsLoading(true);
-      const data = await getTemplates(selectOrganizationId);
+      const data = await getTemplates();
       setTemplates(data);
       setFilteredTemplates(data);
     } catch (error) {

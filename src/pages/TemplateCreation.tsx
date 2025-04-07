@@ -4,8 +4,6 @@ import { toast } from "react-toastify";
 import { FunctionTemplate } from "@interfaces/template.interface";
 import FunctionTemplateModal from "@components/FunctionTemplate/FunctionTemplateModal";
 import { Button } from "@components/common/Button";
-import { useSelector } from "react-redux";
-import { RootState } from "@store";
 import Loading from "@components/Loading";
 import ContextMenu from "@components/ContextMenu";
 import {
@@ -23,14 +21,14 @@ type TemplateHandlers = {
 };
 
 // Hook personalizado para manejar templates
-const useTemplates = (organizationId: number) => {
+const useTemplates = () => {
   const [templates, setTemplates] = useState<FunctionTemplate[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   const fetchTemplates = async () => {
     try {
       setIsLoading(true);
-      const data = await getTemplates(organizationId);
+      const data = await getTemplates();
       setTemplates(data);
     } catch (error) {
       console.error("Error al cargar templates:", error);
@@ -344,18 +342,13 @@ const TemplateTable: React.FC<{
 };
 
 // Hook para manejar operaciones de templates
-const useTemplateOperations = (
-  organizationId: number,
-  fetchTemplates: () => Promise<void>
-) => {
+const useTemplateOperations = (fetchTemplates: () => Promise<void>) => {
   const handleSubmit = async (
     templateData: FunctionTemplate,
     selectedTemplate: FunctionTemplate | undefined,
     handleCloseModal: () => void
   ) => {
     try {
-      templateData.organizationId = organizationId;
-
       if (selectedTemplate) {
         templateData.id = selectedTemplate.id;
         await updateTemplate(templateData.id, templateData);
@@ -410,18 +403,12 @@ const useConditionalRendering = (
 
 // Componente principal
 const TemplateCreation: React.FC = () => {
-  // Obtener organización del usuario
-  const { myOrganizations } = useSelector((state: RootState) => state.auth);
-  const organizationId = myOrganizations[0]?.organization?.id || 0;
-
   // Usar hooks personalizados
-  const { templates, isLoading, fetchTemplates } = useTemplates(organizationId);
+  const { templates, isLoading, fetchTemplates } = useTemplates();
   const { isModalOpen, selectedTemplate, handleOpenModal, handleCloseModal } =
     useTemplateModal();
-  const { handleSubmit, handleDeleteTemplate } = useTemplateOperations(
-    organizationId,
-    fetchTemplates
-  );
+  const { handleSubmit, handleDeleteTemplate } =
+    useTemplateOperations(fetchTemplates);
 
   // Manejador para editar template
   const handleEditTemplate = async (

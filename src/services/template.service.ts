@@ -1,156 +1,52 @@
-import { ParamType } from "@interfaces/function-params.interface";
 import {
   FunctionTemplate,
   FunctionTemplateApplication,
   FunctionTemplateCategory,
   CreateFunctionTemplateDto,
   UpdateFunctionTemplateDto,
-  FunctionTemplateParam,
 } from "@interfaces/template.interface";
-
-// Mock data para usar temporalmente
-const mockCategories: FunctionTemplateCategory[] = [
-  { id: 1, name: "E-commerce", description: "Plantillas para tiendas online" },
-  { id: 2, name: "CRM", description: "Plantillas para gestión de clientes" },
-  { id: 3, name: "ERP", description: "Plantillas para gestión empresarial" },
-  {
-    id: 4,
-    name: "Marketing",
-    description: "Plantillas para campañas de marketing",
-  },
-];
-
-const mockApplications: FunctionTemplateApplication[] = [
-  {
-    id: 1,
-    name: "Shopify",
-    description: "Plataforma de comercio electrónico",
-    image: "/demo/app-icons/shopify.png",
-    domain: "myshopify.com",
-    isDynamicDomain: true,
-  },
-  {
-    id: 2,
-    name: "HubSpot",
-    description: "Software de CRM",
-    image: "/demo/app-icons/hubspot.png",
-    domain: "app.hubspot.com",
-    isDynamicDomain: false,
-  },
-  {
-    id: 3,
-    name: "Salesforce",
-    description: "Plataforma CRM",
-    image: "/demo/app-icons/salesforce.png",
-    domain: "salesforce.com",
-    isDynamicDomain: true,
-  },
-  {
-    id: 4,
-    name: "SAP",
-    description: "Sistema ERP",
-    image: "/demo/app-icons/sap.png",
-    domain: "sap.com",
-    isDynamicDomain: false,
-  },
-];
-
-const mockParams: FunctionTemplateParam[] = [
-  {
-    id: "1",
-    name: "api_key",
-    title: "API Key",
-    description: "Clave de API para autenticación",
-    type: ParamType.STRING,
-    required: true,
-  },
-  {
-    id: "2",
-    name: "store_name",
-    title: "Nombre de la Tienda",
-    description: "Nombre de la tienda en Shopify",
-    type: ParamType.STRING,
-    required: true,
-  },
-  {
-    id: "4",
-    name: "include_orders",
-    title: "Incluir Órdenes",
-    description: "Incluir información de órdenes en las consultas",
-    type: ParamType.BOOLEAN,
-    required: false,
-    defaultValue: true,
-  },
-];
-
-// Mock data inicial para templates
-const mockTemplates: FunctionTemplate[] = [
-  {
-    id: 1,
-    name: "Shopify - Productos",
-    description: "Obtener productos desde Shopify",
-    categoryId: 1,
-    category: mockCategories[0],
-    applicationId: 1,
-    application: mockApplications[0],
-    tags: ["ecommerce", "productos", "inventario"],
-    authenticatorId: 2,
-    url: "https://{store_name}.myshopify.com/admin/api/2023-01/products.json",
-    method: "GET",
-    bodyType: "json",
-    params: [mockParams[0], mockParams[1], mockParams[2]],
-    organizationId: 1,
-  },
-  {
-    id: 2,
-    name: "HubSpot - Contactos",
-    description: "Gestionar contactos en HubSpot",
-    categoryId: 2,
-    category: mockCategories[1],
-    applicationId: 2,
-    application: mockApplications[1],
-    tags: ["crm", "contactos", "clientes"],
-    authenticatorId: 1,
-    url: "https://api.hubspot.com/crm/v3/objects/contacts",
-    method: "GET",
-    bodyType: "json",
-    params: [mockParams[0], mockParams[2]],
-    organizationId: 1,
-  },
-];
-
-// Estado compartido (mutable)
-let templates = [...mockTemplates];
-let nextTemplateId = templates.length + 1;
+import { axiosInstance } from "@store/actions/auth";
+import { apiUrls } from "@config/config";
 
 /**
- * Obtener todos los templates para una organización
+ * Obtener templates con paginación y búsqueda
  */
 export const getTemplates = async (
-  organizationId: number
+  params: {
+    search?: string;
+    page?: number;
+    limit?: number;
+  } = {}
 ): Promise<FunctionTemplate[]> => {
-  return templates
-    .filter(t => t.organizationId === organizationId)
-    .map(template => {
-      // Asegurarse de que cada template tenga los objetos completos de categoría y aplicación
-      const category =
-        template.category ||
-        (template.categoryId
-          ? mockCategories.find(c => c.id === Number(template.categoryId))
-          : undefined);
+  try {
+    // Definir el tipo correcto para la respuesta
+    interface TemplateResponse {
+      items: FunctionTemplate[];
+      total: number;
+      page: number;
+      limit: number;
+    }
 
-      const application =
-        template.application ||
-        (template.applicationId
-          ? mockApplications.find(a => a.id === Number(template.applicationId))
-          : undefined);
+    const response = await axiosInstance.get<TemplateResponse>(
+      apiUrls.functionTemplates.base(),
+      { params }
+    );
 
-      return {
-        ...template,
-        category,
-        application,
-      };
-    });
+    // Extraer el array de items de la respuesta
+    if (
+      response.data &&
+      response.data.items &&
+      Array.isArray(response.data.items)
+    ) {
+      return response.data.items;
+    }
+    // Si no hay items o no es un array, devolver array vacío
+    console.warn("No se encontraron templates en la respuesta:", response.data);
+    return [];
+  } catch (error) {
+    console.error("Error al obtener templates:", error);
+    return [];
+  }
 };
 
 /**
@@ -159,8 +55,14 @@ export const getTemplates = async (
 export const getTemplateById = async (
   id: number
 ): Promise<FunctionTemplate | null> => {
-  const template = templates.find(t => t.id === id);
-  return template || null;
+  try {
+    const response = await axiosInstance.get<FunctionTemplate>(
+      apiUrls.functionTemplates.byId(id)
+    );
+    return response.data;
+  } catch {
+    return null;
+  }
 };
 
 /**
@@ -169,22 +71,11 @@ export const getTemplateById = async (
 export const createTemplate = async (
   template: CreateFunctionTemplateDto
 ): Promise<FunctionTemplate> => {
-  const category = mockCategories.find(c => c.id === template.categoryId);
-  const application = mockApplications.find(
-    a => a.id === template.applicationId
+  const response = await axiosInstance.post<FunctionTemplate>(
+    apiUrls.functionTemplates.base(),
+    template
   );
-
-  const newTemplate: FunctionTemplate = {
-    ...template,
-    id: nextTemplateId++,
-    category,
-    application,
-    method: template.method || "GET",
-    bodyType: template.bodyType || "json",
-  };
-
-  templates.push(newTemplate);
-  return newTemplate;
+  return response.data;
 };
 
 /**
@@ -194,45 +85,37 @@ export const updateTemplate = async (
   id: number,
   updateData: UpdateFunctionTemplateDto
 ): Promise<FunctionTemplate | null> => {
-  const index = templates.findIndex(t => t.id === id);
-  if (index === -1) return null;
-
-  const updatedTemplate: FunctionTemplate = {
-    ...templates[index],
-    ...updateData,
-  };
-
-  // Actualizar category y application si fueron modificados
-  if (updateData.categoryId) {
-    updatedTemplate.category = mockCategories.find(
-      c => c.id === updateData.categoryId
+  try {
+    const response = await axiosInstance.patch<FunctionTemplate>(
+      apiUrls.functionTemplates.byId(id),
+      updateData
     );
+    return response.data;
+  } catch {
+    return null;
   }
-
-  if (updateData.applicationId) {
-    updatedTemplate.application = mockApplications.find(
-      a => a.id === updateData.applicationId
-    );
-  }
-
-  templates[index] = updatedTemplate;
-  return updatedTemplate;
 };
 
 /**
  * Eliminar un template
  */
 export const deleteTemplate = async (id: number): Promise<boolean> => {
-  const initialLength = templates.length;
-  templates = templates.filter(t => t.id !== id);
-  return templates.length !== initialLength;
+  try {
+    await axiosInstance.delete(apiUrls.functionTemplates.byId(id));
+    return true;
+  } catch {
+    return false;
+  }
 };
 
 /**
  * Obtener todas las categorías disponibles
  */
 export const getCategories = async (): Promise<FunctionTemplateCategory[]> => {
-  return [...mockCategories];
+  const response = await axiosInstance.get<FunctionTemplateCategory[]>(
+    apiUrls.functionTemplates.categories()
+  );
+  return response.data;
 };
 
 /**
@@ -241,7 +124,10 @@ export const getCategories = async (): Promise<FunctionTemplateCategory[]> => {
 export const getApplications = async (): Promise<
   FunctionTemplateApplication[]
 > => {
-  return [...mockApplications];
+  const response = await axiosInstance.get<FunctionTemplateApplication[]>(
+    apiUrls.functionTemplates.applications()
+  );
+  return response.data;
 };
 
 /**
@@ -250,12 +136,11 @@ export const getApplications = async (): Promise<
 export const createCategory = async (
   category: Omit<FunctionTemplateCategory, "id">
 ): Promise<FunctionTemplateCategory> => {
-  const newCategory: FunctionTemplateCategory = {
-    ...category,
-    id: mockCategories.length + 1,
-  };
-  mockCategories.push(newCategory);
-  return newCategory;
+  const response = await axiosInstance.post<FunctionTemplateCategory>(
+    apiUrls.functionTemplates.categories(),
+    category
+  );
+  return response.data;
 };
 
 /**
@@ -264,10 +149,9 @@ export const createCategory = async (
 export const createApplication = async (
   application: Omit<FunctionTemplateApplication, "id">
 ): Promise<FunctionTemplateApplication> => {
-  const newApplication: FunctionTemplateApplication = {
-    ...application,
-    id: mockApplications.length + 1,
-  };
-  mockApplications.push(newApplication);
-  return newApplication;
+  const response = await axiosInstance.post<FunctionTemplateApplication>(
+    apiUrls.functionTemplates.applications(),
+    application
+  );
+  return response.data;
 };
