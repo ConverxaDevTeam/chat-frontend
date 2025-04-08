@@ -47,18 +47,31 @@ export const ActionButtons = ({
 );
 
 // Componente para mostrar la información de la función
+// Función auxiliar para extraer el path de una URL
+const getPathFromUrl = (url: string): string => {
+  try {
+    const urlObj = new URL(url);
+    return urlObj.pathname + urlObj.search + urlObj.hash;
+  } catch (e) {
+    // Si no es una URL válida, devolvemos la cadena original
+    return url;
+  }
+};
+
 export const FunctionContent = ({
   template,
   authenticators,
   selectedAuthenticatorId,
   onAuthenticatorChange,
   onManageAuthenticators,
+  onDomainChange,
 }: {
   template: FunctionTemplate;
   authenticators: AuthenticatorType[];
   selectedAuthenticatorId?: number;
   onAuthenticatorChange: (authenticatorId?: number) => void;
   onManageAuthenticators: () => void;
+  onDomainChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }) => {
   return (
     <div className="space-y-6">
@@ -172,9 +185,34 @@ export const FunctionContent = ({
             Dirección de la función
           </h4>
         </div>
-        <div className="mt-1 p-2 bg-gray-50 rounded-md border border-gray-200 text-gray-600 break-all text-sm">
-          {template.url}
-        </div>
+        {template.application?.isDynamicDomain ? (
+          <div className="space-y-3">
+            <div className="flex flex-col">
+              <label className="text-xs text-gray-500 mb-1">
+                Dominio personalizado
+              </label>
+              <input
+                type="text"
+                className="p-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="https://ejemplo.com"
+                defaultValue={template.application?.domain || ""}
+                onChange={onDomainChange}
+              />
+            </div>
+            <div>
+              <label className="text-xs text-gray-500 mb-1 block">
+                Ruta de la función
+              </label>
+              <div className="mt-1 p-2 bg-gray-50 rounded-md border border-gray-200 text-gray-600 break-all text-sm">
+                {getPathFromUrl(template.url)}
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="mt-1 p-2 bg-gray-50 rounded-md border border-gray-200 text-gray-600 break-all text-sm">
+            {template.url}
+          </div>
+        )}
       </div>
     </div>
   );
