@@ -9,8 +9,7 @@ import {
 import { ParamConfigItem, WizardFormValues } from "./types";
 import { Button } from "@components/common/Button";
 import { Input } from "@components/forms/input";
-import { Toggle } from "@components/forms/toggle";
-import { useState } from "react";
+import { CollapsibleCard, ParamItem, PropertyInput } from "./ParamComponents";
 
 // Componente para los botones de acción
 export const ActionButtons = ({
@@ -259,31 +258,7 @@ export const ParamsContent = ({
             type={property.type}
             required={property.required}
           >
-            {property.type === ParamType.STRING && (
-              <Input
-                placeholder={`Valor para ${property.name}`}
-                className="w-full p-2 border rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                value=""
-                onChange={() => {}}
-              />
-            )}
-
-            {property.type === ParamType.NUMBER && (
-              <Input
-                type="number"
-                placeholder={`Valor para ${property.name}`}
-                className="w-full p-2 border rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                value=""
-                onChange={() => {}}
-              />
-            )}
-
-            {property.type === ParamType.BOOLEAN && (
-              <div className="flex items-center gap-2">
-                <Toggle checked={false} onChange={() => {}} />
-                <span className="text-sm">No</span>
-              </div>
-            )}
+            <PropertyInput property={property} value="" onChange={() => {}} />
 
             {property.type === ParamType.OBJECT &&
               renderObjectProperties({
@@ -295,65 +270,6 @@ export const ParamsContent = ({
               })}
           </CollapsibleCard>
         ))}
-      </div>
-    );
-  };
-
-  const CollapsibleCard = ({
-    title,
-    description,
-    type,
-    required = false,
-    children,
-  }: {
-    title: string;
-    description?: string;
-    type: ParamType;
-    required?: boolean;
-    children: React.ReactNode;
-  }) => {
-    const [isOpen, setIsOpen] = useState(false);
-
-    return (
-      <div className="border rounded-lg overflow-hidden">
-        <div
-          className="flex items-center justify-between p-3 bg-gray-50 cursor-pointer"
-          onClick={() => setIsOpen(!isOpen)}
-        >
-          <div className="flex items-center gap-2">
-            <span className="font-medium">{title}</span>
-            <span className="text-xs px-2 py-0.5 bg-gray-100 rounded">
-              {type === ParamType.STRING
-                ? "Texto"
-                : type === ParamType.NUMBER
-                  ? "Número"
-                  : type === ParamType.BOOLEAN
-                    ? "Sí/No"
-                    : "Objeto"}
-            </span>
-            {required && (
-              <span className="text-xs px-2 py-0.5 bg-red-50 text-red-600 rounded">
-                Requerido
-              </span>
-            )}
-          </div>
-          <div className="flex items-center gap-2">
-            <img
-              src={`/mvp/chevron-${isOpen ? "down" : "right"}.svg`}
-              className="w-4 h-4"
-              alt={isOpen ? "Collapse" : "Expand"}
-            />
-          </div>
-        </div>
-
-        {isOpen && (
-          <div className="p-3 bg-white">
-            {description && (
-              <p className="text-xs text-gray-500 mb-2">{description}</p>
-            )}
-            {children}
-          </div>
-        )}
       </div>
     );
   };
@@ -391,138 +307,16 @@ export const ParamsContent = ({
           </div>
         ) : (
           Object.entries(params).map(([paramId, param]) => (
-            <div
+            <ParamItem
               key={paramId}
-              className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden"
-            >
-              {/* Encabezado del parámetro */}
-              <div className="flex items-center justify-between p-4 border-b border-gray-100">
-                <div className="flex items-center gap-2">
-                  <h4 className="font-medium text-gray-800">{param.name}</h4>
-                  {param.required && (
-                    <span className="px-2 py-0.5 bg-red-50 text-red-600 text-xs rounded-full font-medium">
-                      Requerido
-                    </span>
-                  )}
-                </div>
-                <div className="flex items-center gap-3">
-                  <span className="px-2 py-1 bg-blue-50 text-blue-600 text-xs rounded-full">
-                    {param.type === ParamType.OBJECT
-                      ? "Objeto"
-                      : param.type === ParamType.STRING
-                        ? "Texto"
-                        : param.type === ParamType.NUMBER
-                          ? "Número"
-                          : "Sí/No"}
-                  </span>
-                  <div className="flex items-center gap-1">
-                    <span className="text-xs text-gray-500 mr-1">
-                      {watchedParams[paramId]?.enabled
-                        ? "Activado"
-                        : "Desactivado"}
-                    </span>
-                    <label className="relative inline-flex items-center cursor-pointer">
-                      <input
-                        type="checkbox"
-                        className="sr-only peer"
-                        {...register(`params.${paramId}.enabled`)}
-                        checked={watchedParams[paramId]?.enabled}
-                        onChange={e =>
-                          handleToggleParam(paramId, e.target.checked)
-                        }
-                      />
-                      <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-600"></div>
-                    </label>
-                  </div>
-                </div>
-              </div>
-
-              {/* Campo de entrada para tipos simples */}
-              {param.type !== ParamType.OBJECT ? (
-                <div className="p-4">
-                  {param.type === ParamType.STRING ? (
-                    <div className="flex flex-col">
-                      <textarea
-                        className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${!watchedParams[paramId]?.enabled ? "bg-gray-50 text-gray-400" : ""}`}
-                        rows={3}
-                        placeholder={`Ingresa un valor para ${param.name}`}
-                        disabled={!watchedParams[paramId]?.enabled}
-                        value={watchedParams[paramId]?.value || ""}
-                        onChange={e =>
-                          handleValueChange(paramId, e.target.value)
-                        }
-                      />
-                    </div>
-                  ) : (
-                    <div className="flex items-center">
-                      {param.type === ParamType.BOOLEAN ? (
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input
-                            type="checkbox"
-                            className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
-                            disabled={!watchedParams[paramId]?.enabled}
-                            checked={watchedParams[paramId]?.value === "true"}
-                            onChange={e =>
-                              handleValueChange(
-                                paramId,
-                                e.target.checked ? "true" : "false"
-                              )
-                            }
-                          />
-                          <span
-                            className={`${!watchedParams[paramId]?.enabled ? "text-gray-400" : "text-gray-700"}`}
-                          >
-                            {watchedParams[paramId]?.value === "true"
-                              ? "Sí"
-                              : "No"}
-                          </span>
-                        </label>
-                      ) : (
-                        <Input
-                          type={
-                            param.type === ParamType.NUMBER ? "number" : "text"
-                          }
-                          className={`w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 ${!watchedParams[paramId]?.enabled ? "bg-gray-50 text-gray-400" : ""}`}
-                          placeholder={`Ingresa un valor para ${param.name}`}
-                          disabled={!watchedParams[paramId]?.enabled}
-                          value={watchedParams[paramId]?.value || ""}
-                          onChange={e =>
-                            handleValueChange(paramId, e.target.value)
-                          }
-                        />
-                      )}
-                    </div>
-                  )}
-                  <p className="mt-2 text-xs text-gray-500">
-                    {param.required
-                      ? "Este campo es obligatorio para que la función opere correctamente."
-                      : "Este campo es opcional. Puedes dejarlo en blanco si no lo necesitas."}
-                  </p>
-                </div>
-              ) : (
-                /* Renderizado para parámetros tipo objeto */
-                <div className="p-4">
-                  <div className="bg-gray-50 p-3 rounded-md border border-gray-200 mb-2">
-                    <div className="flex items-center gap-2 mb-2">
-                      <img
-                        src="/mvp/code-square.svg"
-                        alt="Objeto"
-                        className="w-4 h-4"
-                      />
-                      <span className="text-sm font-medium text-gray-700">
-                        Estructura del objeto
-                      </span>
-                    </div>
-                    {renderObjectProperties(param)}
-                  </div>
-                  <p className="mt-2 text-xs text-gray-500">
-                    {param.required
-                      ? "Este objeto es obligatorio para que la función opere correctamente."
-                      : "Este objeto es opcional. Puedes dejarlo en blanco si no lo necesitas."}
-                  </p>
-                </div>
-              )}
-            </div>
+              paramId={paramId}
+              param={param}
+              watchedParams={watchedParams}
+              register={register}
+              handleToggleParam={handleToggleParam}
+              handleValueChange={handleValueChange}
+              renderObjectProperties={renderObjectProperties}
+            />
           ))
         )}
       </div>
