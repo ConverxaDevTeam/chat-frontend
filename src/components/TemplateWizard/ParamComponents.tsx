@@ -8,7 +8,6 @@ import { Toggle } from "@components/forms/toggle";
 type CollapsibleCardProps = {
   title: string;
   description?: string;
-  type: ParamType;
   required?: boolean;
   children: React.ReactNode;
 };
@@ -16,7 +15,6 @@ type CollapsibleCardProps = {
 export const CollapsibleCard = ({
   title,
   description,
-  type,
   required = false,
   children,
 }: CollapsibleCardProps) => {
@@ -30,15 +28,6 @@ export const CollapsibleCard = ({
       >
         <div className="flex items-center gap-2">
           <span className="font-medium">{title}</span>
-          <span className="text-xs px-2 py-0.5 bg-gray-100 rounded">
-            {type === ParamType.STRING
-              ? "Texto"
-              : type === ParamType.NUMBER
-                ? "Número"
-                : type === ParamType.BOOLEAN
-                  ? "Sí/No"
-                  : "Objeto"}
-          </span>
           {required && (
             <span className="text-xs px-2 py-0.5 bg-red-50 text-red-600 rounded">
               Requerido
@@ -73,8 +62,81 @@ type ParamItemProps = {
   register: UseFormRegister<WizardFormValues>;
   handleToggleParam: (paramId: string, enabled: boolean) => void;
   handleValueChange: (paramId: string, value: string) => void;
-  renderObjectProperties: (param: ParamConfigItem) => React.ReactNode;
 };
+
+const ParamHeader = ({
+  name,
+  required,
+}: {
+  name: string;
+  required: boolean;
+}) => (
+  <div className="flex items-center gap-2">
+    <h4 className="font-medium text-gray-800">{name}</h4>
+    {required && (
+      <span className="px-2 py-0.5 bg-red-50 text-red-600 text-xs rounded-full font-medium">
+        Requerido
+      </span>
+    )}
+  </div>
+);
+
+const ParamTypeBadge = ({ type }: { type: ParamType }) => {
+  const typeText = {
+    [ParamType.OBJECT]: "Objeto",
+    [ParamType.STRING]: "Texto",
+    [ParamType.NUMBER]: "Número",
+    [ParamType.BOOLEAN]: "Sí/No",
+  }[type];
+
+  return (
+    <span className="px-2 py-1 bg-blue-50 text-blue-600 text-xs rounded-full">
+      {typeText}
+    </span>
+  );
+};
+
+const ParamToggle = ({
+  register,
+  paramId,
+  enabled,
+  handleToggleParam,
+}: {
+  register: UseFormRegister<WizardFormValues>;
+  paramId: string;
+  enabled?: boolean;
+  handleToggleParam: (paramId: string, enabled: boolean) => void;
+}) => (
+  <div className="flex items-center gap-1">
+    <span className="text-xs text-gray-500 mr-1">
+      {enabled ? "Activado" : "Desactivado"}
+    </span>
+    <label className="relative inline-flex items-center cursor-pointer">
+      <input
+        type="checkbox"
+        className="sr-only peer"
+        {...register(`params.${paramId}.enabled`)}
+        checked={enabled}
+        onChange={e => handleToggleParam(paramId, e.target.checked)}
+      />
+      <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-600"></div>
+    </label>
+  </div>
+);
+
+const ParamDescription = ({
+  required,
+  isObject = false,
+}: {
+  required: boolean;
+  isObject?: boolean;
+}) => (
+  <p className="mt-2 text-xs text-gray-500">
+    {required
+      ? `Este ${isObject ? "objeto" : "campo"} es obligatorio para que la función opere correctamente.`
+      : `Este ${isObject ? "objeto" : "campo"} es opcional. Puedes dejarlo en blanco si no lo necesitas.`}
+  </p>
+);
 
 export const ParamItem = ({
   paramId,
@@ -83,83 +145,31 @@ export const ParamItem = ({
   register,
   handleToggleParam,
   handleValueChange,
-  renderObjectProperties,
 }: ParamItemProps) => {
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
       <div className="flex items-center justify-between p-4 border-b border-gray-100">
-        <div className="flex items-center gap-2">
-          <h4 className="font-medium text-gray-800">{param.name}</h4>
-          {param.required && (
-            <span className="px-2 py-0.5 bg-red-50 text-red-600 text-xs rounded-full font-medium">
-              Requerido
-            </span>
-          )}
-        </div>
+        <ParamHeader name={param.name} required={param.required} />
         <div className="flex items-center gap-3">
-          <span className="px-2 py-1 bg-blue-50 text-blue-600 text-xs rounded-full">
-            {param.type === ParamType.OBJECT
-              ? "Objeto"
-              : param.type === ParamType.STRING
-                ? "Texto"
-                : param.type === ParamType.NUMBER
-                  ? "Número"
-                  : "Sí/No"}
-          </span>
-          <div className="flex items-center gap-1">
-            <span className="text-xs text-gray-500 mr-1">
-              {watchedParams[paramId]?.enabled ? "Activado" : "Desactivado"}
-            </span>
-            <label className="relative inline-flex items-center cursor-pointer">
-              <input
-                type="checkbox"
-                className="sr-only peer"
-                {...register(`params.${paramId}.enabled`)}
-                checked={watchedParams[paramId]?.enabled}
-                onChange={e => handleToggleParam(paramId, e.target.checked)}
-              />
-              <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-600"></div>
-            </label>
-          </div>
+          <ParamTypeBadge type={param.type} />
+          <ParamToggle
+            register={register}
+            paramId={paramId}
+            enabled={watchedParams[paramId]?.enabled}
+            handleToggleParam={handleToggleParam}
+          />
         </div>
       </div>
 
-      {param.type !== ParamType.OBJECT ? (
-        <div className="p-4">
-          <PropertyInput
-            property={param}
-            value={watchedParams[paramId]?.value ?? ""}
-            onChange={value => handleValueChange(paramId, value)}
-            disabled={!watchedParams[paramId]?.enabled}
-          />
-          <p className="mt-2 text-xs text-gray-500">
-            {param.required
-              ? "Este campo es obligatorio para que la función opere correctamente."
-              : "Este campo es opcional. Puedes dejarlo en blanco si no lo necesitas."}
-          </p>
-        </div>
-      ) : (
-        <div className="p-4">
-          <div className="bg-gray-50 p-3 rounded-md border border-gray-200 mb-2">
-            <div className="flex items-center gap-2 mb-2">
-              <img
-                src="/mvp/code-square.svg"
-                alt="Objeto"
-                className="w-4 h-4"
-              />
-              <span className="text-sm font-medium text-gray-700">
-                Estructura del objeto
-              </span>
-            </div>
-            {renderObjectProperties(param)}
-          </div>
-          <p className="mt-2 text-xs text-gray-500">
-            {param.required
-              ? "Este objeto es obligatorio para que la función opere correctamente."
-              : "Este objeto es opcional. Puedes dejarlo en blanco si no lo necesitas."}
-          </p>
-        </div>
-      )}
+      <div className="p-4">
+        <PropertyInput
+          property={param}
+          value={watchedParams[paramId]?.value ?? ""}
+          onChange={value => handleValueChange(paramId, value)}
+          disabled={!watchedParams[paramId]?.enabled}
+        />
+        <ParamDescription required={param.required} />
+      </div>
     </div>
   );
 };
