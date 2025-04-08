@@ -2,58 +2,7 @@ import { ParamType } from "@interfaces/function-params.interface";
 import { UseFormRegister } from "react-hook-form";
 import { WizardFormValues, ParamConfigItem } from "./types";
 import { Input } from "@components/forms/input";
-import { useState } from "react";
 import { Toggle } from "@components/forms/toggle";
-
-type CollapsibleCardProps = {
-  title: string;
-  description?: string;
-  required?: boolean;
-  children: React.ReactNode;
-};
-
-export const CollapsibleCard = ({
-  title,
-  description,
-  required = false,
-  children,
-}: CollapsibleCardProps) => {
-  const [isOpen, setIsOpen] = useState(false);
-
-  return (
-    <div className="border rounded-lg overflow-hidden">
-      <div
-        className="flex items-center justify-between p-3 bg-gray-50 cursor-pointer"
-        onClick={() => setIsOpen(!isOpen)}
-      >
-        <div className="flex items-center gap-2">
-          <span className="font-medium">{title}</span>
-          {required && (
-            <span className="text-xs px-2 py-0.5 bg-red-50 text-red-600 rounded">
-              Requerido
-            </span>
-          )}
-        </div>
-        <div className="flex items-center gap-2">
-          <img
-            src={`/mvp/chevron-${isOpen ? "down" : "right"}.svg`}
-            className="w-4 h-4"
-            alt={isOpen ? "Collapse" : "Expand"}
-          />
-        </div>
-      </div>
-
-      {isOpen && (
-        <div className="p-3 bg-white">
-          {description && (
-            <p className="text-xs text-gray-500 mb-2">{description}</p>
-          )}
-          {children}
-        </div>
-      )}
-    </div>
-  );
-};
 
 type ParamItemProps = {
   paramId: string;
@@ -99,30 +48,26 @@ const ParamTypeBadge = ({ type }: { type: ParamType }) => {
 const ParamToggle = ({
   register,
   paramId,
-  enabled,
-  handleToggleParam,
+  enabled = false,
+  required = false,
 }: {
   register: UseFormRegister<WizardFormValues>;
   paramId: string;
   enabled?: boolean;
-  handleToggleParam: (paramId: string, enabled: boolean) => void;
-}) => (
-  <div className="flex items-center gap-1">
-    <span className="text-xs text-gray-500 mr-1">
-      {enabled ? "Activado" : "Desactivado"}
-    </span>
-    <label className="relative inline-flex items-center cursor-pointer">
-      <input
-        type="checkbox"
-        className="sr-only peer"
-        {...register(`params.${paramId}.enabled`)}
-        checked={enabled}
-        onChange={e => handleToggleParam(paramId, e.target.checked)}
-      />
-      <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-600"></div>
-    </label>
-  </div>
-);
+  required?: boolean;
+}) => {
+  const isEnabled = required ? true : enabled;
+  const { ...rest } = register(`params.${paramId}.enabled`);
+
+  return (
+    <div className="flex items-center gap-1">
+      <span className="text-xs text-gray-500 mr-1">
+        {isEnabled ? "Activado" : "Desactivado"}
+      </span>
+      <Toggle checked={isEnabled} disabled={required} {...rest} />
+    </div>
+  );
+};
 
 const ParamDescription = ({
   required,
@@ -143,7 +88,6 @@ export const ParamItem = ({
   param,
   watchedParams,
   register,
-  handleToggleParam,
   handleValueChange,
 }: ParamItemProps) => {
   return (
@@ -156,7 +100,7 @@ export const ParamItem = ({
             register={register}
             paramId={paramId}
             enabled={watchedParams[paramId]?.enabled}
-            handleToggleParam={handleToggleParam}
+            required={param.required}
           />
         </div>
       </div>
@@ -217,9 +161,7 @@ export const PropertyInput = ({
         <div className="flex items-center gap-2">
           <Toggle
             checked={value === "true"}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              onChange(e.target.checked ? "true" : "false")
-            }
+            onChange={e => onChange(e.target.checked ? "true" : "false")}
             disabled={disabled}
           />
           <span className="text-sm">{value === "true" ? "Sí" : "No"}</span>
