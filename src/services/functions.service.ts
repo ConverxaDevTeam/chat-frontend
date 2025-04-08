@@ -4,6 +4,7 @@ import {
   FunctionData,
   HttpRequestFunction,
 } from "@interfaces/functions.interface";
+import axios from "axios";
 
 class FunctionsService {
   async create(data: FunctionData<HttpRequestFunction>) {
@@ -35,9 +36,11 @@ class FunctionsService {
     try {
       const response = await axiosInstance.delete(apiUrls.functions.byId(id));
       return response.data;
-    } catch (error: any) {
-      if (error.response?.status === 500) {
-        throw new Error('Error interno del servidor. Por favor, inténtelo de nuevo más tarde.');
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error) && error.response?.status === 500) {
+        throw new Error(
+          "Error interno del servidor. Por favor, inténtelo de nuevo más tarde."
+        );
       }
       throw error;
     }
