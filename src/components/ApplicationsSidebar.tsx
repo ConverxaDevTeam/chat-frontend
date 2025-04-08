@@ -201,7 +201,13 @@ const TemplateItem = ({
 );
 
 // Componente para mostrar un grupo de templates
-const ApplicationGroup = ({ group, onTemplateClick }: { group: GroupedTemplates; onTemplateClick: (templateId: number) => void }) => {
+const ApplicationGroup = ({
+  group,
+  onTemplateClick,
+}: {
+  group: GroupedTemplates;
+  onTemplateClick: (templateId: number) => void;
+}) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const toggleExpand = () => {
@@ -239,7 +245,9 @@ const ApplicationGroup = ({ group, onTemplateClick }: { group: GroupedTemplates;
 // Componente principal
 export const ApplicationsSidebar = ({ onClose }: { onClose: () => void }) => {
   const { groups, loading, fetchData } = useApplicationsData();
-  const [selectedTemplateId, setSelectedTemplateId] = useState<number | null>(null);
+  const [selectedTemplateId, setSelectedTemplateId] = useState<number | null>(
+    null
+  );
   const [isWizardOpen, setIsWizardOpen] = useState(false);
 
   // Cargar datos al montar el componente
@@ -272,10 +280,10 @@ export const ApplicationsSidebar = ({ onClose }: { onClose: () => void }) => {
             ) : (
               <div className="space-y-4">
                 {groups.map(group => (
-                  <ApplicationGroup 
-                    key={group.application.id} 
-                    group={group} 
-                    onTemplateClick={handleTemplateClick} 
+                  <ApplicationGroup
+                    key={group.application.id}
+                    group={group}
+                    onTemplateClick={handleTemplateClick}
                   />
                 ))}
               </div>
@@ -285,10 +293,10 @@ export const ApplicationsSidebar = ({ onClose }: { onClose: () => void }) => {
       </div>
 
       {selectedTemplateId && (
-        <TemplateWizard 
-          isOpen={isWizardOpen} 
-          onClose={handleWizardClose} 
-          templateId={selectedTemplateId} 
+        <TemplateWizard
+          isOpen={isWizardOpen}
+          onClose={handleWizardClose}
+          templateId={selectedTemplateId}
         />
       )}
     </div>

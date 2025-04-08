@@ -4,7 +4,6 @@ import ConfigPanel from "@components/ConfigPanel";
 import { FunctionTemplate } from "@interfaces/template.interface";
 import { getTemplateById } from "@services/template.service";
 import { useForm } from "react-hook-form";
-import { ParamType } from "@interfaces/function-params.interface";
 import Loading from "@components/Loading";
 import { toast } from "react-toastify";
 import AuthenticatorFormModal from "@components/Diagrams/authComponents/AuthenticatorFormModal";
@@ -70,16 +69,17 @@ export const TemplateWizard = ({
             const paramConfig: Record<string, ParamConfigItem> = {};
             if (template.params && template.params.length > 0) {
               template.params.forEach(param => {
-                if (param.type !== ParamType.OBJECT) {
-                  paramConfig[param.id] = {
-                    id: param.id,
-                    name: param.name,
-                    enabled: param.required,
-                    value: param.defaultValue?.toString() || "",
-                    type: param.type,
-                    required: param.required,
-                  };
-                }
+                // Incluir todos los tipos de parámetros, incluidos los de tipo objeto
+                paramConfig[param.id] = {
+                  id: param.id,
+                  name: param.name,
+                  enabled: param.required,
+                  value: param.defaultValue?.toString() || "",
+                  type: param.type,
+                  required: param.required,
+                  // Asegurar que las propiedades se pasen correctamente para objetos
+                  properties: param.properties,
+                };
               });
             }
 

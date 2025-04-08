@@ -8,6 +8,9 @@ import {
 } from "react-hook-form";
 import { ParamConfigItem, WizardFormValues } from "./types";
 import { Button } from "@components/common/Button";
+import { Input } from "@components/forms/input";
+import { Toggle } from "@components/forms/toggle";
+import { useState } from "react";
 
 // Componente para los botones de acción
 export const ActionButtons = ({
@@ -191,7 +194,7 @@ export const FunctionContent = ({
               <label className="text-xs text-gray-500 mb-1">
                 Dominio personalizado
               </label>
-              <input
+              <Input
                 type="text"
                 className="p-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="https://ejemplo.com"
@@ -241,6 +244,118 @@ export const ParamsContent = ({
     if (value) {
       setValue(`params.${paramId}.enabled`, true);
     }
+  };
+
+  const renderObjectProperties = (param: ParamConfigItem) => {
+    if (!param.properties || param.properties.length === 0) return null;
+
+    return (
+      <div className="mt-2 space-y-2">
+        {param.properties.map(property => (
+          <CollapsibleCard
+            key={property.name}
+            title={property.name}
+            description={property.description}
+            type={property.type}
+            required={property.required}
+          >
+            {property.type === ParamType.STRING && (
+              <Input
+                placeholder={`Valor para ${property.name}`}
+                className="w-full p-2 border rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                value=""
+                onChange={() => {}}
+              />
+            )}
+
+            {property.type === ParamType.NUMBER && (
+              <Input
+                type="number"
+                placeholder={`Valor para ${property.name}`}
+                className="w-full p-2 border rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                value=""
+                onChange={() => {}}
+              />
+            )}
+
+            {property.type === ParamType.BOOLEAN && (
+              <div className="flex items-center gap-2">
+                <Toggle checked={false} onChange={() => {}} />
+                <span className="text-sm">No</span>
+              </div>
+            )}
+
+            {property.type === ParamType.OBJECT &&
+              renderObjectProperties({
+                ...property,
+                id: property.name,
+                enabled: true,
+                value: "",
+                required: property.required || false,
+              })}
+          </CollapsibleCard>
+        ))}
+      </div>
+    );
+  };
+
+  const CollapsibleCard = ({
+    title,
+    description,
+    type,
+    required = false,
+    children,
+  }: {
+    title: string;
+    description?: string;
+    type: ParamType;
+    required?: boolean;
+    children: React.ReactNode;
+  }) => {
+    const [isOpen, setIsOpen] = useState(false);
+
+    return (
+      <div className="border rounded-lg overflow-hidden">
+        <div
+          className="flex items-center justify-between p-3 bg-gray-50 cursor-pointer"
+          onClick={() => setIsOpen(!isOpen)}
+        >
+          <div className="flex items-center gap-2">
+            <span className="font-medium">{title}</span>
+            <span className="text-xs px-2 py-0.5 bg-gray-100 rounded">
+              {type === ParamType.STRING
+                ? "Texto"
+                : type === ParamType.NUMBER
+                  ? "Número"
+                  : type === ParamType.BOOLEAN
+                    ? "Sí/No"
+                    : "Objeto"}
+            </span>
+            {required && (
+              <span className="text-xs px-2 py-0.5 bg-red-50 text-red-600 rounded">
+                Requerido
+              </span>
+            )}
+          </div>
+          <div className="flex items-center gap-2">
+            <img
+              src={`/mvp/chevron-${isOpen ? "down" : "right"}.svg`}
+              className="w-4 h-4"
+              alt={isOpen ? "Collapse" : "Expand"}
+            />
+          </div>
+        </div>
+
+        {isOpen && (
+          <div className="p-3 bg-white">
+            {description && (
+              <p className="text-xs text-gray-500 mb-2">{description}</p>
+            )}
+            {children}
+          </div>
+        )}
+      </div>
+    );
   };
 
   return (
@@ -322,8 +437,8 @@ export const ParamsContent = ({
                 </div>
               </div>
 
-              {/* Campo de entrada */}
-              {param.type !== ParamType.OBJECT && (
+              {/* Campo de entrada para tipos simples */}
+              {param.type !== ParamType.OBJECT ? (
                 <div className="p-4">
                   {param.type === ParamType.STRING ? (
                     <div className="flex flex-col">
@@ -363,7 +478,7 @@ export const ParamsContent = ({
                           </span>
                         </label>
                       ) : (
-                        <input
+                        <Input
                           type={
                             param.type === ParamType.NUMBER ? "number" : "text"
                           }
@@ -382,6 +497,28 @@ export const ParamsContent = ({
                     {param.required
                       ? "Este campo es obligatorio para que la función opere correctamente."
                       : "Este campo es opcional. Puedes dejarlo en blanco si no lo necesitas."}
+                  </p>
+                </div>
+              ) : (
+                /* Renderizado para parámetros tipo objeto */
+                <div className="p-4">
+                  <div className="bg-gray-50 p-3 rounded-md border border-gray-200 mb-2">
+                    <div className="flex items-center gap-2 mb-2">
+                      <img
+                        src="/mvp/code-square.svg"
+                        alt="Objeto"
+                        className="w-4 h-4"
+                      />
+                      <span className="text-sm font-medium text-gray-700">
+                        Estructura del objeto
+                      </span>
+                    </div>
+                    {renderObjectProperties(param)}
+                  </div>
+                  <p className="mt-2 text-xs text-gray-500">
+                    {param.required
+                      ? "Este objeto es obligatorio para que la función opere correctamente."
+                      : "Este objeto es opcional. Puedes dejarlo en blanco si no lo necesitas."}
                   </p>
                 </div>
               )}

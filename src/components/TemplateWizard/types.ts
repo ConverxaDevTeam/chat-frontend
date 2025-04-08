@@ -6,6 +6,9 @@ export interface TemplateWizardProps {
   templateId: number;
 }
 
+// Importamos las interfaces de propiedades de parámetros
+import { BaseParamProperty } from "@interfaces/function-params.interface";
+
 export interface ParamConfigItem {
   id: string;
   name: string;
@@ -13,6 +16,7 @@ export interface ParamConfigItem {
   value: string;
   type: ParamType;
   required: boolean;
+  properties?: BaseParamProperty[];
 }
 
 export interface WizardFormValues {
