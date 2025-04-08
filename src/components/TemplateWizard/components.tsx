@@ -243,10 +243,6 @@ export const FunctionContent = ({
 );
 
 const useParamsHandlers = (setValue: UseFormSetValue<WizardFormValues>) => {
-  const handleToggleParam = (paramId: string, enabled: boolean) => {
-    setValue(`params.${paramId}.enabled`, enabled);
-  };
-
   const handleValueChange = (paramId: string, value: string) => {
     setValue(`params.${paramId}.value`, value);
     if (value) {
@@ -254,7 +250,7 @@ const useParamsHandlers = (setValue: UseFormSetValue<WizardFormValues>) => {
     }
   };
 
-  return { handleToggleParam, handleValueChange };
+  return { handleValueChange };
 };
 
 const ParamsHeader = () => (
@@ -301,7 +297,7 @@ export const ParamsContent = ({
   watch: UseFormWatch<WizardFormValues>;
 }) => {
   const watchedParams = watch("params");
-  const { handleToggleParam, handleValueChange } = useParamsHandlers(setValue);
+  const { handleValueChange } = useParamsHandlers(setValue);
 
   return (
     <div className="space-y-6 py-4">
@@ -317,7 +313,6 @@ export const ParamsContent = ({
               param={param}
               watchedParams={watchedParams}
               register={register}
-              handleToggleParam={handleToggleParam}
               handleValueChange={handleValueChange}
             />
           ))
