@@ -53,6 +53,7 @@ export const TemplateWizard = ({
       defaultValues: {
         params: {},
         authenticatorId: template?.authenticator?.id,
+        customDomain: template?.application?.domain || "",
       },
     });
 
@@ -82,9 +83,15 @@ export const TemplateWizard = ({
               });
             }
 
+            // Establecer el dominio personalizado si existe
+            if (template.application?.isDynamicDomain) {
+              setValue("customDomain", template.application.domain || "");
+            }
+
             reset({
               params: paramConfig,
               authenticatorId: template.authenticatorId,
+              customDomain: template.application?.domain || "",
             });
 
             // Cargar autenticadores
@@ -101,10 +108,23 @@ export const TemplateWizard = ({
     }
   }, [isOpen, templateId, reset, fetchAuthenticators]);
 
+  // Manejar el cambio de dominio personalizado
+  const handleDomainChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newDomain = e.target.value;
+    setValue("customDomain", newDomain);
+  };
+
   // Manejar el envío del formulario
   const onSave = handleSubmit(data => {
     // Aquí se procesarían los datos del formulario para crear la función
-    console.log("Datos del formulario:", data);
+    // Incluir el dominio personalizado si es aplicable
+    const formData = {
+      ...data,
+      customDomain: template?.application?.isDynamicDomain
+        ? data.customDomain
+        : undefined,
+    };
+    console.log("Datos del formulario:", formData);
     onClose();
   });
 
@@ -157,6 +177,7 @@ export const TemplateWizard = ({
                       // No guardamos en el backend hasta el final
                     }}
                     onManageAuthenticators={() => setShowAuthModal(true)}
+                    onDomainChange={handleDomainChange}
                   />
                 )}
                 {activeTab === "params" && (
