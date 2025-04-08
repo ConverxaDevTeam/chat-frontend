@@ -110,7 +110,6 @@ export const ParamItem = ({
           property={param}
           value={watchedParams[paramId]?.value ?? ""}
           onChange={value => handleValueChange(paramId, value)}
-          disabled={!watchedParams[paramId]?.enabled}
         />
         <ParamDescription required={param.required} />
       </div>
@@ -122,7 +121,6 @@ export const PropertyInput = ({
   property,
   value,
   onChange,
-  disabled = false,
 }: {
   property: {
     name: string;
@@ -132,7 +130,6 @@ export const PropertyInput = ({
   };
   value: string;
   onChange: (value: string) => void;
-  disabled?: boolean;
 }) => {
   return (
     <div className="space-y-1">
@@ -142,7 +139,6 @@ export const PropertyInput = ({
           className="w-full p-2 border rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           value={value}
           onChange={e => onChange(e.target.value)}
-          disabled={disabled}
         />
       )}
 
@@ -153,7 +149,6 @@ export const PropertyInput = ({
           className="w-full p-2 border rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           value={value}
           onChange={e => onChange(e.target.value)}
-          disabled={disabled}
         />
       )}
 
@@ -162,7 +157,6 @@ export const PropertyInput = ({
           <Toggle
             checked={value === "true"}
             onChange={e => onChange(e.target.checked ? "true" : "false")}
-            disabled={disabled}
           />
           <span className="text-sm">{value === "true" ? "Sí" : "No"}</span>
         </div>
