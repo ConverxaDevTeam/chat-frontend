@@ -4,20 +4,20 @@ interface InfoTooltipProps {
   text: string;
   width?: string;
   iconSrc?: string;
-  position?: 'left' | 'right' | 'top' | 'bottom';
+  position?: "left" | "right" | "top" | "bottom";
 }
 
 const InfoTooltip: React.FC<InfoTooltipProps> = ({
   text,
   width = "178px",
   iconSrc = "/mvp/Vector.svg",
-  position = 'right'
+  position = "right",
 }) => {
   const positionClasses = {
     right: "left-full top-0 ml-2",
     left: "right-full top-0 mr-2",
     top: "bottom-full left-1/2 -translate-x-1/2 mb-2",
-    bottom: "top-full left-1/2 -translate-x-1/2 mt-2"
+    bottom: "top-full left-1/2 -translate-x-1/2 mt-2",
   };
 
   return (
