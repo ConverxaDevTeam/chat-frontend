@@ -4,37 +4,238 @@ import {
   FunctionTemplate,
   FunctionTemplateApplication,
 } from "@interfaces/template.interface";
+import InfoTooltip from "./Common/InfoTooltip";
 
 interface GroupedTemplates {
   application: FunctionTemplateApplication;
   templates: FunctionTemplate[];
 }
 
-export const ApplicationsSidebar = ({ onClose }: { onClose: () => void }) => {
+// Hook personalizado para cargar las aplicaciones y templates
+const useApplicationsData = () => {
   const [groups, setGroups] = useState<GroupedTemplates[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const fetchData = async () => {
+    try {
+      const [applications, templates] = await Promise.all([
+        getApplications(),
+        getTemplates(),
+      ]);
+
+      const grouped = applications.map(app => ({
+        application: app,
+        templates: templates.filter(t => t.applicationId === app.id),
+      }));
+
+      setGroups(grouped.filter(g => g.templates.length > 0));
+    } catch (error) {
+      console.error("Error loading data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { groups, loading, fetchData };
+};
+
+// Componente para la cabecera del sidebar
+const SidebarHeader = ({ onClose }: { onClose: () => void }) => (
+  <div className="p-4 border-b border-gray-200 flex justify-between items-center">
+    <h3 className="text-lg font-semibold">Aplicaciones</h3>
+    <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
+      ✕
+    </button>
+  </div>
+);
+
+// Componente para mostrar el estado de carga
+const LoadingState = () => (
+  <div className="flex justify-center items-center h-full">
+    <span className="text-gray-500">Cargando...</span>
+  </div>
+);
+
+// Componente para la imagen de la aplicación
+const ApplicationImage = ({
+  imageUrl,
+  altText,
+  size = "large",
+  isFunction = false,
+  isApplication = false,
+}: {
+  imageUrl?: string;
+  altText: string;
+  size?: "large" | "small";
+  isFunction?: boolean;
+  isApplication?: boolean;
+}) => {
+  if (!imageUrl) return null;
+
+  const sizeClass = size === "large" ? "w-12 h-12" : "w-9 h-9";
+  const styleClass =
+    isFunction || isApplication ? "p-1 bg-white border-2 shadow-sm" : "";
+  const borderClass = isFunction
+    ? "border-blue-300"
+    : isApplication
+      ? "border-gray-400"
+      : "";
+
+  return (
+    <div className="flex items-center justify-center self-center">
+      <img
+        src={imageUrl}
+        alt={altText}
+        className={`${sizeClass} ${styleClass} ${borderClass} rounded-full object-cover`}
+        onError={e => {
+          (e.target as HTMLImageElement).style.display = "none";
+        }}
+      />
+    </div>
+  );
+};
+
+// Componente para mostrar la información de la aplicación
+const ApplicationHeader = ({
+  application,
+  isExpanded,
+  toggleExpand,
+}: {
+  application: FunctionTemplateApplication;
+  isExpanded: boolean;
+  toggleExpand: () => void;
+}) => (
+  <div
+    className="flex items-center gap-3 p-3 bg-gray-100 rounded-md shadow-sm border-l-4 border-gray-400 cursor-pointer"
+    onClick={toggleExpand}
+  >
+    <ApplicationImage
+      imageUrl={application.imageUrl}
+      altText={application.name}
+      isApplication={true}
+    />
+    <div className="flex-1">
+      <div className="flex items-center justify-between">
+        <h4 className="font-semibold text-gray-800">{application.name}</h4>
+        <img
+          src={isExpanded ? "/mvp/chevron-up.svg" : "/mvp/chevron-down.svg"}
+          alt={isExpanded ? "Collapse" : "Expand"}
+          className="w-5 h-5 text-gray-600"
+        />
+      </div>
+      {application.description && (
+        <div className="flex items-center gap-1">
+          <p className="text-sm text-gray-600 line-clamp-2">
+            {application.description}
+          </p>
+          {application.description.length > 100 && (
+            <InfoTooltip
+              text={application.description}
+              position="bottom"
+              width="250px"
+              iconSrc="/mvp/Vector.svg"
+            />
+          )}
+        </div>
+      )}
+    </div>
+  </div>
+);
+
+// Componente para mostrar un template individual
+const TemplateItem = ({
+  template,
+  applicationImageUrl,
+}: {
+  template: FunctionTemplate;
+  applicationImageUrl?: string;
+}) => (
+  <div
+    key={template.id}
+    className="flex flex-col p-2 hover:bg-gray-100 rounded-md cursor-pointer border-l-2 border-blue-300 shadow-sm"
+  >
+    <div className="flex items-center gap-3 py-1">
+      <ApplicationImage
+        imageUrl={applicationImageUrl}
+        altText={template.name}
+        size="small"
+        isFunction={true}
+      />
+      <span className="font-medium text-blue-700">{template.name}</span>
+    </div>
+
+    {template.description && (
+      <div className="flex items-center gap-1 ml-8 mt-1">
+        <p className="text-xs text-gray-600 line-clamp-2">
+          {template.description}
+        </p>
+        {template.description.length > 100 && (
+          <InfoTooltip
+            text={template.description}
+            position="bottom"
+            width="250px"
+            iconSrc="/mvp/Vector.svg"
+          />
+        )}
+      </div>
+    )}
+
+    {template.tags && template.tags.length > 0 && (
+      <div className="flex flex-wrap gap-1 ml-8 mt-1">
+        {template.tags.map((tag, index) => (
+          <span
+            key={index}
+            className="px-2 py-0.5 bg-gray-100 text-gray-600 text-xs rounded-full"
+          >
+            {tag}
+          </span>
+        ))}
+      </div>
+    )}
+  </div>
+);
+
+// Componente para mostrar un grupo de templates
+const ApplicationGroup = ({ group }: { group: GroupedTemplates }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  const toggleExpand = () => {
+    setIsExpanded(!isExpanded);
+  };
+
+  return (
+    <div className="mb-4">
+      <ApplicationHeader
+        application={group.application}
+        isExpanded={isExpanded}
+        toggleExpand={toggleExpand}
+      />
+      {isExpanded && (
+        <div className="mt-2 pl-2">
+          <h5 className="text-sm font-medium text-gray-700 mb-1 ml-2">
+            Funciones disponibles:
+          </h5>
+          <div className="space-y-2">
+            {group.templates.map(template => (
+              <TemplateItem
+                key={template.id}
+                template={template}
+                applicationImageUrl={group.application.imageUrl}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// Componente principal
+export const ApplicationsSidebar = ({ onClose }: { onClose: () => void }) => {
+  const { groups, loading, fetchData } = useApplicationsData();
+
+  // Cargar datos al montar el componente
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [applications, templates] = await Promise.all([
-          getApplications(),
-          getTemplates(),
-        ]);
-
-        const grouped = applications.map(app => ({
-          application: app,
-          templates: templates.filter(t => t.applicationId === app.id),
-        }));
-
-        setGroups(grouped.filter(g => g.templates.length > 0));
-      } catch (error) {
-        console.error("Error loading data:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchData();
   }, []);
 
@@ -46,71 +247,15 @@ export const ApplicationsSidebar = ({ onClose }: { onClose: () => void }) => {
       />
       <div className="absolute inset-y-0 right-0 w-[400px] bg-white shadow-xl transform transition-transform duration-300 ease-in-out">
         <div className="h-full flex flex-col">
-          <div className="p-4 border-b border-gray-200 flex justify-between items-center">
-            <h3 className="text-lg font-semibold">Aplicaciones</h3>
-            <button
-              onClick={onClose}
-              className="text-gray-500 hover:text-gray-700"
-            >
-              ✕
-            </button>
-          </div>
+          <SidebarHeader onClose={onClose} />
 
           <div className="flex-1 overflow-y-auto p-4">
             {loading ? (
-              <div className="flex justify-center items-center h-full">
-                <span className="text-gray-500">Cargando...</span>
-              </div>
+              <LoadingState />
             ) : (
               <div className="space-y-4">
                 {groups.map(group => (
-                  <div key={group.application.id} className="space-y-2">
-                    <div className="flex items-center gap-2 p-2 bg-gray-50 rounded">
-                      {group.application.imageUrl && (
-                        <img
-                          src={group.application.imageUrl}
-                          alt={group.application.name}
-                          className="w-10 h-10 rounded"
-                          onError={e => {
-                            (e.target as HTMLImageElement).style.display =
-                              "none";
-                          }}
-                        />
-                      )}
-                      <div>
-                        <h4 className="font-medium">
-                          {group.application.name}
-                        </h4>
-                        {group.application.description && (
-                          <p className="text-sm text-gray-500 line-clamp-1">
-                            {group.application.description}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-
-                    <div className="ml-4 space-y-2">
-                      {group.templates.map(template => (
-                        <div
-                          key={template.id}
-                          className="flex items-center gap-2 p-2 hover:bg-gray-100 rounded cursor-pointer"
-                        >
-                          {group.application.imageUrl && (
-                            <img
-                              src={group.application.imageUrl}
-                              alt={template.name}
-                              className="w-8 h-8 rounded"
-                              onError={e => {
-                                (e.target as HTMLImageElement).style.display =
-                                  "none";
-                              }}
-                            />
-                          )}
-                          <span>{template.name}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
+                  <ApplicationGroup key={group.application.id} group={group} />
                 ))}
               </div>
             )}
