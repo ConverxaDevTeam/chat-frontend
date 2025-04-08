@@ -39,6 +39,7 @@ interface AuthenticatorFormModalProps {
   onSubmit: (data: AuthenticatorType) => Promise<void>;
   initialData?: AuthenticatorType;
   organizationId: number;
+  zindex?: number;
 }
 
 type FormFieldType = {
@@ -222,6 +223,7 @@ const AuthenticatorFormModal = ({
   onSubmit,
   initialData,
   organizationId,
+  zindex,
 }: AuthenticatorFormModalProps) => {
   const {
     register,
@@ -351,6 +353,7 @@ const AuthenticatorFormModal = ({
     <Modal
       isShown={isShown}
       onClose={handleClose}
+      zindex={zindex}
       header={
         <div className="w-[518px]">
           <h2 className="text-lg font-semibold">
