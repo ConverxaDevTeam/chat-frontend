@@ -9,12 +9,14 @@ import { ContextMenuOption } from "./DiagramContextMenu";
 import { ActionButtons, ActionType } from "./agenteComponents/AgentInfo";
 import { useHumanCommunication } from "./hooks/useHumanCommunication";
 import InfoTooltip from "../../components/Common/InfoTooltip";
+import { useApplicationsSidebar } from "@hooks/ApplicationsSidebarContext";
 
 const AgenteNode = (props: CustomTypeNodeProps<AgentData>) => {
   const { data, selected } = props;
   const [eventOpen, setEventOpen] = useState<string | null>(null);
   const { humanCommunication, handleHumanCommunicationToggle } =
     useHumanCommunication(data.agentId);
+  const { openApplicationsSidebar } = useApplicationsSidebar();
 
   const contextMenuOptions: ContextMenuOption[] = [
     {
@@ -67,7 +69,7 @@ const AgenteNode = (props: CustomTypeNodeProps<AgentData>) => {
           </span>
         </div>
       ),
-      onClick: () => setEventOpen(ActionType.ADD_APPLICATION),
+      onClick: () => openApplicationsSidebar(),
     },
     {
       child: (
@@ -118,7 +120,8 @@ const AgenteNode = (props: CustomTypeNodeProps<AgentData>) => {
         contextMenuOptions={contextMenuOptions}
         contextMenuVersion="v2"
         allowedConnections={["source", "target"]}
-      ></DefaultNode>
+      />
+
       <ActionButtons
         eventShown={eventOpen}
         onClose={() => setEventOpen(null)}
