@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Modal from "@components/Modal";
 import ConfigPanel from "@components/ConfigPanel";
 import { FunctionTemplate } from "@interfaces/template.interface";
@@ -6,6 +6,12 @@ import { getTemplateById } from "@services/template.service";
 import { useForm } from "react-hook-form";
 import { ParamType } from "@interfaces/function-params.interface";
 import Loading from "@components/Loading";
+import { AuthenticatorType } from "@interfaces/autenticators.interface";
+import { authenticatorService } from "@services/authenticator.service";
+import { functionsService } from "@services/functions.service";
+import { toast } from "react-toastify";
+import { useAlertContext } from "@components/Diagrams/components/AlertContext";
+import AuthenticatorFormModal from "@components/Diagrams/authComponents/AuthenticatorFormModal";
 
 interface TemplateWizardProps {
   isOpen: boolean;
@@ -24,6 +30,7 @@ interface ParamConfigItem {
 
 interface WizardFormValues {
   params: Record<string, ParamConfigItem>;
+  authenticatorId?: number;
 }
 
 // Hook para gestionar la navegación por pestañas
@@ -124,82 +131,109 @@ const ActionButtons = ({
 );
 
 // Componente para mostrar la información de la función
-const FunctionContent = ({ template }: { template: FunctionTemplate }) => (
-  <div className="space-y-6 py-4">
-    <div className="flex items-start gap-4">
-      {template.application?.imageUrl && (
-        <div className="flex-shrink-0">
+const FunctionContent = ({
+  template,
+  authenticators,
+  selectedAuthenticatorId,
+  onAuthenticatorChange,
+  onManageAuthenticators,
+}: {
+  template: FunctionTemplate;
+  authenticators: AuthenticatorType[];
+  selectedAuthenticatorId?: number;
+  onAuthenticatorChange: (authenticatorId?: number) => void;
+  onManageAuthenticators: () => void;
+}) => {
+  return (
+    <div className="space-y-6">
+      <div className="flex items-start gap-4">
+        <div className="w-12 h-12 flex-shrink-0 bg-blue-100 rounded-md flex items-center justify-center">
           <img
-            src={template.application.imageUrl}
-            alt={template.application?.name}
-            className="w-16 h-16 rounded-full object-cover border-2 border-gray-300"
-            onError={e => {
-              (e.target as HTMLImageElement).style.display = "none";
-            }}
+            src={template.application?.imageUrl || "/mvp/function.svg"}
+            alt={template.name}
+            className="w-8 h-8 object-contain"
           />
         </div>
-      )}
-      <div className="flex-1">
-        <h3 className="text-xl font-semibold text-gray-800">{template.name}</h3>
-        <p className="text-gray-600 mt-1">{template.description}</p>
-        
-        {template.tags && template.tags.length > 0 && (
-          <div className="flex flex-wrap gap-1 mt-2">
-            {template.tags.map((tag, index) => (
-              <span
-                key={index}
-                className="px-2 py-0.5 bg-gray-100 text-gray-600 text-xs rounded-full"
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
-        )}
-      </div>
-    </div>
 
-    <div className="mt-6 space-y-4 border-t pt-4">
+        <div className="flex-1">
+          <h3 className="text-xl font-semibold text-gray-800">
+            {template.name}
+          </h3>
+          <p className="text-gray-600 mt-1">{template.description}</p>
+
+          {template.tags && template.tags.length > 0 && (
+            <div className="flex flex-wrap gap-1 mt-2">
+              {template.tags.map((tag, index) => (
+                <span
+                  key={index}
+                  className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-md"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
       <div>
         <h4 className="text-sm font-medium text-gray-500">Aplicación</h4>
         <p className="mt-1">
           {template.application?.name || "No especificada"}
         </p>
       </div>
-      
+
       <div>
         <h4 className="text-sm font-medium text-gray-500">Categoría</h4>
         <p className="mt-1">{template.category?.name || "No especificada"}</p>
       </div>
-      
+
       <div>
         <h4 className="text-sm font-medium text-gray-500">Autenticación</h4>
-        <p className="mt-1">{template.authenticator?.name || "No requiere autenticación"}</p>
+        <div className="mt-1 flex gap-2 items-center">
+          <select
+            className="flex-1 rounded-md bg-white border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-3 py-2 sm:text-sm"
+            value={selectedAuthenticatorId || ""}
+            onChange={e =>
+              onAuthenticatorChange(
+                e.target.value ? Number(e.target.value) : undefined
+              )
+            }
+          >
+            <option value="">Sin autenticación</option>
+            {authenticators.map(auth => (
+              <option key={auth.id} value={auth.id}>
+                {auth.name}
+              </option>
+            ))}
+          </select>
+          <button
+            type="button"
+            className="px-4 py-2 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700 transition-colors"
+            onClick={onManageAuthenticators}
+          >
+            Gestionar
+          </button>
+        </div>
       </div>
-      
+
       <div>
         <h4 className="text-sm font-medium text-gray-500">URL</h4>
         <p className="mt-1 text-blue-600 break-all">{template.url}</p>
       </div>
-      
+
       <div>
         <h4 className="text-sm font-medium text-gray-500">Método</h4>
         <p className="mt-1">{template.method}</p>
       </div>
-      
+
       <div>
         <h4 className="text-sm font-medium text-gray-500">Tipo de Body</h4>
         <p className="mt-1">{template.bodyType}</p>
       </div>
-      
-      {template.authenticator && (
-        <div>
-          <h4 className="text-sm font-medium text-gray-500">Autenticador</h4>
-          <p className="mt-1">{template.authenticator.name}</p>
-        </div>
-      )}
     </div>
-  </div>
-);
+  );
+};
 
 // Componente para configurar los parámetros
 const ParamsContent = ({
@@ -231,7 +265,7 @@ const ParamsContent = ({
       <h3 className="text-lg font-medium text-gray-700 mb-4">
         Configuración de Parámetros
       </h3>
-      
+
       <div className="space-y-4">
         {Object.keys(params).length === 0 ? (
           <p className="text-gray-500 italic">
@@ -271,7 +305,7 @@ const ParamsContent = ({
                   </label>
                 </div>
               </div>
-              
+
               {param.type !== ParamType.OBJECT && (
                 <div className="mt-2">
                   {param.type === ParamType.STRING ? (
@@ -282,7 +316,9 @@ const ParamsContent = ({
                         placeholder={`Valor para ${param.name}`}
                         disabled={!watchedParams[paramId]?.enabled}
                         value={watchedParams[paramId]?.value || ""}
-                        onChange={e => handleValueChange(paramId, e.target.value)}
+                        onChange={e =>
+                          handleValueChange(paramId, e.target.value)
+                        }
                       />
                     </div>
                   ) : (
@@ -313,6 +349,54 @@ const ParamsContent = ({
   );
 };
 
+// Hook para gestionar los autenticadores
+const useAuthenticators = (organizationId: number) => {
+  const [authenticators, setAuthenticators] = useState<AuthenticatorType[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const { showConfirmation } = useAlertContext();
+
+  const fetchAuthenticators = useCallback(async () => {
+    try {
+      setLoading(true);
+      const data = await authenticatorService.fetchAll(organizationId);
+      setAuthenticators(data);
+    } catch (error) {
+      toast.error("Error al cargar autenticadores");
+    } finally {
+      setLoading(false);
+    }
+  }, [organizationId]);
+
+  const handleAuthenticatorChange = useCallback(
+    async (functionId: number, authenticatorId: number | null) => {
+      try {
+        await functionsService.assignAuthenticator(functionId, authenticatorId);
+        toast.success(
+          authenticatorId
+            ? "Autenticador asignado exitosamente"
+            : "Autenticador removido exitosamente"
+        );
+        return true;
+      } catch (error) {
+        toast.error("Error al asignar el autenticador");
+        return false;
+      }
+    },
+    []
+  );
+
+  return {
+    authenticators,
+    loading,
+    fetchAuthenticators,
+    handleAuthenticatorChange,
+    showAuthModal,
+    setShowAuthModal,
+    showConfirmation,
+  };
+};
+
 // Componente principal del wizard
 export const TemplateWizard = ({
   isOpen,
@@ -322,7 +406,18 @@ export const TemplateWizard = ({
   const [template, setTemplate] = useState<FunctionTemplate | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
+
+  // Obtener el ID de la organización del template
+  const organizationId = template?.applicationId || 1; // Valor por defecto temporal
+
+  const {
+    authenticators,
+    fetchAuthenticators,
+    handleAuthenticatorChange,
+    showAuthModal,
+    setShowAuthModal,
+  } = useAuthenticators(organizationId);
+
   const {
     activeTab,
     setActiveTab,
@@ -333,11 +428,13 @@ export const TemplateWizard = ({
     isLastTab,
   } = useTabNavigation("function");
 
-  const { register, handleSubmit, setValue, watch, reset } = useForm<WizardFormValues>({
-    defaultValues: {
-      params: {},
-    },
-  });
+  const { register, handleSubmit, setValue, watch, reset } =
+    useForm<WizardFormValues>({
+      defaultValues: {
+        params: {},
+        authenticatorId: template?.authenticator?.id,
+      },
+    });
 
   // Cargar datos del template
   useEffect(() => {
@@ -347,7 +444,7 @@ export const TemplateWizard = ({
         .then(template => {
           if (template) {
             setTemplate(template);
-            
+
             // Inicializar los parámetros en el formulario
             const paramConfig: Record<string, ParamConfigItem> = {};
             if (template.params && template.params.length > 0) {
@@ -364,8 +461,14 @@ export const TemplateWizard = ({
                 }
               });
             }
-            
-            reset({ params: paramConfig });
+
+            reset({
+              params: paramConfig,
+              authenticatorId: template.authenticatorId,
+            });
+
+            // Cargar autenticadores
+            fetchAuthenticators();
           }
         })
         .catch(err => {
@@ -376,7 +479,7 @@ export const TemplateWizard = ({
           setLoading(false);
         });
     }
-  }, [isOpen, templateId, reset]);
+  }, [isOpen, templateId, reset, fetchAuthenticators]);
 
   // Manejar el envío del formulario
   const onSave = handleSubmit(data => {
@@ -388,56 +491,94 @@ export const TemplateWizard = ({
   if (!isOpen) return null;
 
   return (
-    <Modal
-      isShown={isOpen}
-      onClose={onClose}
-      header={
-        <div className="text-xl font-semibold">
-          {template ? `Configurar función: ${template.name}` : "Cargando..."}
+    <>
+      <Modal
+        isShown={isOpen}
+        onClose={onClose}
+        header={
+          <div className="text-xl font-semibold">
+            {template ? `Configurar función: ${template.name}` : "Cargando..."}
+          </div>
+        }
+        zindex={1000}
+      >
+        <div className="w-full">
+          <ConfigPanel
+            tabs={tabs}
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
+            isLoading={loading}
+            actions={
+              <ActionButtons
+                onCancel={onClose}
+                onSave={onSave}
+                goToPreviousTab={goToPreviousTab}
+                goToNextTab={goToNextTab}
+                isFirstTab={isFirstTab}
+                isLastTab={isLastTab}
+              />
+            }
+          >
+            {loading ? (
+              <div className="flex justify-center items-center min-h-[400px]">
+                <Loading />
+              </div>
+            ) : error ? (
+              <div className="text-red-500 p-4">{error}</div>
+            ) : template ? (
+              <div className="w-full max-w-2xl mx-auto">
+                {activeTab === "function" && (
+                  <FunctionContent
+                    template={template}
+                    authenticators={authenticators}
+                    selectedAuthenticatorId={watch("authenticatorId")}
+                    onAuthenticatorChange={authId => {
+                      setValue("authenticatorId", authId);
+                      if (template?.id) {
+                        handleAuthenticatorChange(template.id, authId || null);
+                      }
+                    }}
+                    onManageAuthenticators={() => setShowAuthModal(true)}
+                  />
+                )}
+                {activeTab === "params" && (
+                  <ParamsContent
+                    params={watch("params")}
+                    register={register}
+                    setValue={setValue}
+                    watch={watch}
+                  />
+                )}
+              </div>
+            ) : (
+              <div className="text-gray-500 p-4">
+                No se encontró el template
+              </div>
+            )}
+          </ConfigPanel>
         </div>
-      }
-      zindex={1000}
-    >
-      <div className="w-full">
-        <ConfigPanel
-          tabs={tabs}
-          activeTab={activeTab}
-          onTabChange={setActiveTab}
-          isLoading={loading}
-          actions={
-            <ActionButtons
-              onCancel={onClose}
-              onSave={onSave}
-              goToPreviousTab={goToPreviousTab}
-              goToNextTab={goToNextTab}
-              isFirstTab={isFirstTab}
-              isLastTab={isLastTab}
-            />
-          }
-        >
-          {loading ? (
-            <div className="flex justify-center items-center min-h-[400px]">
-              <Loading />
-            </div>
-          ) : error ? (
-            <div className="text-red-500 p-4">{error}</div>
-          ) : template ? (
-            <div className="w-full max-w-2xl mx-auto">
-              {activeTab === "function" && <FunctionContent template={template} />}
-              {activeTab === "params" && (
-                <ParamsContent
-                  params={watch("params")}
-                  register={register}
-                  setValue={setValue}
-                  watch={watch}
-                />
-              )}
-            </div>
-          ) : (
-            <div className="text-gray-500 p-4">No se encontró el template</div>
-          )}
-        </ConfigPanel>
-      </div>
-    </Modal>
+      </Modal>
+
+      {/* Modal para gestionar autenticadores */}
+      {showAuthModal && (
+        <AuthenticatorFormModal
+          isShown={showAuthModal}
+          onClose={() => setShowAuthModal(false)}
+          organizationId={organizationId}
+          onSubmit={async data => {
+            try {
+              await authenticatorService.create(data);
+              toast.success("Autenticador creado exitosamente");
+              fetchAuthenticators();
+              setShowAuthModal(false);
+            } catch (error) {
+              console.error("Error al crear autenticador:", error);
+              toast.error("Error al crear el autenticador");
+            }
+          }}
+          zindex={1100}
+        />
+      )}
+    </>
   );
 };
