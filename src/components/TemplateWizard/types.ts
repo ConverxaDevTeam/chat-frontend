@@ -13,6 +13,8 @@ export interface ParamConfigItem {
   id: string;
   name: string;
   enabled: boolean;
+  title: string;
+  description: string;
   value: string;
   type: ParamType;
   required: boolean;

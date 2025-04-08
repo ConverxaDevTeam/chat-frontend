@@ -69,7 +69,6 @@ export const TemplateWizard = ({
             const paramConfig: Record<string, ParamConfigItem> = {};
             if (template.params && template.params.length > 0) {
               template.params.forEach(param => {
-                // Incluir todos los tipos de parámetros, incluidos los de tipo objeto
                 paramConfig[param.id] = {
                   id: param.id,
                   name: param.name,
@@ -77,7 +76,8 @@ export const TemplateWizard = ({
                   value: param.defaultValue?.toString() || "",
                   type: param.type,
                   required: param.required,
-                  // Asegurar que las propiedades se pasen correctamente para objetos
+                  title: param.name,
+                  description: param.description,
                   properties: param.properties,
                 };
               });
