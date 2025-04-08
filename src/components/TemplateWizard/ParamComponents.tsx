@@ -13,23 +13,6 @@ type ParamItemProps = {
   handleValueChange: (paramId: string, value: string) => void;
 };
 
-const ParamHeader = ({
-  name,
-  required,
-}: {
-  name: string;
-  required: boolean;
-}) => (
-  <div className="flex items-center gap-2">
-    <h4 className="font-medium text-gray-800">{name}</h4>
-    {required && (
-      <span className="px-2 py-0.5 bg-red-50 text-red-600 text-xs rounded-full font-medium">
-        Requerido
-      </span>
-    )}
-  </div>
-);
-
 const ParamTypeBadge = ({ type }: { type: ParamType }) => {
   const typeText = {
     [ParamType.OBJECT]: "Objeto",
@@ -69,20 +52,6 @@ const ParamToggle = ({
   );
 };
 
-const ParamDescription = ({
-  required,
-  isObject = false,
-}: {
-  required: boolean;
-  isObject?: boolean;
-}) => (
-  <p className="mt-2 text-xs text-gray-500">
-    {required
-      ? `Este ${isObject ? "objeto" : "campo"} es obligatorio para que la función opere correctamente.`
-      : `Este ${isObject ? "objeto" : "campo"} es opcional. Puedes dejarlo en blanco si no lo necesitas.`}
-  </p>
-);
-
 export const ParamItem = ({
   paramId,
   param,
@@ -91,27 +60,27 @@ export const ParamItem = ({
   handleValueChange,
 }: ParamItemProps) => {
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
-      <div className="flex items-center justify-between p-4 border-b border-gray-100">
-        <ParamHeader name={param.name} required={param.required} />
-        <div className="flex items-center gap-3">
-          <ParamTypeBadge type={param.type} />
-          <ParamToggle
-            register={register}
-            paramId={paramId}
-            enabled={watchedParams[paramId]?.enabled}
-            required={param.required}
-          />
+    <div className="flex items-center gap-4">
+      <div className="flex-1 min-w-0">
+        <div className="font-medium text-gray-800 truncate">{param.title}</div>
+        <div className="text-xs text-gray-500 truncate">
+          {param.description}
         </div>
       </div>
-
-      <div className="p-4">
+      <div className="flex items-center gap-2">
+        <ParamTypeBadge type={param.type} />
         <PropertyInput
           property={param}
           value={watchedParams[paramId]?.value ?? ""}
           onChange={value => handleValueChange(paramId, value)}
+          className="w-32"
         />
-        <ParamDescription required={param.required} />
+        <ParamToggle
+          register={register}
+          paramId={paramId}
+          enabled={watchedParams[paramId]?.enabled}
+          required={param.required}
+        />
       </div>
     </div>
   );
@@ -121,6 +90,7 @@ export const PropertyInput = ({
   property,
   value,
   onChange,
+  className,
 }: {
   property: {
     name: string;
@@ -130,13 +100,14 @@ export const PropertyInput = ({
   };
   value: string;
   onChange: (value: string) => void;
+  className?: string;
 }) => {
   return (
     <div className="space-y-1">
       {property.type === ParamType.STRING && (
         <Input
           placeholder={`Valor para ${property.name}`}
-          className="w-full p-2 border rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          className={`w-full p-2 border rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${className}`}
           value={value}
           onChange={e => onChange(e.target.value)}
         />
@@ -146,7 +117,7 @@ export const PropertyInput = ({
         <Input
           type="number"
           placeholder={`Valor para ${property.name}`}
-          className="w-full p-2 border rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          className={`w-full p-2 border rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${className}`}
           value={value}
           onChange={e => onChange(e.target.value)}
         />
