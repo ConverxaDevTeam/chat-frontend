@@ -11,6 +11,7 @@ export interface FunctionTemplateApplication {
   id: number;
   name: string;
   description?: string;
+  imageUrl?: string;
   image: string;
   domain?: string;
   isDynamicDomain: boolean;
