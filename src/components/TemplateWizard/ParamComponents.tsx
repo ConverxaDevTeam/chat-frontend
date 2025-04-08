@@ -13,25 +13,6 @@ type ParamItemProps = {
   handleValueChange: (paramId: string, value: string) => void;
 };
 
-type ParamTypeBadgeProps = {
-  type: ParamType;
-};
-
-const ParamTypeBadge = ({ type }: ParamTypeBadgeProps) => {
-  const typeText = {
-    [ParamType.OBJECT]: "Objeto",
-    [ParamType.STRING]: "Texto",
-    [ParamType.NUMBER]: "Número",
-    [ParamType.BOOLEAN]: "Sí/No",
-  }[type];
-
-  return (
-    <span className="px-2 py-1 bg-blue-50 text-blue-600 text-xs rounded-full">
-      {typeText}
-    </span>
-  );
-};
-
 type ParamToggleProps = {
   register: UseFormRegister<WizardFormValues>;
   paramId: string;
@@ -87,7 +68,6 @@ export const ParamItem = ({
               {param.description ?? ""}
             </div>
           </div>
-          <ParamTypeBadge type={param.type} />
           <ParamToggle
             register={register}
             paramId={paramId}
@@ -135,7 +115,6 @@ export const ParamItem = ({
         </div>
       </div>
       <div className="flex items-center gap-2">
-        <ParamTypeBadge type={param.type} />
         <PropertyInput
           property={param}
           value={watchedParams[paramId]?.value ?? ""}
