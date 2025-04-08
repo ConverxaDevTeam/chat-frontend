@@ -1,6 +1,5 @@
 import { FunctionTemplate } from "@interfaces/template.interface";
 import { AuthenticatorType } from "@interfaces/autenticators.interface";
-import { ParamType } from "@interfaces/function-params.interface";
 import {
   UseFormRegister,
   UseFormSetValue,
@@ -9,7 +8,7 @@ import {
 import { ParamConfigItem, WizardFormValues } from "./types";
 import { Button } from "@components/common/Button";
 import { Input } from "@components/forms/input";
-import { CollapsibleCard, ParamItem, PropertyInput } from "./ParamComponents";
+import { ParamItem } from "./ParamComponents";
 
 // Componente para los botones de acción
 export const ActionButtons = ({
@@ -245,35 +244,6 @@ export const ParamsContent = ({
     }
   };
 
-  const renderObjectProperties = (param: ParamConfigItem) => {
-    if (!param.properties || param.properties.length === 0) return null;
-
-    return (
-      <div className="mt-2 space-y-2">
-        {param.properties.map(property => (
-          <CollapsibleCard
-            key={property.name}
-            title={property.name}
-            description={property.description}
-            type={property.type}
-            required={property.required}
-          >
-            <PropertyInput property={property} value="" onChange={() => {}} />
-
-            {property.type === ParamType.OBJECT &&
-              renderObjectProperties({
-                ...property,
-                id: property.name,
-                enabled: true,
-                value: "",
-                required: property.required || false,
-              })}
-          </CollapsibleCard>
-        ))}
-      </div>
-    );
-  };
-
   return (
     <div className="space-y-6 py-4">
       <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100 mb-4">
@@ -315,7 +285,6 @@ export const ParamsContent = ({
               register={register}
               handleToggleParam={handleToggleParam}
               handleValueChange={handleValueChange}
-              renderObjectProperties={renderObjectProperties}
             />
           ))
         )}
