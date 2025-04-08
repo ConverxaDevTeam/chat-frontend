@@ -5,6 +5,8 @@ import {
   FunctionTemplateApplication,
 } from "@interfaces/template.interface";
 import InfoTooltip from "./Common/InfoTooltip";
+import Loading from "./Loading";
+import { TemplateWizard } from "./TemplateWizard/TemplateWizard";
 
 interface GroupedTemplates {
   application: FunctionTemplateApplication;
@@ -51,8 +53,8 @@ const SidebarHeader = ({ onClose }: { onClose: () => void }) => (
 
 // Componente para mostrar el estado de carga
 const LoadingState = () => (
-  <div className="flex justify-center items-center h-full">
-    <span className="text-gray-500">Cargando...</span>
+  <div className="flex justify-center items-center h-full py-8">
+    <Loading />
   </div>
 );
 
@@ -146,13 +148,16 @@ const ApplicationHeader = ({
 const TemplateItem = ({
   template,
   applicationImageUrl,
+  onTemplateClick,
 }: {
   template: FunctionTemplate;
   applicationImageUrl?: string;
+  onTemplateClick: (templateId: number) => void;
 }) => (
   <div
     key={template.id}
     className="flex flex-col p-2 hover:bg-gray-100 rounded-md cursor-pointer border-l-2 border-blue-300 shadow-sm"
+    onClick={() => onTemplateClick(template.id)}
   >
     <div className="flex items-center gap-3 py-1">
       <ApplicationImage
@@ -196,7 +201,7 @@ const TemplateItem = ({
 );
 
 // Componente para mostrar un grupo de templates
-const ApplicationGroup = ({ group }: { group: GroupedTemplates }) => {
+const ApplicationGroup = ({ group, onTemplateClick }: { group: GroupedTemplates; onTemplateClick: (templateId: number) => void }) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const toggleExpand = () => {
@@ -221,6 +226,7 @@ const ApplicationGroup = ({ group }: { group: GroupedTemplates }) => {
                 key={template.id}
                 template={template}
                 applicationImageUrl={group.application.imageUrl}
+                onTemplateClick={onTemplateClick}
               />
             ))}
           </div>
@@ -233,11 +239,22 @@ const ApplicationGroup = ({ group }: { group: GroupedTemplates }) => {
 // Componente principal
 export const ApplicationsSidebar = ({ onClose }: { onClose: () => void }) => {
   const { groups, loading, fetchData } = useApplicationsData();
+  const [selectedTemplateId, setSelectedTemplateId] = useState<number | null>(null);
+  const [isWizardOpen, setIsWizardOpen] = useState(false);
 
   // Cargar datos al montar el componente
   useEffect(() => {
     fetchData();
   }, []);
+
+  const handleTemplateClick = (templateId: number) => {
+    setSelectedTemplateId(templateId);
+    setIsWizardOpen(true);
+  };
+
+  const handleWizardClose = () => {
+    setIsWizardOpen(false);
+  };
 
   return (
     <div className="fixed inset-0 z-50">
@@ -255,13 +272,25 @@ export const ApplicationsSidebar = ({ onClose }: { onClose: () => void }) => {
             ) : (
               <div className="space-y-4">
                 {groups.map(group => (
-                  <ApplicationGroup key={group.application.id} group={group} />
+                  <ApplicationGroup 
+                    key={group.application.id} 
+                    group={group} 
+                    onTemplateClick={handleTemplateClick} 
+                  />
                 ))}
               </div>
             )}
           </div>
         </div>
       </div>
+
+      {selectedTemplateId && (
+        <TemplateWizard 
+          isOpen={isWizardOpen} 
+          onClose={handleWizardClose} 
+          templateId={selectedTemplateId} 
+        />
+      )}
     </div>
   );
 };
