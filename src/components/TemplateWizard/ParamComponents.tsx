@@ -93,10 +93,9 @@ export const PropertyInput = ({
   className,
 }: {
   property: {
-    name: string;
+    title: string;
     type: ParamType;
     required?: boolean;
-    description?: string;
   };
   value: string;
   onChange: (value: string) => void;
@@ -106,17 +105,16 @@ export const PropertyInput = ({
     <div className="space-y-1">
       {property.type === ParamType.STRING && (
         <Input
-          placeholder={`Valor para ${property.name}`}
+          placeholder={`Valor para ${property.title}`}
           className={`w-full p-2 border rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${className}`}
           value={value}
           onChange={e => onChange(e.target.value)}
         />
       )}
-
       {property.type === ParamType.NUMBER && (
         <Input
           type="number"
-          placeholder={`Valor para ${property.name}`}
+          placeholder={`Valor para ${property.title}`}
           className={`w-full p-2 border rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${className}`}
           value={value}
           onChange={e => onChange(e.target.value)}

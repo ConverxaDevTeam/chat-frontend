@@ -76,7 +76,7 @@ export const TemplateWizard = ({
                   value: param.defaultValue?.toString() || "",
                   type: param.type,
                   required: param.required,
-                  title: param.name,
+                  title: param.title,
                   description: param.description,
                   properties: param.properties,
                 };
