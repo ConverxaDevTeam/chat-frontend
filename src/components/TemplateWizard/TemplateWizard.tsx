@@ -12,11 +12,7 @@ import { authenticatorService } from "@services/authenticator.service";
 // Importaciones de archivos locales
 import { useTabNavigation, useAuthenticators } from "./hooks";
 import { ActionButtons, FunctionContent, ParamsContent } from "./components";
-import {
-  TemplateWizardProps,
-  WizardFormValues,
-  ParamConfigItem,
-} from "./types";
+import { TemplateWizardProps, WizardFormValues } from "./types";
 
 export const TemplateWizard = ({
   isOpen,
@@ -50,7 +46,7 @@ export const TemplateWizard = ({
   const { register, handleSubmit, setValue, watch, reset } =
     useForm<WizardFormValues>({
       defaultValues: {
-        params: {},
+        params: [],
         authenticatorId: template?.authenticator?.id,
         customDomain: template?.application?.domain || "",
       },
