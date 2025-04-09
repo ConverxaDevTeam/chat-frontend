@@ -145,8 +145,6 @@ export const ParamItem = ({
                     nestedEnabled =
                       propEnabled !== undefined ? propEnabled : false;
                   }
-
-
                 }
 
                 // Si aún no hay valores, usar los valores por defecto de la propiedad
@@ -182,9 +180,6 @@ export const ParamItem = ({
                     register={register}
                     setValue={setValue}
                     handleValueChange={(nestedId, value) => {
-                      console.log(
-                        `Nested value change: ${nestedId} = ${value}`
-                      );
                       handleValueChange(nestedId, value);
                     }}
                     handleToggleChange={handleToggleChange}
