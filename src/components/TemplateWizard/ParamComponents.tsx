@@ -32,8 +32,6 @@ const ParamToggle = ({
   onToggleChange,
   handleToggleChange,
 }: ParamToggleProps) => {
-  const isEnabled = required ? true : enabled;
-
   // Extraer el onChange del register para manejarlo explícitamente
   const { onChange, ...rest } = register(`params.${paramId}.enabled`);
 
@@ -55,10 +53,10 @@ const ParamToggle = ({
   return (
     <div className="flex items-center gap-1">
       <span className="text-xs text-gray-500 mr-1">
-        {isEnabled ? "Activado" : "Desactivado"}
+        {enabled ? "Activado" : "Desactivado"}
       </span>
       <Toggle
-        checked={isEnabled}
+        checked={enabled}
         disabled={required}
         onChange={onToggleStateChange}
         {...rest}
@@ -81,12 +79,16 @@ export const ParamItem = ({
   // Obtener el estado actualizado de los parámetros
   const watchedParam = watchedParams[paramId];
   const watchedValue = watchedParam?.value;
-  const watchedEnabled = watchedParam?.enabled;
 
   // Determinar si el parámetro está habilitado
-  const isParamEnabled =
-    param.required ||
-    (watchedEnabled !== undefined ? watchedEnabled : (param.enabled ?? false));
+  const isParamEnabled = param.enabled;
+
+  // Actualizar el form state si es required
+  useEffect(() => {
+    if (param.required) {
+      setValue(`params.${paramId}.enabled`, true);
+    }
+  }, [param.required, paramId, setValue]);
 
   // Efecto para manejar la activación/desactivación de parámetros anidados
   // cuando el parámetro padre cambia de estado
@@ -151,11 +153,7 @@ export const ParamItem = ({
           </div>
           <ParamToggle
             paramId={paramId}
-            enabled={
-              watchedEnabled !== undefined
-                ? watchedEnabled
-                : (param.enabled ?? false)
-            }
+            enabled={isParamEnabled}
             required={param.required ?? false}
             register={register}
             handleToggleChange={handleToggleChange}
@@ -206,10 +204,7 @@ export const ParamItem = ({
                   id: nestedParamId,
                   title: prop.name || propName,
                   description: prop.description ?? "",
-                  enabled:
-                    nestedEnabled !== undefined
-                      ? nestedEnabled
-                      : (prop.enabled ?? false),
+                  enabled: nestedEnabled,
                   // Usar el valor observado si existe, de lo contrario usar el valor de la propiedad
                   value:
                     nestedWatchedValue !== undefined
@@ -259,11 +254,7 @@ export const ParamItem = ({
         />
         <ParamToggle
           paramId={paramId}
-          enabled={
-            watchedEnabled !== undefined
-              ? watchedEnabled
-              : (param.enabled ?? false)
-          }
+          enabled={isParamEnabled}
           required={param.required ?? false}
           register={register}
           handleToggleChange={handleToggleChange}
