@@ -75,54 +75,31 @@ export const ParamItem = ({
   handleToggleChange,
 }: ParamItemProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
-
-  // Obtener el estado actualizado de los parámetros
-  const watchedParam = watchedParams[paramId];
-  const watchedValue = watchedParam?.value;
-
-  // Determinar si el parámetro está habilitado
   const isParamEnabled = param.enabled;
+  const watchedValue = watchedParams[paramId]?.value;
 
-  // Actualizar el form state si es required
   useEffect(() => {
     if (param.required) {
       setValue(`params.${paramId}.enabled`, true);
     }
   }, [param.required, paramId, setValue]);
 
-  // Efecto para manejar la activación/desactivación de parámetros anidados
-  // cuando el parámetro padre cambia de estado
   useEffect(() => {
-    // Solo aplicar para parámetros de tipo objeto con propiedades
     if (
       param.type === ParamType.OBJECT &&
       param.properties &&
-      paramId &&
       !paramId.includes(".")
     ) {
-      // Si el parámetro está activado, solo activar los requeridos
-      if (isParamEnabled) {
-        Object.entries(param.properties).forEach(([propName, prop]) => {
-          const nestedParamId = `${paramId}.${propName}`;
-          const isRequired = prop.required ?? false;
+      Object.entries(param.properties).forEach(([propName, prop]) => {
+        const nestedParamId = `${paramId}.${propName}`;
+        const isRequired = prop.required ?? false;
 
-          // Solo establecer el valor si es requerido
-          if (isRequired) {
-            setValue(`params.${nestedParamId}.enabled`, true);
-          }
-        });
-      } else {
-        // Si el parámetro está desactivado, desactivar todos los no requeridos
-        Object.entries(param.properties).forEach(([propName, prop]) => {
-          const nestedParamId = `${paramId}.${propName}`;
-          const isRequired = prop.required ?? false;
-
-          // No desactivar los requeridos
-          if (!isRequired) {
-            setValue(`params.${nestedParamId}.enabled`, false);
-          }
-        });
-      }
+        if (isParamEnabled && isRequired) {
+          setValue(`params.${nestedParamId}.enabled`, true);
+        } else if (!isParamEnabled && !isRequired) {
+          setValue(`params.${nestedParamId}.enabled`, false);
+        }
+      });
     }
   }, [isParamEnabled, paramId, param.type, param.properties, setValue]);
 
@@ -162,70 +139,34 @@ export const ParamItem = ({
 
         {isExpanded && isParamEnabled && (
           <div className="pl-8 space-y-4">
-            {param.properties &&
-              Object.entries(param.properties).map(([propName, prop]) => {
-                console.log("PropName:", propName, "Prop:", prop);
-                const nestedParamId = `${paramId}.${propName}`;
-                console.log("nestedParamId resultante:", nestedParamId);
-                // Asegurarnos de obtener el valor más actualizado
-                let nestedWatchedValue = watchedParams[nestedParamId]?.value;
-                let nestedEnabled = watchedParams[nestedParamId]?.enabled;
+            {Object.entries(param.properties).map(([propName, prop]) => {
+              const nestedParamId = `${paramId}.${propName}`;
+              const nestedProp: ParamConfigItem = {
+                ...prop,
+                id: nestedParamId,
+                title: prop.name || propName,
+                value: watchedParams[nestedParamId]?.value ?? prop.value ?? "",
+                enabled:
+                  watchedParams[nestedParamId]?.enabled ??
+                  prop.enabled ??
+                  false,
+                description: prop.description ?? "",
+                required: prop.required ?? false,
+              };
 
-                // Si no hay valor en el parámetro anidado, intentar obtenerlo de las propiedades del padre
-                if (
-                  watchedParams[paramId]?.properties &&
-                  propName in watchedParams[paramId].properties
-                ) {
-                  if (nestedWatchedValue === undefined) {
-                    const propValue =
-                      watchedParams[paramId].properties[propName].value;
-                    nestedWatchedValue =
-                      propValue !== undefined ? propValue : "";
-                  }
-                  if (nestedEnabled === undefined) {
-                    const propEnabled =
-                      watchedParams[paramId].properties[propName].enabled;
-                    nestedEnabled =
-                      propEnabled !== undefined ? propEnabled : false;
-                  }
-                }
-
-                // Si aún no hay valores, usar los valores por defecto de la propiedad
-                if (nestedWatchedValue === undefined) {
-                  nestedWatchedValue = prop.value ?? "";
-                }
-                if (nestedEnabled === undefined) {
-                  nestedEnabled = prop.enabled ?? false;
-                }
-
-                const fullProp: ParamConfigItem = {
-                  ...prop,
-                  id: nestedParamId,
-                  title: prop.name || propName,
-                  description: prop.description ?? "",
-                  enabled: nestedEnabled,
-                  // Usar el valor observado si existe, de lo contrario usar el valor de la propiedad
-                  value:
-                    nestedWatchedValue !== undefined
-                      ? nestedWatchedValue
-                      : (prop.value ?? ""),
-                  required: prop.required ?? false,
-                };
-                return (
-                  <ParamItem
-                    key={fullProp.id}
-                    paramId={fullProp.id}
-                    param={fullProp}
-                    watchedParams={watchedParams}
-                    register={register}
-                    setValue={setValue}
-                    handleValueChange={(nestedId, value) => {
-                      handleValueChange(nestedId, value);
-                    }}
-                    handleToggleChange={handleToggleChange}
-                  />
-                );
-              })}
+              return (
+                <ParamItem
+                  key={nestedParamId}
+                  paramId={nestedParamId}
+                  param={nestedProp}
+                  watchedParams={watchedParams}
+                  register={register}
+                  setValue={setValue}
+                  handleValueChange={handleValueChange}
+                  handleToggleChange={handleToggleChange}
+                />
+              );
+            })}
           </div>
         )}
       </div>
