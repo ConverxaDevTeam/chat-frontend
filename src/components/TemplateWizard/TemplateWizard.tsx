@@ -3,7 +3,7 @@ import Modal from "@components/Modal";
 import ConfigPanel from "@components/ConfigPanel";
 import { FunctionTemplate } from "@interfaces/template.interface";
 import { getTemplateById } from "@services/template.service";
-import { useForm } from "react-hook-form";
+import { useForm, FormProvider } from "react-hook-form";
 import Loading from "@components/Loading";
 import { toast } from "react-toastify";
 import AuthenticatorFormModal from "@components/Diagrams/authComponents/AuthenticatorFormModal";
@@ -43,14 +43,15 @@ export const TemplateWizard = ({
     isLastTab,
   } = useTabNavigation("function");
 
-  const { register, handleSubmit, setValue, watch, reset } =
-    useForm<WizardFormValues>({
-      defaultValues: {
-        params: [],
-        authenticatorId: template?.authenticator?.id,
-        customDomain: template?.application?.domain || "",
-      },
-    });
+  const methods = useForm<WizardFormValues>({
+    defaultValues: {
+      params: [],
+      authenticatorId: template?.authenticator?.id,
+      customDomain: template?.application?.domain || "",
+    },
+  });
+
+  const { handleSubmit, setValue, watch, reset } = methods;
 
   // Cargar datos del template
   useEffect(() => {
@@ -67,7 +68,11 @@ export const TemplateWizard = ({
             }
 
             reset({
-              params: template.params,
+              params: template.params.map(p => ({
+                ...p,
+                enabled: p.required ?? false,
+                value: "",
+              })),
               authenticatorId: template.authenticatorId,
               customDomain: template.application?.domain || "",
             });
@@ -109,7 +114,7 @@ export const TemplateWizard = ({
   if (!isOpen) return null;
 
   return (
-    <>
+    <FormProvider {...methods}>
       <Modal
         isShown={isOpen}
         onClose={onClose}
@@ -159,12 +164,7 @@ export const TemplateWizard = ({
                   />
                 )}
                 {activeTab === "params" && (
-                  <ParamsContent
-                    params={watch("params")}
-                    register={register}
-                    setValue={setValue}
-                    watch={watch}
-                  />
+                  <ParamsContent params={watch("params")} />
                 )}
               </div>
             ) : (
@@ -196,6 +196,6 @@ export const TemplateWizard = ({
           zindex={1100}
         />
       )}
-    </>
+    </FormProvider>
   );
 };

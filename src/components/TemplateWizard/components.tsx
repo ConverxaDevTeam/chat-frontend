@@ -1,15 +1,10 @@
 import { FunctionTemplate } from "@interfaces/template.interface";
 import { AuthenticatorType } from "@interfaces/autenticators.interface";
-import {
-  UseFormRegister,
-  UseFormSetValue,
-  UseFormWatch,
-} from "react-hook-form";
 import { ParamConfigItem, WizardFormValues } from "./types";
 import { Button } from "@components/common/Button";
 import { Input } from "@components/forms/input";
 import { ParamItem } from "./ParamComponents";
-import { useCallback } from "react";
+import { Controller, useFormContext } from "react-hook-form";
 
 // Componente para los botones de acción
 export const ActionButtons = ({
@@ -243,85 +238,6 @@ export const FunctionContent = ({
   </div>
 );
 
-export const useParamsHandlers = (
-  setValue: UseFormSetValue<WizardFormValues>,
-  watch: UseFormWatch<WizardFormValues>
-) => {
-  const params = watch("params");
-
-  // Memoizar handlers para evitar recreación en cada render
-  const handleToggleChange = useCallback(
-    (paramId: string, enabled: boolean) => {
-      const updatedParams = params.map(param =>
-        param.id === paramId ? { ...param, enabled } : param
-      );
-      setValue("params", updatedParams, { shouldDirty: true });
-    },
-    [params, setValue]
-  );
-
-  const handleValueChange = useCallback(
-    (paramId: string, value: string) => {
-      const updatedParams = params.map(param =>
-        param.id === paramId ? { ...param, value } : param
-      );
-      setValue("params", updatedParams, { shouldDirty: true });
-    },
-    [params, setValue]
-  );
-
-  const handleNestedToggleChange = useCallback(
-    (paramId: string, propId: string, enabled: boolean) => {
-      const updatedParams = params.map(param => {
-        if (param.id === paramId) {
-          return {
-            ...param,
-            properties: {
-              ...param.properties,
-              [propId]: {
-                ...param.properties?.[propId],
-                enabled,
-              },
-            },
-          };
-        }
-        return param;
-      });
-      setValue("params", updatedParams, { shouldDirty: true });
-    },
-    [params, setValue]
-  );
-
-  const handleNestedValueChange = useCallback(
-    (paramId: string, propId: string, value: string) => {
-      const updatedParams = params.map(param => {
-        if (param.id === paramId) {
-          return {
-            ...param,
-            properties: {
-              ...param.properties,
-              [propId]: {
-                ...param.properties?.[propId],
-                value,
-              },
-            },
-          };
-        }
-        return param;
-      });
-      setValue("params", updatedParams, { shouldDirty: true });
-    },
-    [params, setValue]
-  );
-
-  return {
-    handleToggleChange,
-    handleValueChange,
-    handleNestedToggleChange,
-    handleNestedValueChange,
-  };
-};
-
 const NoParamsMessage = () => (
   <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100 text-center">
     <img
@@ -335,23 +251,8 @@ const NoParamsMessage = () => (
   </div>
 );
 
-export const ParamsContent = ({
-  params,
-  register,
-  setValue,
-  watch,
-}: {
-  params: ParamConfigItem[];
-  register: UseFormRegister<WizardFormValues>;
-  setValue: UseFormSetValue<WizardFormValues>;
-  watch: UseFormWatch<WizardFormValues>;
-}) => {
-  const {
-    handleToggleChange,
-    handleValueChange,
-    handleNestedToggleChange,
-    handleNestedValueChange,
-  } = useParamsHandlers(setValue, watch);
+export const ParamsContent = ({ params }: { params: ParamConfigItem[] }) => {
+  const { control } = useFormContext<WizardFormValues>();
 
   if (!params || params.length === 0) {
     return <NoParamsMessage />;
@@ -359,21 +260,28 @@ export const ParamsContent = ({
 
   return (
     <div className="space-y-4">
-      {params.map(param => (
-        <ParamItem
-          key={param.id}
-          param={param}
-          register={register}
-          onToggleChange={enabled => handleToggleChange(param.id, enabled)}
-          onValueChange={value => handleValueChange(param.id, value)}
-          onNestedToggleChange={(propId, enabled) =>
-            handleNestedToggleChange(param.id, propId, enabled)
-          }
-          onNestedValueChange={(propId, value) =>
-            handleNestedValueChange(param.id, propId, value)
-          }
-        />
-      ))}
+      <Controller
+        name="params"
+        control={control}
+        render={({ field }) => (
+          <>
+            {params.map(param => (
+              <ParamItem
+                key={param.id}
+                param={param}
+                value={field.value?.find(p => p.id === param.id)}
+                onChange={updatedParam => {
+                  const updatedParams =
+                    field.value?.map(p =>
+                      p.id === param.id ? updatedParam : p
+                    ) || [];
+                  field.onChange(updatedParams);
+                }}
+              />
+            ))}
+          </>
+        )}
+      />
     </div>
   );
 };
