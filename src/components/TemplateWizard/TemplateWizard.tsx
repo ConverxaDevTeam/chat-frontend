@@ -110,17 +110,31 @@ export const TemplateWizard = ({
   };
 
   // Crear función
-  const createFunction = (formData: WizardFormValues) => ({
-    name: template?.name ?? "",
-    agentId: agentId,
-    description: template?.description ?? "",
-    type: FunctionNodeTypes.API_ENDPOINT,
-    config: {
-      url: formData.customDomain ?? "",
-      method: template?.method ?? HttpMethod.POST,
-      bodyType: template?.bodyType ?? BodyType.JSON,
-    },
-  });
+  const createFunction = (formData: WizardFormValues) => {
+    let finalUrl = template?.url ?? "";
+    if (template?.application?.isDynamicDomain && formData.customDomain) {
+      try {
+        const urlObj = new URL(template.url);
+        urlObj.hostname = formData.customDomain;
+        finalUrl = urlObj.toString();
+      } catch {
+        // Si falla la construcción de URL, usar el valor original
+        finalUrl = template.url;
+      }
+    }
+
+    return {
+      name: template?.name ?? "",
+      agentId: agentId,
+      description: template?.description ?? "",
+      type: FunctionNodeTypes.API_ENDPOINT,
+      config: {
+        url: finalUrl,
+        method: template?.method ?? HttpMethod.POST,
+        bodyType: template?.bodyType ?? BodyType.JSON,
+      },
+    };
+  };
 
   // Manejar el envío del formulario
   const onSave = async () => {
