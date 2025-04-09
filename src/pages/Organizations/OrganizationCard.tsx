@@ -45,9 +45,9 @@ const OrganizationCard = ({
     e.stopPropagation();
     const rect = menuButtonRef.current?.getBoundingClientRect();
     if (rect) {
-      setMenuPosition({ 
-        x: rect.right, 
-        y: rect.top 
+      setMenuPosition({
+        x: rect.right,
+        y: rect.top,
       });
       setShowContextMenu(true);
     }
@@ -82,7 +82,7 @@ const OrganizationCard = ({
             <img src="/mvp/pencil.svg" alt="Editar" className="w-4 h-4" />
             <span>Editar</span>
           </button>
-          
+
           {hasDeletePermission && (
             <button
               onClick={onDelete}
@@ -92,13 +92,17 @@ const OrganizationCard = ({
               <span>Eliminar</span>
             </button>
           )}
-          
+
           {isSuperAdmin && (
             <button
               onClick={() => setShowPasswordModal(true)}
               className="flex items-center gap-2 w-full text-left"
             >
-              <img src="/mvp/lock.svg" alt="Cambiar contraseña" className="w-4 h-4" />
+              <img
+                src="/mvp/lock.svg"
+                alt="Cambiar contraseña"
+                className="w-4 h-4"
+              />
               <span>Cambiar contraseña</span>
             </button>
           )}
@@ -136,15 +140,25 @@ const OrganizationCard = ({
           </p>
         </td>
         <td className="py-2.5 px-6">
-          <p className="text-sm font-medium text-gray-600 truncate max-w-[200px]" 
-            title={organization.email || organization.owner?.user.email || ''}>
-            {organization.email || organization.owner?.user.email || '-'}
+          <p
+            className="text-sm font-medium text-gray-600 truncate max-w-[200px]"
+            title={organization.email || organization.owner?.user.email || ""}
+          >
+            {organization.email || organization.owner?.user.email || "-"}
           </p>
         </td>
         <td className="py-2.5 px-6">
-          <p className="text-sm font-medium text-gray-600 truncate max-w-[200px]" 
-            title={organization.departments !== undefined ? organization.departments.toString() : ''}>
-            {organization.departments !== undefined ? organization.departments : '-'}
+          <p
+            className="text-sm font-medium text-gray-600 truncate max-w-[200px]"
+            title={
+              organization.departments !== undefined
+                ? organization.departments.toString()
+                : ""
+            }
+          >
+            {organization.departments !== undefined
+              ? organization.departments
+              : "-"}
           </p>
         </td>
         <td className="py-2.5 px-6 text-center font-size-[16px]">
@@ -159,7 +173,11 @@ const OrganizationCard = ({
               onClick={handleOpenMenu}
               className="p-2 rounded-full hover:bg-gray-100 transition-colors"
             >
-              <img src="/mvp/three-dots.svg" alt="Opciones" className="w-5 h-5" />
+              <img
+                src="/mvp/three-dots.svg"
+                alt="Opciones"
+                className="w-5 h-5"
+              />
             </button>
           </div>
         </td>

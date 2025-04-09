@@ -181,6 +181,13 @@ export const apiUrls = {
     byOrganization: (organizationId: number) =>
       `/api/notifications/organization/${organizationId}`,
   },
+  // function templates
+  functionTemplates: {
+    base: () => `/api/function-templates`,
+    byId: (id: number) => `/api/function-templates/${id}`,
+    categories: () => `/api/function-templates/categories`,
+    applications: () => `/api/function-templates/applications`,
+  },
 } as const;
 
 export const tokenAccess = {

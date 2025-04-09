@@ -5,12 +5,17 @@ export enum ParamType {
   OBJECT = "object",
 }
 
-export interface ObjectParamProperty {
+// Interfaz base para evitar referencias circulares
+export interface BaseParamProperty {
   name: string;
   type: ParamType;
   description?: string;
   required?: boolean;
-  properties?: ObjectParamProperty[];
+}
+
+// Interfaz con propiedades anidadas
+export interface ObjectParamProperty extends BaseParamProperty {
+  properties?: BaseParamProperty[];
 }
 
 export interface CreateFunctionParamDto {
@@ -18,7 +23,7 @@ export interface CreateFunctionParamDto {
   type: ParamType;
   description: string;
   required: boolean;
-  properties?: ObjectParamProperty[];
+  properties?: BaseParamProperty[];
 }
 
 export interface FunctionParam extends CreateFunctionParamDto {
