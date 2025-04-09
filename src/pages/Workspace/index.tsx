@@ -62,14 +62,17 @@ const ChatWrapper = ({ agentId }: ChatWrapperProps) => {
   );
 };
 
-const ApplicationsWrapper = () => {
+const ApplicationsWrapper = ({ agentId }: { agentId: number }) => {
   const { isApplicationsSidebarOpen, closeApplicationsSidebar } =
     useApplicationsSidebar();
 
   return (
     <Fragment>
       {isApplicationsSidebarOpen && (
-        <ApplicationsSidebar onClose={closeApplicationsSidebar} />
+        <ApplicationsSidebar
+          onClose={closeApplicationsSidebar}
+          agentId={agentId}
+        />
       )}
     </Fragment>
   );
@@ -88,7 +91,7 @@ const WorkspaceContent = () => {
         </ReactFlowProvider>
       </div>
       {agentId !== null && <ChatWrapper agentId={agentId} />}
-      <ApplicationsWrapper />
+      <ApplicationsWrapper agentId={agentId || -1} />
     </div>
   );
 };

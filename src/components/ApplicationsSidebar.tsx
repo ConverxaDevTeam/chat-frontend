@@ -243,7 +243,13 @@ const ApplicationGroup = ({
 };
 
 // Componente principal
-export const ApplicationsSidebar = ({ onClose }: { onClose: () => void }) => {
+export const ApplicationsSidebar = ({
+  onClose,
+  agentId,
+}: {
+  onClose: () => void;
+  agentId: number;
+}) => {
   const { groups, loading, fetchData } = useApplicationsData();
   const [selectedTemplateId, setSelectedTemplateId] = useState<number | null>(
     null
@@ -297,6 +303,7 @@ export const ApplicationsSidebar = ({ onClose }: { onClose: () => void }) => {
           isOpen={isWizardOpen}
           onClose={handleWizardClose}
           templateId={selectedTemplateId}
+          agentId={agentId}
         />
       )}
     </div>

@@ -8,8 +8,7 @@ import Loading from "@components/Loading";
 import { toast } from "react-toastify";
 import AuthenticatorFormModal from "@components/Diagrams/authComponents/AuthenticatorFormModal";
 import { authenticatorService } from "@services/authenticator.service";
-import { functionsService } from "@services/functions.service"; // Importar el servicio de funciones
-import { useAppSelector } from "@store/hooks"; // Importar el hook de Redux
+import { functionsService } from "@services/functions.service";
 
 // Importaciones de archivos locales
 import { useTabNavigation, useAuthenticators } from "./hooks";
@@ -20,29 +19,31 @@ import {
   FunctionNodeTypes,
   HttpMethod,
 } from "@interfaces/functions.interface";
+import { useAppSelector } from "@store/hooks";
 
 export const TemplateWizard = ({
   isOpen,
   onClose,
   templateId,
+  agentId,
 }: TemplateWizardProps) => {
   const [template, setTemplate] = useState<FunctionTemplate | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Obtener el ID del agente desde Redux
-  const agentId = useAppSelector(state => state.chat.currentAgent?.id || -1);
   // Obtener el ID de la organización desde Redux
   const organizationId = useAppSelector(
     state => state.auth.selectOrganizationId
   );
-
+  if (!organizationId) {
+    throw new Error("No se encontró el ID de la organización");
+  }
   const {
     authenticators,
     fetchAuthenticators,
     showAuthModal,
     setShowAuthModal,
-  } = useAuthenticators(organizationId || agentId); // Usar agentId como fallback
+  } = useAuthenticators(organizationId);
 
   const {
     activeTab,
@@ -111,7 +112,7 @@ export const TemplateWizard = ({
   // Crear función
   const createFunction = (formData: WizardFormValues) => ({
     name: template?.name ?? "",
-    agentId: agentId, // Usar el ID del agente desde Redux
+    agentId: agentId,
     description: template?.description ?? "",
     type: FunctionNodeTypes.API_ENDPOINT,
     config: {
