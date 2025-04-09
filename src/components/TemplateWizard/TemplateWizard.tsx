@@ -9,6 +9,7 @@ import { toast } from "react-toastify";
 import AuthenticatorFormModal from "@components/Diagrams/authComponents/AuthenticatorFormModal";
 import { authenticatorService } from "@services/authenticator.service";
 import { functionsService } from "@services/functions.service";
+import { paramsService } from "@services/params.service"; // Importar paramsService
 
 // Importaciones de archivos locales
 import { useTabNavigation, useAuthenticators } from "./hooks";
@@ -20,6 +21,7 @@ import {
   HttpMethod,
 } from "@interfaces/functions.interface";
 import { useAppSelector } from "@store/hooks";
+import { BaseParamProperty } from "@interfaces/function-params.interface";
 
 export const TemplateWizard = ({
   isOpen,
@@ -130,8 +132,8 @@ export const TemplateWizard = ({
       type: FunctionNodeTypes.API_ENDPOINT,
       config: {
         url: finalUrl,
-        method: template?.method ?? HttpMethod.POST,
-        bodyType: template?.bodyType ?? BodyType.JSON,
+        method: (template?.method as HttpMethod) ?? HttpMethod.POST,
+        bodyType: (template?.bodyType as BodyType) ?? BodyType.JSON,
       },
     };
   };
@@ -140,11 +142,73 @@ export const TemplateWizard = ({
   const onSave = async () => {
     try {
       console.log("Form values:", getValues());
-      await functionsService.create(createFunction(getValues()));
-      toast.success("Función creada");
+      const formData = getValues();
+      const functionData = createFunction(formData);
+      const createdFunction = await functionsService.create(functionData);
+
+      if (!createdFunction.id) {
+        throw new Error("No se pudo crear la función");
+      }
+
+      // Asignar autenticador si existe
+      if (formData.authenticatorId) {
+        await functionsService.assignAuthenticator(
+          createdFunction.id,
+          formData.authenticatorId
+        );
+      }
+
+      // Crear parámetros habilitados
+      const enabledParams = formData.params?.filter(p => p.enabled) || [];
+      for (const param of enabledParams) {
+        const propertiesArray = Array.isArray(param.properties)
+          ? (param.properties as (BaseParamProperty & { enabled?: boolean })[])
+          : param.properties
+            ? (Object.values(param.properties) as (BaseParamProperty & {
+                enabled?: boolean;
+              })[])
+            : [];
+
+        const paramDto = {
+          name: param.name || param.title,
+          title: param.title,
+          description: param.value
+            ? `este parametro siempre es ${param.value}`
+            : param.description,
+          type: param.type,
+          required: param.required,
+          value: param.value,
+          properties: propertiesArray
+            .filter(
+              (p: BaseParamProperty & { enabled?: boolean }) =>
+                p.enabled !== false
+            )
+            .map(
+              (
+                p: BaseParamProperty & { enabled?: boolean; value?: string }
+              ) => ({
+                name: p.name,
+                type: p.type,
+                value: p.value,
+                description: p.value
+                  ? `este parametro siempre es ${p.value}`
+                  : p.description,
+                required: p.required,
+              })
+            ),
+        };
+
+        await paramsService.create(paramDto, createdFunction.id);
+      }
+
+      toast.success("Función creada con parámetros configurados");
       onClose();
     } catch (error) {
-      toast.error(error.message || "Error al crear función");
+      if (error instanceof Error) {
+        toast.error(error.message || "Error al crear función");
+      } else {
+        toast.error("Error desconocido al crear función");
+      }
     }
   };
 

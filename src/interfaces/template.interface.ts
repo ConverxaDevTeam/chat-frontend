@@ -1,5 +1,6 @@
 import { Autenticador } from "./autenticators.interface";
 import { ParamType } from "./function-params.interface";
+import { HttpMethod, BodyType } from "./functions.interface";
 
 export interface FunctionTemplateCategory {
   id: number;
@@ -41,8 +42,8 @@ export interface FunctionTemplate {
   authenticatorId?: number;
   authenticator?: Autenticador;
   url: string;
-  method: string;
-  bodyType: string;
+  method: HttpMethod;
+  bodyType: BodyType;
   params: FunctionTemplateParam[];
 }
 
@@ -54,8 +55,8 @@ export interface CreateFunctionTemplateDto {
   tags: string[];
   authenticatorId?: number;
   url: string;
-  method?: string;
-  bodyType?: string;
+  method?: HttpMethod;
+  bodyType?: BodyType;
   params: FunctionTemplateParam[];
 }
 

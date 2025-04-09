@@ -7,6 +7,7 @@ import {
   FunctionTemplateParam,
 } from "@interfaces/template.interface";
 import { getApplications, getCategories } from "@services/template.service";
+import { HttpMethod, BodyType } from "@interfaces/functions.interface";
 
 export interface FormValues {
   name: string;
@@ -16,8 +17,8 @@ export interface FormValues {
   tags: string[];
   authenticatorId?: number;
   url: string;
-  method: string;
-  bodyType: string;
+  method: HttpMethod;
+  bodyType: BodyType;
   params: FunctionTemplateParam[];
 }
 
@@ -112,8 +113,8 @@ export const useTemplateForm = (
       applicationId: undefined,
       tags: [],
       url: "",
-      method: "GET",
-      bodyType: "JSON",
+      method: HttpMethod.GET,
+      bodyType: BodyType.JSON,
       params: [],
     },
   });
@@ -130,8 +131,8 @@ export const useTemplateForm = (
         setValue("tags", initialData.tags || []);
         setValue("authenticatorId", initialData.authenticatorId);
         setValue("url", initialData.url);
-        setValue("method", initialData.method || "GET");
-        setValue("bodyType", initialData.bodyType || "JSON");
+        setValue("method", initialData.method || HttpMethod.GET);
+        setValue("bodyType", initialData.bodyType || BodyType.JSON);
         setValue("params", initialData.params || []);
       } else {
         // Modo creación: reiniciar formulario
@@ -173,6 +174,8 @@ export const useTemplateForm = (
         applicationId,
         tags: processedTags as string[],
         id: initialData?.id || 0,
+        method: data.method,
+        bodyType: data.bodyType,
       };
 
       await onSubmit(templateData);
