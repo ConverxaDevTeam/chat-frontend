@@ -161,10 +161,6 @@ export const ParamEditorModal: React.FC<ParamEditorModalProps> = ({
               <JsonStructureEditor
                 value={properties || []}
                 setValue={(_, value) => {
-                  console.log(
-                    "[ParamEditorModal] Setting properties value:",
-                    value
-                  );
                   control._formValues.params[index].properties = value;
                 }}
                 paramIndex={index}
