@@ -252,8 +252,6 @@ const useParamsHandlers = (
 
   // Función para manejar el cambio de estado del toggle
   const handleToggleChange = (paramId: string, enabled: boolean) => {
-    console.log(`Handle toggle change for ${paramId}: ${enabled}`);
-
     // Verificar si es un parámetro anidado
     if (paramId.includes(".")) {
       const [parentId, propName] = paramId.split(".");
@@ -279,8 +277,8 @@ const useParamsHandlers = (
           type: ParamType.STRING,
           required: false,
           description: "",
-          value: enabled ? "" : "",
-          enabled: enabled,
+          value: "",
+          enabled,
         };
       } else {
         parentParam.properties[propName].enabled = enabled;
@@ -294,8 +292,7 @@ const useParamsHandlers = (
 
       // Forzar la actualización del formulario
       setTimeout(() => {
-        const formValues = { ...params };
-        setValue("params", formValues);
+        setValue("params", { ...params });
       }, 0);
     } else {
       // Para parámetros normales, actualizar directamente
@@ -406,8 +403,7 @@ export const ParamsContent = ({
     watch
   );
 
-  // Añadir log para ver los parámetros observados
-  console.log("Watched params:", watchedParams);
+
 
   return (
     <div className="space-y-6 py-4">
