@@ -1,4 +1,5 @@
 import { ParamType } from "@interfaces/function-params.interface";
+import { BaseParamProperty } from "@interfaces/function-params.interface";
 
 export interface TemplateWizardProps {
   isOpen: boolean;
@@ -7,7 +8,6 @@ export interface TemplateWizardProps {
 }
 
 // Importamos las interfaces de propiedades de parámetros
-import { BaseParamProperty } from "@interfaces/function-params.interface";
 
 export interface ParamConfigItem {
   id: string;

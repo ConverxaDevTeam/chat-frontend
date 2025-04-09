@@ -1,4 +1,3 @@
-import { useFormContext } from "react-hook-form";
 import { ParamType } from "@interfaces/function-params.interface";
 import { ParamConfigItem } from "./types";
 import { Input } from "@components/forms/input";
@@ -42,26 +41,26 @@ export const ParamItem = ({ param, value, onChange }: ParamItemProps) => {
   if (!param) return null; // Validación crítica
 
   const safeParam: ParamConfigItem = {
-    id: param?.id || "",
-    name: param?.name || "",
-    enabled: param?.enabled ?? false,
-    title: param?.title || "",
-    description: param?.description || "",
-    value: param?.value || "",
-    type: param?.type || ParamType.STRING,
-    required: param?.required ?? false,
-    properties: param?.properties || {},
+    id: param.id,
+    name: param.name || "",
+    enabled: param.enabled ?? false,
+    title: param.title || "",
+    description: param.description || "",
+    value: param.value || "",
+    type: param.type || ParamType.STRING,
+    required: param.required ?? false,
+    properties: param.properties || [],
   };
 
   const currentValue = value?.value ?? "";
   const currentEnabled = value?.enabled ?? false;
 
   const handleToggleChange = (enabled: boolean) => {
-    onChange({ ...value, enabled });
+    onChange({ ...safeParam, ...value, enabled });
   };
 
   const handleValueChange = (newValue: string) => {
-    onChange({ ...value, value: newValue });
+    onChange({ ...safeParam, ...value, value: newValue });
   };
 
   const handleNestedValueChange = (
@@ -70,6 +69,7 @@ export const ParamItem = ({ param, value, onChange }: ParamItemProps) => {
   ) => {
     if (value?.properties) {
       onChange({
+        ...safeParam,
         ...value,
         properties: {
           ...value.properties,
@@ -128,7 +128,7 @@ export const ParamItem = ({ param, value, onChange }: ParamItemProps) => {
                 <ParamItem
                   key={propId}
                   param={nestedProp}
-                  value={value?.properties?.[propId]}
+                  value={value?.properties?.[Number(propId)]}
                   onChange={handleNestedValueChange.bind(null, propId)}
                 />
               );
