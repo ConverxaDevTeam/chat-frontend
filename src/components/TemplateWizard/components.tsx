@@ -250,6 +250,64 @@ const useParamsHandlers = (
   // Obtener los parámetros actuales para poder manipularlos
   const params = watch("params");
 
+  // Función para manejar el cambio de estado del toggle
+  const handleToggleChange = (paramId: string, enabled: boolean) => {
+    console.log(`Handle toggle change for ${paramId}: ${enabled}`);
+    
+    // Verificar si es un parámetro anidado
+    if (paramId.includes(".")) {
+      const [parentId, propName] = paramId.split(".");
+
+      // Actualizar directamente el parámetro anidado para que se refleje inmediatamente
+      setValue(`params.${paramId}.enabled`, enabled);
+      
+      // Si se desactiva, limpiar el valor
+      if (!enabled) {
+        setValue(`params.${paramId}.value`, "");
+      }
+      
+      // También actualizar en el objeto padre para mantener consistencia
+      const parentParam = { ...params[parentId] };
+      
+      if (!parentParam.properties) {
+        parentParam.properties = {};
+      }
+      
+      if (!parentParam.properties[propName]) {
+        parentParam.properties[propName] = {
+          name: propName,
+          type: ParamType.STRING,
+          required: false,
+          description: "",
+          value: enabled ? "" : "",
+          enabled: enabled,
+        };
+      } else {
+        parentParam.properties[propName].enabled = enabled;
+        if (!enabled) {
+          parentParam.properties[propName].value = "";
+        }
+      }
+      
+      // Actualizar el objeto padre completo
+      setValue(`params.${parentId}`, parentParam);
+      
+      // Forzar la actualización del formulario
+      setTimeout(() => {
+        const formValues = { ...params };
+        setValue("params", formValues);
+      }, 0);
+    } else {
+      // Para parámetros normales, actualizar directamente
+      setValue(`params.${paramId}.enabled`, enabled);
+      
+      // Si se desactiva, limpiar el valor
+      if (!enabled) {
+        setValue(`params.${paramId}.value`, "");
+      }
+    }
+  };
+
   const handleValueChange = (paramId: string, value: string) => {
     // Verificar si es un parámetro anidado
     if (paramId.includes(".")) {
@@ -296,7 +354,7 @@ const useParamsHandlers = (
     }
   };
 
-  return { handleValueChange };
+  return { handleValueChange, handleToggleChange };
 };
 
 const ParamsHeader = () => (
@@ -343,7 +401,13 @@ export const ParamsContent = ({
   watch: UseFormWatch<WizardFormValues>;
 }) => {
   const watchedParams = watch("params");
-  const { handleValueChange } = useParamsHandlers(setValue, watch);
+  const { handleValueChange, handleToggleChange } = useParamsHandlers(
+    setValue,
+    watch
+  );
+
+  // Añadir log para ver los parámetros observados
+  console.log("Watched params:", watchedParams);
 
   return (
     <div className="space-y-6 py-4">
@@ -359,7 +423,9 @@ export const ParamsContent = ({
               param={param}
               watchedParams={watchedParams}
               register={register}
+              setValue={setValue}
               handleValueChange={handleValueChange}
+              handleToggleChange={handleToggleChange}
             />
           ))
         )}

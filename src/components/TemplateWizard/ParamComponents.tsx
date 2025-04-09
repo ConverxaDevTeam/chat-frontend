@@ -1,49 +1,57 @@
 import { useState } from "react";
 import { ParamType } from "@interfaces/function-params.interface";
-import { UseFormRegister } from "react-hook-form";
+import { UseFormRegister, UseFormSetValue } from "react-hook-form";
 import { WizardFormValues, ParamConfigItem } from "./types";
 import { Input } from "@components/forms/input";
 import { Toggle } from "@components/forms/toggle";
 
-type ParamItemProps = {
+interface ParamItemProps {
   paramId: string;
   param: ParamConfigItem;
-  watchedParams: Record<string, ParamConfigItem>;
   register: UseFormRegister<WizardFormValues>;
+  watchedParams: Record<string, ParamConfigItem>;
+  setValue: UseFormSetValue<WizardFormValues>;
   handleValueChange: (paramId: string, value: string) => void;
-};
+  handleToggleChange: (paramId: string, enabled: boolean) => void;
+}
 
 type ParamToggleProps = {
-  register: UseFormRegister<WizardFormValues>;
   paramId: string;
-  enabled?: boolean;
-  required?: boolean;
-  onToggleChange?: (enabled: boolean) => void;
+  enabled: boolean;
+  required: boolean;
+  register: UseFormRegister<WizardFormValues>;
+  onToggleChange?: (checked: boolean) => void;
+  handleToggleChange?: (paramId: string, enabled: boolean) => void;
 };
 
 const ParamToggle = ({
-  register,
   paramId,
-  enabled = false,
-  required = false,
+  enabled,
+  required,
+  register,
   onToggleChange,
+  handleToggleChange,
 }: ParamToggleProps) => {
   const isEnabled = required ? true : enabled;
-  
+
   // Extraer el onChange del register para manejarlo explícitamente
   const { onChange, ...rest } = register(`params.${paramId}.enabled`);
-  
+
   // Función para manejar el cambio del toggle
-  const handleToggleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onToggleStateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     console.log(`Toggle changed for ${paramId}:`, e.target.checked);
-    console.log(`Current enabled state before change:`, isEnabled);
-    
+    // Usar la función handleToggleChange si está disponible
+    if (handleToggleChange) {
+      console.log(`Using handleToggleChange for ${paramId}`);
+      handleToggleChange(paramId, e.target.checked);
+    }
+
     // Si es un parámetro anidado, llamar al callback personalizado
     if (paramId.includes(".") && onToggleChange) {
       console.log(`Handling nested toggle change for ${paramId}`);
       onToggleChange(e.target.checked);
     }
-    
+
     onChange(e); // Llamar al onChange original del register
   };
 
@@ -52,11 +60,11 @@ const ParamToggle = ({
       <span className="text-xs text-gray-500 mr-1">
         {isEnabled ? "Activado" : "Desactivado"}
       </span>
-      <Toggle 
-        checked={isEnabled} 
-        disabled={required} 
-        onChange={handleToggleChange}
-        {...rest} 
+      <Toggle
+        checked={isEnabled}
+        disabled={required}
+        onChange={onToggleStateChange}
+        {...rest}
       />
     </div>
   );
@@ -65,17 +73,25 @@ const ParamToggle = ({
 export const ParamItem = ({
   paramId,
   param,
-  watchedParams,
   register,
+  watchedParams,
+  setValue,
   handleValueChange,
+  handleToggleChange,
 }: ParamItemProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
-  
+
   // Añadir log para ver el estado de los parámetros
+  const watchedParam = watchedParams[paramId];
+  const watchedValue = watchedParam?.value;
+  const watchedEnabled = watchedParam?.enabled;
+
   console.log(`Rendering ParamItem for ${paramId}:`, {
     param,
-    watchedValue: watchedParams[paramId],
-    isNested: paramId.includes('.')
+    watchedParam,
+    watchedValue,
+    watchedEnabled,
+    isNested: paramId.includes("."),
   });
 
   if (param.type === ParamType.OBJECT && param.properties) {
@@ -99,10 +115,15 @@ export const ParamItem = ({
             </div>
           </div>
           <ParamToggle
-            register={register}
             paramId={paramId}
-            enabled={watchedParams[paramId]?.enabled ?? false}
+            enabled={
+              watchedEnabled !== undefined
+                ? watchedEnabled
+                : (param.enabled ?? false)
+            }
             required={param.required ?? false}
+            register={register}
+            handleToggleChange={handleToggleChange}
           />
         </div>
 
@@ -112,24 +133,41 @@ export const ParamItem = ({
               Object.entries(param.properties).map(([propName, prop]) => {
                 // Asegurarnos de obtener el valor más actualizado
                 const nestedParamId = `${paramId}.${propName}`;
-                
-                // Obtener el valor y estado enabled de la propiedad anidada
+
+                // Obtener el valor y estado enabled de la propiedad anidada directamente
+                // Primero intentamos obtenerlo del objeto watchedParams con la ruta completa
                 let nestedWatchedValue = watchedParams[nestedParamId]?.value;
                 let nestedEnabled = watchedParams[nestedParamId]?.enabled;
                 
+                console.log(`Checking nested param ${nestedParamId}:`, {
+                  directValue: nestedWatchedValue,
+                  directEnabled: nestedEnabled
+                });
+
                 // Si no hay valor en el parámetro anidado, intentar obtenerlo de las propiedades del padre
-                if (watchedParams[paramId]?.properties && 
-                    propName in watchedParams[paramId].properties) {
+                if (
+                  watchedParams[paramId]?.properties &&
+                  propName in watchedParams[paramId].properties
+                ) {
                   if (nestedWatchedValue === undefined) {
-                    const propValue = watchedParams[paramId].properties[propName].value;
-                    nestedWatchedValue = propValue !== undefined ? propValue : "";
+                    const propValue =
+                      watchedParams[paramId].properties[propName].value;
+                    nestedWatchedValue =
+                      propValue !== undefined ? propValue : "";
                   }
                   if (nestedEnabled === undefined) {
-                    const propEnabled = watchedParams[paramId].properties[propName].enabled;
-                    nestedEnabled = propEnabled !== undefined ? propEnabled : false;
+                    const propEnabled =
+                      watchedParams[paramId].properties[propName].enabled;
+                    nestedEnabled =
+                      propEnabled !== undefined ? propEnabled : false;
                   }
+                  
+                  console.log(`Found in parent properties for ${nestedParamId}:`, {
+                    fromParentValue: nestedWatchedValue,
+                    fromParentEnabled: nestedEnabled
+                  });
                 }
-                
+
                 // Si aún no hay valores, usar los valores por defecto de la propiedad
                 if (nestedWatchedValue === undefined) {
                   nestedWatchedValue = prop.value ?? "";
@@ -137,12 +175,12 @@ export const ParamItem = ({
                 if (nestedEnabled === undefined) {
                   nestedEnabled = prop.enabled ?? false;
                 }
-                
+
                 console.log(`Nested param ${nestedParamId}:`, {
                   nestedWatchedValue,
                   nestedEnabled,
                   fromParent: watchedParams[paramId]?.properties?.[propName],
-                  fromDirect: watchedParams[nestedParamId]
+                  fromDirect: watchedParams[nestedParamId],
                 });
 
                 const fullProp: ParamConfigItem = {
@@ -150,9 +188,10 @@ export const ParamItem = ({
                   id: nestedParamId,
                   title: prop.name || propName,
                   description: prop.description ?? "",
-                  enabled: nestedEnabled !== undefined 
-                    ? nestedEnabled 
-                    : (prop.enabled ?? false),
+                  enabled:
+                    nestedEnabled !== undefined
+                      ? nestedEnabled
+                      : (prop.enabled ?? false),
                   // Usar el valor observado si existe, de lo contrario usar el valor de la propiedad
                   value:
                     nestedWatchedValue !== undefined
@@ -167,12 +206,14 @@ export const ParamItem = ({
                     param={fullProp}
                     watchedParams={watchedParams}
                     register={register}
+                    setValue={setValue}
                     handleValueChange={(nestedId, value) => {
                       console.log(
                         `Nested value change: ${nestedId} = ${value}`
                       );
                       handleValueChange(nestedId, value);
                     }}
+                    handleToggleChange={handleToggleChange}
                   />
                 );
               })}
@@ -182,8 +223,8 @@ export const ParamItem = ({
     );
   }
 
-  // Asegurarnos de que estamos usando el valor más actualizado
-  const currentValue = param.value ?? watchedParams[paramId]?.value ?? "";
+  // Obtener el valor más actualizado para mostrar
+  const currentValue = watchedValue !== undefined ? watchedValue : (param.value ?? "");
 
   return (
     <div className="flex items-center gap-4">
@@ -201,17 +242,11 @@ export const ParamItem = ({
           className="w-32"
         />
         <ParamToggle
-          register={register}
           paramId={paramId}
-          enabled={watchedParams[paramId]?.enabled ?? false}
+          enabled={watchedEnabled !== undefined ? watchedEnabled : (param.enabled ?? false)}
           required={param.required ?? false}
-          onToggleChange={enabled => {
-            console.log(`Toggle changed for ${paramId} to ${enabled}`);
-            // Si el toggle se desactiva, también debemos actualizar el valor
-            if (!enabled && paramId.includes(".")) {
-              handleValueChange(paramId, "");
-            }
-          }}
+          register={register}
+          handleToggleChange={handleToggleChange}
         />
       </div>
     </div>
