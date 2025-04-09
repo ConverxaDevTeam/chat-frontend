@@ -253,26 +253,26 @@ const useParamsHandlers = (
   // Función para manejar el cambio de estado del toggle
   const handleToggleChange = (paramId: string, enabled: boolean) => {
     console.log(`Handle toggle change for ${paramId}: ${enabled}`);
-    
+
     // Verificar si es un parámetro anidado
     if (paramId.includes(".")) {
       const [parentId, propName] = paramId.split(".");
 
       // Actualizar directamente el parámetro anidado para que se refleje inmediatamente
       setValue(`params.${paramId}.enabled`, enabled);
-      
+
       // Si se desactiva, limpiar el valor
       if (!enabled) {
         setValue(`params.${paramId}.value`, "");
       }
-      
+
       // También actualizar en el objeto padre para mantener consistencia
       const parentParam = { ...params[parentId] };
-      
+
       if (!parentParam.properties) {
         parentParam.properties = {};
       }
-      
+
       if (!parentParam.properties[propName]) {
         parentParam.properties[propName] = {
           name: propName,
@@ -288,10 +288,10 @@ const useParamsHandlers = (
           parentParam.properties[propName].value = "";
         }
       }
-      
+
       // Actualizar el objeto padre completo
       setValue(`params.${parentId}`, parentParam);
-      
+
       // Forzar la actualización del formulario
       setTimeout(() => {
         const formValues = { ...params };
@@ -300,7 +300,7 @@ const useParamsHandlers = (
     } else {
       // Para parámetros normales, actualizar directamente
       setValue(`params.${paramId}.enabled`, enabled);
-      
+
       // Si se desactiva, limpiar el valor
       if (!enabled) {
         setValue(`params.${paramId}.value`, "");

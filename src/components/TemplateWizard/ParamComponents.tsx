@@ -138,10 +138,10 @@ export const ParamItem = ({
                 // Primero intentamos obtenerlo del objeto watchedParams con la ruta completa
                 let nestedWatchedValue = watchedParams[nestedParamId]?.value;
                 let nestedEnabled = watchedParams[nestedParamId]?.enabled;
-                
+
                 console.log(`Checking nested param ${nestedParamId}:`, {
                   directValue: nestedWatchedValue,
-                  directEnabled: nestedEnabled
+                  directEnabled: nestedEnabled,
                 });
 
                 // Si no hay valor en el parámetro anidado, intentar obtenerlo de las propiedades del padre
@@ -161,11 +161,14 @@ export const ParamItem = ({
                     nestedEnabled =
                       propEnabled !== undefined ? propEnabled : false;
                   }
-                  
-                  console.log(`Found in parent properties for ${nestedParamId}:`, {
-                    fromParentValue: nestedWatchedValue,
-                    fromParentEnabled: nestedEnabled
-                  });
+
+                  console.log(
+                    `Found in parent properties for ${nestedParamId}:`,
+                    {
+                      fromParentValue: nestedWatchedValue,
+                      fromParentEnabled: nestedEnabled,
+                    }
+                  );
                 }
 
                 // Si aún no hay valores, usar los valores por defecto de la propiedad
@@ -224,7 +227,8 @@ export const ParamItem = ({
   }
 
   // Obtener el valor más actualizado para mostrar
-  const currentValue = watchedValue !== undefined ? watchedValue : (param.value ?? "");
+  const currentValue =
+    watchedValue !== undefined ? watchedValue : (param.value ?? "");
 
   return (
     <div className="flex items-center gap-4">
@@ -243,7 +247,11 @@ export const ParamItem = ({
         />
         <ParamToggle
           paramId={paramId}
-          enabled={watchedEnabled !== undefined ? watchedEnabled : (param.enabled ?? false)}
+          enabled={
+            watchedEnabled !== undefined
+              ? watchedEnabled
+              : (param.enabled ?? false)
+          }
           required={param.required ?? false}
           register={register}
           handleToggleChange={handleToggleChange}
