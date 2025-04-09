@@ -39,16 +39,13 @@ const ParamToggle = ({
 
   // Función para manejar el cambio del toggle
   const onToggleStateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(`Toggle changed for ${paramId}:`, e.target.checked);
     // Usar la función handleToggleChange si está disponible
     if (handleToggleChange) {
-      console.log(`Using handleToggleChange for ${paramId}`);
       handleToggleChange(paramId, e.target.checked);
     }
 
     // Si es un parámetro anidado, llamar al callback personalizado
     if (paramId.includes(".") && onToggleChange) {
-      console.log(`Handling nested toggle change for ${paramId}`);
       onToggleChange(e.target.checked);
     }
 
@@ -81,18 +78,10 @@ export const ParamItem = ({
 }: ParamItemProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
-  // Añadir log para ver el estado de los parámetros
+  // Obtener el estado actualizado de los parámetros
   const watchedParam = watchedParams[paramId];
   const watchedValue = watchedParam?.value;
   const watchedEnabled = watchedParam?.enabled;
-
-  console.log(`Rendering ParamItem for ${paramId}:`, {
-    param,
-    watchedParam,
-    watchedValue,
-    watchedEnabled,
-    isNested: paramId.includes("."),
-  });
 
   if (param.type === ParamType.OBJECT && param.properties) {
     return (
@@ -139,11 +128,6 @@ export const ParamItem = ({
                 let nestedWatchedValue = watchedParams[nestedParamId]?.value;
                 let nestedEnabled = watchedParams[nestedParamId]?.enabled;
 
-                console.log(`Checking nested param ${nestedParamId}:`, {
-                  directValue: nestedWatchedValue,
-                  directEnabled: nestedEnabled,
-                });
-
                 // Si no hay valor en el parámetro anidado, intentar obtenerlo de las propiedades del padre
                 if (
                   watchedParams[paramId]?.properties &&
@@ -162,13 +146,7 @@ export const ParamItem = ({
                       propEnabled !== undefined ? propEnabled : false;
                   }
 
-                  console.log(
-                    `Found in parent properties for ${nestedParamId}:`,
-                    {
-                      fromParentValue: nestedWatchedValue,
-                      fromParentEnabled: nestedEnabled,
-                    }
-                  );
+
                 }
 
                 // Si aún no hay valores, usar los valores por defecto de la propiedad
@@ -178,13 +156,6 @@ export const ParamItem = ({
                 if (nestedEnabled === undefined) {
                   nestedEnabled = prop.enabled ?? false;
                 }
-
-                console.log(`Nested param ${nestedParamId}:`, {
-                  nestedWatchedValue,
-                  nestedEnabled,
-                  fromParent: watchedParams[paramId]?.properties?.[propName],
-                  fromDirect: watchedParams[nestedParamId],
-                });
 
                 const fullProp: ParamConfigItem = {
                   ...prop,
