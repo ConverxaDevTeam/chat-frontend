@@ -251,16 +251,12 @@ const useParamsHandlers = (
   const params = watch("params");
 
   const handleValueChange = (paramId: string, value: string) => {
-    console.log("handleValueChange - paramId:", paramId, "value:", value);
-
     // Verificar si es un parámetro anidado
     if (paramId.includes(".")) {
       const [parentId, propName] = paramId.split(".");
-      console.log("Nested param - parentId:", parentId, "propName:", propName);
 
       // Obtener el parámetro padre actual
       const parentParam = { ...params[parentId] };
-      console.log("Parent param:", JSON.stringify(parentParam, null, 2));
 
       // Asegurarnos que properties existe como objeto
       if (!parentParam.properties) {
@@ -280,28 +276,16 @@ const useParamsHandlers = (
           value,
           enabled: !!value,
         };
-        console.log(
-          `Creando nueva propiedad ${propName}:`,
-          JSON.stringify(parentParam.properties[propName], null, 2)
-        );
       } else {
         // Si existe, actualizar su valor
         existingProp.value = value;
         if (value) {
           existingProp.enabled = true;
         }
-        console.log(
-          `Actualizando propiedad existente ${propName}:`,
-          JSON.stringify(existingProp, null, 2)
-        );
       }
 
       // Actualizar el parámetro padre completo
       setValue(`params.${parentId}`, parentParam);
-      console.log(
-        `Actualizado params.${parentId}:`,
-        JSON.stringify(parentParam, null, 2)
-      );
     } else {
       // Para parámetros normales, mantener el comportamiento original
       setValue(`params.${paramId}.value`, value);
@@ -310,15 +294,6 @@ const useParamsHandlers = (
         setValue(`params.${paramId}.enabled`, true);
       }
     }
-
-    // Log final state after update
-    setTimeout(() => {
-      const updatedParams = watch("params");
-      console.log(
-        "Params after update:",
-        JSON.stringify(updatedParams, null, 2)
-      );
-    }, 0);
   };
 
   return { handleValueChange };
