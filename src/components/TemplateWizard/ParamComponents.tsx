@@ -164,11 +164,10 @@ export const ParamItem = ({
           <div className="pl-8 space-y-4">
             {param.properties &&
               Object.entries(param.properties).map(([propName, prop]) => {
-                // Asegurarnos de obtener el valor más actualizado
+                console.log("PropName:", propName, "Prop:", prop);
                 const nestedParamId = `${paramId}.${propName}`;
-
-                // Obtener el valor y estado enabled de la propiedad anidada directamente
-                // Primero intentamos obtenerlo del objeto watchedParams con la ruta completa
+                console.log("nestedParamId resultante:", nestedParamId);
+                // Asegurarnos de obtener el valor más actualizado
                 let nestedWatchedValue = watchedParams[nestedParamId]?.value;
                 let nestedEnabled = watchedParams[nestedParamId]?.enabled;
 
