@@ -11,20 +11,17 @@ import { BaseParamProperty } from "@interfaces/function-params.interface";
 
 export interface ParamConfigItem {
   id: string;
-  name: string;
+  name?: string;
   enabled: boolean;
   title: string;
   description: string;
   value: string;
   type: ParamType;
   required: boolean;
-  properties?: Record<
-    string,
-    BaseParamProperty & {
-      value?: string;
-      enabled?: boolean;
-    }
-  >;
+  properties?: (BaseParamProperty & {
+    value?: string;
+    enabled?: boolean;
+  })[];
 }
 
 export interface WizardFormValues {

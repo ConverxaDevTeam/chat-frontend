@@ -58,7 +58,7 @@ export const ParamItem = ({
     value: param?.value || "",
     type: param?.type || ParamType.STRING,
     required: param?.required ?? false,
-    properties: param?.properties || {},
+    properties: param?.properties || [],
   };
 
   const [isExpanded, setIsExpanded] = useState(false);
