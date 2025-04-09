@@ -18,7 +18,13 @@ export interface ParamConfigItem {
   value: string;
   type: ParamType;
   required: boolean;
-  properties?: BaseParamProperty[];
+  properties?: Record<
+    string,
+    BaseParamProperty & {
+      value?: string;
+      enabled?: boolean;
+    }
+  >;
 }
 
 export interface WizardFormValues {

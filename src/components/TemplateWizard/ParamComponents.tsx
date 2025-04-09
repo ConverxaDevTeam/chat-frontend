@@ -78,33 +78,44 @@ export const ParamItem = ({
 
         {isExpanded && (
           <div className="pl-8 space-y-4">
-            {Object.entries(param.properties).map(([propName, prop]) => {
-              const fullProp: ParamConfigItem = {
-                ...prop,
-                id: `${paramId}.${propName}`,
-                title: prop.name,
-                description: prop.description ?? "",
-                enabled:
-                  watchedParams[`${paramId}.${propName}`]?.enabled ?? false,
-                value: watchedParams[`${paramId}.${propName}`]?.value ?? "",
-                required: prop.required ?? false,
-              };
-              return (
-                <ParamItem
-                  key={fullProp.id}
-                  paramId={fullProp.id}
-                  param={fullProp}
-                  watchedParams={watchedParams}
-                  register={register}
-                  handleValueChange={handleValueChange}
-                />
-              );
-            })}
+            {param.properties &&
+              Object.entries(param.properties).map(([propName, prop]) => {
+                // Asegurarnos de obtener el valor más actualizado
+                const nestedParamId = `${paramId}.${propName}`;
+                const nestedWatchedValue = watchedParams[nestedParamId]?.value;
+
+                const fullProp: ParamConfigItem = {
+                  ...prop,
+                  id: nestedParamId,
+                  title: prop.name || propName,
+                  description: prop.description ?? "",
+                  enabled: watchedParams[nestedParamId]?.enabled ?? false,
+                  // Usar el valor observado si existe, de lo contrario usar el valor de la propiedad
+                  value:
+                    nestedWatchedValue !== undefined
+                      ? nestedWatchedValue
+                      : (prop.value ?? ""),
+                  required: prop.required ?? false,
+                };
+                return (
+                  <ParamItem
+                    key={fullProp.id}
+                    paramId={fullProp.id}
+                    param={fullProp}
+                    watchedParams={watchedParams}
+                    register={register}
+                    handleValueChange={handleValueChange}
+                  />
+                );
+              })}
           </div>
         )}
       </div>
     );
   }
+
+  // Asegurarnos de que estamos usando el valor más actualizado
+  const currentValue = param.value ?? watchedParams[paramId]?.value ?? "";
 
   return (
     <div className="flex items-center gap-4">
@@ -117,7 +128,7 @@ export const ParamItem = ({
       <div className="flex items-center gap-2">
         <PropertyInput
           property={param}
-          value={watchedParams[paramId]?.value ?? ""}
+          value={currentValue}
           onChange={value => handleValueChange(paramId, value)}
           className="w-32"
         />

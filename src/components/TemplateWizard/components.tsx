@@ -1,5 +1,6 @@
 import { FunctionTemplate } from "@interfaces/template.interface";
 import { AuthenticatorType } from "@interfaces/autenticators.interface";
+import { ParamType } from "@interfaces/function-params.interface";
 import {
   UseFormRegister,
   UseFormSetValue,
@@ -242,12 +243,82 @@ export const FunctionContent = ({
   </div>
 );
 
-const useParamsHandlers = (setValue: UseFormSetValue<WizardFormValues>) => {
+const useParamsHandlers = (
+  setValue: UseFormSetValue<WizardFormValues>,
+  watch: UseFormWatch<WizardFormValues>
+) => {
+  // Obtener los parámetros actuales para poder manipularlos
+  const params = watch("params");
+
   const handleValueChange = (paramId: string, value: string) => {
-    setValue(`params.${paramId}.value`, value);
-    if (value) {
-      setValue(`params.${paramId}.enabled`, true);
+    console.log("handleValueChange - paramId:", paramId, "value:", value);
+
+    // Verificar si es un parámetro anidado
+    if (paramId.includes(".")) {
+      const [parentId, propName] = paramId.split(".");
+      console.log("Nested param - parentId:", parentId, "propName:", propName);
+
+      // Obtener el parámetro padre actual
+      const parentParam = { ...params[parentId] };
+      console.log("Parent param:", JSON.stringify(parentParam, null, 2));
+
+      // Asegurarnos que properties existe como objeto
+      if (!parentParam.properties) {
+        parentParam.properties = {};
+      }
+
+      // Buscar si ya existe la propiedad en el objeto
+      const existingProp = parentParam.properties[propName];
+
+      if (!existingProp) {
+        // Si no existe, crear nueva propiedad
+        parentParam.properties[propName] = {
+          name: propName,
+          type: ParamType.STRING,
+          required: false,
+          description: "",
+          value,
+          enabled: !!value,
+        };
+        console.log(
+          `Creando nueva propiedad ${propName}:`,
+          JSON.stringify(parentParam.properties[propName], null, 2)
+        );
+      } else {
+        // Si existe, actualizar su valor
+        existingProp.value = value;
+        if (value) {
+          existingProp.enabled = true;
+        }
+        console.log(
+          `Actualizando propiedad existente ${propName}:`,
+          JSON.stringify(existingProp, null, 2)
+        );
+      }
+
+      // Actualizar el parámetro padre completo
+      setValue(`params.${parentId}`, parentParam);
+      console.log(
+        `Actualizado params.${parentId}:`,
+        JSON.stringify(parentParam, null, 2)
+      );
+    } else {
+      // Para parámetros normales, mantener el comportamiento original
+      setValue(`params.${paramId}.value`, value);
+
+      if (value) {
+        setValue(`params.${paramId}.enabled`, true);
+      }
     }
+
+    // Log final state after update
+    setTimeout(() => {
+      const updatedParams = watch("params");
+      console.log(
+        "Params after update:",
+        JSON.stringify(updatedParams, null, 2)
+      );
+    }, 0);
   };
 
   return { handleValueChange };
@@ -297,7 +368,7 @@ export const ParamsContent = ({
   watch: UseFormWatch<WizardFormValues>;
 }) => {
   const watchedParams = watch("params");
-  const { handleValueChange } = useParamsHandlers(setValue);
+  const { handleValueChange } = useParamsHandlers(setValue, watch);
 
   return (
     <div className="space-y-6 py-4">
