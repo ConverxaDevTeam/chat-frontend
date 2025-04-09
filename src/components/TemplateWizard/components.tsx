@@ -1,6 +1,5 @@
 import { FunctionTemplate } from "@interfaces/template.interface";
 import { AuthenticatorType } from "@interfaces/autenticators.interface";
-import { ParamType } from "@interfaces/function-params.interface";
 import {
   UseFormRegister,
   UseFormSetValue,
@@ -10,6 +9,7 @@ import { ParamConfigItem, WizardFormValues } from "./types";
 import { Button } from "@components/common/Button";
 import { Input } from "@components/forms/input";
 import { ParamItem } from "./ParamComponents";
+import { useCallback } from "react";
 
 // Componente para los botones de acción
 export const ActionButtons = ({
@@ -243,158 +243,84 @@ export const FunctionContent = ({
   </div>
 );
 
-const useParamsHandlers = (
+export const useParamsHandlers = (
   setValue: UseFormSetValue<WizardFormValues>,
   watch: UseFormWatch<WizardFormValues>
 ) => {
-  // Obtener los parámetros actuales para poder manipularlos
   const params = watch("params");
 
-  // Función para manejar el cambio de estado del toggle
-  const handleToggleChange = (paramId: string, enabled: boolean) => {
-    // Verificar si es un parámetro anidado
-    if (paramId.includes(".")) {
-      const [parentId, propName] = paramId.split(".");
+  // Memoizar handlers para evitar recreación en cada render
+  const handleToggleChange = useCallback(
+    (paramId: string, enabled: boolean) => {
+      const updatedParams = params.map(param =>
+        param.id === paramId ? { ...param, enabled } : param
+      );
+      setValue("params", updatedParams, { shouldDirty: true });
+    },
+    [params, setValue]
+  );
 
-      // Actualizar directamente el parámetro anidado para que se refleje inmediatamente
-      setValue(`params.${paramId}.enabled`, enabled);
+  const handleValueChange = useCallback(
+    (paramId: string, value: string) => {
+      const updatedParams = params.map(param =>
+        param.id === paramId ? { ...param, value } : param
+      );
+      setValue("params", updatedParams, { shouldDirty: true });
+    },
+    [params, setValue]
+  );
 
-      // Si se desactiva, limpiar el valor
-      if (!enabled) {
-        setValue(`params.${paramId}.value`, "");
-      }
-
-      // También actualizar en el objeto padre para mantener consistencia
-      const parentParam = { ...params[parentId] };
-
-      if (!parentParam.properties) {
-        parentParam.properties = {};
-      }
-
-      if (!parentParam.properties[propName]) {
-        parentParam.properties[propName] = {
-          name: propName,
-          type: ParamType.STRING,
-          required: false,
-          description: "",
-          value: "",
-          enabled,
-        };
-      } else {
-        parentParam.properties[propName].enabled = enabled;
-        if (!enabled) {
-          parentParam.properties[propName].value = "";
+  const handleNestedToggleChange = useCallback(
+    (paramId: string, propId: string, enabled: boolean) => {
+      const updatedParams = params.map(param => {
+        if (param.id === paramId) {
+          return {
+            ...param,
+            properties: {
+              ...param.properties,
+              [propId]: {
+                ...param.properties?.[propId],
+                enabled,
+              },
+            },
+          };
         }
-      }
+        return param;
+      });
+      setValue("params", updatedParams, { shouldDirty: true });
+    },
+    [params, setValue]
+  );
 
-      // Actualizar el objeto padre completo
-      setValue(`params.${parentId}`, parentParam);
-
-      // Forzar la actualización del formulario
-      setTimeout(() => {
-        setValue("params", { ...params });
-      }, 0);
-    } else {
-      // Para parámetros normales, actualizar directamente
-      setValue(`params.${paramId}.enabled`, enabled);
-
-      // Si se desactiva, limpiar el valor
-      if (!enabled) {
-        setValue(`params.${paramId}.value`, "");
-      }
-
-      // Si es un parámetro de tipo objeto, manejar sus propiedades anidadas
-      const param = params[paramId];
-      if (param?.type === ParamType.OBJECT && param.properties) {
-        // Recorrer todas las propiedades del objeto
-        Object.entries(param.properties).forEach(([propName, prop]) => {
-          const nestedParamId = `${paramId}.${propName}`;
-          const isRequired = prop.required ?? false;
-
-          if (enabled) {
-            // Si se activa el padre, solo activar los parámetros requeridos
-            if (isRequired) {
-              setValue(`params.${nestedParamId}.enabled`, true);
-            }
-          } else {
-            // Si se desactiva el padre, desactivar todos los parámetros no requeridos
-            if (!isRequired) {
-              setValue(`params.${nestedParamId}.enabled`, false);
-              setValue(`params.${nestedParamId}.value`, "");
-            }
-          }
-        });
-      }
-    }
-  };
-
-  const handleValueChange = (paramId: string, value: string) => {
-    // Verificar si es un parámetro anidado
-    if (paramId.includes(".")) {
-      const [parentId, propName] = paramId.split(".");
-
-      // Obtener el parámetro padre actual
-      const parentParam = { ...params[parentId] };
-
-      // Asegurarnos que properties existe como objeto
-      if (!parentParam.properties) {
-        parentParam.properties = {};
-      }
-
-      // Buscar si ya existe la propiedad en el objeto
-      const existingProp = parentParam.properties[propName];
-
-      if (!existingProp) {
-        // Si no existe, crear nueva propiedad
-        parentParam.properties[propName] = {
-          name: propName,
-          type: ParamType.STRING,
-          required: false,
-          description: "",
-          value,
-          enabled: !!value,
-        };
-      } else {
-        // Si existe, actualizar su valor
-        existingProp.value = value;
-        if (value) {
-          existingProp.enabled = true;
+  const handleNestedValueChange = useCallback(
+    (paramId: string, propId: string, value: string) => {
+      const updatedParams = params.map(param => {
+        if (param.id === paramId) {
+          return {
+            ...param,
+            properties: {
+              ...param.properties,
+              [propId]: {
+                ...param.properties?.[propId],
+                value,
+              },
+            },
+          };
         }
-      }
+        return param;
+      });
+      setValue("params", updatedParams, { shouldDirty: true });
+    },
+    [params, setValue]
+  );
 
-      // Actualizar el parámetro padre completo
-      setValue(`params.${parentId}`, parentParam);
-    } else {
-      // Para parámetros normales, mantener el comportamiento original
-      setValue(`params.${paramId}.value`, value);
-
-      if (value) {
-        setValue(`params.${paramId}.enabled`, true);
-      }
-    }
+  return {
+    handleToggleChange,
+    handleValueChange,
+    handleNestedToggleChange,
+    handleNestedValueChange,
   };
-
-  return { handleValueChange, handleToggleChange };
 };
-
-const ParamsHeader = () => (
-  <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100 mb-4">
-    <div className="flex items-center gap-2 mb-2">
-      <img
-        src="/mvp/sliders-vertical.svg"
-        alt="Parámetros"
-        className="w-5 h-5"
-      />
-      <h3 className="text-lg font-medium text-gray-700">
-        Configuración de Parámetros
-      </h3>
-    </div>
-    <p className="text-sm text-gray-500">
-      Configura los valores que necesita esta función para ejecutarse
-      correctamente
-    </p>
-  </div>
-);
 
 const NoParamsMessage = () => (
   <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100 text-center">
@@ -415,38 +341,39 @@ export const ParamsContent = ({
   setValue,
   watch,
 }: {
-  params: Record<string, ParamConfigItem>;
+  params: ParamConfigItem[];
   register: UseFormRegister<WizardFormValues>;
   setValue: UseFormSetValue<WizardFormValues>;
   watch: UseFormWatch<WizardFormValues>;
 }) => {
-  const watchedParams = watch("params");
-  const { handleValueChange, handleToggleChange } = useParamsHandlers(
-    setValue,
-    watch
-  );
+  const {
+    handleToggleChange,
+    handleValueChange,
+    handleNestedToggleChange,
+    handleNestedValueChange,
+  } = useParamsHandlers(setValue, watch);
+
+  if (!params || params.length === 0) {
+    return <NoParamsMessage />;
+  }
 
   return (
-    <div className="space-y-6 py-4">
-      <ParamsHeader />
-      <div className="space-y-4">
-        {Object.keys(params).length === 0 ? (
-          <NoParamsMessage />
-        ) : (
-          Object.entries(params).map(([paramId, param]) => (
-            <ParamItem
-              key={paramId}
-              paramId={paramId}
-              param={param}
-              watchedParams={watchedParams}
-              register={register}
-              setValue={setValue}
-              handleValueChange={handleValueChange}
-              handleToggleChange={handleToggleChange}
-            />
-          ))
-        )}
-      </div>
+    <div className="space-y-4">
+      {params.map(param => (
+        <ParamItem
+          key={param.id}
+          param={param}
+          register={register}
+          onToggleChange={enabled => handleToggleChange(param.id, enabled)}
+          onValueChange={value => handleValueChange(param.id, value)}
+          onNestedToggleChange={(propId, enabled) =>
+            handleNestedToggleChange(param.id, propId, enabled)
+          }
+          onNestedValueChange={(propId, value) =>
+            handleNestedValueChange(param.id, propId, value)
+          }
+        />
+      ))}
     </div>
   );
 };

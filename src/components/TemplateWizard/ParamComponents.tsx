@@ -1,55 +1,30 @@
 import { useState, useEffect } from "react";
 import { ParamType } from "@interfaces/function-params.interface";
-import { UseFormRegister, UseFormSetValue } from "react-hook-form";
+import { UseFormRegister } from "react-hook-form";
 import { WizardFormValues, ParamConfigItem } from "./types";
 import { Input } from "@components/forms/input";
 import { Toggle } from "@components/forms/toggle";
 
 interface ParamItemProps {
-  paramId: string;
   param: ParamConfigItem;
   register: UseFormRegister<WizardFormValues>;
-  watchedParams: Record<string, ParamConfigItem>;
-  setValue: UseFormSetValue<WizardFormValues>;
-  handleValueChange: (paramId: string, value: string) => void;
-  handleToggleChange: (paramId: string, enabled: boolean) => void;
+  onToggleChange: (enabled: boolean) => void;
+  onValueChange: (value: string) => void;
+  onNestedToggleChange?: (propId: string, enabled: boolean) => void;
+  onNestedValueChange?: (propId: string, value: string) => void;
 }
 
 type ParamToggleProps = {
-  paramId: string;
   enabled: boolean;
   required: boolean;
-  register: UseFormRegister<WizardFormValues>;
-  onToggleChange?: (checked: boolean) => void;
-  handleToggleChange?: (paramId: string, enabled: boolean) => void;
+  onToggleChange: (checked: boolean) => void;
 };
 
 const ParamToggle = ({
-  paramId,
   enabled,
   required,
-  register,
   onToggleChange,
-  handleToggleChange,
 }: ParamToggleProps) => {
-  // Extraer el onChange del register para manejarlo explícitamente
-  const { onChange, ...rest } = register(`params.${paramId}.enabled`);
-
-  // Función para manejar el cambio del toggle
-  const onToggleStateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // Usar la función handleToggleChange si está disponible
-    if (handleToggleChange) {
-      handleToggleChange(paramId, e.target.checked);
-    }
-
-    // Si es un parámetro anidado, llamar al callback personalizado
-    if (paramId.includes(".") && onToggleChange) {
-      onToggleChange(e.target.checked);
-    }
-
-    onChange(e); // Llamar al onChange original del register
-  };
-
   return (
     <div className="flex items-center gap-1">
       <span className="text-xs text-gray-500 mr-1">
@@ -58,52 +33,62 @@ const ParamToggle = ({
       <Toggle
         checked={enabled}
         disabled={required}
-        onChange={onToggleStateChange}
-        {...rest}
+        onChange={e => onToggleChange(e.target.checked)}
       />
     </div>
   );
 };
 
 export const ParamItem = ({
-  paramId,
   param,
   register,
-  watchedParams,
-  setValue,
-  handleValueChange,
-  handleToggleChange,
+  onToggleChange = () => {},
+  onValueChange = () => {},
+  onNestedToggleChange,
+  onNestedValueChange,
 }: ParamItemProps) => {
+  if (!param) return null; // Validación crítica
+
+  const safeParam = {
+    id: param?.id || "",
+    name: param?.name || "",
+    enabled: param?.enabled ?? false,
+    title: param?.title || "",
+    description: param?.description || "",
+    value: param?.value || "",
+    type: param?.type || ParamType.STRING,
+    required: param?.required ?? false,
+    properties: param?.properties || {},
+  };
+
   const [isExpanded, setIsExpanded] = useState(false);
-  const isParamEnabled = param.enabled;
-  const watchedValue = watchedParams[paramId]?.value;
+  const [isParamEnabled, setIsParamEnabled] = useState(safeParam.enabled);
 
   useEffect(() => {
-    if (param.required) {
-      setValue(`params.${paramId}.enabled`, true);
+    if (safeParam.required && !isParamEnabled) {
+      setIsParamEnabled(true);
+      onToggleChange(true);
     }
-  }, [param.required, paramId, setValue]);
+  }, [safeParam.required]);
 
   useEffect(() => {
-    if (
-      param.type === ParamType.OBJECT &&
-      param.properties &&
-      !paramId.includes(".")
-    ) {
-      Object.entries(param.properties).forEach(([propName, prop]) => {
-        const nestedParamId = `${paramId}.${propName}`;
-        const isRequired = prop.required ?? false;
-
-        if (isParamEnabled && isRequired) {
-          setValue(`params.${nestedParamId}.enabled`, true);
-        } else if (!isParamEnabled && !isRequired) {
-          setValue(`params.${nestedParamId}.enabled`, false);
+    if (safeParam.type === ParamType.OBJECT && safeParam.properties) {
+      Object.entries(safeParam.properties).forEach(([propId, prop]) => {
+        if (isParamEnabled && onNestedToggleChange) {
+          onNestedToggleChange(propId, true);
+        } else if (!isParamEnabled && !prop.required && onNestedToggleChange) {
+          onNestedToggleChange(propId, false);
         }
       });
     }
-  }, [isParamEnabled, paramId, param.type, param.properties, setValue]);
+  }, [isParamEnabled, safeParam.type, JSON.stringify(safeParam.properties)]);
 
-  if (param.type === ParamType.OBJECT && param.properties) {
+  const handleToggle = (enabled: boolean) => {
+    setIsParamEnabled(enabled);
+    onToggleChange(enabled);
+  };
+
+  if (safeParam.type === ParamType.OBJECT && safeParam.properties) {
     return (
       <div className="space-y-2">
         <div className="flex items-center gap-4">
@@ -122,48 +107,41 @@ export const ParamItem = ({
             <div
               className={`font-medium ${isParamEnabled ? "text-gray-800" : "text-gray-400"}`}
             >
-              {param.title}
+              {safeParam.title}
             </div>
             <div className="text-xs text-gray-500">
-              {param.description ?? ""}
+              {safeParam.description ?? ""}
             </div>
           </div>
           <ParamToggle
-            paramId={paramId}
             enabled={isParamEnabled}
-            required={param.required ?? false}
-            register={register}
-            handleToggleChange={handleToggleChange}
+            required={safeParam.required ?? false}
+            onToggleChange={handleToggle}
           />
         </div>
 
         {isExpanded && isParamEnabled && (
           <div className="pl-8 space-y-4">
-            {Object.entries(param.properties).map(([propName, prop]) => {
-              const nestedParamId = `${paramId}.${propName}`;
+            {Object.entries(safeParam.properties).map(([propId, prop]) => {
               const nestedProp: ParamConfigItem = {
                 ...prop,
-                id: nestedParamId,
-                title: prop.name || propName,
-                value: watchedParams[nestedParamId]?.value ?? prop.value ?? "",
-                enabled:
-                  watchedParams[nestedParamId]?.enabled ??
-                  prop.enabled ??
-                  false,
+                id: propId,
+                title: prop.name || propId,
+                value: prop.value ?? "",
+                enabled: prop.enabled ?? false,
                 description: prop.description ?? "",
                 required: prop.required ?? false,
               };
 
               return (
                 <ParamItem
-                  key={nestedParamId}
-                  paramId={nestedParamId}
+                  key={propId}
                   param={nestedProp}
-                  watchedParams={watchedParams}
                   register={register}
-                  setValue={setValue}
-                  handleValueChange={handleValueChange}
-                  handleToggleChange={handleToggleChange}
+                  onToggleChange={enabled =>
+                    onNestedToggleChange?.(propId, enabled)
+                  }
+                  onValueChange={value => onNestedValueChange?.(propId, value)}
                 />
               );
             })}
@@ -173,83 +151,57 @@ export const ParamItem = ({
     );
   }
 
-  // Obtener el valor más actualizado para mostrar
-  const currentValue =
-    watchedValue !== undefined ? watchedValue : (param.value ?? "");
-
   return (
     <div className="flex items-center gap-4">
       <div className="flex-1 min-w-0">
-        <div className="font-medium text-gray-800 truncate">{param.title}</div>
+        <div className="font-medium text-gray-800 truncate">
+          {safeParam.title}
+        </div>
         <div className="text-xs text-gray-500 truncate">
-          {param.description ?? ""}
+          {safeParam.description ?? ""}
         </div>
       </div>
       <div className="flex items-center gap-2">
         <PropertyInput
-          property={param}
-          value={currentValue}
-          onChange={value => handleValueChange(paramId, value)}
+          property={{
+            type: safeParam.type,
+            enabled: isParamEnabled,
+          }}
+          value={safeParam.value ?? ""}
+          onChange={onValueChange}
           className="w-32"
         />
         <ParamToggle
-          paramId={paramId}
           enabled={isParamEnabled}
-          required={param.required ?? false}
-          register={register}
-          handleToggleChange={handleToggleChange}
+          required={safeParam.required ?? false}
+          onToggleChange={handleToggle}
         />
       </div>
     </div>
   );
 };
 
-type PropertyInputProps = {
+interface PropertyInputProps {
   property: {
-    title: string;
     type: ParamType;
-    required?: boolean;
+    enabled?: boolean;
   };
   value: string;
   onChange: (value: string) => void;
   className?: string;
-};
+}
 
-export const PropertyInput = ({
+const PropertyInput = ({
   property,
   value,
   onChange,
   className,
-}: PropertyInputProps) => {
-  return (
-    <div className="space-y-1">
-      {property.type === ParamType.STRING && (
-        <Input
-          placeholder={`Valor para ${property.title}`}
-          className={`w-full p-2 border rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${className}`}
-          value={value}
-          onChange={e => onChange(e.target.value)}
-        />
-      )}
-      {property.type === ParamType.NUMBER && (
-        <Input
-          type="number"
-          placeholder={`Valor para ${property.title}`}
-          className={`w-full p-2 border rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${className}`}
-          value={value}
-          onChange={e => onChange(e.target.value)}
-        />
-      )}
-
-      {property.type === ParamType.BOOLEAN && (
-        <div className="flex items-center gap-2">
-          <Toggle
-            checked={value === "true"}
-            onChange={e => onChange(e.target.checked ? "true" : "false")}
-          />
-          <span className="text-sm">{value === "true" ? "Sí" : "No"}</span>
-        </div>
-      )}
-    </div>
-  );
-};
+}: PropertyInputProps) => (
+  <Input
+    type={property.type === ParamType.NUMBER ? "number" : "text"}
+    value={value}
+    onChange={e => onChange(e.target.value)}
+    disabled={!property.enabled}
+    className={className}
+  />
+);

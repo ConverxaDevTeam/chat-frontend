@@ -65,31 +65,13 @@ export const TemplateWizard = ({
           if (template) {
             setTemplate(template);
 
-            // Inicializar los parámetros en el formulario
-            const paramConfig: Record<string, ParamConfigItem> = {};
-            if (template.params && template.params.length > 0) {
-              template.params.forEach(param => {
-                paramConfig[param.id] = {
-                  id: param.id,
-                  name: param.name,
-                  enabled: param.required,
-                  value: param.defaultValue?.toString() || "",
-                  type: param.type,
-                  required: param.required,
-                  title: param.title,
-                  description: param.description,
-                  properties: param.properties,
-                };
-              });
-            }
-
             // Establecer el dominio personalizado si existe
             if (template.application?.isDynamicDomain) {
               setValue("customDomain", template.application.domain || "");
             }
 
             reset({
-              params: paramConfig,
+              params: template.params,
               authenticatorId: template.authenticatorId,
               customDomain: template.application?.domain || "",
             });
