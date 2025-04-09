@@ -9,12 +9,14 @@ import { ContextMenuOption } from "./DiagramContextMenu";
 import { ActionButtons, ActionType } from "./agenteComponents/AgentInfo";
 import { useHumanCommunication } from "./hooks/useHumanCommunication";
 import InfoTooltip from "../../components/Common/InfoTooltip";
+import { useApplicationsSidebar } from "@hooks/ApplicationsSidebarContext";
 
 const AgenteNode = (props: CustomTypeNodeProps<AgentData>) => {
   const { data, selected } = props;
   const [eventOpen, setEventOpen] = useState<string | null>(null);
   const { humanCommunication, handleHumanCommunicationToggle } =
     useHumanCommunication(data.agentId);
+  const { openApplicationsSidebar } = useApplicationsSidebar();
 
   const contextMenuOptions: ContextMenuOption[] = [
     {
@@ -53,6 +55,21 @@ const AgenteNode = (props: CustomTypeNodeProps<AgentData>) => {
         </div>
       ),
       onClick: () => setEventOpen(ActionType.ADD_DOCUMENT),
+    },
+    {
+      child: (
+        <div className="flex items-center gap-[10px]">
+          <img
+            src="/mvp/layout-grid-plus.svg"
+            alt="Agregar aplicación"
+            className="w-4 h-4"
+          />
+          <span className="text-[#001126] text-[14px] font-[500] leading-normal">
+            Agregar aplicación
+          </span>
+        </div>
+      ),
+      onClick: () => openApplicationsSidebar(),
     },
     {
       child: (
@@ -103,7 +120,8 @@ const AgenteNode = (props: CustomTypeNodeProps<AgentData>) => {
         contextMenuOptions={contextMenuOptions}
         contextMenuVersion="v2"
         allowedConnections={["source", "target"]}
-      ></DefaultNode>
+      />
+
       <ActionButtons
         eventShown={eventOpen}
         onClose={() => setEventOpen(null)}
