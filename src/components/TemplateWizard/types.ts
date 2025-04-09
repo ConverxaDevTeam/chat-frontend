@@ -28,7 +28,7 @@ export interface ParamConfigItem {
 }
 
 export interface WizardFormValues {
-  params: Record<string, ParamConfigItem>;
+  params: ParamConfigItem[];
   authenticatorId?: number;
   customDomain?: string;
 }
