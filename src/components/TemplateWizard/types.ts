@@ -5,6 +5,7 @@ export interface TemplateWizardProps {
   isOpen: boolean;
   onClose: () => void;
   templateId: number;
+  agentId: number;
 }
 
 // Importamos las interfaces de propiedades de parámetros
