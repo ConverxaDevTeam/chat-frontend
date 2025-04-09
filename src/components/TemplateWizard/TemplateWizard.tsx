@@ -8,11 +8,18 @@ import Loading from "@components/Loading";
 import { toast } from "react-toastify";
 import AuthenticatorFormModal from "@components/Diagrams/authComponents/AuthenticatorFormModal";
 import { authenticatorService } from "@services/authenticator.service";
+import { functionsService } from "@services/functions.service"; // Importar el servicio de funciones
+import { useAppSelector } from "@store/hooks"; // Importar el hook de Redux
 
 // Importaciones de archivos locales
 import { useTabNavigation, useAuthenticators } from "./hooks";
 import { ActionButtons, FunctionContent, ParamsContent } from "./components";
 import { TemplateWizardProps, WizardFormValues } from "./types";
+import {
+  BodyType,
+  FunctionNodeTypes,
+  HttpMethod,
+} from "@interfaces/functions.interface";
 
 export const TemplateWizard = ({
   isOpen,
@@ -23,15 +30,19 @@ export const TemplateWizard = ({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Obtener el ID de la organización del template
-  const organizationId = template?.applicationId || 1; // Valor por defecto temporal
+  // Obtener el ID del agente desde Redux
+  const agentId = useAppSelector(state => state.chat.currentAgent?.id || -1);
+  // Obtener el ID de la organización desde Redux
+  const organizationId = useAppSelector(
+    state => state.auth.selectOrganizationId
+  );
 
   const {
     authenticators,
     fetchAuthenticators,
     showAuthModal,
     setShowAuthModal,
-  } = useAuthenticators(organizationId);
+  } = useAuthenticators(organizationId || agentId); // Usar agentId como fallback
 
   const {
     activeTab,
@@ -51,7 +62,7 @@ export const TemplateWizard = ({
     },
   });
 
-  const { handleSubmit, setValue, watch, reset } = methods;
+  const { setValue, watch, reset, getValues } = methods;
 
   // Cargar datos del template
   useEffect(() => {
@@ -97,19 +108,30 @@ export const TemplateWizard = ({
     setValue("customDomain", newDomain);
   };
 
-  // Manejar el envío del formulario
-  const onSave = handleSubmit(data => {
-    // Aquí se procesarían los datos del formulario para crear la función
-    // Incluir el dominio personalizado si es aplicable
-    const formData = {
-      ...data,
-      customDomain: template?.application?.isDynamicDomain
-        ? data.customDomain
-        : undefined,
-    };
-    console.log("Datos del formulario:", formData);
-    onClose();
+  // Crear función
+  const createFunction = (formData: WizardFormValues) => ({
+    name: template?.name ?? "",
+    agentId: agentId, // Usar el ID del agente desde Redux
+    description: template?.description ?? "",
+    type: FunctionNodeTypes.API_ENDPOINT,
+    config: {
+      url: formData.customDomain ?? "",
+      method: template?.method ?? HttpMethod.POST,
+      bodyType: template?.bodyType ?? BodyType.JSON,
+    },
   });
+
+  // Manejar el envío del formulario
+  const onSave = async () => {
+    try {
+      console.log("Form values:", getValues());
+      await functionsService.create(createFunction(getValues()));
+      toast.success("Función creada");
+      onClose();
+    } catch (error) {
+      toast.error(error.message || "Error al crear función");
+    }
+  };
 
   if (!isOpen) return null;
 
@@ -181,7 +203,7 @@ export const TemplateWizard = ({
         <AuthenticatorFormModal
           isShown={showAuthModal}
           onClose={() => setShowAuthModal(false)}
-          organizationId={organizationId}
+          organizationId={organizationId || agentId}
           onSubmit={async data => {
             try {
               await authenticatorService.create(data);
