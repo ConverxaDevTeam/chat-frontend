@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ParamType } from "@interfaces/function-params.interface";
 import { UseFormRegister, UseFormSetValue } from "react-hook-form";
 import { WizardFormValues, ParamConfigItem } from "./types";
@@ -83,22 +83,68 @@ export const ParamItem = ({
   const watchedValue = watchedParam?.value;
   const watchedEnabled = watchedParam?.enabled;
 
+  // Determinar si el parámetro está habilitado
+  const isParamEnabled =
+    param.required ||
+    (watchedEnabled !== undefined ? watchedEnabled : (param.enabled ?? false));
+
+  // Efecto para manejar la activación/desactivación de parámetros anidados
+  // cuando el parámetro padre cambia de estado
+  useEffect(() => {
+    // Solo aplicar para parámetros de tipo objeto con propiedades
+    if (
+      param.type === ParamType.OBJECT &&
+      param.properties &&
+      paramId &&
+      !paramId.includes(".")
+    ) {
+      // Si el parámetro está activado, solo activar los requeridos
+      if (isParamEnabled) {
+        Object.entries(param.properties).forEach(([propName, prop]) => {
+          const nestedParamId = `${paramId}.${propName}`;
+          const isRequired = prop.required ?? false;
+
+          // Solo establecer el valor si es requerido
+          if (isRequired) {
+            setValue(`params.${nestedParamId}.enabled`, true);
+          }
+        });
+      } else {
+        // Si el parámetro está desactivado, desactivar todos los no requeridos
+        Object.entries(param.properties).forEach(([propName, prop]) => {
+          const nestedParamId = `${paramId}.${propName}`;
+          const isRequired = prop.required ?? false;
+
+          // No desactivar los requeridos
+          if (!isRequired) {
+            setValue(`params.${nestedParamId}.enabled`, false);
+          }
+        });
+      }
+    }
+  }, [isParamEnabled, paramId, param.type, param.properties, setValue]);
+
   if (param.type === ParamType.OBJECT && param.properties) {
     return (
       <div className="space-y-2">
         <div className="flex items-center gap-4">
           <button
-            onClick={() => setIsExpanded(!isExpanded)}
-            className="text-gray-500 hover:text-gray-700"
+            onClick={() => isParamEnabled && setIsExpanded(!isExpanded)}
+            className={`text-gray-500 ${isParamEnabled ? "hover:text-gray-700" : "opacity-50 cursor-not-allowed"}`}
+            disabled={!isParamEnabled}
           >
-            {isExpanded ? (
+            {isExpanded && isParamEnabled ? (
               <img src="/mvp/chevron-down.svg" className="w-4 h-4" />
             ) : (
               <img src="/mvp/chevron-right.svg" className="w-4 h-4" />
             )}
           </button>
           <div className="flex-1 min-w-0">
-            <div className="font-medium text-gray-800">{param.title}</div>
+            <div
+              className={`font-medium ${isParamEnabled ? "text-gray-800" : "text-gray-400"}`}
+            >
+              {param.title}
+            </div>
             <div className="text-xs text-gray-500">
               {param.description ?? ""}
             </div>
@@ -116,7 +162,7 @@ export const ParamItem = ({
           />
         </div>
 
-        {isExpanded && (
+        {isExpanded && isParamEnabled && (
           <div className="pl-8 space-y-4">
             {param.properties &&
               Object.entries(param.properties).map(([propName, prop]) => {

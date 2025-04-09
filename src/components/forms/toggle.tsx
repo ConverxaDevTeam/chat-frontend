@@ -15,7 +15,7 @@ export const Toggle = React.forwardRef<HTMLInputElement, ToggleProps>(
           type="checkbox"
           className={`peer sr-only ${className}`}
           checked={checked}
-          onChange={onChange}
+          onChange={disabled ? undefined : onChange}
           disabled={disabled}
           ref={ref}
           {...props}

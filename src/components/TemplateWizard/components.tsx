@@ -302,6 +302,29 @@ const useParamsHandlers = (
       if (!enabled) {
         setValue(`params.${paramId}.value`, "");
       }
+
+      // Si es un parámetro de tipo objeto, manejar sus propiedades anidadas
+      const param = params[paramId];
+      if (param?.type === ParamType.OBJECT && param.properties) {
+        // Recorrer todas las propiedades del objeto
+        Object.entries(param.properties).forEach(([propName, prop]) => {
+          const nestedParamId = `${paramId}.${propName}`;
+          const isRequired = prop.required ?? false;
+
+          if (enabled) {
+            // Si se activa el padre, solo activar los parámetros requeridos
+            if (isRequired) {
+              setValue(`params.${nestedParamId}.enabled`, true);
+            }
+          } else {
+            // Si se desactiva el padre, desactivar todos los parámetros no requeridos
+            if (!isRequired) {
+              setValue(`params.${nestedParamId}.enabled`, false);
+              setValue(`params.${nestedParamId}.value`, "");
+            }
+          }
+        });
+      }
     }
   };
 
