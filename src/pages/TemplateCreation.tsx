@@ -11,10 +11,10 @@ import {
   deleteTemplate,
   getTemplates,
   updateTemplate,
-  generateTemplateWithAI,
-  continueTemplateGenerationWithAI,
 } from "@services/template.service";
-import { Input } from "@components/forms/input";
+import AIGeneratorModal, {
+  useAITemplateGenerator,
+} from "@components/FunctionTemplate/AITemplateGenerator";
 
 // Tipos
 type TemplateHandlers = {
@@ -54,7 +54,6 @@ const useTemplateModal = () => {
   const [selectedTemplate, setSelectedTemplate] = useState<
     FunctionTemplate | undefined
   >(undefined);
-  const [isAIModalOpen, setIsAIModalOpen] = useState(false);
 
   const handleOpenModal = (template?: FunctionTemplate) => {
     setSelectedTemplate(template);
@@ -66,22 +65,11 @@ const useTemplateModal = () => {
     setIsModalOpen(false);
   };
 
-  const handleOpenAIModal = () => {
-    setIsAIModalOpen(true);
-  };
-
-  const handleCloseAIModal = () => {
-    setIsAIModalOpen(false);
-  };
-
   return {
     isModalOpen,
     selectedTemplate,
     handleOpenModal,
     handleCloseModal,
-    isAIModalOpen,
-    handleOpenAIModal,
-    handleCloseAIModal,
   };
 };
 
@@ -416,282 +404,14 @@ const useConditionalRendering = (
   return { renderContent };
 };
 
-// Modal para generar templates con IA
-const AIGeneratorModal: React.FC<{
-  isOpen: boolean;
-  onClose: () => void;
-  onSubmit: (
-    content: string,
-    message: string,
-    domain?: string
-  ) => Promise<FunctionTemplate>;
-}> = ({ isOpen, onClose, onSubmit }) => {
-  const [content, setContent] = useState("");
-  const [message, setMessage] = useState("");
-  const [domain, setDomain] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [isGenerating, setIsGenerating] = useState(false);
-
-  const [generationState, setGenerationState] = useState<{
-    template: FunctionTemplate | null;
-    lastProcessedLine: number;
-    createdIds: {
-      applicationId?: string;
-      categoryIds?: string[];
-    };
-  }>({
-    template: null,
-    lastProcessedLine: 0,
-    createdIds: {},
-  });
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!content.trim()) {
-      toast.error("El contenido es requerido");
-      return;
-    }
-
-    try {
-      setIsLoading(true);
-      setIsGenerating(true);
-      const template = await onSubmit(content, message, domain);
-      setGenerationState({
-        template,
-        lastProcessedLine: template.lastProcessedLine || 0,
-        createdIds: template.createdIds || {},
-      });
-    } catch (error) {
-      console.error("Error al generar template:", error);
-      setIsGenerating(false);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleContinueGeneration = async () => {
-    if (!generationState.template || !content) {
-      toast.error("Se requiere contenido para continuar");
-      return;
-    }
-
-    try {
-      setIsLoading(true);
-      const updatedTemplate = await continueTemplateGenerationWithAI(
-        content,
-        message,
-        generationState.lastProcessedLine,
-        generationState.template.id,
-        generationState.template.categoryId,
-        generationState.template.applicationId ||
-          (generationState.createdIds.applicationId
-            ? Number(generationState.createdIds.applicationId)
-            : undefined),
-        domain,
-        {
-          ...generationState.createdIds,
-          applicationId:
-            generationState.createdIds.applicationId ||
-            (generationState.template.applicationId
-              ? generationState.template.applicationId.toString()
-              : undefined),
-        }
-      );
-
-      setGenerationState(prev => ({
-        ...prev,
-        template: updatedTemplate,
-        lastProcessedLine:
-          updatedTemplate.lastProcessedLine || prev.lastProcessedLine,
-        createdIds: {
-          ...prev.createdIds,
-          applicationId: updatedTemplate.applicationId
-            ? updatedTemplate.applicationId.toString()
-            : prev.createdIds.applicationId,
-        },
-      }));
-
-      toast.success("Generación continuada exitosamente");
-    } catch (error) {
-      console.error("Error al continuar generación:", error);
-      toast.error("Error al continuar la generación");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleClose = () => {
-    setContent("");
-    setMessage("");
-    setDomain("");
-    setGenerationState({
-      template: null,
-      lastProcessedLine: 0,
-      createdIds: {},
-    });
-    setIsGenerating(false);
-    onClose();
-  };
-
-  if (!isOpen) return null;
-
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-6 w-full max-w-md">
-        <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
-          <img src="/mvp/bot.svg" alt="IA" className="w-5 h-5" />
-          Generar Template con IA
-        </h2>
-        {!isGenerating ? (
-          <form onSubmit={handleSubmit}>
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Contenido *
-              </label>
-              <textarea
-                value={content}
-                onChange={e => setContent(e.target.value)}
-                placeholder="Ingresa el contenido para generar un template"
-                required
-                className="w-full border border-gray-300 rounded-md p-2 text-sm"
-                rows={5}
-              />
-              <p className="text-xs text-gray-500 mt-1">
-                Ingresa el contenido HTML o texto para generar un template
-              </p>
-            </div>
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Dominio
-              </label>
-              <Input
-                type="text"
-                value={domain}
-                onChange={e => setDomain(e.target.value)}
-                placeholder="ejemplo.com"
-                className="w-full"
-              />
-              <p className="text-xs text-gray-500 mt-1">
-                Dominio para las imágenes del template
-              </p>
-            </div>
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Mensaje adicional
-              </label>
-              <textarea
-                value={message}
-                onChange={e => setMessage(e.target.value)}
-                placeholder="Instrucciones adicionales para la IA..."
-                className="w-full border border-gray-300 rounded-md p-2 text-sm"
-                rows={3}
-              />
-            </div>
-            <div className="flex justify-end gap-2">
-              <Button
-                variant="default"
-                onClick={handleClose}
-                type="button"
-                className="!h-auto py-1.5 px-3"
-                disabled={isLoading}
-              >
-                Cancelar
-              </Button>
-              <Button
-                variant="primary"
-                type="submit"
-                className="!h-auto py-1.5 px-3"
-                disabled={isLoading}
-              >
-                {isLoading ? (
-                  <span className="flex items-center gap-2">
-                    <Loading /> Generando...
-                  </span>
-                ) : (
-                  "Generar"
-                )}
-              </Button>
-            </div>
-          </form>
-        ) : generationState.template ? (
-          <div>
-            <div className="mb-4 border-b pb-2">
-              <h3 className="font-medium text-gray-800">Template generado</h3>
-              <p className="text-sm text-gray-600 mt-1">
-                {generationState.template.name}
-              </p>
-            </div>
-            <div className="mb-4">
-              <h3 className="font-medium text-gray-800 mb-1">Descripción</h3>
-              <p className="text-sm text-gray-600">
-                {generationState.template.description}
-              </p>
-            </div>
-            {generationState.template.tags &&
-              generationState.template.tags.length > 0 && (
-                <div className="mb-4">
-                  <h3 className="font-medium text-gray-800 mb-1">Etiquetas</h3>
-                  <div className="flex flex-wrap gap-1">
-                    {generationState.template.tags.map((tag, i) => (
-                      <div
-                        key={i}
-                        className="bg-gray-100 text-gray-600 px-2 py-1 rounded text-xs"
-                      >
-                        {tag}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            <div className="flex justify-end gap-2 mt-6">
-              <Button
-                variant="default"
-                onClick={handleClose}
-                type="button"
-                className="!h-auto py-1.5 px-3"
-              >
-                Cerrar
-              </Button>
-              <Button
-                onClick={handleContinueGeneration}
-                type="button"
-                className="!h-auto py-1.5 px-3"
-                disabled={isLoading}
-              >
-                {isLoading ? (
-                  <span className="flex items-center gap-2">
-                    <Loading /> Procesando...
-                  </span>
-                ) : (
-                  "Continuar generación"
-                )}
-              </Button>
-            </div>
-          </div>
-        ) : (
-          <div className="py-8 text-center">
-            <Loading />
-            <p className="mt-4 text-gray-600">Generando template...</p>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-};
-
 // Componente principal
 const TemplateCreation: React.FC = () => {
   // Usar hooks personalizados
   const { templates, isLoading, fetchTemplates } = useTemplates();
-  const {
-    isModalOpen,
-    selectedTemplate,
-    handleOpenModal,
-    handleCloseModal,
-    isAIModalOpen,
-    handleOpenAIModal,
-    handleCloseAIModal,
-  } = useTemplateModal();
+  const { isModalOpen, selectedTemplate, handleOpenModal, handleCloseModal } =
+    useTemplateModal();
+  const { isAIModalOpen, handleOpenAIModal, handleCloseAIModal } =
+    useAITemplateGenerator();
   const { handleSubmit, handleDeleteTemplate } =
     useTemplateOperations(fetchTemplates);
 
@@ -708,30 +428,6 @@ const TemplateCreation: React.FC = () => {
     onDelete: handleDeleteTemplate,
     onEdit: handleEditTemplate,
     onOpenModal: handleOpenModal,
-  };
-
-  // Manejador para generar template con IA
-  const handleGenerateWithAI = async (
-    content: string,
-    message: string,
-    domain?: string
-  ) => {
-    try {
-      toast.info("Generando template con IA...");
-      const generatedTemplate = await generateTemplateWithAI(
-        content,
-        message,
-        domain
-      );
-      toast.success("Template generado correctamente");
-      fetchTemplates();
-      console.log("generatedTemplate", generatedTemplate);
-      return generatedTemplate;
-    } catch (error) {
-      console.error("Error al generar template con IA:", error);
-      toast.error("Error al generar el template con IA");
-      throw error;
-    }
   };
 
   // Renderizado condicional
@@ -762,7 +458,7 @@ const TemplateCreation: React.FC = () => {
       <AIGeneratorModal
         isOpen={isAIModalOpen}
         onClose={handleCloseAIModal}
-        onSubmit={handleGenerateWithAI}
+        onTemplateGenerated={fetchTemplates}
       />
     </div>
   );

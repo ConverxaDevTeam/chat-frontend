@@ -251,6 +251,7 @@ export const continueTemplateGenerationWithAI = async (
   }
 ): Promise<FunctionTemplate> => {
   console.log("lastProcessedLine", lastProcessedLine);
+  return;
   try {
     const response = await axiosInstance.post<FunctionTemplate>(
       apiUrls.functionTemplates.continueGenerateWithAI(),
