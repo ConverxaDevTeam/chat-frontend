@@ -224,11 +224,11 @@ export const generateTemplateWithAI = async (
   domain?: string
 ): Promise<FunctionTemplate> => {
   try {
-    const response = await axiosInstance.post<FunctionTemplate>(
+    const response = await axiosInstance.post<{ data: FunctionTemplate }>(
       apiUrls.functionTemplates.generateWithAI(),
       { content, additionalMessage, domain }
     );
-    return response.data;
+    return response.data.data;
   } catch (error) {
     throw handleServiceError(error, "Error al generar template con IA");
   }
@@ -250,10 +250,8 @@ export const continueTemplateGenerationWithAI = async (
     categoryIds?: string[];
   }
 ): Promise<FunctionTemplate> => {
-  console.log("lastProcessedLine", lastProcessedLine);
-  return;
   try {
-    const response = await axiosInstance.post<FunctionTemplate>(
+    const response = await axiosInstance.post<{ data: FunctionTemplate }>(
       apiUrls.functionTemplates.continueGenerateWithAI(),
       {
         content,
@@ -266,7 +264,7 @@ export const continueTemplateGenerationWithAI = async (
         createdIds,
       }
     );
-    return response.data;
+    return response.data.data;
   } catch (error) {
     throw handleServiceError(
       error,
