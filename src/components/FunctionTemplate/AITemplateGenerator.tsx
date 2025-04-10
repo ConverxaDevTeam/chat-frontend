@@ -20,8 +20,6 @@ export const AIGeneratorModal: React.FC<{
   const [domain, setDomain] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
-  const [generatedTemplate, setGeneratedTemplate] =
-    useState<FunctionTemplate | null>(null);
   const [generatedTemplates, setGeneratedTemplates] = useState<
     FunctionTemplate[]
   >([]);
@@ -37,36 +35,30 @@ export const AIGeneratorModal: React.FC<{
     }
   }, [content]);
 
-  // Actualizar el estado local cuando cambia el template generado
-  useEffect(() => {
-    if (generatedTemplate) {
-      setIsGenerating(true);
-      const lastLine = generatedTemplate.lastProcessedLine || 0;
-      // Calcular progreso
-      if (totalLines > 0 && lastLine > 0) {
-        const currentProgress = Math.min(
-          Math.round((lastLine / totalLines) * 100),
-          100
-        );
-        setProgress(currentProgress);
-        setProcessingStatus(
-          `Procesando... ${currentProgress}% completado (línea ${lastLine} de ${totalLines})`
-        );
-      }
+  const updateUIWithTemplate = (template: FunctionTemplate) => {
+    const lastLine = template.lastProcessedLine || 0;
 
-      // Agregar el template generado a la lista
-      setGeneratedTemplates(prev => {
-        // Evitar duplicados
-        if (!prev.some(t => t.id === generatedTemplate.id)) {
-          return [...prev, generatedTemplate];
-        }
-        return prev;
-      });
-
-      // Iniciar automáticamente la continuación si hay más líneas por procesar
-      continueBulkGeneration(generatedTemplate, content, message, domain);
+    // Calcular progreso
+    if (totalLines > 0 && lastLine > 0) {
+      const currentProgress = Math.min(
+        Math.round((lastLine / totalLines) * 100),
+        100
+      );
+      setProgress(currentProgress);
+      setProcessingStatus(
+        `Procesando... ${currentProgress}% completado (línea ${lastLine} de ${totalLines})`
+      );
     }
-  }, [generatedTemplate, totalLines]);
+
+    // Agregar el template generado a la lista si no existe
+    setGeneratedTemplates(prev => {
+      // Evitar duplicados
+      if (!prev.some(t => t.id === template.id)) {
+        return [...prev, template];
+      }
+      return prev;
+    });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -76,13 +68,51 @@ export const AIGeneratorModal: React.FC<{
     }
 
     try {
+      // Inicializar estados
       setIsLoading(true);
       setIsGenerating(true);
       setGeneratedTemplates([]);
       setProgress(0);
       setProcessingStatus("Iniciando generación de templates...");
-      const template = await generateWithAI(content, message, domain);
-      setGeneratedTemplate(template);
+
+      // Generar template inicial
+      let currentTemplate = await generateWithAI(content, message, domain);
+
+      // Actualizar UI con el template generado
+      updateUIWithTemplate(currentTemplate);
+
+      // Procesar la generación completa de templates
+      let isCompleted = false;
+
+      while (!isCompleted && currentTemplate) {
+        // Verificar si ya se procesó todo el contenido
+        const lastLine = currentTemplate.lastProcessedLine || 0;
+        if (lastLine >= totalLines) {
+          isCompleted = true;
+          setIsGenerating(false);
+          setProcessingStatus("Generación completada");
+          break;
+        }
+
+        // Continuar con la generación
+        setIsLoading(true);
+        const updatedTemplate = await continueTemplateGenerationWithAI(
+          content,
+          message,
+          currentTemplate.lastProcessedLine,
+          currentTemplate.id,
+          currentTemplate.categoryId,
+          currentTemplate.applicationId,
+          domain,
+          {
+            applicationId: currentTemplate.application?.id?.toString(),
+          }
+        );
+
+        // Actualizar el template actual y la UI
+        currentTemplate = updatedTemplate;
+        updateUIWithTemplate(updatedTemplate);
+      }
     } catch (error) {
       console.error("Error al generar template:", error);
       setIsGenerating(false);
@@ -107,70 +137,6 @@ export const AIGeneratorModal: React.FC<{
     }
   };
 
-  const continueBulkGeneration = async (
-    generatedTemplate: FunctionTemplate,
-    content: string,
-    message: string,
-    domain?: string
-  ) => {
-    if (!generatedTemplate || !content) return;
-
-    try {
-      setIsLoading(true);
-      const updatedTemplate = await continueGenerationWithAI(
-        content,
-        message,
-        generatedTemplate.lastProcessedLine,
-        generatedTemplate.id,
-        generatedTemplate.categoryId,
-        generatedTemplate.applicationId,
-        domain,
-        {
-          applicationId: generatedTemplate.application?.id?.toString(),
-        }
-      );
-      setGeneratedTemplate(updatedTemplate);
-    } catch (error) {
-      console.error("Error al continuar generación:", error);
-      toast.error("Error al continuar la generación");
-      setProcessingStatus("Error en la generación");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const continueGenerationWithAI = async (
-    content: string,
-    message: string,
-    lastProcessedLine: number,
-    templateId: number,
-    categoryId?: number,
-    applicationId?: number,
-    domain?: string,
-    createdIds?: {
-      applicationId?: string;
-      categoryIds?: string[];
-    }
-  ): Promise<FunctionTemplate> => {
-    try {
-      const template = await continueTemplateGenerationWithAI(
-        content,
-        message,
-        lastProcessedLine,
-        templateId,
-        categoryId,
-        applicationId,
-        domain,
-        createdIds
-      );
-      return template;
-    } catch (error) {
-      console.error("Error al continuar la generación:", error);
-      toast.error("Error al continuar la generación");
-      throw error;
-    }
-  };
-
   const handleStopGeneration = () => {
     setIsLoading(false);
     setProcessingStatus("Generación detenida por el usuario");
@@ -181,7 +147,6 @@ export const AIGeneratorModal: React.FC<{
     setContent("");
     setMessage("");
     setDomain("");
-    setGeneratedTemplate(null);
     setGeneratedTemplates([]);
     setIsGenerating(false);
     setProcessingStatus("");
