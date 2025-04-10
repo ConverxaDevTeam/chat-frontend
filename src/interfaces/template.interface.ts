@@ -44,6 +44,11 @@ export interface FunctionTemplate {
   url: string;
   method: HttpMethod;
   bodyType: BodyType;
+  lastProcessedLine: number;
+  createdIds: {
+    applicationId?: string;
+    categoryIds?: string[];
+  };
   params: FunctionTemplateParam[];
 }
 
