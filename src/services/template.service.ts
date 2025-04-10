@@ -214,3 +214,62 @@ export const createApplication = async (
     throw handleServiceError(error, "Error al crear la aplicación");
   }
 };
+
+/**
+ * Generar un template con IA a partir de un texto
+ */
+export const generateTemplateWithAI = async (
+  content: string,
+  additionalMessage: string,
+  domain?: string
+): Promise<FunctionTemplate> => {
+  try {
+    const response = await axiosInstance.post<FunctionTemplate>(
+      apiUrls.functionTemplates.generateWithAI(),
+      { content, additionalMessage, domain }
+    );
+    return response.data;
+  } catch (error) {
+    throw handleServiceError(error, "Error al generar template con IA");
+  }
+};
+
+/**
+ * Continuar la generación de un template con IA
+ */
+export const continueTemplateGenerationWithAI = async (
+  content: string,
+  additionalMessage: string,
+  lastProcessedLine: number,
+  templateId?: number,
+  categoryId?: number,
+  applicationId?: number,
+  domain?: string,
+  createdIds?: {
+    applicationId?: string;
+    categoryIds?: string[];
+  }
+): Promise<FunctionTemplate> => {
+  console.log("lastProcessedLine", lastProcessedLine);
+  try {
+    const response = await axiosInstance.post<FunctionTemplate>(
+      apiUrls.functionTemplates.continueGenerateWithAI(),
+      {
+        content,
+        additionalMessage,
+        templateId,
+        categoryId,
+        applicationId,
+        domain,
+        lastProcessedLine,
+        createdIds,
+      }
+    );
+    return response.data;
+  } catch (error) {
+    throw handleServiceError(
+      error,
+      "Error al continuar la generación del template con IA"
+    );
+  }
+};
