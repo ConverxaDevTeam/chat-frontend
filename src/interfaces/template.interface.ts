@@ -48,10 +48,6 @@ export interface FunctionTemplate {
   isActive?: boolean;
   createdAt?: string;
   updatedAt?: string;
-  createdIds: {
-    applicationId?: string;
-    categoryIds?: string[];
-  };
   params: FunctionTemplateParam[];
 }
 

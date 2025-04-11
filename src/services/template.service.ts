@@ -59,8 +59,6 @@ export const getTemplateById = async (
     );
 
     const template = response.data;
-    console.log("SERVICIO - Template completo:", template);
-    console.log("SERVICIO - Estructura de params:", template.params);
 
     // Convertir tags a array de strings (extraer name de cada objeto)
     if (template.tags) {
@@ -257,29 +255,27 @@ export const generateTemplateWithAI = async (
     templates: FunctionTemplate[];
     totalLines: number;
     lastProcessedLine: number;
+    createdIds?: {
+      applicationId?: string;
+      categoryIds?: string[];
+    };
   };
 }> => {
   try {
-    console.log("[API] Enviando solicitud a generateWithAI");
     const response = await axiosInstance.post<{
       data: {
         templates: FunctionTemplate[];
         totalLines: number;
         lastProcessedLine: number;
+        createdIds?: {
+          applicationId?: string;
+          categoryIds?: string[];
+        };
       };
     }>(apiUrls.functionTemplates.generateWithAI(), {
       content,
       additionalMessage,
       domain,
-    });
-
-    // Verificar la estructura de la respuesta
-    console.log("[API] Respuesta recibida:", {
-      status: response.status,
-      hasData: !!response.data,
-      hasTemplate: !!response.data?.data?.templates,
-      totalLines: response.data?.data?.totalLines,
-      lastProcessedLine: response.data?.data?.lastProcessedLine,
     });
 
     return response.data;
@@ -308,7 +304,11 @@ export const continueTemplateGenerationWithAI = async (
 }> => {
   try {
     const response = await axiosInstance.post<{
-      data: { templates: FunctionTemplate[]; lastProcessedLine: number };
+      data: {
+        templates: FunctionTemplate[];
+        lastProcessedLine: number;
+        createdIds?: { applicationId?: string; categoryIds?: string[] };
+      };
     }>(
       apiUrls.functionTemplates.continueGenerateWithAI(),
       {
