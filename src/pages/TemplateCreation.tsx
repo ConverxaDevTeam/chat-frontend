@@ -12,6 +12,9 @@ import {
   getTemplates,
   updateTemplate,
 } from "@services/template.service";
+import AIGeneratorModal, {
+  useAITemplateGenerator,
+} from "@components/FunctionTemplate/AITemplateGenerator";
 
 // Tipos
 type TemplateHandlers = {
@@ -71,9 +74,10 @@ const useTemplateModal = () => {
 };
 
 // Componente para el encabezado
-const TemplateHeader: React.FC<{ onOpenModal: () => void }> = ({
-  onOpenModal,
-}) => (
+const TemplateHeader: React.FC<{
+  onOpenModal: () => void;
+  onOpenAIModal: () => void;
+}> = ({ onOpenModal, onOpenAIModal }) => (
   <div className="flex justify-between items-center mb-5">
     <div className="flex items-center">
       <span className="text-gray-800 mr-2 inline-block">
@@ -86,13 +90,21 @@ const TemplateHeader: React.FC<{ onOpenModal: () => void }> = ({
         </div>
       </div>
     </div>
-    <Button
-      variant="primary"
-      onClick={onOpenModal}
-      className="!flex-none !h-auto text-sm py-1 px-3 flex items-center gap-1"
-    >
-      <FiPlus size={16} /> Crear Template
-    </Button>
+    <div className="flex gap-2">
+      <Button
+        onClick={onOpenAIModal}
+        className="!flex-none !h-auto text-sm py-1 px-3 flex items-center gap-1"
+      >
+        <img src="/mvp/bot.svg" alt="IA" className="w-4 h-4" /> Generar con IA
+      </Button>
+      <Button
+        variant="primary"
+        onClick={onOpenModal}
+        className="!flex-none !h-auto text-sm py-1 px-3 flex items-center gap-1"
+      >
+        <FiPlus size={16} /> Crear Template
+      </Button>
+    </div>
   </div>
 );
 
@@ -223,15 +235,6 @@ const TemplateRow: React.FC<{
   template: FunctionTemplate;
   handlers: TemplateHandlers;
 }> = ({ template, handlers }) => {
-  // Depuración: Verificar los datos de categoría y aplicación
-  console.log("Template row data:", {
-    id: template.id,
-    name: template.name,
-    categoryId: template.categoryId,
-    category: template.category,
-    applicationId: template.applicationId,
-    application: template.application,
-  });
   const {
     showContextMenu,
     menuPosition,
@@ -407,6 +410,8 @@ const TemplateCreation: React.FC = () => {
   const { templates, isLoading, fetchTemplates } = useTemplates();
   const { isModalOpen, selectedTemplate, handleOpenModal, handleCloseModal } =
     useTemplateModal();
+  const { isAIModalOpen, handleOpenAIModal, handleCloseAIModal } =
+    useAITemplateGenerator();
   const { handleSubmit, handleDeleteTemplate } =
     useTemplateOperations(fetchTemplates);
 
@@ -434,7 +439,10 @@ const TemplateCreation: React.FC = () => {
 
   return (
     <div className="container mx-auto px-4 py-5">
-      <TemplateHeader onOpenModal={() => handleOpenModal()} />
+      <TemplateHeader
+        onOpenModal={() => handleOpenModal()}
+        onOpenAIModal={handleOpenAIModal}
+      />
 
       {renderContent()}
 
@@ -445,6 +453,12 @@ const TemplateCreation: React.FC = () => {
           handleSubmit(templateData, selectedTemplate, handleCloseModal)
         }
         templateId={selectedTemplate?.id}
+      />
+
+      <AIGeneratorModal
+        isOpen={isAIModalOpen}
+        onClose={handleCloseAIModal}
+        onTemplateGenerated={fetchTemplates}
       />
     </div>
   );

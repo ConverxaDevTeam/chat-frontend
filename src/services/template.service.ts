@@ -165,6 +165,34 @@ export const getApplications = async (): Promise<
 };
 
 /**
+ * Obtener templates por aplicación
+ */
+export const getTemplatesByApplication = async (
+  applicationId: number
+): Promise<FunctionTemplate[]> => {
+  try {
+    interface PaginatedResponse {
+      items: FunctionTemplate[];
+      total: number;
+      page: number;
+      limit: number;
+    }
+
+    const response = await axiosInstance.get<PaginatedResponse>(
+      apiUrls.functionTemplates.byApplication(applicationId)
+    );
+
+    // Extraer los items del objeto paginado
+    return response.data.items || [];
+  } catch (error) {
+    throw handleServiceError(
+      error,
+      `Error al obtener templates de la aplicación ${applicationId}`
+    );
+  }
+};
+
+/**
  * Crear una nueva categoría
  */
 export const createCategory = async (
@@ -212,5 +240,94 @@ export const createApplication = async (
     return data;
   } catch (error) {
     throw handleServiceError(error, "Error al crear la aplicación");
+  }
+};
+
+/**
+ * Generar un template con IA a partir de un texto
+ */
+export const generateTemplateWithAI = async (
+  content: string,
+  additionalMessage: string,
+  domain?: string
+): Promise<{
+  data: {
+    templates: FunctionTemplate[];
+    totalLines: number;
+    lastProcessedLine: number;
+    createdIds?: {
+      applicationId?: string;
+      categoryIds?: string[];
+    };
+  };
+}> => {
+  try {
+    const response = await axiosInstance.post<{
+      data: {
+        templates: FunctionTemplate[];
+        totalLines: number;
+        lastProcessedLine: number;
+        createdIds?: {
+          applicationId?: string;
+          categoryIds?: string[];
+        };
+      };
+    }>(apiUrls.functionTemplates.generateWithAI(), {
+      content,
+      additionalMessage,
+      domain,
+    });
+
+    return response.data;
+  } catch (error) {
+    throw handleServiceError(error, "Error al generar template con IA");
+  }
+};
+
+/**
+ * Continuar la generación de un template con IA
+ */
+export const continueTemplateGenerationWithAI = async (
+  content: string,
+  additionalMessage: string,
+  lastProcessedLine: number,
+  templateId?: number,
+  categoryId?: number,
+  applicationId?: number,
+  domain?: string,
+  createdIds?: {
+    applicationId?: string;
+    categoryIds?: string[];
+  }
+): Promise<{
+  data: { templates: FunctionTemplate[]; lastProcessedLine: number };
+}> => {
+  try {
+    const response = await axiosInstance.post<{
+      data: {
+        templates: FunctionTemplate[];
+        lastProcessedLine: number;
+        createdIds?: { applicationId?: string; categoryIds?: string[] };
+      };
+    }>(
+      apiUrls.functionTemplates.continueGenerateWithAI(),
+      {
+        content,
+        additionalMessage,
+        templateId,
+        categoryId,
+        applicationId,
+        domain,
+        lastProcessedLine,
+        createdIds,
+      },
+      { timeout: 0 }
+    );
+    return response.data;
+  } catch (error) {
+    throw handleServiceError(
+      error,
+      "Error al continuar la generación del template con IA"
+    );
   }
 };

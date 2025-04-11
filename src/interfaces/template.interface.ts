@@ -28,6 +28,7 @@ export interface FunctionTemplateParam {
   enumValues?: string[];
   defaultValue?: string | number | boolean;
   properties?: FunctionTemplateParam[];
+  value?: string;
 }
 
 export interface FunctionTemplate {
@@ -44,6 +45,9 @@ export interface FunctionTemplate {
   url: string;
   method: HttpMethod;
   bodyType: BodyType;
+  isActive?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
   params: FunctionTemplateParam[];
 }
 
