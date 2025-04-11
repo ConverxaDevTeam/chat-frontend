@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { toast } from "react-toastify";
 import { FunctionTemplate } from "@interfaces/template.interface";
 import { Button } from "@components/common/Button";
@@ -27,13 +27,7 @@ export const AIGeneratorModal: React.FC<{
   const [totalLines, setTotalLines] = useState(0);
   const [progress, setProgress] = useState(0);
 
-  // Calcular el total de líneas cuando se ingresa contenido
-  useEffect(() => {
-    if (content) {
-      const lines = content.split(/\r\n|\r|\n/).length;
-      setTotalLines(lines);
-    }
-  }, [content]);
+  // El total de líneas se obtiene del servicio en la primera llamada
 
   const updateUIWithTemplate = (template: FunctionTemplate) => {
     const lastLine = template.lastProcessedLine || 0;
@@ -128,8 +122,10 @@ export const AIGeneratorModal: React.FC<{
     domain?: string
   ): Promise<FunctionTemplate> => {
     try {
-      const template = await generateTemplateWithAI(content, message, domain);
-      return template;
+      const data = await generateTemplateWithAI(content, message, domain);
+      // Actualizar el total de líneas con el valor que viene del servicio
+      setTotalLines(data.data.totalLines);
+      return data.data.template;
     } catch (error) {
       console.error("Error al generar el template con IA:", error);
       toast.error("Error al generar el template con IA");
