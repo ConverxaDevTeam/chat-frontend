@@ -254,7 +254,12 @@ const NoParamsMessage = () => (
 export const ParamsContent = ({ params }: { params: ParamConfigItem[] }) => {
   const { control } = useFormContext<WizardFormValues>();
 
+  console.log("PARAMS_CONTENT - Parámetros recibidos:", params);
+  console.log("PARAMS_CONTENT - Tipo de params:", typeof params);
+  console.log("PARAMS_CONTENT - Es array:", Array.isArray(params));
+
   if (!params || params.length === 0) {
+    console.log("PARAMS_CONTENT - No hay parámetros o length es 0");
     return <NoParamsMessage />;
   }
 

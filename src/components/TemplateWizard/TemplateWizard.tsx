@@ -74,6 +74,9 @@ export const TemplateWizard = ({
       getTemplateById(templateId)
         .then(template => {
           if (template) {
+            console.log("WIZARD - Template recibido:", template);
+            console.log("WIZARD - Estructura de params:", template.params);
+            console.log("WIZARD - Tipo de params:", typeof template.params);
             setTemplate(template);
 
             // Establecer el dominio personalizado si existe
@@ -81,14 +84,26 @@ export const TemplateWizard = ({
               setValue("customDomain", template.application.domain || "");
             }
 
-            reset({
-              params: Array.isArray(template.params)
-                ? template.params.map(p => ({
-                    ...p,
-                    enabled: p.required ?? false,
-                    value: "",
+            // Transformar los parámetros de objeto a array
+            const paramsArray =
+              template.params && typeof template.params === "object"
+                ? Object.entries(template.params).map(([id, param]) => ({
+                    id,
+                    name: param.name || id,
+                    title: param.title || param.name || id,
+                    description: param.description || "",
+                    type: param.type || "string",
+                    required: param.required || false,
+                    enabled: param.required || false,
+                    value: param.value || "",
+                    properties: param.properties || [],
                   }))
-                : [],
+                : [];
+
+            console.log("WIZARD - Parámetros transformados:", paramsArray);
+
+            reset({
+              params: paramsArray,
               authenticatorId: template.authenticatorId,
               customDomain: template.application?.domain || "",
             });

@@ -28,6 +28,7 @@ export interface FunctionTemplateParam {
   enumValues?: string[];
   defaultValue?: string | number | boolean;
   properties?: FunctionTemplateParam[];
+  value?: string;
 }
 
 export interface FunctionTemplate {

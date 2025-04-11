@@ -59,6 +59,8 @@ export const getTemplateById = async (
     );
 
     const template = response.data;
+    console.log("SERVICIO - Template completo:", template);
+    console.log("SERVICIO - Estructura de params:", template.params);
 
     // Convertir tags a array de strings (extraer name de cada objeto)
     if (template.tags) {
