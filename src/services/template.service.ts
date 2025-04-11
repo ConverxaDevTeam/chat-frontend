@@ -252,13 +252,16 @@ export const generateTemplateWithAI = async (
   content: string,
   additionalMessage: string,
   domain?: string
-): Promise<FunctionTemplate> => {
+): Promise<{ data: { template: FunctionTemplate; totalLines: number } }> => {
   try {
-    const response = await axiosInstance.post<{ data: FunctionTemplate }>(
-      apiUrls.functionTemplates.generateWithAI(),
-      { content, additionalMessage, domain }
-    );
-    return response.data.data;
+    const response = await axiosInstance.post<{
+      data: { template: FunctionTemplate; totalLines: number };
+    }>(apiUrls.functionTemplates.generateWithAI(), {
+      content,
+      additionalMessage,
+      domain,
+    });
+    return response.data;
   } catch (error) {
     throw handleServiceError(error, "Error al generar template con IA");
   }
