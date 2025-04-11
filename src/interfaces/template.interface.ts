@@ -45,7 +45,9 @@ export interface FunctionTemplate {
   url: string;
   method: HttpMethod;
   bodyType: BodyType;
-  lastProcessedLine: number;
+  isActive?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
   createdIds: {
     applicationId?: string;
     categoryIds?: string[];

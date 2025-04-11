@@ -252,15 +252,36 @@ export const generateTemplateWithAI = async (
   content: string,
   additionalMessage: string,
   domain?: string
-): Promise<{ data: { template: FunctionTemplate; totalLines: number } }> => {
+): Promise<{
+  data: {
+    templates: FunctionTemplate[];
+    totalLines: number;
+    lastProcessedLine: number;
+  };
+}> => {
   try {
+    console.log("[API] Enviando solicitud a generateWithAI");
     const response = await axiosInstance.post<{
-      data: { template: FunctionTemplate; totalLines: number };
+      data: {
+        templates: FunctionTemplate[];
+        totalLines: number;
+        lastProcessedLine: number;
+      };
     }>(apiUrls.functionTemplates.generateWithAI(), {
       content,
       additionalMessage,
       domain,
     });
+
+    // Verificar la estructura de la respuesta
+    console.log("[API] Respuesta recibida:", {
+      status: response.status,
+      hasData: !!response.data,
+      hasTemplate: !!response.data?.data?.templates,
+      totalLines: response.data?.data?.totalLines,
+      lastProcessedLine: response.data?.data?.lastProcessedLine,
+    });
+
     return response.data;
   } catch (error) {
     throw handleServiceError(error, "Error al generar template con IA");
@@ -282,9 +303,13 @@ export const continueTemplateGenerationWithAI = async (
     applicationId?: string;
     categoryIds?: string[];
   }
-): Promise<FunctionTemplate> => {
+): Promise<{
+  data: { templates: FunctionTemplate[]; lastProcessedLine: number };
+}> => {
   try {
-    const response = await axiosInstance.post<{ data: FunctionTemplate }>(
+    const response = await axiosInstance.post<{
+      data: { templates: FunctionTemplate[]; lastProcessedLine: number };
+    }>(
       apiUrls.functionTemplates.continueGenerateWithAI(),
       {
         content,
@@ -298,7 +323,7 @@ export const continueTemplateGenerationWithAI = async (
       },
       { timeout: 0 }
     );
-    return response.data.data;
+    return response.data;
   } catch (error) {
     throw handleServiceError(
       error,
