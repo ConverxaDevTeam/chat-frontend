@@ -52,6 +52,7 @@ const generatorReducer = (
         isPaused: false,
         generatedTemplates: [],
         progress: 0,
+        totalLines: 0, // Reiniciar totalLines al iniciar una nueva generación
         processingStatus: "Iniciando generación de templates...",
       };
     case "PAUSE_GENERATION":
@@ -121,18 +122,20 @@ const useTemplateGenerator = () => {
   const pauseGenerationRef = useRef(false);
 
   const updateUIWithTemplate = useCallback(
-    (template: FunctionTemplate, lastProcessedLine = 0) => {
+    (
+      template: FunctionTemplate,
+      lastProcessedLine = 0,
+      totalLines?: number
+    ) => {
+      // Usar totalLines pasado como parámetro o el del estado
+      const linesToUse = totalLines || state.totalLines;
+
       // Actualizar progreso si hay líneas totales
-      if (state.totalLines > 0 && lastProcessedLine > 0) {
+      if (linesToUse > 0 && lastProcessedLine > 0) {
         dispatch({
           type: "SET_PROGRESS",
           lastLine: lastProcessedLine,
-          totalLines: state.totalLines,
-        });
-      } else {
-        console.error("[ERROR] No se puede actualizar progreso, faltan datos", {
-          totalLines: state.totalLines,
-          lastProcessedLine,
+          totalLines: linesToUse,
         });
       }
 
@@ -150,6 +153,7 @@ const useTemplateGenerator = () => {
     ): Promise<{
       template: FunctionTemplate | null;
       lastProcessedLine: number;
+      totalLines: number;
       createdIds?: {
         applicationId?: string;
         categoryIds?: string[];
@@ -161,11 +165,11 @@ const useTemplateGenerator = () => {
         // Validar la estructura de la respuesta
         if (!data || !data.data) {
           console.error("[ERROR] Respuesta inválida del API, no contiene data");
-          return { template: null, lastProcessedLine: 0 };
+          return { template: null, lastProcessedLine: 0, totalLines: 0 };
         }
 
-        // Establecer el totalLines solo si aún no está establecido
-        if (state.totalLines === 0 && data.data.totalLines > 0) {
+        // Siempre actualizar totalLines con el valor más reciente de la API
+        if (data.data.totalLines > 0) {
           dispatch({
             type: "SET_FIELD",
             field: "totalLines",
@@ -184,6 +188,7 @@ const useTemplateGenerator = () => {
           return {
             template: null,
             lastProcessedLine: data.data.lastProcessedLine || 0,
+            totalLines: data.data.totalLines || 0,
             createdIds: data.data.createdIds,
           };
         }
@@ -194,6 +199,7 @@ const useTemplateGenerator = () => {
         return {
           template: firstTemplate,
           lastProcessedLine: data.data.lastProcessedLine,
+          totalLines: data.data.totalLines,
           createdIds: data.data.createdIds,
         };
       } catch (error) {
@@ -275,6 +281,15 @@ const useTemplateGenerator = () => {
         const updatedTemplate = result.data.templates[0];
         lastProcessedLine = result.data.lastProcessedLine;
 
+        // Actualizar totalLines si está disponible
+        if (result.data.totalLines && result.data.totalLines > 0) {
+          dispatch({
+            type: "SET_FIELD",
+            field: "totalLines",
+            value: result.data.totalLines,
+          });
+        }
+
         // Si se pausó durante la petición, detener el ciclo
         if (pauseGenerationRef.current) {
           dispatch({
@@ -283,13 +298,21 @@ const useTemplateGenerator = () => {
             value: "Generación pausada en línea " + lastProcessedLine,
           });
           currentTemplate = updatedTemplate;
-          updateUIWithTemplate(updatedTemplate, lastProcessedLine);
+          updateUIWithTemplate(
+            updatedTemplate,
+            lastProcessedLine,
+            result.data.totalLines
+          );
           break;
         }
 
         // Actualizar el template actual y la UI
         currentTemplate = updatedTemplate;
-        updateUIWithTemplate(updatedTemplate, lastProcessedLine);
+        updateUIWithTemplate(
+          updatedTemplate,
+          lastProcessedLine,
+          result.data.totalLines
+        );
       }
     } catch (error) {
       console.error("Error al continuar la generación:", error);
@@ -363,7 +386,11 @@ export const AIGeneratorModal: React.FC<{
       }
 
       // Actualizar UI con el template generado
-      updateUIWithTemplate(currentTemplate, result.lastProcessedLine);
+      updateUIWithTemplate(
+        currentTemplate,
+        result.lastProcessedLine,
+        result.totalLines
+      );
 
       // Verificar estado antes de continuar
 
