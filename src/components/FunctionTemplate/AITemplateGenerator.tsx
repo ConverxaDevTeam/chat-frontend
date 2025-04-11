@@ -177,6 +177,10 @@ const useTemplateGenerator = () => {
           });
         }
 
+        // Extraer lastProcessedLine de la respuesta
+        const lastProcessedLine = data.data.lastProcessedLine || 0;
+        console.log("[INFO] lastProcessedLine recibido:", lastProcessedLine);
+
         // Si no hay templates o el array está vacío, manejarlo adecuadamente
         if (!data.data.templates || data.data.templates.length === 0) {
           console.error(
@@ -187,7 +191,7 @@ const useTemplateGenerator = () => {
           );
           return {
             template: null,
-            lastProcessedLine: data.data.lastProcessedLine || 0,
+            lastProcessedLine,
             totalLines: data.data.totalLines || 0,
             createdIds: data.data.createdIds,
           };
@@ -198,7 +202,7 @@ const useTemplateGenerator = () => {
 
         return {
           template: firstTemplate,
-          lastProcessedLine: data.data.lastProcessedLine,
+          lastProcessedLine,
           totalLines: data.data.totalLines,
           createdIds: data.data.createdIds,
         };
@@ -245,9 +249,12 @@ const useTemplateGenerator = () => {
 
       while (!isCompleted && currentTemplate && !pauseGenerationRef.current) {
         // Verificar si ya se procesó todo el contenido
-        if (lastProcessedLine >= state.totalLines) {
+        if (lastProcessedLine >= state.totalLines && state.totalLines > 0) {
           isCompleted = true;
           dispatch({ type: "COMPLETE_GENERATION" });
+          console.log(
+            "[INFO] Generación completada, se procesaron todas las líneas"
+          );
           break;
         }
 
@@ -392,17 +399,29 @@ export const AIGeneratorModal: React.FC<{
         result.totalLines
       );
 
-      // Verificar estado antes de continuar
-
       if (currentTemplate && currentTemplate.id) {
+        // Asegurarse de que lastProcessedLine sea un número válido
+        const lastLine =
+          typeof result.lastProcessedLine === "number"
+            ? result.lastProcessedLine
+            : 0;
+
         setTimeout(() => {
           if (!result.createdIds?.applicationId) {
-            throw new Error("No se encontró applicationId en la respuesta");
+            console.error(
+              "[ERROR] No se encontró applicationId en la respuesta"
+            );
+            toast.error("Error: No se pudo continuar la generación");
+            dispatch({
+              type: "SET_ERROR",
+              message: "No se encontró applicationId en la respuesta",
+            });
+            return;
           }
           continuarGeneracion(
             currentTemplate,
-            result.lastProcessedLine,
-            result.createdIds?.applicationId
+            lastLine,
+            result.createdIds.applicationId
           );
         }, 100);
       } else {
