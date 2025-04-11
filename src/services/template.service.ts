@@ -165,6 +165,25 @@ export const getApplications = async (): Promise<
 };
 
 /**
+ * Obtener templates por aplicación
+ */
+export const getTemplatesByApplication = async (
+  applicationId: number
+): Promise<FunctionTemplate[]> => {
+  try {
+    const response = await axiosInstance.get<FunctionTemplate[]>(
+      apiUrls.functionTemplates.byApplication(applicationId)
+    );
+    return response.data;
+  } catch (error) {
+    throw handleServiceError(
+      error,
+      `Error al obtener templates de la aplicación ${applicationId}`
+    );
+  }
+};
+
+/**
  * Crear una nueva categoría
  */
 export const createCategory = async (
@@ -262,7 +281,8 @@ export const continueTemplateGenerationWithAI = async (
         domain,
         lastProcessedLine,
         createdIds,
-      }
+      },
+      { timeout: 0 }
     );
     return response.data.data;
   } catch (error) {

@@ -82,11 +82,13 @@ export const TemplateWizard = ({
             }
 
             reset({
-              params: template.params.map(p => ({
-                ...p,
-                enabled: p.required ?? false,
-                value: "",
-              })),
+              params: Array.isArray(template.params)
+                ? template.params.map(p => ({
+                    ...p,
+                    enabled: p.required ?? false,
+                    value: "",
+                  }))
+                : [],
               authenticatorId: template.authenticatorId,
               customDomain: template.application?.domain || "",
             });
