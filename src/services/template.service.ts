@@ -272,11 +272,15 @@ export const generateTemplateWithAI = async (
           categoryIds?: string[];
         };
       };
-    }>(apiUrls.functionTemplates.generateWithAI(), {
-      content,
-      additionalMessage,
-      domain,
-    });
+    }>(
+      apiUrls.functionTemplates.generateWithAI(),
+      {
+        content,
+        additionalMessage,
+        domain,
+      },
+      { timeout: 0 }
+    );
 
     return response.data;
   } catch (error) {
