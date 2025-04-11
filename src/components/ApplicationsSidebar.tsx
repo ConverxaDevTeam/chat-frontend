@@ -1,5 +1,8 @@
 import { useState, useEffect } from "react";
-import { getApplications, getTemplates } from "@services/template.service";
+import {
+  getApplications,
+  getTemplatesByApplication,
+} from "@services/template.service";
 import {
   FunctionTemplate,
   FunctionTemplateApplication,
@@ -8,37 +11,84 @@ import InfoTooltip from "./Common/InfoTooltip";
 import Loading from "./Loading";
 import { TemplateWizard } from "./TemplateWizard/TemplateWizard";
 
-interface GroupedTemplates {
+interface ApplicationItem {
   application: FunctionTemplateApplication;
-  templates: FunctionTemplate[];
+  templates: FunctionTemplate[] | null;
+  isLoading: boolean;
 }
 
-// Hook personalizado para cargar las aplicaciones y templates
+// Hook personalizado para cargar solo las aplicaciones
 const useApplicationsData = () => {
-  const [groups, setGroups] = useState<GroupedTemplates[]>([]);
+  const [applications, setApplications] = useState<ApplicationItem[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchData = async () => {
+  const fetchApplications = async () => {
     try {
-      const [applications, templates] = await Promise.all([
-        getApplications(),
-        getTemplates(),
-      ]);
+      const apps = await getApplications();
 
-      const grouped = applications.map(app => ({
+      const appItems = apps.map(app => ({
         application: app,
-        templates: templates.filter(t => t.applicationId === app.id),
+        templates: null, // No cargamos templates inicialmente
+        isLoading: false,
       }));
 
-      setGroups(grouped.filter(g => g.templates.length > 0));
+      setApplications(appItems);
     } catch (error) {
-      console.error("Error loading data:", error);
+      console.error("Error loading applications:", error);
     } finally {
       setLoading(false);
     }
   };
 
-  return { groups, loading, fetchData };
+  // Función para cargar templates de una aplicación específica
+  const loadTemplatesForApplication = async (applicationId: number) => {
+    // Encontrar el índice de la aplicación
+    const appIndex = applications.findIndex(
+      item => item.application.id === applicationId
+    );
+    if (appIndex === -1) return;
+
+    // Actualizar el estado de carga
+    setApplications(prev => {
+      const updated = [...prev];
+      updated[appIndex] = { ...updated[appIndex], isLoading: true };
+      return updated;
+    });
+
+    try {
+      // Cargar templates para esta aplicación
+      const templates = await getTemplatesByApplication(applicationId);
+
+      // Actualizar el estado con los templates cargados
+      setApplications(prev => {
+        const updated = [...prev];
+        updated[appIndex] = {
+          ...updated[appIndex],
+          templates,
+          isLoading: false,
+        };
+        return updated;
+      });
+    } catch (error) {
+      console.error(
+        `Error loading templates for application ${applicationId}:`,
+        error
+      );
+      // Actualizar el estado para indicar que la carga falló
+      setApplications(prev => {
+        const updated = [...prev];
+        updated[appIndex] = { ...updated[appIndex], isLoading: false };
+        return updated;
+      });
+    }
+  };
+
+  return {
+    applications,
+    loading,
+    fetchApplications,
+    loadTemplatesForApplication,
+  };
 };
 
 // Componente para la cabecera del sidebar
@@ -202,40 +252,60 @@ const TemplateItem = ({
 
 // Componente para mostrar un grupo de templates
 const ApplicationGroup = ({
-  group,
+  appItem,
   onTemplateClick,
+  onExpand,
 }: {
-  group: GroupedTemplates;
+  appItem: ApplicationItem;
   onTemplateClick: (templateId: number) => void;
+  onExpand: (applicationId: number) => void;
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const toggleExpand = () => {
-    setIsExpanded(!isExpanded);
+    const newExpandedState = !isExpanded;
+    setIsExpanded(newExpandedState);
+
+    // Si se está expandiendo y no se han cargado los templates, cargarlos
+    if (newExpandedState && appItem.templates === null) {
+      onExpand(appItem.application.id);
+    }
   };
 
   return (
     <div className="mb-4">
       <ApplicationHeader
-        application={group.application}
+        application={appItem.application}
         isExpanded={isExpanded}
         toggleExpand={toggleExpand}
       />
       {isExpanded && (
         <div className="mt-2 pl-2">
-          <h5 className="text-sm font-medium text-gray-700 mb-1 ml-2">
-            Funciones disponibles:
-          </h5>
-          <div className="space-y-2">
-            {group.templates.map(template => (
-              <TemplateItem
-                key={template.id}
-                template={template}
-                applicationImageUrl={group.application.imageUrl}
-                onTemplateClick={onTemplateClick}
-              />
-            ))}
-          </div>
+          {appItem.isLoading ? (
+            <div className="flex justify-center py-4">
+              <Loading />
+            </div>
+          ) : appItem.templates && appItem.templates.length > 0 ? (
+            <>
+              <h5 className="text-sm font-medium text-gray-700 mb-1 ml-2">
+                Funciones disponibles:
+              </h5>
+              <div className="space-y-2">
+                {appItem.templates.map(template => (
+                  <TemplateItem
+                    key={template.id}
+                    template={template}
+                    applicationImageUrl={appItem.application.imageUrl}
+                    onTemplateClick={onTemplateClick}
+                  />
+                ))}
+              </div>
+            </>
+          ) : (
+            <div className="text-sm text-gray-500 italic ml-2 py-2">
+              No hay funciones disponibles para esta aplicación.
+            </div>
+          )}
         </div>
       )}
     </div>
@@ -250,7 +320,12 @@ export const ApplicationsSidebar = ({
   onClose: () => void;
   agentId: number;
 }) => {
-  const { groups, loading, fetchData } = useApplicationsData();
+  const {
+    applications,
+    loading,
+    fetchApplications,
+    loadTemplatesForApplication,
+  } = useApplicationsData();
   const [selectedTemplateId, setSelectedTemplateId] = useState<number | null>(
     null
   );
@@ -258,7 +333,7 @@ export const ApplicationsSidebar = ({
 
   // Cargar datos al montar el componente
   useEffect(() => {
-    fetchData();
+    fetchApplications();
   }, []);
 
   const handleTemplateClick = (templateId: number) => {
@@ -268,6 +343,10 @@ export const ApplicationsSidebar = ({
 
   const handleWizardClose = () => {
     setIsWizardOpen(false);
+  };
+
+  const handleApplicationExpand = (applicationId: number) => {
+    loadTemplatesForApplication(applicationId);
   };
 
   return (
@@ -285,11 +364,12 @@ export const ApplicationsSidebar = ({
               <LoadingState />
             ) : (
               <div className="space-y-4">
-                {groups.map(group => (
+                {applications.map(appItem => (
                   <ApplicationGroup
-                    key={group.application.id}
-                    group={group}
+                    key={appItem.application.id}
+                    appItem={appItem}
                     onTemplateClick={handleTemplateClick}
+                    onExpand={handleApplicationExpand}
                   />
                 ))}
               </div>
