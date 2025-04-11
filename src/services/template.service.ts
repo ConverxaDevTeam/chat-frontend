@@ -171,10 +171,19 @@ export const getTemplatesByApplication = async (
   applicationId: number
 ): Promise<FunctionTemplate[]> => {
   try {
-    const response = await axiosInstance.get<FunctionTemplate[]>(
+    interface PaginatedResponse {
+      items: FunctionTemplate[];
+      total: number;
+      page: number;
+      limit: number;
+    }
+
+    const response = await axiosInstance.get<PaginatedResponse>(
       apiUrls.functionTemplates.byApplication(applicationId)
     );
-    return response.data;
+
+    // Extraer los items del objeto paginado
+    return response.data.items || [];
   } catch (error) {
     throw handleServiceError(
       error,
