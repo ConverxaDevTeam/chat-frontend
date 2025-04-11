@@ -59,7 +59,7 @@ const FunctionHeader = ({ template }: { template: FunctionTemplate }) => (
   <div className="flex items-start gap-4 bg-white p-4 rounded-lg shadow-sm border border-gray-100">
     <div className="w-14 h-14 flex-shrink-0 bg-blue-100 rounded-lg flex items-center justify-center">
       <img
-        src={template.application?.imageUrl || "/mvp/function.svg"}
+        src={template.application?.imageUrl || "/mvp/file-code.svg"}
         alt={template.name}
         className="w-10 h-10 object-contain"
       />
@@ -254,12 +254,7 @@ const NoParamsMessage = () => (
 export const ParamsContent = ({ params }: { params: ParamConfigItem[] }) => {
   const { control } = useFormContext<WizardFormValues>();
 
-  console.log("PARAMS_CONTENT - Parámetros recibidos:", params);
-  console.log("PARAMS_CONTENT - Tipo de params:", typeof params);
-  console.log("PARAMS_CONTENT - Es array:", Array.isArray(params));
-
   if (!params || params.length === 0) {
-    console.log("PARAMS_CONTENT - No hay parámetros o length es 0");
     return <NoParamsMessage />;
   }
 
