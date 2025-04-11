@@ -300,13 +300,18 @@ export const continueTemplateGenerationWithAI = async (
     categoryIds?: string[];
   }
 ): Promise<{
-  data: { templates: FunctionTemplate[]; lastProcessedLine: number };
+  data: {
+    templates: FunctionTemplate[];
+    lastProcessedLine: number;
+    totalLines: number;
+  };
 }> => {
   try {
     const response = await axiosInstance.post<{
       data: {
         templates: FunctionTemplate[];
         lastProcessedLine: number;
+        totalLines: number;
         createdIds?: { applicationId?: string; categoryIds?: string[] };
       };
     }>(
