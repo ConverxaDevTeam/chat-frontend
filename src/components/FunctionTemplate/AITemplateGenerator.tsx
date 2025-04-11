@@ -122,17 +122,8 @@ const useTemplateGenerator = () => {
 
   const updateUIWithTemplate = useCallback(
     (template: FunctionTemplate, lastProcessedLine = 0) => {
-      console.log("[DEBUG] Estado antes de updateUI:", {
-        template: template ? "OK" : "NULL",
-        lastProcessedLine,
-        totalLines: state.totalLines,
-      });
-
       // Actualizar progreso si hay líneas totales
       if (state.totalLines > 0 && lastProcessedLine > 0) {
-        console.log(
-          `[DEBUG] Actualizando progreso: ${lastProcessedLine}/${state.totalLines}`
-        );
         dispatch({
           type: "SET_PROGRESS",
           lastLine: lastProcessedLine,
@@ -159,12 +150,13 @@ const useTemplateGenerator = () => {
     ): Promise<{
       template: FunctionTemplate | null;
       lastProcessedLine: number;
+      createdIds?: {
+        applicationId?: string;
+        categoryIds?: string[];
+      };
     }> => {
       try {
         const data = await generateTemplateWithAI(content, message, domain);
-
-        // Verificar si la respuesta contiene los datos esperados
-        console.log("[DEBUG] Estructura completa de la respuesta:", data);
 
         // Validar la estructura de la respuesta
         if (!data || !data.data) {
@@ -172,21 +164,8 @@ const useTemplateGenerator = () => {
           return { template: null, lastProcessedLine: 0 };
         }
 
-        // Logs detallados de la respuesta
-        console.log("[DEBUG] Respuesta API:", {
-          hasTemplates: !!data.data.templates && data.data.templates.length > 0,
-          templatesCount: data.data.templates?.length,
-          templateId: data.data.templates?.[0]?.id,
-          lastProcessedLine: data.data.lastProcessedLine,
-          totalLines: data.data.totalLines,
-        });
-
         // Establecer el totalLines solo si aún no está establecido
         if (state.totalLines === 0 && data.data.totalLines > 0) {
-          console.log(
-            "[DEBUG] Estableciendo totalLines:",
-            data.data.totalLines
-          );
           dispatch({
             type: "SET_FIELD",
             field: "totalLines",
@@ -205,16 +184,17 @@ const useTemplateGenerator = () => {
           return {
             template: null,
             lastProcessedLine: data.data.lastProcessedLine || 0,
+            createdIds: data.data.createdIds,
           };
         }
 
         // Tomamos el primer template del array
         const firstTemplate = data.data.templates[0];
-        console.log("[DEBUG] Primer template recibido:", firstTemplate);
 
         return {
           template: firstTemplate,
           lastProcessedLine: data.data.lastProcessedLine,
+          createdIds: data.data.createdIds,
         };
       } catch (error) {
         console.error("Error al generar el template con IA:", error);
@@ -239,7 +219,8 @@ const useTemplateGenerator = () => {
   // Función para continuar la generación después de la primera llamada
   const continuarGeneracion = async (
     initialTemplate: FunctionTemplate,
-    initialLastProcessedLine = 0
+    initialLastProcessedLine = 0,
+    applicationId: string
   ) => {
     try {
       // Validar que el template existe
@@ -250,12 +231,6 @@ const useTemplateGenerator = () => {
         );
         return;
       }
-
-      console.log("[DEBUG] continuarGeneracion con:", {
-        templateId: initialTemplate.id,
-        lastProcessedLine: initialLastProcessedLine,
-        totalLines: state.totalLines,
-      });
 
       // Procesar la generación completa de templates
       let isCompleted = false;
@@ -272,10 +247,6 @@ const useTemplateGenerator = () => {
 
         // Continuar con la generación
         dispatch({ type: "SET_FIELD", field: "isLoading", value: true });
-        console.log(
-          "Continuando con la generación desde línea",
-          lastProcessedLine
-        );
 
         const result = await continueTemplateGenerationWithAI(
           state.content,
@@ -286,7 +257,7 @@ const useTemplateGenerator = () => {
           currentTemplate.applicationId,
           state.domain,
           {
-            applicationId: currentTemplate.application?.id?.toString(),
+            applicationId,
           }
         );
 
@@ -302,11 +273,6 @@ const useTemplateGenerator = () => {
         }
 
         const updatedTemplate = result.data.templates[0];
-        console.log("[DEBUG] Template actualizado:", {
-          id: updatedTemplate.id,
-          lastProcessedLine: result.data.lastProcessedLine,
-        });
-
         lastProcessedLine = result.data.lastProcessedLine;
 
         // Si se pausó durante la petición, detener el ciclo
@@ -378,7 +344,6 @@ export const AIGeneratorModal: React.FC<{
       dispatch({ type: "START_GENERATION" });
 
       // Generar template inicial
-      console.log("[DEBUG] Iniciando generación con AI");
       const result = await generateWithAI(
         state.content,
         state.message,
@@ -397,33 +362,21 @@ export const AIGeneratorModal: React.FC<{
         return;
       }
 
-      console.log("[DEBUG] Template a guardar:", {
-        id: currentTemplate.id,
-        name: currentTemplate.name,
-      });
-
-      console.log("[DEBUG] Template recibido:", {
-        id: currentTemplate.id,
-        lastProcessedLine: result.lastProcessedLine,
-      });
-
       // Actualizar UI con el template generado
       updateUIWithTemplate(currentTemplate, result.lastProcessedLine);
 
       // Verificar estado antes de continuar
-      console.log("[DEBUG] Estado antes de continuar:", {
-        totalLines: state.totalLines,
-        template: currentTemplate ? "OK" : "NULL",
-        templateId: currentTemplate?.id,
-      });
 
       if (currentTemplate && currentTemplate.id) {
         setTimeout(() => {
-          console.log("[DEBUG] Ejecutando continuarGeneracion con:", {
-            templateId: currentTemplate.id,
-            lastProcessedLine: result.lastProcessedLine,
-          });
-          continuarGeneracion(currentTemplate, result.lastProcessedLine);
+          if (!result.createdIds?.applicationId) {
+            throw new Error("No se encontró applicationId en la respuesta");
+          }
+          continuarGeneracion(
+            currentTemplate,
+            result.lastProcessedLine,
+            result.createdIds?.applicationId
+          );
         }, 100);
       } else {
         console.error(
