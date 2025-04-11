@@ -67,6 +67,27 @@ export const TemplateWizard = ({
 
   const { setValue, watch, reset, getValues } = methods;
 
+  // Función para procesar propiedades anidadas y habilitar las que son requeridas
+  const processNestedProperties = (
+    properties: BaseParamProperty[] | Record<string, BaseParamProperty>
+  ) => {
+    if (Array.isArray(properties)) {
+      return properties.map(prop => ({
+        ...prop,
+        enabled: prop.required || false,
+      }));
+    } else if (typeof properties === "object") {
+      return Object.entries(properties).map(
+        ([propId, prop]: [string, BaseParamProperty]) => ({
+          ...prop,
+          id: propId,
+          enabled: prop.required || false,
+        })
+      );
+    }
+    return properties;
+  };
+
   // Cargar datos del template
   useEffect(() => {
     if (isOpen && templateId) {
@@ -74,9 +95,6 @@ export const TemplateWizard = ({
       getTemplateById(templateId)
         .then(template => {
           if (template) {
-            console.log("WIZARD - Template recibido:", template);
-            console.log("WIZARD - Estructura de params:", template.params);
-            console.log("WIZARD - Tipo de params:", typeof template.params);
             setTemplate(template);
 
             // Establecer el dominio personalizado si existe
@@ -96,11 +114,11 @@ export const TemplateWizard = ({
                     required: param.required || false,
                     enabled: param.required || false,
                     value: param.value || "",
-                    properties: param.properties || [],
+                    properties: param.properties
+                      ? processNestedProperties(param.properties)
+                      : [],
                   }))
                 : [];
-
-            console.log("WIZARD - Parámetros transformados:", paramsArray);
 
             reset({
               params: paramsArray,
@@ -158,7 +176,6 @@ export const TemplateWizard = ({
   // Manejar el envío del formulario
   const onSave = async () => {
     try {
-      console.log("Form values:", getValues());
       const formData = getValues();
       const functionData = createFunction(formData);
       const createdFunction = await functionsService.create(functionData);
@@ -176,7 +193,9 @@ export const TemplateWizard = ({
       }
 
       // Crear parámetros habilitados
-      const enabledParams = formData.params?.filter(p => p.enabled) || [];
+      // Filtrar parámetros habilitados o requeridos
+      const enabledParams =
+        formData.params?.filter(p => p.enabled || p.required) || [];
       for (const param of enabledParams) {
         const propertiesArray = Array.isArray(param.properties)
           ? (param.properties as (BaseParamProperty & { enabled?: boolean })[])
@@ -197,8 +216,9 @@ export const TemplateWizard = ({
           value: param.value,
           properties: propertiesArray
             .filter(
-              (p: BaseParamProperty & { enabled?: boolean }) =>
-                p.enabled !== false
+              (
+                p: BaseParamProperty & { enabled?: boolean; required?: boolean }
+              ) => p.enabled !== false || p.required === true
             )
             .map(
               (
