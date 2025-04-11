@@ -187,6 +187,8 @@ export const apiUrls = {
     byId: (id: number) => `/api/function-templates/${id}`,
     categories: () => `/api/function-templates/categories`,
     applications: () => `/api/function-templates/applications`,
+    byApplication: (applicationId: number) =>
+      `/api/function-templates/by-application/${applicationId}`,
     generateWithAI: () => `/api/function-templates/generate-with-ai`,
     continueGenerateWithAI: () =>
       `/api/function-templates/generate-with-ai/continue`,
