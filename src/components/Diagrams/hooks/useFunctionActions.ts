@@ -228,7 +228,11 @@ export const useFunctionSuccess = (
   ) => Promise<{ success: boolean; data?: T; error?: unknown }>
 ) => {
   const state = useFunctionState({} as FunctionData<HttpRequestFunction>);
-  const createFunction = useCreateFunction(selectedAgentId || -1, state, handleOperation);
+  const createFunction = useCreateFunction(
+    selectedAgentId || -1,
+    state,
+    handleOperation
+  );
 
   return useCallback(
     async (data: FunctionData<HttpRequestFunction>) => {
@@ -254,7 +258,7 @@ export const useFunctionSuccess = (
       onSuccess,
       selectedNodeId,
       selectedAgentId,
-      handleOperation 
+      handleOperation,
     ]
   );
 };
@@ -271,9 +275,22 @@ export const useFunctionActions = (
 
   const { handleOperation, showConfirmation } = useAlertContext();
 
-  const createFunction = useCreateFunction(initialData.agentId, state, handleOperation);
-  const updateFunction = useUpdateFunction(state.data.functionId, state, handleOperation);
-  const deleteFunction = useDeleteFunction(state.data.functionId, state, showConfirmation, handleOperation);
+  const createFunction = useCreateFunction(
+    initialData.agentId,
+    state,
+    handleOperation
+  );
+  const updateFunction = useUpdateFunction(
+    state.data.functionId,
+    state,
+    handleOperation
+  );
+  const deleteFunction = useDeleteFunction(
+    state.data.functionId,
+    state,
+    showConfirmation,
+    handleOperation
+  );
 
   return {
     data: state.data,

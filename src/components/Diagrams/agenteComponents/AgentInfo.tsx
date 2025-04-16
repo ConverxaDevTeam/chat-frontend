@@ -11,6 +11,7 @@ export enum ActionType {
   ADD_FUNCTION = "ADD_FUNCTION",
   ADD_DOCUMENT = "ADD_DOCUMENT",
   SEND_TO_HUMAN = "SEND_TO_HUMAN",
+  ADD_APPLICATION = "ADD_APPLICATION",
 }
 
 interface ActionButtonsProps {
@@ -45,7 +46,7 @@ export const ActionButtons = ({
     createWithSpacing,
     nodeId,
     agentId || -1,
-    () => onClose(), 
+    () => onClose(),
     handleOperation
   );
 

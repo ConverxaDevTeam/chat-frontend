@@ -6,6 +6,11 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { RootState } from "@store";
 import { useAlertContext } from "@components/Diagrams/components/AlertContext";
+import { ApplicationsSidebar } from "@components/ApplicationsSidebar";
+import {
+  ApplicationsSidebarProvider,
+  useApplicationsSidebar,
+} from "@hooks/ApplicationsSidebarContext";
 
 interface ChatWrapperProps {
   agentId: number;
@@ -57,21 +62,45 @@ const ChatWrapper = ({ agentId }: ChatWrapperProps) => {
   );
 };
 
-const Workspace = () => {
+const ApplicationsWrapper = ({ agentId }: { agentId: number }) => {
+  const { isApplicationsSidebarOpen, closeApplicationsSidebar } =
+    useApplicationsSidebar();
+
+  return (
+    <Fragment>
+      {isApplicationsSidebarOpen && (
+        <ApplicationsSidebar
+          onClose={closeApplicationsSidebar}
+          agentId={agentId}
+        />
+      )}
+    </Fragment>
+  );
+};
+
+const WorkspaceContent = () => {
   const [agentId, setAgentId] = useState<number | null>(null);
 
   return (
     <div className="grid grid-cols-[1fr,auto] h-full w-full">
       {/* Diagram Section */}
       <div className="relative w-full h-full p-4">
-        {" "}
         {/* Margen agregado */}
         <ReactFlowProvider>
           <Diagram onAgentIdChange={setAgentId} />
         </ReactFlowProvider>
       </div>
       {agentId !== null && <ChatWrapper agentId={agentId} />}
+      <ApplicationsWrapper agentId={agentId || -1} />
     </div>
+  );
+};
+
+const Workspace = () => {
+  return (
+    <ApplicationsSidebarProvider>
+      <WorkspaceContent />
+    </ApplicationsSidebarProvider>
   );
 };
 

@@ -181,6 +181,18 @@ export const apiUrls = {
     byOrganization: (organizationId: number) =>
       `/api/notifications/organization/${organizationId}`,
   },
+  // function templates
+  functionTemplates: {
+    base: () => `/api/function-templates`,
+    byId: (id: number) => `/api/function-templates/${id}`,
+    categories: () => `/api/function-templates/categories`,
+    applications: () => `/api/function-templates/applications`,
+    byApplication: (applicationId: number) =>
+      `/api/function-templates/by-application/${applicationId}`,
+    generateWithAI: () => `/api/function-templates/generate-with-ai`,
+    continueGenerateWithAI: () =>
+      `/api/function-templates/generate-with-ai/continue`,
+  },
 } as const;
 
 export const tokenAccess = {
