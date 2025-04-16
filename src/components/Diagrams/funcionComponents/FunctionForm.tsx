@@ -180,20 +180,16 @@ interface SubmitButtonProps {
   onCancel?: () => void;
 }
 
-const SubmitButton = ({ isLoading, isCreating, onCancel }: SubmitButtonProps) => (
+const SubmitButton = ({
+  isLoading,
+  isCreating,
+  onCancel,
+}: SubmitButtonProps) => (
   <div className="flex gap-2 -mt-5">
-    <Button
-      type="button"
-      variant="cancel"
-      onClick={onCancel}
-    >
+    <Button type="button" variant="cancel" onClick={onCancel}>
       Cancelar
     </Button>
-    <Button
-      type="submit"
-      variant="primary"
-      disabled={isLoading}
-    >
+    <Button type="submit" variant="primary" disabled={isLoading}>
       {isLoading
         ? "Guardando..."
         : isCreating
@@ -233,7 +229,10 @@ export const FunctionForm = (props: FunctionFormProps) => {
       rows: 3,
       helpText: (
         <p className="text-gray-700 text-[12px] font-[500] leading-[16px] -mt-2">
-          ¿Tienes duda de cómo comenzar? Visita nuestro <a target="_blank" rel="noopener noreferrer" className="underline">knowledge base</a>
+          ¿Tienes duda de cómo comenzar? Visita nuestro{" "}
+          <a target="_blank" rel="noopener noreferrer" className="underline">
+            knowledge base
+          </a>
         </p>
       ),
     },
@@ -244,8 +243,8 @@ export const FunctionForm = (props: FunctionFormProps) => {
       validation: { required: "La URL es obligatoria" },
       type: "input",
       tooltip: (
-        <InfoTooltip 
-          text="Dirección web completa del servicio al que se conectará el agente. Debe incluir http:// o https:// al inicio." 
+        <InfoTooltip
+          text="Dirección web completa del servicio al que se conectará el agente. Debe incluir http:// o https:// al inicio."
           width="220px"
         />
       ),
@@ -259,12 +258,13 @@ export const FunctionForm = (props: FunctionFormProps) => {
       options: HTTP_METHODS,
       helpText: (
         <p className="text-gray-700 text-[12px] font-[500] leading-[16px] -mt-2">
-          Selecciona cómo el agente se comunicará con la URL. Usa GET para leer datos y POST para enviarlos
+          Selecciona cómo el agente se comunicará con la URL. Usa GET para leer
+          datos y POST para enviarlos
         </p>
       ),
       tooltip: (
-        <InfoTooltip 
-          text="GET: Para obtener datos. POST: Para enviar datos. PUT: Para actualizar recursos. DELETE: Para eliminar recursos." 
+        <InfoTooltip
+          text="GET: Para obtener datos. POST: Para enviar datos. PUT: Para actualizar recursos. DELETE: Para eliminar recursos."
           width="220px"
         />
       ),
@@ -280,8 +280,8 @@ export const FunctionForm = (props: FunctionFormProps) => {
         { value: BodyType.FORM_DATA, label: "Form Data" },
       ],
       tooltip: (
-        <InfoTooltip 
-          text="JSON: Para enviar datos estructurados en formato JSON. Form Data: Para enviar datos como un formulario, útil para archivos." 
+        <InfoTooltip
+          text="JSON: Para enviar datos estructurados en formato JSON. Form Data: Para enviar datos como un formulario, útil para archivos."
           width="220px"
         />
       ),
@@ -311,7 +311,11 @@ export const FunctionForm = (props: FunctionFormProps) => {
           />
         ))}
       </div>
-      <SubmitButton isLoading={isLoading ?? false} isCreating={isCreating} onCancel={props.onCancel} />
+      <SubmitButton
+        isLoading={isLoading ?? false}
+        isCreating={isCreating}
+        onCancel={props.onCancel}
+      />
     </form>
   );
 };
