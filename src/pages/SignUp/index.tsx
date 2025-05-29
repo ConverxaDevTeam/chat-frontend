@@ -1,15 +1,16 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@store/index";
-import { logInAsync } from "@store/actions/auth";
-import { Navigate } from "react-router-dom";
-import { Link } from "react-router-dom";
+import { Navigate, Link } from "react-router-dom";
 import GoogleLoginButton from "@components/GoogleLoginButton";
+import { signUpAsync } from "@store/actions/auth";
 
-const LogIn = () => {
-  const [data, setData] = useState({
+const SignUp = () => {
+  const [formData, setFormData] = useState({
     email: "",
     password: "",
+    first_name: "",
+    last_name: "",
   });
 
   const dispatch = useDispatch<AppDispatch>();
@@ -24,11 +25,11 @@ const LogIn = () => {
     e.preventDefault();
     setError(null);
     setActive(true);
-    dispatch(logInAsync({ data, setActive, setError, dispatch }));
+    dispatch(signUpAsync({ data: formData, setActive, setError, dispatch }));
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setData({ ...data, [e.target.name]: e.target.value });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   if (authenticated && !loading) {
@@ -45,10 +46,44 @@ const LogIn = () => {
             alt="logo"
           />
           <h2 className="font-semibold text-[30px] text-sofia-superDark mb-[16px] text-center">
-            Inicia sesión
+            Crear cuenta
           </h2>
           <form onSubmit={handleSubmit}>
             <div className="flex flex-col">
+              <label
+                className="text-[14px] font-medium text-[#414651] mb-[6px]"
+                htmlFor="first_name"
+              >
+                Nombre
+              </label>
+              <input
+                className="rounded-lg mb-[16px] py-[10px] px-[14px] border-[1px] text-[#717680] text-[16px] font-normal"
+                type="text"
+                id="first_name"
+                placeholder="Ingresa tu nombre"
+                onChange={handleChange}
+                value={formData.first_name}
+                name="first_name"
+                required
+              />
+              
+              <label
+                className="text-[14px] font-medium text-[#414651] mb-[6px]"
+                htmlFor="last_name"
+              >
+                Apellido
+              </label>
+              <input
+                className="rounded-lg mb-[16px] py-[10px] px-[14px] border-[1px] text-[#717680] text-[16px] font-normal"
+                type="text"
+                id="last_name"
+                placeholder="Ingresa tu apellido"
+                onChange={handleChange}
+                value={formData.last_name}
+                name="last_name"
+                required
+              />
+              
               <label
                 className="text-[14px] font-medium text-[#414651] mb-[6px]"
                 htmlFor="email"
@@ -61,10 +96,11 @@ const LogIn = () => {
                 id="email"
                 placeholder="Ingresa tu correo"
                 onChange={handleChange}
-                value={data.email}
+                value={formData.email}
                 name="email"
                 required
               />
+              
               <label
                 className="text-[14px] font-medium text-[#414651] mb-[6px]"
                 htmlFor="password"
@@ -75,27 +111,21 @@ const LogIn = () => {
                 className="rounded-lg mb-[16px] py-[10px] px-[14px] border-[1px] text-[#717680] text-[16px] font-normal"
                 type="password"
                 id="password"
-                placeholder="Contraseña"
+                placeholder="Contraseña (mínimo 8 caracteres)"
                 onChange={handleChange}
-                value={data.password}
+                value={formData.password}
                 name="password"
                 required
+                minLength={8}
               />
             </div>
-            <div className="flex items-center justify-end mb-[24px]">
-              <Link
-                to="/reset-password"
-                className="text-[14px] font-medium text-sofia-superDark hover:text-sofia-electricGreen hover:underline"
-              >
-                Olvidé mi contraseña
-              </Link>
-            </div>
+            
             <button
               className="w-full rounded-[8px] py-[10px] bg-sofia-electricGreen text-sofia-superDark text-[16px] font-semibold mb-[16px] disabled:bg-app-lightGray"
               type="submit"
               disabled={active}
             >
-              Iniciar sesión
+              Registrarse
             </button>
             
             <div className="flex items-center justify-between mb-[16px]">
@@ -105,6 +135,7 @@ const LogIn = () => {
             </div>
             
             <GoogleLoginButton setError={setError} />
+            
             {error && (
               <p className="text-red-600 text-sm text-center max-h-5 px-2 mb-2">
                 {error}
@@ -112,12 +143,12 @@ const LogIn = () => {
             )}
             
             <div className="text-center mt-4">
-              <span className="text-[14px] text-gray-600">¿No tienes cuenta? </span>
+              <span className="text-[14px] text-gray-600">¿Ya tienes cuenta? </span>
               <Link
-                to="/sign-up"
+                to="/"
                 className="text-[14px] font-medium text-sofia-superDark hover:text-sofia-electricGreen hover:underline"
               >
-                Regístrate
+                Inicia sesión
               </Link>
             </div>
           </form>
@@ -132,4 +163,4 @@ const LogIn = () => {
   );
 };
 
-export default LogIn;
+export default SignUp;

@@ -202,6 +202,65 @@ export const getMyOrganizationsAsync = createAsyncThunk(
   }
 );
 
+export const signUpAsync = createAsyncThunk(
+  "auth/signUpAsync",
+  async (
+    {
+      data,
+      setActive,
+      setError,
+      dispatch,
+    }: {
+      data: {
+        email: string;
+        password: string;
+        first_name: string;
+        last_name: string;
+        google_token?: string;
+      };
+      setActive: (boolean: boolean) => void;
+      setError: (error: string) => void;
+      dispatch: ReturnType<typeof useAppDispatch>;
+    },
+    { rejectWithValue }
+  ) => {
+    try {
+      const response = await axios.post(apiUrls.signUp(), data);
+      if (response.data.ok) {
+        localStorage.setItem(tokenAccess.tokenName, response.data.token);
+        localStorage.setItem(
+          tokenAccess.refreshTokenName,
+          response.data.refreshToken
+        );
+        setupAxiosInterceptors(dispatch);
+        dispatch(connectSocketAsync({ dispatch }));
+        dispatch(getUserAsync());
+        dispatch(getMyOrganizationsAsync());
+        return {};
+      } else {
+        setError(response.data.message);
+        return rejectWithValue("error");
+      }
+    } catch (error) {
+      let message = "Error al registrarse";
+      if (axios.isAxiosError(error)) {
+        if (error.response) {
+          message =
+            error.response.data?.message || "Error inesperado del servidor";
+        } else if (error.request) {
+          message = "No se pudo conectar con el servidor";
+        } else {
+          message = error.message;
+        }
+      }
+      setError(message);
+      return rejectWithValue("error");
+    } finally {
+      setActive(false);
+    }
+  }
+);
+
 export const googleLoginAsync = createAsyncThunk(
   "auth/googleLoginAsync",
   async (
