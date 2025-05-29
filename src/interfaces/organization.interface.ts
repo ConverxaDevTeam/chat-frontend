@@ -8,6 +8,7 @@ export interface ISelectOrganization {
 export enum OrganizationType {
   PRODUCTION = "production",
   MVP = "mvp",
+  FREE = "free"
 }
 
 export enum AgentType {
