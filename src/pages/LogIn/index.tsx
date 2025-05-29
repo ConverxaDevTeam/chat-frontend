@@ -4,6 +4,7 @@ import { AppDispatch, RootState } from "@store/index";
 import { logInAsync } from "@store/actions/auth";
 import { Navigate } from "react-router-dom";
 import { Link } from "react-router-dom";
+import GoogleLoginButton from "@components/GoogleLoginButton";
 
 const LogIn = () => {
   const [data, setData] = useState({
@@ -90,12 +91,20 @@ const LogIn = () => {
               </Link>
             </div>
             <button
-              className="w-full rounded-[8px] py-[10px] bg-sofia-electricGreen text-sofia-superDark text-[16px] font-semibold mb-[24px] disabled:bg-app-lightGray"
+              className="w-full rounded-[8px] py-[10px] bg-sofia-electricGreen text-sofia-superDark text-[16px] font-semibold mb-[16px] disabled:bg-app-lightGray"
               type="submit"
               disabled={active}
             >
               Iniciar sesión
             </button>
+            
+            <div className="flex items-center justify-between mb-[16px]">
+              <div className="w-[45%] h-[1px] bg-gray-300"></div>
+              <span className="text-[14px] text-gray-500">o</span>
+              <div className="w-[45%] h-[1px] bg-gray-300"></div>
+            </div>
+            
+            <GoogleLoginButton setError={setError} />
             {error && (
               <p className="text-red-600 text-sm text-center max-h-5 px-2 mb-2">
                 {error}
