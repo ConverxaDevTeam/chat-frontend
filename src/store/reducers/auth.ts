@@ -4,6 +4,7 @@ import { IAuthState } from "../../utils/interfaces";
 import {
   getUserAsync,
   logInAsync,
+  googleLoginAsync,
   verifySessionAsync,
   logOutAsync,
   connectSocketAsync,
@@ -46,6 +47,12 @@ export const authSlice = createSlice({
         state.authenticated = true;
       })
       .addCase(logInAsync.rejected, state => {
+        state.authenticated = false;
+      })
+      .addCase(googleLoginAsync.fulfilled, state => {
+        state.authenticated = true;
+      })
+      .addCase(googleLoginAsync.rejected, state => {
         state.authenticated = false;
       })
       .addCase(logOutAsync.fulfilled, state => {
