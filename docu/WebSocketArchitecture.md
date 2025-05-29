@@ -1,4 +1,10 @@
-%% Diagrama de Conexión WebSocket Global
+# Arquitectura WebSocket en Sofia Chat Frontend
+
+Este documento describe la arquitectura de WebSockets utilizada en el proyecto Sofia Chat Frontend.
+
+## Diagrama de Conexión WebSocket Global (Redux)
+
+```mermaid
 sequenceDiagram
     participant Usuario
     participant Redux
@@ -27,8 +33,11 @@ sequenceDiagram
     Redux->>WebSocketService: disconnectWebSocket()
     WebSocketService->>Servidor: Desconexión
     Servidor-->>WebSocketService: Confirma desconexión
+```
 
-%% Diagrama de Conexión WebSocket de Chat
+## Diagrama de Conexión WebSocket de Chat (Componente Chat)
+
+```mermaid
 sequenceDiagram
     participant Usuario
     participant ChatComponent
@@ -60,8 +69,11 @@ sequenceDiagram
     useWebSocketConnection->>WebSocketService: leaveRoom(roomName)
     WebSocketService->>Servidor: Evento "leave" (roomName)
     useWebSocketConnection->>WebSocketService: Elimina event listeners
+```
 
-%% Diagrama de Flujo de WebSocket
+## Diagrama de Flujo General de WebSockets
+
+```mermaid
 flowchart TD
     A[Usuario] -->|Inicia sesión| B[Redux Auth]
     B -->|connectSocketAsync| C[WebSocketService]
@@ -83,8 +95,11 @@ flowchart TD
     D -->|Evento message| G
     G -->|Notifica| B
     B -->|Actualiza estado| A
+```
 
-%% Estructura de Datos WebSocket
+## Estructura de Datos de Mensajes WebSocket
+
+```mermaid
 classDiagram
     class WebSocketBaseResponse {
         +conf: {
@@ -118,8 +133,11 @@ classDiagram
     }
     
     WebSocketBaseResponse <|-- WebSocketChatTestResponse
+```
 
-%% Estructura de Servicios WebSocket
+## Estructura de Servicios y Clases WebSocket
+
+```mermaid
 classDiagram
     class WebSocketService {
         -Socket websocket
@@ -161,8 +179,11 @@ classDiagram
     WebSocketService <-- ReduxAuthActions: Usa
     WebSocketService <-- useWebSocketConnection: Usa
     useWebSocketConnection --> useChat: Actualiza
+```
 
-%% Ciclo de Vida de la Conexión WebSocket
+## Ciclo de Vida de la Conexión WebSocket
+
+```mermaid
 stateDiagram-v2
     [*] --> Desconectado
     Desconectado --> Conectando: connectWebSocket(token)
@@ -184,3 +205,4 @@ stateDiagram-v2
     
     Conectado --> Desconectando: disconnectWebSocket()
     Desconectando --> Desconectado: Evento "disconnect"
+```
