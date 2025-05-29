@@ -202,6 +202,58 @@ export const getMyOrganizationsAsync = createAsyncThunk(
   }
 );
 
+export const googleLoginAsync = createAsyncThunk(
+  "auth/googleLoginAsync",
+  async (
+    {
+      accessToken,
+      setError,
+      dispatch,
+    }: {
+      accessToken: string;
+      setError: (error: string) => void;
+      dispatch: ReturnType<typeof useAppDispatch>;
+    },
+    { rejectWithValue }
+  ) => {
+    try {
+      const response = await axios.post(apiUrls.googleLogin(), {
+        token: accessToken,
+      });
+      if (response.data.ok) {
+        localStorage.setItem(tokenAccess.tokenName, response.data.token);
+        localStorage.setItem(
+          tokenAccess.refreshTokenName,
+          response.data.refreshToken
+        );
+        setupAxiosInterceptors(dispatch);
+        dispatch(connectSocketAsync({ dispatch }));
+        alertConfirm("Sesión iniciada correctamente");
+        dispatch(getUserAsync());
+        dispatch(getMyOrganizationsAsync());
+        return {};
+      } else {
+        setError(response.data.message);
+        return rejectWithValue("error");
+      }
+    } catch (error) {
+      let message = "Error al iniciar sesión con Google";
+      if (axios.isAxiosError(error)) {
+        if (error.response) {
+          message =
+            error.response.data?.message || "Error inesperado del servidor";
+        } else if (error.request) {
+          message = "No se pudo conectar con el servidor";
+        } else {
+          message = error.message;
+        }
+      }
+      setError(message);
+      return rejectWithValue("error");
+    }
+  }
+);
+
 export const logInAsync = createAsyncThunk(
   "auth/logInAsync",
   async (

@@ -6,6 +6,7 @@ export const apiUrls = {
   refreshToken: () => `${baseUrl}/api/auth/refresh-token`,
   logOut: () => `${baseUrl}/api/auth/log-out`,
   logIn: () => `${baseUrl}/api/auth/log-in`,
+  googleLogin: () => `${baseUrl}/api/auth/google-login`,
   requestResetPassword: () => `${baseUrl}/api/auth/request-reset-password`,
   resetPassword: () => `${baseUrl}/api/auth/reset-password`,
   getSessions: () => `/api/auth/session`,
