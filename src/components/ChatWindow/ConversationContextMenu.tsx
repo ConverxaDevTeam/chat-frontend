@@ -63,7 +63,10 @@ export const ConversationContextMenu = ({
         <img src="/mvp/download.svg" alt="" className="w-4 h-4" />
         Exportar chat EXCEL
       </button>
-      <button className="w-full text-left text-red-500 flex items-center gap-2" onClick={onDelete}>
+      <button
+        className="w-full text-left text-red-500 flex items-center gap-2"
+        onClick={onDelete}
+      >
         <img src="/mvp/trash.svg" alt="" className="w-4 h-4" />
         Eliminar chat
       </button>

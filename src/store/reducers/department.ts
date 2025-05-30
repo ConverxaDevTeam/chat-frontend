@@ -51,16 +51,18 @@ const departmentSlice = createSlice({
     },
     removeDepartment: (state, action: PayloadAction<number>) => {
       state.departments = state.departments.filter(
-        (dept) => dept.id !== action.payload
+        dept => dept.id !== action.payload
       );
-      
+
       if (state.selectedDepartmentId === action.payload) {
-        state.selectedDepartmentId = state.departments.length > 0 
-          ? state.departments[0].id 
-          : null;
-        
+        state.selectedDepartmentId =
+          state.departments.length > 0 ? state.departments[0].id : null;
+
         if (state.selectedDepartmentId) {
-          localStorage.setItem("departmentSelect", String(state.selectedDepartmentId));
+          localStorage.setItem(
+            "departmentSelect",
+            String(state.selectedDepartmentId)
+          );
         } else {
           localStorage.removeItem("departmentSelect");
         }
@@ -68,14 +70,14 @@ const departmentSlice = createSlice({
     },
     updateDepartmentInStore: (state, action: PayloadAction<IDepartment>) => {
       const index = state.departments.findIndex(
-        (dept) => dept.id === action.payload.id
+        dept => dept.id === action.payload.id
       );
-      
+
       if (index !== -1) {
         state.departments = [
           ...state.departments.slice(0, index),
           action.payload,
-          ...state.departments.slice(index + 1)
+          ...state.departments.slice(index + 1),
         ];
       }
     },
@@ -113,11 +115,11 @@ const departmentSlice = createSlice({
   },
 });
 
-export const { 
-  setSelectedDepartmentId, 
-  clearSelectedDepartment, 
-  addDepartment, 
+export const {
+  setSelectedDepartmentId,
+  clearSelectedDepartment,
+  addDepartment,
   removeDepartment,
-  updateDepartmentInStore
+  updateDepartmentInStore,
 } = departmentSlice.actions;
 export default departmentSlice.reducer;

@@ -31,7 +31,11 @@ export const ChatHeader = ({
           onClick={onConversationsClick}
           className="md:hidden w-8 h-8 flex items-center justify-center bg-sofia-blancoPuro rounded-lg"
         >
-          <img src="/mvp/chevron-down.svg" alt="Ver conversaciones" className="w-5 h-5" />
+          <img
+            src="/mvp/chevron-down.svg"
+            alt="Ver conversaciones"
+            className="w-5 h-5"
+          />
         </button>
         <Avatar avatar={avatar} secret={secret} className="flex-none" />
         <div className="max-w-[calc(50%-3rem)] flex flex-col items-start">
@@ -50,11 +54,13 @@ export const ChatHeader = ({
         </button>
         <div className="flex-1" />
         <div className="relative flex items-center">
-          <div className={`
+          <div
+            className={`
             transition-all duration-300 ease-in-out
-            ${isSearchVisible ? 'w-[210px] opacity-100' : 'w-0 opacity-0'} 
+            ${isSearchVisible ? "w-[210px] opacity-100" : "w-0 opacity-0"} 
             lg:block lg:w-[210px] lg:opacity-100
-          `}>
+          `}
+          >
             <input
               type="text"
               placeholder="Buscar"
@@ -63,8 +69,8 @@ export const ChatHeader = ({
               className="w-full h-[37px] pl-4 pr-9 py-2.5 rounded-lg bg-sofia-blancoPuro font-normal placeholder:text-[#A6A8AB]"
             />
           </div>
-          
-          <button 
+
+          <button
             onClick={toggleSearch}
             className="lg:hidden absolute right-0 w-[37px] h-[37px] flex items-center justify-center bg-sofia-blancoPuro rounded-lg"
           >

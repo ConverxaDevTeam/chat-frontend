@@ -120,7 +120,7 @@ const MessengerManualIntegration: React.FC<MessengerManualIntegrationProps> = ({
               <img
                 src="/mvp/vector-x.svg"
                 alt="Cerrar"
-                className="w-[14px] h-[14px] cursor-pointer" 
+                className="w-[14px] h-[14px] cursor-pointer"
                 onClick={onClose}
               />
             </div>
@@ -178,8 +178,8 @@ const MessengerManualIntegration: React.FC<MessengerManualIntegrationProps> = ({
                     alertConfirm("Copiado");
                   }}
                 />
-                <img 
-                  src="/mvp/refresh-cw.svg" 
+                <img
+                  src="/mvp/refresh-cw.svg"
                   alt="Refresh"
                   className="cursor-pointer p-[8px] rounded-[4px] w-[36px] h-[36px]"
                   onClick={handleUpdateWebhook}

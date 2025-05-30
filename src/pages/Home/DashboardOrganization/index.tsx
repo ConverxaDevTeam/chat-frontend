@@ -90,7 +90,7 @@ const DashboardOrganization = () => {
   const [currentBreakpoint, setCurrentBreakpoint] = useState(
     getBreakpoint(window.innerWidth)
   );
-  
+
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [tarjetaAgregada, setTarjetaAgregada] = useState(false);
 
@@ -135,7 +135,7 @@ const DashboardOrganization = () => {
       state.length > 0
         ? Math.max(...state.map(card => card.layout.lg.y + card.layout.lg.h))
         : 0;
-    
+
     const newCard = {
       ...DEFAULT_CARD,
       layout: {
@@ -146,15 +146,15 @@ const DashboardOrganization = () => {
     addCard(newCard);
     setTarjetaAgregada(true);
   };
-  
+
   useEffect(() => {
     if (tarjetaAgregada && containerRef.current) {
       setTimeout(() => {
         containerRef.current?.scrollTo({
           top: containerRef.current.scrollHeight,
-          behavior: 'smooth'
+          behavior: "smooth",
         });
-        
+
         setTarjetaAgregada(false);
       }, 200);
     }
@@ -162,7 +162,11 @@ const DashboardOrganization = () => {
 
   return (
     <div className="h-full overflow-auto" ref={containerRef}>
-      <Button variant="primary" onClick={handleAddCard} className="w-[161px] h-[40px] flex items-center gap-1 px-4 py-2 bg-[#001130] text-white rounded-lg hover:bg-opacity-90">
+      <Button
+        variant="primary"
+        onClick={handleAddCard}
+        className="w-[161px] h-[40px] flex items-center gap-1 px-4 py-2 bg-[#001130] text-white rounded-lg hover:bg-opacity-90"
+      >
         + Crear tarjeta
       </Button>
       <ResponsiveGridLayout
