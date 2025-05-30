@@ -41,6 +41,7 @@ jobs:
             VITE_PUBLIC_TOKEN_NAME=${{ secrets.VITE_PUBLIC_TOKEN_NAME_DEV }}
             VITE_PUBLIC_TOKEN_REFRESH_NAME=${{ secrets.VITE_PUBLIC_TOKEN_REFRESH_NAME_DEV }}
             VITE_PUBLIC_URL_FILES=${{ secrets.VITE_PUBLIC_URL_FILES_DEV }}  # Cambia a la URL de desarrollo
+            VITE_GOOGLE_CLIENT_ID=${{ secrets.VITE_GOOGLE_CLIENT_ID }}
             EOF
             docker-compose build  # Usa un archivo de compose específico para desarrollo
             docker-compose down -v
