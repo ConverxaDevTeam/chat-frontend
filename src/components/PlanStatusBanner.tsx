@@ -62,7 +62,6 @@ const PlanStatusBanner: React.FC = () => {
       // Success toast is handled by the service
     } catch (error) {
       // Error toast is handled by the service
-      console.error("Failed to request custom plan:", error);
     }
   };
 
