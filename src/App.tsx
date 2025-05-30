@@ -58,8 +58,22 @@ const App = (): JSX.Element => {
               </ProtectedAuth>
             }
           >
-            <Route index element={<InitialSetupCheck><Dashboard /></InitialSetupCheck>} />
-            <Route path="dashboard" element={<InitialSetupCheck><Dashboard /></InitialSetupCheck>} />
+            <Route
+              index
+              element={
+                <InitialSetupCheck>
+                  <Dashboard />
+                </InitialSetupCheck>
+              }
+            />
+            <Route
+              path="dashboard"
+              element={
+                <InitialSetupCheck>
+                  <Dashboard />
+                </InitialSetupCheck>
+              }
+            />
             <Route path="users" element={<Users />} />
             <Route
               path="organizations"

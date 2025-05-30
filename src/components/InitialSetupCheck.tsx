@@ -8,14 +8,16 @@ interface InitialSetupCheckProps {
 }
 
 const InitialSetupCheck = ({ children }: InitialSetupCheckProps) => {
-  const { user, myOrganizations } = useSelector((state: RootState) => state.auth);
+  const { user, myOrganizations } = useSelector(
+    (state: RootState) => state.auth
+  );
   const navigate = useNavigate();
 
   useEffect(() => {
     // Check if user is authenticated, not a super admin, and has no organizations
     if (
-      user && 
-      !user.is_super_admin && 
+      user &&
+      !user.is_super_admin &&
       (!myOrganizations || myOrganizations.length === 0)
     ) {
       navigate("/initial-setup");

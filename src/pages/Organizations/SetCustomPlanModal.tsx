@@ -32,15 +32,20 @@ const SetCustomPlanModal: React.FC<SetCustomPlanModalProps> = ({
       setStep("setDetails");
     } catch (error) {
       // Toast error is handled by the service
-      console.error("Failed to set plan to custom:", error);
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleSavePlanDetails = async () => {
-    if (!conversationCountInput || isNaN(parseInt(conversationCountInput))) {
-      alert("Please enter a valid number for conversation count."); // Basic validation
+    if (
+      !conversationCountInput ||
+      isNaN(parseInt(conversationCountInput, 10)) ||
+      parseInt(conversationCountInput, 10) <= 0
+    ) {
+      alert(
+        "Por favor, ingresa un número válido mayor a cero para el límite de conversaciones."
+      );
       return;
     }
     setIsLoading(true);
@@ -53,7 +58,6 @@ const SetCustomPlanModal: React.FC<SetCustomPlanModalProps> = ({
       onClose(); // Close the modal
     } catch (error) {
       // Toast error is handled by the service
-      console.error("Failed to update custom plan details:", error);
     } finally {
       setIsLoading(false);
     }
@@ -70,13 +74,16 @@ const SetCustomPlanModal: React.FC<SetCustomPlanModalProps> = ({
         <div>
           <p className="mb-2 text-sm text-gray-600">
             Esto cambiará el plan de la organización a un{" "}
-            <strong>Plan Personalizado</strong>. Podrá establecer límites específicos
-            en el siguiente paso.
+            <strong>Plan Personalizado</strong>. Podrá establecer límites
+            específicos en el siguiente paso.
           </p>
-          <p className="mb-4 text-sm text-gray-600">Tipo de Plan Actual: <span className="capitalize">{organization.type || "N/A"}</span></p>
+          <p className="mb-4 text-sm text-gray-600">
+            Tipo de Plan Actual:{" "}
+            <span className="capitalize">{organization.type || "N/A"}</span>
+          </p>
           <div className="mt-5 flex justify-end gap-3">
-            <button 
-              onClick={onClose} 
+            <button
+              onClick={onClose}
               className="px-4 py-2 text-sm text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50"
             >
               Cancelar
@@ -96,11 +103,13 @@ const SetCustomPlanModal: React.FC<SetCustomPlanModalProps> = ({
           <p className="mb-4 text-sm text-gray-600">
             {organization.type === "custom" ? (
               <>
-                Configure los detalles del <strong>Plan Personalizado</strong> para esta organización.
+                Configure los detalles del <strong>Plan Personalizado</strong>{" "}
+                para esta organización.
               </>
             ) : (
               <>
-                Plan cambiado exitosamente a <strong>Plan Personalizado</strong>.
+                Plan cambiado exitosamente a <strong>Plan Personalizado</strong>
+                .
               </>
             )}
           </p>
@@ -121,8 +130,8 @@ const SetCustomPlanModal: React.FC<SetCustomPlanModalProps> = ({
             />
           </div>
           <div className="mt-5 flex justify-end gap-3">
-            <button 
-              onClick={onClose} 
+            <button
+              onClick={onClose}
               className="px-4 py-2 text-sm text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50"
             >
               Cancelar

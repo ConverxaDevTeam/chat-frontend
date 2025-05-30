@@ -55,7 +55,7 @@ const UsersOrganization = () => {
   const handleDelete = () => {
     toast.error("No tienes permisos para realizar esta acción", {
       position: "top-right",
-      autoClose: 3000
+      autoClose: 3000,
     });
   };
 
@@ -71,17 +71,17 @@ const UsersOrganization = () => {
   return (
     <>
       <Modal isShown={modalAddUser} onClose={() => setModalAddUser(false)}>
-        <ModalAddUser 
-          close={setModalAddUser} 
+        <ModalAddUser
+          close={setModalAddUser}
           getAllUsers={getAllUsers}
           users={users}
         />
       </Modal>
 
       <Modal isShown={modalEditUser} onClose={() => setModalEditUser(false)}>
-        <ModalAddUser 
-          close={setModalEditUser} 
-          getAllUsers={getAllUsers} 
+        <ModalAddUser
+          close={setModalEditUser}
+          getAllUsers={getAllUsers}
           editUser={selectedUser}
           users={users}
         />
@@ -102,12 +102,14 @@ const UsersOrganization = () => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-[20px] 2xl:gap-[24px]">
             {users.map(user => {
-              return <UserCard 
-                key={user.id} 
-                userData={user} 
-                onEdit={() => handleEdit(user)} 
-                onDelete={handleDelete} 
-              />;
+              return (
+                <UserCard
+                  key={user.id}
+                  userData={user}
+                  onEdit={() => handleEdit(user)}
+                  onDelete={handleDelete}
+                />
+              );
             })}
           </div>
         )}

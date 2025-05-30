@@ -1,6 +1,7 @@
 import { ToastContainerProps } from "react-toastify";
 
-const baseClasses = "relative flex w-[434px] font-medium rounded-[4px] shadow-lg mb-3 p-3";
+const baseClasses =
+  "relative flex w-[434px] font-medium rounded-[4px] shadow-lg mb-3 p-3";
 
 export const toastConfig: ToastContainerProps = {
   position: "bottom-right",
@@ -10,16 +11,16 @@ export const toastConfig: ToastContainerProps = {
   className: "!max-w-[500px] !w-[434px] !mb-3",
   bodyClassName: "p-4",
   toastClassName: ({ type, data }: any) => {
-    const classes = `${baseClasses} ${data?.subtitle ? 'flex-col gap-3' : ''}`;
+    const classes = `${baseClasses} ${data?.subtitle ? "flex-col gap-3" : ""}`;
     switch (type) {
-      case 'success':
+      case "success":
         return `${classes} !bg-[#EEFDE3] !text-[#1E4620]`;
-      case 'error':
+      case "error":
         return `${classes} !bg-[#FDEDED] !text-[#1E4620]`;
-      case 'info':
+      case "info":
         return `${classes} !bg-[#E5F6FD] !text-[#1E4620]`;
       default:
         return classes;
     }
-  }
+  },
 };
