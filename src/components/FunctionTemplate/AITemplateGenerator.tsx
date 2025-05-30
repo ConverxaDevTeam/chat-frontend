@@ -179,7 +179,7 @@ const useTemplateGenerator = () => {
 
         // Extraer lastProcessedLine de la respuesta
         const lastProcessedLine = data.data.lastProcessedLine || 0;
-        console.log("[INFO] lastProcessedLine recibido:", lastProcessedLine);
+        // Process the last line received
 
         // Si no hay templates o el array está vacío, manejarlo adecuadamente
         if (!data.data.templates || data.data.templates.length === 0) {
@@ -252,9 +252,7 @@ const useTemplateGenerator = () => {
         if (lastProcessedLine >= state.totalLines && state.totalLines > 0) {
           isCompleted = true;
           dispatch({ type: "COMPLETE_GENERATION" });
-          console.log(
-            "[INFO] Generación completada, se procesaron todas las líneas"
-          );
+
           break;
         }
 

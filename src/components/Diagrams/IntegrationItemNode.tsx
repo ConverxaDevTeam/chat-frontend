@@ -53,7 +53,7 @@ const useIntegrationActions = (data: NodeData) => {
   };
 
   return {
-    handleDeleteIntegration
+    handleDeleteIntegration,
   };
 };
 
@@ -77,28 +77,30 @@ export const contextMenuOptions = ({
     choices.push({
       child: <img src="/mvp/pencil.svg" alt="slack" className="w-4 h-4" />,
       onClick: () => setIsSlackModalOpen(true),
-      tooltip: "Editar integración Slack"
+      tooltip: "Editar integración Slack",
     });
   }
   if (itemType === IntegrationType.MESSENGER_MANUAL) {
     choices.push({
-      child: <img src="/mvp/settings.svg" alt="messenger" className="w-4 h-4"/>,
+      child: (
+        <img src="/mvp/settings.svg" alt="messenger" className="w-4 h-4" />
+      ),
       onClick: () => setMessengerManualModalOpen(true),
-      tooltip: "Configurar Messenger"
+      tooltip: "Configurar Messenger",
     });
   }
   if (itemType === IntegrationType.WHATSAP_MANUAL) {
     choices.push({
-      child: <img src="/mvp/settings.svg" alt="whatsapp" className="w-4 h-4"/>,
+      child: <img src="/mvp/settings.svg" alt="whatsapp" className="w-4 h-4" />,
       onClick: () => setWhatsAppManualModalOpen(true),
-      tooltip: "Configurar WhatsApp"
+      tooltip: "Configurar WhatsApp",
     });
   }
   if (itemType === IntegrationType.CHAT_WEB) {
     choices.push({
-      child: <img src="/mvp/globe.svg" alt="Webchat" className="w-4 h-4"/>,
+      child: <img src="/mvp/globe.svg" alt="Webchat" className="w-4 h-4" />,
       onClick: () => setIsModalOpen(true),
-      tooltip: "Configurar Webchat"
+      tooltip: "Configurar Webchat",
     });
   } else if (
     itemType === IntegrationType.MESSENGER ||
@@ -110,7 +112,7 @@ export const contextMenuOptions = ({
     choices.push({
       child: <img src="/mvp/trash.svg" alt="Remove" />,
       onClick: () => setIsRemoveModalOpen(true),
-      tooltip: "Eliminar integración"
+      tooltip: "Eliminar integración",
     });
   }
   return choices;

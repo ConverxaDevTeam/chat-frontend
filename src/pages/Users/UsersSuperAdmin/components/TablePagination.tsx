@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 interface TablePaginationProps {
   currentPage: number;
@@ -9,7 +9,7 @@ interface TablePaginationProps {
 const TablePagination: React.FC<TablePaginationProps> = ({
   currentPage,
   totalPages,
-  goToPage
+  goToPage,
 }) => {
   if (totalPages <= 1) return null;
 
@@ -33,7 +33,11 @@ const TablePagination: React.FC<TablePaginationProps> = ({
           className="p-2 text-gray-600 hover:bg-gray-100 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
           aria-label="Página siguiente"
         >
-          <img src="/mvp/chevron-right.svg" alt="Siguiente" className="w-5 h-5" />
+          <img
+            src="/mvp/chevron-right.svg"
+            alt="Siguiente"
+            className="w-5 h-5"
+          />
         </button>
       </div>
     </div>
