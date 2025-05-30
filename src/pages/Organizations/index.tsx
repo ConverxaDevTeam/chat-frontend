@@ -11,6 +11,7 @@ import { FiPlus, FiSearch, FiX } from "react-icons/fi";
 import { useAlertContext } from "@components/Diagrams/components/AlertContext";
 import { IOrganization } from "@interfaces/organization.interface";
 import ButtonExportAllOrganizations from "./ButtonExportAllOrganizations";
+import SetCustomPlanModal from "./SetCustomPlanModal";
 
 type EditFormData = {
   owner_id: number;
@@ -20,12 +21,14 @@ interface OrganizationListProps {
   organizations: IOrganization[];
   onEdit: (organization: IOrganization) => void;
   onDelete: (organization: IOrganization) => void;
+  onSetCustomPlan: (organization: IOrganization) => void;
 }
 
 const OrganizationList = ({
   organizations,
   onEdit,
   onDelete,
+  onSetCustomPlan,
 }: OrganizationListProps) => {
   return (
     <div className="flex flex-col gap-4">
@@ -47,6 +50,9 @@ const OrganizationList = ({
                   Email
                 </th>
                 <th className="py-2.5 px-6 text-left font-size-[16px] text-sofia-superDark font-normal">
+                  Tipo
+                </th>
+                <th className="py-2.5 px-6 text-left font-size-[16px] text-sofia-superDark font-normal">
                   Departamentos
                 </th>
                 <th className="py-2.5 px-6 text-center font-size-[16px] text-sofia-superDark font-normal">
@@ -64,6 +70,7 @@ const OrganizationList = ({
                   organization={organization}
                   onEdit={() => onEdit(organization)}
                   onDelete={() => onDelete(organization)}
+                  onSetCustomPlan={() => onSetCustomPlan(organization)}
                 />
               ))}
             </tbody>
@@ -230,6 +237,11 @@ const Organizations = () => {
   const [isSearchOpen, setIsSearchOpen] = useState<boolean>(false);
   const { users, getUsers } = useUsers();
   const { isModalOpen, setIsModalOpen } = useModals();
+  const [isCustomPlanModalOpen, setIsCustomPlanModalOpen] =
+    useState<boolean>(false);
+  const [selectedPlanOrg, setSelectedPlanOrg] = useState<IOrganization | null>(
+    null
+  );
   const {
     handleDelete,
     reset,
@@ -252,9 +264,10 @@ const Organizations = () => {
   const filteredOrganizations = useMemo(() => {
     if (!searchTerm.trim()) return organizations;
 
-    return organizations.filter(org =>
-      org.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      org.id.toString().includes(searchTerm)
+    return organizations.filter(
+      org =>
+        org.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        org.id.toString().includes(searchTerm)
     );
   }, [organizations, searchTerm]);
 
@@ -263,7 +276,9 @@ const Organizations = () => {
   }, [searchTerm]);
 
   useEffect(() => {
-    const newTotalPages = Math.ceil(filteredOrganizations.length / ITEMS_PER_PAGE);
+    const newTotalPages = Math.ceil(
+      filteredOrganizations.length / ITEMS_PER_PAGE
+    );
     if (currentPage > newTotalPages) {
       setCurrentPage(newTotalPages === 0 ? 1 : newTotalPages);
     }
@@ -272,12 +287,20 @@ const Organizations = () => {
   const totalPages = Math.ceil(filteredOrganizations.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const endIndex = startIndex + ITEMS_PER_PAGE;
-  const currentOrganizations = filteredOrganizations.slice(startIndex, endIndex);
+  const currentOrganizations = filteredOrganizations.slice(
+    startIndex,
+    endIndex
+  );
 
   const goToPage = (pageNumber: number) => {
     if (pageNumber >= 1 && pageNumber <= totalPages) {
       setCurrentPage(pageNumber);
     }
+  };
+
+  const handleSetCustomPlan = (organization: IOrganization) => {
+    setSelectedPlanOrg(organization);
+    setIsCustomPlanModalOpen(true);
   };
 
   return (
@@ -293,6 +316,25 @@ const Organizations = () => {
         updateOrganization={updateOrganization}
       />
 
+      {isCustomPlanModalOpen && selectedPlanOrg && (
+        <Modal
+          isShown={isCustomPlanModalOpen}
+          onClose={() => {
+            setIsCustomPlanModalOpen(false);
+            setSelectedPlanOrg(null);
+          }}
+        >
+          <SetCustomPlanModal
+            organization={selectedPlanOrg}
+            onClose={() => {
+              setIsCustomPlanModalOpen(false);
+              setSelectedPlanOrg(null);
+            }}
+            onPlanUpdated={getAllOrganizations}
+          />
+        </Modal>
+      )}
+
       <div className="flex flex-1 flex-col gap-[20px] overflow-auto w-full">
         <div className="flex justify-between items-center">
           <button
@@ -307,24 +349,32 @@ const Organizations = () => {
           </button>
 
           <div className="flex items-center gap-2">
-            <ButtonExportAllOrganizations organizations={filteredOrganizations} />
+            <ButtonExportAllOrganizations
+              organizations={filteredOrganizations}
+            />
             {!isSearchOpen && (
-              <button 
+              <button
                 onClick={() => setIsSearchOpen(true)}
                 className="p-2 lg:hidden"
               >
                 <FiSearch className="w-5 h-5 text-gray-500" />
               </button>
             )}
-            
-            <div className={`relative ${isSearchOpen ? 'flex' : 'hidden'} lg:flex`}>
+
+            <div
+              className={`relative ${isSearchOpen ? "flex" : "hidden"} lg:flex`}
+            >
               <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                <img src="/mvp/magnifying-glass-gray.svg" alt="Buscar" className="w-5 h-5 text-gray-500" />
+                <img
+                  src="/mvp/magnifying-glass-gray.svg"
+                  alt="Buscar"
+                  className="w-5 h-5 text-gray-500"
+                />
               </div>
               <input
                 type="text"
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={e => setSearchTerm(e.target.value)}
                 className="w-[300px] py-2 pl-10 pr-4 text-sm bg-[#FCFCFC] border-[1px] border-[#DBEAF2] rounded-[4px] focus:ring-[#DBEAF2] focus:border-[#DBEAF4]"
                 placeholder="Búsqueda"
               />
@@ -361,6 +411,7 @@ const Organizations = () => {
                     setIsModalOpen(true);
                   }}
                   onDelete={handleDelete}
+                  onSetCustomPlan={handleSetCustomPlan}
                 />
 
                 {totalPages > 1 && (
@@ -371,14 +422,22 @@ const Organizations = () => {
                         disabled={currentPage === 1}
                         className="p-2 text-gray-600 hover:bg-gray-100 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
                       >
-                        <img src="/mvp/chevron-left.svg" alt="Anterior" className="w-5 h-5" />
+                        <img
+                          src="/mvp/chevron-left.svg"
+                          alt="Anterior"
+                          className="w-5 h-5"
+                        />
                       </button>
                       <button
                         onClick={() => goToPage(currentPage + 1)}
                         disabled={currentPage === totalPages}
                         className="p-2 text-gray-600 hover:bg-gray-100 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
                       >
-                        <img src="/mvp/chevron-right.svg" alt="Siguiente" className="w-5 h-5" />
+                        <img
+                          src="/mvp/chevron-right.svg"
+                          alt="Siguiente"
+                          className="w-5 h-5"
+                        />
                       </button>
                     </div>
                   </div>

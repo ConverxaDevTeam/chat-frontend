@@ -39,11 +39,11 @@ export const TestFunctionModal = ({
 
   const onSubmit = async (data: Record<string, unknown>) => {
     try {
-      console.log("Form data:", data);
+      // Form data submitted
 
       // Transformar datos para manejar objetos anidados
       const transformedData = transformFormData(data);
-      console.log("Transformed data:", transformedData);
+      // Data transformed for API
 
       const response = await onTest(transformedData);
       const responseData = response.data as Record<string, unknown>;
