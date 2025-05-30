@@ -195,6 +195,13 @@ export const apiUrls = {
     continueGenerateWithAI: () =>
       `/api/function-templates/generate-with-ai/continue`,
   },
+  plan: {
+    requestCustom: () => `/api/plan/request-custom`,
+    setCustom: (organizationId: number) =>
+      `/api/plan/${organizationId}/set-custom`,
+    updateDetails: (organizationId: number) =>
+      `/api/plan/${organizationId}/details`,
+  },
 } as const;
 
 export const tokenAccess = {
