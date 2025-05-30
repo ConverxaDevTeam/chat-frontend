@@ -12,12 +12,14 @@ interface OrganizationCardProps {
   organization: IOrganization;
   onEdit: () => void;
   onDelete: () => void;
+  onSetCustomPlan: () => void;
 }
 
 const OrganizationCard = ({
   organization,
   onEdit,
   onDelete,
+  onSetCustomPlan,
 }: OrganizationCardProps) => {
   const { isSuperAdmin } = useRoleAuth();
   const hasDeletePermission = isSuperAdmin;
@@ -106,6 +108,22 @@ const OrganizationCard = ({
               <span>Cambiar contraseña</span>
             </button>
           )}
+          {isSuperAdmin && (
+            <button
+              onClick={() => {
+                onSetCustomPlan();
+                handleCloseMenu();
+              }}
+              className="flex items-center gap-2 w-full text-left"
+            >
+              <img
+                src="/mvp/sliders-vertical.svg"
+                alt="Set Custom Plan"
+                className="w-4 h-4"
+              />
+              <span>Set Custom Plan</span>
+            </button>
+          )}
         </ContextMenu>
       )}
 
@@ -145,6 +163,14 @@ const OrganizationCard = ({
             title={organization.email || organization.owner?.user.email || ""}
           >
             {organization.email || organization.owner?.user.email || "-"}
+          </p>
+        </td>
+        <td className="py-2.5 px-6">
+          <p
+            className="text-sm font-medium text-gray-600 truncate max-w-[200px] capitalize"
+            title={organization.type}
+          >
+            {organization.type || "-"}
           </p>
         </td>
         <td className="py-2.5 px-6">

@@ -50,30 +50,30 @@ const CorsInput = ({
 }) => (
   <div className="w-full">
     <InputGroup label="">
-    <div className="relative w-full">
-      <Input
-        type="text"
-        value={value}
-        placeholder="https://tu-dominio.com"
-        onChange={e => onChange(e.target.value)}
-        onKeyDown={e => {
-          if (e.key === "Enter") {
-            e.preventDefault();
-            onAdd();
-          }
-        }}
-        className="text-sofia-superDark text-xs font-normal pr-14 w-full"
-      />
-      <button
-        type="button"
-        onClick={onAdd}
-        className="absolute right-2 top-1/2 transform -translate-y-1/2 flex items-center justify-center w-10 h-10" 
-        aria-label="Agregar dominio"
-        title="Agregar dominio"
+      <div className="relative w-full">
+        <Input
+          type="text"
+          value={value}
+          placeholder="https://tu-dominio.com"
+          onChange={e => onChange(e.target.value)}
+          onKeyDown={e => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              onAdd();
+            }
+          }}
+          className="text-sofia-superDark text-xs font-normal pr-14 w-full"
+        />
+        <button
+          type="button"
+          onClick={onAdd}
+          className="absolute right-2 top-1/2 transform -translate-y-1/2 flex items-center justify-center w-10 h-10"
+          aria-label="Agregar dominio"
+          title="Agregar dominio"
         >
           <img src="/mvp/plus.svg" alt="Agregar dominio" />
-      </button>
-    </div>
+        </button>
+      </div>
     </InputGroup>
   </div>
 );

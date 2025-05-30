@@ -39,27 +39,27 @@ export const BarChart = ({ data, series, showLegend }: BarChartProps) => {
             plugins: {
               legend: {
                 display: showLegend,
-                position: 'top',
-                align: 'center',
+                position: "top",
+                align: "center",
                 labels: {
                   font: {
                     family: "'Quicksand', sans-serif",
-                    size: 10
+                    size: 10,
                   },
-                  color: '#001126',
+                  color: "#001126",
                   padding: 8,
                   usePointStyle: true,
-                  pointStyle: 'circle',
+                  pointStyle: "circle",
                   boxWidth: 6,
-                  boxHeight: 6
-                }
+                  boxHeight: 6,
+                },
               },
             },
             layout: {
               padding: {
-                top: showLegend ? 10 : 0
-              }
-            }
+                top: showLegend ? 10 : 0,
+              },
+            },
           }}
         />
       </div>

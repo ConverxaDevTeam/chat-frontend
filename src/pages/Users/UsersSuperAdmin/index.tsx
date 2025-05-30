@@ -7,7 +7,7 @@ import { IUserApi } from "../UsersOrganization";
 import CreateUserModal from "./CreateUserModal";
 import EditUserModal from "./EditUserModal";
 import { useAlertContext } from "@components/Diagrams/components/AlertContext";
-import Loading from '@components/Loading';
+import Loading from "@components/Loading";
 import TablePagination from "./components/TablePagination";
 import UserFilter from "./components/UserFilter";
 import usePagination from "./hooks/usePagination";
@@ -50,9 +50,9 @@ const UserRow = ({
     e.stopPropagation();
     const rect = menuButtonRef.current?.getBoundingClientRect();
     if (rect) {
-      setMenuPosition({ 
-        x: rect.left - 130, 
-        y: rect.top 
+      setMenuPosition({
+        x: rect.left - 130,
+        y: rect.top,
       });
       setShowContextMenu(true);
     }
@@ -67,10 +67,10 @@ const UserRow = ({
     .map(org => org.organization?.name)
     .filter(Boolean)
     .join(", ");
-  
+
   const uniqueRoles = [...new Set(user.userOrganizations.map(org => org.role))];
   const rolesString = uniqueRoles.join(", ");
-    
+
   return (
     <>
       {showContextMenu && (
@@ -99,12 +99,8 @@ const UserRow = ({
         <td className="px-4 py-2">{user.email}</td>
         <td className="px-4 py-2">{user.first_name || "-"}</td>
         <td className="px-4 py-2">{user.last_name || "-"}</td>
-        <td className="px-4 py-2">
-          {organizationNames || "-"}
-        </td>
-        <td className="px-4 py-2">
-          {rolesString}
-        </td>
+        <td className="px-4 py-2">{organizationNames || "-"}</td>
+        <td className="px-4 py-2">{rolesString}</td>
         <td className="px-4 py-2">
           <span
             className={`px-2 py-1 rounded-full text-xs ${
@@ -128,7 +124,11 @@ const UserRow = ({
               onClick={handleOpenMenu}
               className="p-2 rounded-full hover:bg-gray-100 transition-colors"
             >
-              <img src="/mvp/three-dots.svg" alt="Opciones" className="w-5 h-5" />
+              <img
+                src="/mvp/three-dots.svg"
+                alt="Opciones"
+                className="w-5 h-5"
+              />
             </button>
           </div>
         </td>
@@ -152,14 +152,14 @@ const UsersSuperAdmin = () => {
     isSearchOpen,
     setIsSearchOpen,
     filteredUsers,
-    selectRole
+    selectRole,
   } = useUserFilter(users);
 
   const {
     currentPage,
     totalPages,
     paginatedItems: currentUsers,
-    goToPage
+    goToPage,
   } = usePagination(filteredUsers, ITEMS_PER_PAGE);
 
   useEffect(() => {

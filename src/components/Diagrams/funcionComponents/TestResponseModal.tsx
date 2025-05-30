@@ -70,9 +70,7 @@ export const TestResponseModal = ({
       const errorData = response.data as any;
       displayData = {
         message:
-          errorData.error?.message ||
-          errorData.message ||
-          "Error desconocido",
+          errorData.error?.message || errorData.message || "Error desconocido",
         complete:
           errorData.error?.complete ||
           errorData.complete ||
@@ -81,7 +79,7 @@ export const TestResponseModal = ({
     } else {
       displayData = {
         message: "Error en el servidor",
-        complete: `Error ${response.status}: No se pudo completar la operación`,  
+        complete: `Error ${response.status}: No se pudo completar la operación`,
       };
     }
   }

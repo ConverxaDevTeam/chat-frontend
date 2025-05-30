@@ -4,7 +4,10 @@ import { toast } from "react-toastify";
 import { IDepartment } from "../../interfaces/departments";
 import { createDepartment, updateDepartment } from "@services/department";
 import { useAppDispatch } from "@store/hooks";
-import { addDepartment, updateDepartmentInStore } from "@store/reducers/department";
+import {
+  addDepartment,
+  updateDepartmentInStore,
+} from "@store/reducers/department";
 
 interface DepartmentModalProps {
   isOpen: boolean;
