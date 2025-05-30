@@ -97,22 +97,24 @@ const LogIn = () => {
             >
               Iniciar sesión
             </button>
-            
+
             <div className="flex items-center justify-between mb-[16px]">
               <div className="w-[45%] h-[1px] bg-gray-300"></div>
               <span className="text-[14px] text-gray-500">o</span>
               <div className="w-[45%] h-[1px] bg-gray-300"></div>
             </div>
-            
+
             <GoogleLoginButton setError={setError} />
             {error && (
               <p className="text-red-600 text-sm text-center max-h-5 px-2 mb-2">
                 {error}
               </p>
             )}
-            
+
             <div className="text-center mt-4">
-              <span className="text-[14px] text-gray-600">¿No tienes cuenta? </span>
+              <span className="text-[14px] text-gray-600">
+                ¿No tienes cuenta?{" "}
+              </span>
               <Link
                 to="/sign-up"
                 className="text-[14px] font-medium text-sofia-superDark hover:text-sofia-electricGreen hover:underline"

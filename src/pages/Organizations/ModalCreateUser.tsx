@@ -119,16 +119,16 @@ const FormInputs = ({
         id="name"
         type="text"
         placeholder="Nombre"
-        {...register("name", { 
+        {...register("name", {
           required: "Nombre es requerido",
           minLength: {
             value: 4,
-            message: "El nombre debe tener al menos 4 caracteres"
+            message: "El nombre debe tener al menos 4 caracteres",
           },
           maxLength: {
             value: 20,
-            message: "El nombre no debe exceder los 20 caracteres"
-          }
+            message: "El nombre no debe exceder los 20 caracteres",
+          },
         })}
       />
       {errors.name && (
@@ -150,7 +150,9 @@ const FormInputs = ({
         {description.length}/255 caracteres
       </p>
       {errors.description && (
-        <span className="text-red-400 text-sm ml-1">{errors.description.message}</span>
+        <span className="text-red-400 text-sm ml-1">
+          {errors.description.message}
+        </span>
       )}
     </div>
     <div className="mb-4">
@@ -179,23 +181,25 @@ const FormInputs = ({
           id="email"
           type="email"
           placeholder="Email"
-          {...register("email", { 
+          {...register("email", {
             required: "Email es requerido",
             pattern: {
               value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-              message: "Email inválido"
-            }
+              message: "Email inválido",
+            },
           })}
         />
         {errors.email && (
-          <span className="text-red-400 text-sm ml-1">{errors.email.message}</span>
+          <span className="text-red-400 text-sm ml-1">
+            {errors.email.message}
+          </span>
         )}
       </div>
     )}
     {isEditMode && (
       <div className="mb-4">
         <label className="text-gray-700 font-semibold mb-3" htmlFor="owner_id">
-          Propietario 
+          Propietario
         </label>
         <select
           className="w-full mt-2 p-3 border rounded-lg focus:outline-none text-[15px]"
@@ -383,25 +387,33 @@ const DepartmentsList = ({ organizationId }: { organizationId: number }) => {
   return (
     <div className="mt-4">
       <h3 className="text-gray-700 font-semibold mb-3">Departamentos</h3>
-      <div 
-        className="max-h-[200px] overflow-y-auto border rounded-lg" 
+      <div
+        className="max-h-[200px] overflow-y-auto border rounded-lg"
         style={{
-          scrollbarWidth: 'thin',
-          scrollbarColor: 'rgba(0, 0, 0, 0.1) transparent',
+          scrollbarWidth: "thin",
+          scrollbarColor: "rgba(0, 0, 0, 0.1) transparent",
         }}
       >
         <table className="w-full">
           <thead className="bg-gray-50 border-b sticky top-0">
             <tr>
-              <th className="py-2 px-4 text-left text-sm font-medium text-gray-700">Nombre</th>
-              <th className="py-2 px-4 text-left text-sm font-medium text-gray-700">Descripción</th>
+              <th className="py-2 px-4 text-left text-sm font-medium text-gray-700">
+                Nombre
+              </th>
+              <th className="py-2 px-4 text-left text-sm font-medium text-gray-700">
+                Descripción
+              </th>
             </tr>
           </thead>
           <tbody>
-            {departments.map((department) => (
+            {departments.map(department => (
               <tr key={department.id} className="border-b hover:bg-gray-50">
-                <td className="py-2 px-4 text-sm text-gray-600">{department.name}</td>
-                <td className="py-2 px-4 text-sm font-medium text-gray-600">{department.description || "-"}</td>
+                <td className="py-2 px-4 text-sm text-gray-600">
+                  {department.name}
+                </td>
+                <td className="py-2 px-4 text-sm font-medium text-gray-600">
+                  {department.description || "-"}
+                </td>
               </tr>
             ))}
           </tbody>
@@ -417,14 +429,14 @@ const ModalCreateOrganization = ({
   organization,
 }: ModalCreateOrganizationProps) => {
   const isEditMode = !!organization;
-  
-  const { 
-    register, 
-    handleSubmit, 
-    formState: { errors }, 
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
     setValue,
     watch,
-    clearErrors
+    clearErrors,
   } = useForm<OrganizationFormData>({
     defaultValues: {
       name: organization?.name || "",
@@ -432,28 +444,24 @@ const ModalCreateOrganization = ({
       email: organization?.owner?.user.email || "",
       type: organization?.type || OrganizationType.MVP,
       owner_id: organization?.owner?.user.id || 0,
-      logoFile: null
+      logoFile: null,
     },
-    mode: "onSubmit"
+    mode: "onSubmit",
   });
 
   useEffect(() => {
     if (!isEditMode) {
-      register("logoFile", { 
-        required: "Imagen es requerida" 
+      register("logoFile", {
+        required: "Imagen es requerida",
       });
     }
   }, [register, isEditMode]);
 
   const { loadingUsers, getUserOptions } = useUsers(organization);
   const description = watch("description") || "";
-  
-  const { logoUrl, logoFile, handleImageUpload, handleDeleteLogo } = useLogoUpload(
-    organization,
-    setValue,
-    clearErrors,
-    isEditMode
-  );
+
+  const { logoUrl, logoFile, handleImageUpload, handleDeleteLogo } =
+    useLogoUpload(organization, setValue, clearErrors, isEditMode);
 
   const onSubmit = async (formData: OrganizationFormData) => {
     try {

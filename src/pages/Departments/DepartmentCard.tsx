@@ -32,7 +32,7 @@ const DepartmentCard: FC<DepartmentCardProps> = ({
     if (confirmed) {
       try {
         await deleteDepartment(department.id);
-        
+
         dispatch(removeDepartment(department.id));
         onDelete(department.id);
         toast.success("Departamento eliminado exitosamente");
@@ -57,7 +57,9 @@ const DepartmentCard: FC<DepartmentCardProps> = ({
           <h3 className="text-xl font-bold text-gray-900">{department.name}</h3>
         </CardItem>
         <CardItem label="">
-          <p className="text-[12px] 2xl:text-[12px] font-semibold text-app-gray">ID: {department.id}</p>
+          <p className="text-[12px] 2xl:text-[12px] font-semibold text-app-gray">
+            ID: {department.id}
+          </p>
         </CardItem>
         <p className="text-gray-600 text-center mt-3 line-clamp-3">
           {department.description || "Sin descripción"}

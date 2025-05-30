@@ -65,7 +65,6 @@ const PlanStatusBanner: React.FC = () => {
       console.error("Failed to request custom plan:", error);
     }
   };
-  console.log(daysRemaining);
 
   return (
     <div className="w-full bg-[#FFF3CD] text-[#856404] py-2.5 px-5 text-center border-b border-[#FFEEBA] text-sm z-50 relative">

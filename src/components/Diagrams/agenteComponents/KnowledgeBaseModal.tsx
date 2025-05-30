@@ -76,10 +76,11 @@ const FileList = ({
             <button
               key={page}
               onClick={() => onPageChange(page)}
-              className={`px-3 py-1 rounded ${currentPage === page
-                ? "bg-blue-500 text-white"
-                : "bg-gray-200 hover:bg-gray-300"
-                }`}
+              className={`px-3 py-1 rounded ${
+                currentPage === page
+                  ? "bg-blue-500 text-white"
+                  : "bg-gray-200 hover:bg-gray-300"
+              }`}
             >
               {page}
             </button>
@@ -258,8 +259,9 @@ const UploadForm = ({
   return (
     <div
       ref={dropRef}
-      className={`relative border-2 border-dashed rounded-lg p-8 text-center ${isDragging ? "border-blue-500 bg-blue-50" : "border-gray-300"
-        }`}
+      className={`relative border-2 border-dashed rounded-lg p-8 text-center ${
+        isDragging ? "border-blue-500 bg-blue-50" : "border-gray-300"
+      }`}
     >
       <div className="flex flex-col items-center">
         <FaUpload className="text-4xl text-gray-400 mb-2" />
@@ -293,8 +295,7 @@ const KnowledgeBaseModal = ({
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
   const totalPages = Math.ceil(files.length / itemsPerPage);
-  const { handleOperation
-  } = useAlertContext();
+  const { handleOperation } = useAlertContext();
 
   const fetchFiles = async () => {
     setIsLoading(true);
@@ -320,8 +321,8 @@ const KnowledgeBaseModal = ({
       async () => {
         const response = await deleteKnowledgeBase(fileId);
         if (response.status >= 200 && response.status < 300) {
-        await fetchFiles();
-        return true;
+          await fetchFiles();
+          return true;
         }
         throw new Error(`Error al eliminar archivo: ${response.status}`);
       },
@@ -339,94 +340,97 @@ const KnowledgeBaseModal = ({
     }
   };
 
-  return (<>
-    <Modal isShown={isShown} onClose={onClose}>
-      <div className="flex gap-[24px] w-[487px]">
-        <div className="flex-1 flex flex-col gap-[16px]">
-          {showUploadForm ? (
-            <div>
-              <div className="mb-4">
-                <button
-                  onClick={() => setShowUploadForm(false)}
-                  className="flex items-center justify-center px-4 py-2 text-sm text-sofia-superDark bg-[#F4FAFF] border border-[#DBEAF2] rounded-[4px] hover:bg-opacity-70 transition-colors duration-200"
-                >
-                  Volver al listado
-                </button>
+  return (
+    <>
+      <Modal isShown={isShown} onClose={onClose}>
+        <div className="flex gap-[24px] w-[487px]">
+          <div className="flex-1 flex flex-col gap-[16px]">
+            {showUploadForm ? (
+              <div>
+                <div className="mb-4">
+                  <button
+                    onClick={() => setShowUploadForm(false)}
+                    className="flex items-center justify-center px-4 py-2 text-sm text-sofia-superDark bg-[#F4FAFF] border border-[#DBEAF2] rounded-[4px] hover:bg-opacity-70 transition-colors duration-200"
+                  >
+                    Volver al listado
+                  </button>
+                </div>
+                <UploadForm
+                  onClose={() => setShowUploadForm(false)}
+                  agentId={agentId}
+                  onSuccess={fetchFiles}
+                />
               </div>
-              <UploadForm
-                onClose={() => setShowUploadForm(false)}
-                agentId={agentId}
-                onSuccess={fetchFiles}
-              />
-            </div>
-          ) : (
-            <>
-              <div className="grid grid-cols-1 gap-2 mb-4">
-                <div className="w-full text-[16px] text-sofia-superDark bg-[#FFF9D9] px-4 py-3 rounded-[4px]">
-                  <p className="flex items-center gap-2">
-                    <img src="/mvp/triangle-alert-black.svg" alt="Alerta" className="inline-block w-5 h-5" />
-                    Los archivos que no se utilicen en una conversación se
-                    eliminarán automáticamente después de 7 días.
+            ) : (
+              <>
+                <div className="grid grid-cols-1 gap-2 mb-4">
+                  <div className="w-full text-[16px] text-sofia-superDark bg-[#FFF9D9] px-4 py-3 rounded-[4px]">
+                    <p className="flex items-center gap-2">
+                      <img
+                        src="/mvp/triangle-alert-black.svg"
+                        alt="Alerta"
+                        className="inline-block w-5 h-5"
+                      />
+                      Los archivos que no se utilicen en una conversación se
+                      eliminarán automáticamente después de 7 días.
+                    </p>
+                  </div>
+                  <p className="text-sofia-superDark text-[16px] font-bold flex items-center gap-2">
+                    Base de conocimientos
+                    <InfoTooltip
+                      text="Sube documentos para que el agente pueda utilizarlos como referencia al responder preguntas. Formatos soportados: c, cpp, cs, css, doc, docx, go, html, java, js, json, md, pdf, php, pptx, py, rb, sh, tex, ts, txt."
+                      width="237px"
+                    />
+                  </p>
+                  <p className="text-sofia-navyBlue text-[12px]">
+                    Añade archivos con información que el agente utilizará para
+                    responder preguntas. Puedes subir guías, documentos de
+                    soporte u otros recursos relevantes
                   </p>
                 </div>
-                <p className="text-sofia-superDark text-[16px] font-bold flex items-center gap-2">
-                  Base de conocimientos
-                  <InfoTooltip 
-                    text="Sube documentos para que el agente pueda utilizarlos como referencia al responder preguntas. Formatos soportados: c, cpp, cs, css, doc, docx, go, html, java, js, json, md, pdf, php, pptx, py, rb, sh, tex, ts, txt." 
-                    width="237px"
-                  />
-                </p>
-                <p className="text-sofia-navyBlue text-[12px]">
-                  Añade archivos con información que el agente utilizará para
-                  responder preguntas. Puedes subir guías, documentos de soporte
-                  u otros recursos relevantes
-                </p>
-                
-              </div>
-              <FileList
-                files={files.slice(
-                  (currentPage - 1) * itemsPerPage,
-                  currentPage * itemsPerPage
-                )}
-                onDelete={handleDelete}
-                currentPage={currentPage}
-                itemsPerPage={itemsPerPage}
-                totalPages={totalPages}
-                onPageChange={setCurrentPage}
-                isLoading={isLoading}
-              />
-              <div>
-              <button
-                  onClick={() => setShowUploadForm(true)}
-                  className="w-full h-[48px] mt-[9px] flex items-center justify-center px-4 py-2 text-sm text-sofia-superDark border-[#DBEAF2] border-[1px] bg-[#F4FAFF] rounded-[4px] hover:bg-opacity-70 transition-colors duration-200"
-                >
-                  <img src="/mvp/plus.svg" className="inline-block w-5 h-5 mr-2" /> Subir archivos
-                </button>
-              </div>
-              <div className="flex gap-[16px] justify-end">
-                <Button
-                  type="button"
-                  onClick={onClose}
-                  className="w-full"
-                  variant="cancel"
-                >
-                  Cancelar
-                </Button>
-                <Button
-                  type="button"
-                  onClick={onClose}
-                  variant="primary"
-                >
-                  Guardar
-                </Button>
-              </div>
-            </>
-          )}
+                <FileList
+                  files={files.slice(
+                    (currentPage - 1) * itemsPerPage,
+                    currentPage * itemsPerPage
+                  )}
+                  onDelete={handleDelete}
+                  currentPage={currentPage}
+                  itemsPerPage={itemsPerPage}
+                  totalPages={totalPages}
+                  onPageChange={setCurrentPage}
+                  isLoading={isLoading}
+                />
+                <div>
+                  <button
+                    onClick={() => setShowUploadForm(true)}
+                    className="w-full h-[48px] mt-[9px] flex items-center justify-center px-4 py-2 text-sm text-sofia-superDark border-[#DBEAF2] border-[1px] bg-[#F4FAFF] rounded-[4px] hover:bg-opacity-70 transition-colors duration-200"
+                  >
+                    <img
+                      src="/mvp/plus.svg"
+                      className="inline-block w-5 h-5 mr-2"
+                    />{" "}
+                    Subir archivos
+                  </button>
+                </div>
+                <div className="flex gap-[16px] justify-end">
+                  <Button
+                    type="button"
+                    onClick={onClose}
+                    className="w-full"
+                    variant="cancel"
+                  >
+                    Cancelar
+                  </Button>
+                  <Button type="button" onClick={onClose} variant="primary">
+                    Guardar
+                  </Button>
+                </div>
+              </>
+            )}
+          </div>
         </div>
-      </div>
-
-    </Modal>
-  </>
+      </Modal>
+    </>
   );
 };
 

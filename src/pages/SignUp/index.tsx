@@ -66,7 +66,7 @@ const SignUp = () => {
                 name="first_name"
                 required
               />
-              
+
               <label
                 className="text-[14px] font-medium text-[#414651] mb-[6px]"
                 htmlFor="last_name"
@@ -83,7 +83,7 @@ const SignUp = () => {
                 name="last_name"
                 required
               />
-              
+
               <label
                 className="text-[14px] font-medium text-[#414651] mb-[6px]"
                 htmlFor="email"
@@ -100,7 +100,7 @@ const SignUp = () => {
                 name="email"
                 required
               />
-              
+
               <label
                 className="text-[14px] font-medium text-[#414651] mb-[6px]"
                 htmlFor="password"
@@ -119,7 +119,7 @@ const SignUp = () => {
                 minLength={8}
               />
             </div>
-            
+
             <button
               className="w-full rounded-[8px] py-[10px] bg-sofia-electricGreen text-sofia-superDark text-[16px] font-semibold mb-[16px] disabled:bg-app-lightGray"
               type="submit"
@@ -127,23 +127,25 @@ const SignUp = () => {
             >
               Registrarse
             </button>
-            
+
             <div className="flex items-center justify-between mb-[16px]">
               <div className="w-[45%] h-[1px] bg-gray-300"></div>
               <span className="text-[14px] text-gray-500">o</span>
               <div className="w-[45%] h-[1px] bg-gray-300"></div>
             </div>
-            
+
             <GoogleLoginButton setError={setError} />
-            
+
             {error && (
               <p className="text-red-600 text-sm text-center max-h-5 px-2 mb-2">
                 {error}
               </p>
             )}
-            
+
             <div className="text-center mt-4">
-              <span className="text-[14px] text-gray-600">¿Ya tienes cuenta? </span>
+              <span className="text-[14px] text-gray-600">
+                ¿Ya tienes cuenta?{" "}
+              </span>
               <Link
                 to="/"
                 className="text-[14px] font-medium text-sofia-superDark hover:text-sofia-electricGreen hover:underline"

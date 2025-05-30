@@ -77,7 +77,7 @@ const SlackIntegration: React.FC<SlackIntegrationProps> = ({
               <img
                 src="/mvp/vector-x.svg"
                 alt="Cerrar"
-                className="w-[14px] h-[14px] cursor-pointer" 
+                className="w-[14px] h-[14px] cursor-pointer"
                 onClick={onClose}
               />
             </div>

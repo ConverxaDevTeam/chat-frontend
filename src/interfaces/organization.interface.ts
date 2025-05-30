@@ -9,6 +9,7 @@ export enum OrganizationType {
   PRODUCTION = "production",
   MVP = "mvp",
   FREE = "free",
+  CUSTOM = "custom",
 }
 
 export enum AgentType {
@@ -28,6 +29,12 @@ export type IOrganization = {
   users: number;
   email?: string;
   departments?: number;
+  limitInfo?: {
+    hasReachedLimit?: boolean;
+    limit?: number;
+    current?: number;
+    daysRemaining?: number;
+  };
   owner?: {
     id: number;
     role: OrganizationRoleType;

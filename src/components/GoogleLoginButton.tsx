@@ -1,7 +1,7 @@
-import { useGoogleLogin } from '@react-oauth/google';
-import { useDispatch } from 'react-redux';
-import { AppDispatch } from '@store/index';
-import { googleLoginAsync } from '@store/actions/auth';
+import { useGoogleLogin } from "@react-oauth/google";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "@store/index";
+import { googleLoginAsync } from "@store/actions/auth";
 
 interface GoogleLoginButtonProps {
   setError: (error: string) => void;
@@ -11,15 +11,17 @@ const GoogleLoginButton = ({ setError }: GoogleLoginButtonProps) => {
   const dispatch = useDispatch<AppDispatch>();
 
   const login = useGoogleLogin({
-    onSuccess: (tokenResponse) => {
-      dispatch(googleLoginAsync({ 
-        accessToken: tokenResponse.access_token, 
-        setError,
-        dispatch
-      }));
+    onSuccess: tokenResponse => {
+      dispatch(
+        googleLoginAsync({
+          accessToken: tokenResponse.access_token,
+          setError,
+          dispatch,
+        })
+      );
     },
     onError: () => {
-      setError('Error al iniciar sesión con Google');
+      setError("Error al iniciar sesión con Google");
     },
   });
 
