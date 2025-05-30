@@ -24,7 +24,7 @@ export const ParamEditorModal: React.FC<ParamEditorModalProps> = ({
   index,
   control,
 }) => {
-  console.log("[ParamEditorModal] Rendering with isOpen:", isOpen);
+  // Modal rendering state
   const modalRef = useRef<HTMLDivElement>(null);
   // Obtener las propiedades del parámetro actual usando useWatch
   const properties = useWatch({ control, name: `params.${index}.properties` });
@@ -193,7 +193,7 @@ export const ParamEditorModal: React.FC<ParamEditorModalProps> = ({
   );
 
   const handleClose = () => {
-    console.log("[ParamEditorModal] handleClose called");
+    // Handle modal close
     onClose();
   };
 

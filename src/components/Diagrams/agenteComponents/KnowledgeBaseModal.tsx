@@ -190,7 +190,7 @@ const UploadForm = ({
           handleFiles(validFiles);
         }
       } else {
-        console.log("No se encontraron archivos en el evento drop");
+        // No files found in drop event
       }
     };
 
