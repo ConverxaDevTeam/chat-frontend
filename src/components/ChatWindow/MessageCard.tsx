@@ -81,7 +81,7 @@ const MessageHeader = ({
 const renderContent = (
   message: ConversationResponseMessage,
   textColor: string,
-  onImageClick: (imageUrl: string) => void,
+  onImageClick: (imageUrl: string) => void
 ) => {
   return (
     <div className="flex flex-col gap-2">
@@ -164,10 +164,10 @@ const MessageCard = ({
           </div>
         </div>
         <ImageModal
-        isOpen={modalOpen}
-        imageUrl={selectedImage}
-        onClose={() => setModalOpen(false)}
-      />
+          isOpen={modalOpen}
+          imageUrl={selectedImage}
+          onClose={() => setModalOpen(false)}
+        />
       </MessageContainer>
     );
   }
@@ -188,10 +188,10 @@ const MessageCard = ({
         </div>
       </div>
       <ImageModal
-      isOpen={modalOpen}
-      imageUrl={selectedImage}
-      onClose={() => setModalOpen(false)}
-    />
+        isOpen={modalOpen}
+        imageUrl={selectedImage}
+        onClose={() => setModalOpen(false)}
+      />
     </MessageContainer>
   );
 };

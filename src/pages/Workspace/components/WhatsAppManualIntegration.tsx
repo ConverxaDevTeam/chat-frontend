@@ -126,7 +126,7 @@ const WhatsAppManualIntegration: React.FC<WhatsAppManualIntegrationProps> = ({
               <img
                 src="/mvp/vector-x.svg"
                 alt="Cerrar"
-                className="w-[14px] h-[14px] cursor-pointer" 
+                className="w-[14px] h-[14px] cursor-pointer"
                 onClick={onClose}
               />
             </div>
@@ -184,13 +184,12 @@ const WhatsAppManualIntegration: React.FC<WhatsAppManualIntegrationProps> = ({
                     alertConfirm("Copiado");
                   }}
                 />
-                <img 
-                  src="/mvp/refresh-cw.svg" 
+                <img
+                  src="/mvp/refresh-cw.svg"
                   alt="Refresh"
                   className="cursor-pointer p-[8px] rounded-lg w-[36px] h-[36px]"
                   onClick={handleUpdateWebhook}
-                   />
-                
+                />
               </div>
             </div>
             <label

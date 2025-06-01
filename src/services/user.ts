@@ -122,7 +122,7 @@ export const getGlobalUsers = async () => {
           }
         })
       );
-      
+
       return usersWithDetails;
     } else {
       alertError(response.data.message);
