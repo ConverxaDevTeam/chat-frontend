@@ -25,7 +25,7 @@ export const ChatHeader = ({
   };
 
   return (
-    <div className="h-[89px] flex-shrink-0 border-t border-r border-b border-app-lightGray bg-sofia-electricOlive rounded-tr-lg overflow-x-auto">
+    <div className="h-[89px] flex-shrink-0 border-t border-r border-b border-app-lightGray bg-sofia-darkBlue rounded-tr-lg overflow-x-auto">
       <div className="flex items-center p-4 gap-3 min-w-fit">
         <button
           onClick={onConversationsClick}

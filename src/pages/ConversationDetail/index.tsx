@@ -284,7 +284,13 @@ const ConversationDetail = () => {
       </div>
 
       {/* Middle Column - Chat */}
-      <div className="h-full w-full overflow-hidden bg-sofia-blancoPuro flex flex-col">
+      <div className="h-full w-full overflow-hidden bg-sofia-blancoPuro flex flex-col"
+        style={{
+          backgroundImage: "url('/mvp/background-chats.png')",
+          backgroundRepeat: 'repeat', 
+          backgroundSize: 'contain',
+          backgroundPosition: 'center',
+        }}>
         {/* Chat Header */}
         <ChatHeader
           avatar={null}
@@ -307,7 +313,7 @@ const ConversationDetail = () => {
         />
 
         {/* Chat Content */}
-        <div className="flex-1 bg-sofia-celeste overflow-y-auto">
+        <div className="flex-1 overflow-y-auto">
           <div className="flex flex-col gap-4 p-4">
             {filteredMessages.map((message, index) => (
               <MessageCard
@@ -331,11 +337,6 @@ const ConversationDetail = () => {
           />
         )}
       </div>
-
-      {/* Right Column - User Info */}
-      {/* <div className="hidden xl:block ml-4">
-        <UserInfoPanel conversation={conversation} />
-      </div> */}
       </div>
     </div>
   );
