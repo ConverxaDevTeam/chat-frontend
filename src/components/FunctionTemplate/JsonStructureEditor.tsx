@@ -23,7 +23,7 @@ const JsonFieldFormModal = ({
   field,
   onSubmit,
 }: JsonFieldFormModalProps) => {
-  console.log("[JsonFieldFormModal] Rendering with isShown:", isShown);
+  // Modal rendering state
   const [formState, setFormState] = useState<FunctionTemplateParam>(field);
 
   // Actualizar el estado cuando cambia el campo
@@ -40,7 +40,7 @@ const JsonFieldFormModal = ({
       e.preventDefault();
       e.stopPropagation();
     }
-    console.log("[JsonFieldFormModal] handleSubmit called");
+    // Handle form submission
     onSubmit(formState);
     onClose();
   };
@@ -75,7 +75,7 @@ const JsonFieldFormModal = ({
       e.preventDefault();
       e.stopPropagation();
     }
-    console.log("[JsonFieldFormModal] handleClose called");
+    // Handle modal close
     onClose();
   };
 
@@ -203,7 +203,7 @@ export const JsonStructureEditor = ({
   setValue,
   paramIndex,
 }: JsonStructureEditorProps) => {
-  console.log("[JsonStructureEditor] Rendering with value:", value);
+  // Editor rendering with value
   const [fields, setFields] = useState<FunctionTemplateParam[]>(value);
   const [editingField, setEditingField] =
     useState<FunctionTemplateParam | null>(null);
@@ -243,10 +243,7 @@ export const JsonStructureEditor = ({
       // Si hay un campo padre, establecer la ruta para la anidación
       const path = findFieldPath(fields, parentField.id);
       if (path) {
-        console.log(
-          "[JsonStructureEditor] Setting path for nested field:",
-          path
-        );
+
         setCurrentPath(path);
       }
     } else {
@@ -273,7 +270,7 @@ export const JsonStructureEditor = ({
     for (const field of fieldArray) {
       if (field.id === fieldId) {
         const foundPath = [...currentPath, field.id];
-        console.log("Found path:", foundPath);
+        // Debug information"Found path:", foundPath);
         return foundPath;
       }
 
@@ -396,7 +393,7 @@ export const JsonStructureEditor = ({
       const parentFieldIndex = fields.findIndex(f => f.id === parentFieldId);
 
       if (parentFieldIndex === -1) {
-        console.log("Parent field not found:", parentFieldId);
+        // Debug information"Parent field not found:", parentFieldId);
         return fields;
       }
 
@@ -516,7 +513,7 @@ export const JsonStructureEditor = ({
       const parentFieldIndex = fields.findIndex(f => f.id === parentFieldId);
 
       if (parentFieldIndex === -1) {
-        console.log("Parent field not found:", parentFieldId);
+        // Debug information"Parent field not found:", parentFieldId);
         return fields;
       }
 
@@ -530,16 +527,11 @@ export const JsonStructureEditor = ({
 
       if (isNew) {
         // Crear un nuevo campo
-        console.log("Creating new field in parent:", parentFieldId);
+        // Debug information"Creating new field in parent:", parentFieldId);
         parentField.properties = [...parentField.properties, newField];
       } else {
         // Actualizar un campo existente
-        console.log(
-          "Updating existing field:",
-          originalFieldId,
-          "to",
-          newField.id
-        );
+
         const existingFieldIndex = parentField.properties.findIndex(
           f => f.id === originalFieldId
         );
@@ -550,7 +542,7 @@ export const JsonStructureEditor = ({
           parentField.properties = updatedProperties;
         } else {
           // Si no se encuentra, agregarlo como nuevo
-          console.log("Field not found, adding as new:", newField.id);
+          // Debug information"Field not found, adding as new:", newField.id);
           parentField.properties = [...parentField.properties, newField];
         }
       }
