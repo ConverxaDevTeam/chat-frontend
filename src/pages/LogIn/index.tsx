@@ -39,7 +39,7 @@ const LogIn = () => {
       <div className="flex flex-col w-[446px] bg-custom-gradient p-[12px] rounded-2xl border-[1px] border-[#B8CCE0] border-inherit m-auto">
         <div className="bg-[#F1F5F9] rounded-lg px-[32px] pt-[53px] pb-[40px] [box-shadow:0px_4px_8px_0px_rgba(201,_217,_232,_0.8)]">
           <img
-            className="mx-auto mb-[48px]"
+            className="mx-auto mb-[48px] h-[34px]"
             src="/mvp/logo-sofia.svg"
             alt="logo"
           />
