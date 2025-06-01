@@ -8,6 +8,8 @@ export interface ISelectOrganization {
 export enum OrganizationType {
   PRODUCTION = "production",
   MVP = "mvp",
+  FREE = "free",
+  CUSTOM = "custom",
 }
 
 export enum AgentType {
@@ -25,8 +27,14 @@ export type IOrganization = {
   agentType?: AgentType;
   description: string;
   users: number;
-  email?: string; 
-  departments?: number; 
+  email?: string;
+  departments?: number;
+  limitInfo?: {
+    hasReachedLimit?: boolean;
+    limit?: number;
+    current?: number;
+    daysRemaining?: number;
+  };
   owner?: {
     id: number;
     role: OrganizationRoleType;

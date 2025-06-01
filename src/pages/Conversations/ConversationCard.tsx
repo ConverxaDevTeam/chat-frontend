@@ -132,7 +132,7 @@ const ConversationCard = ({
   };
 
   return (
-    <div 
+    <div
       className="min-h-[60px] text-[14px] border-b-[1px] border-b-[#DBEAF2] hover:bg-gray-50 flex items-center cursor-pointer"
       onClick={handleRowClick}
     >
@@ -169,8 +169,8 @@ const ConversationCard = ({
             </p>
           </div>
           <button
-            onClick={(e) => {
-              e.stopPropagation(); 
+            onClick={e => {
+              e.stopPropagation();
               navigate(`/conversation/detail/${conversation.id}`);
             }}
             className="text-xs font-medium hover:underline my-2 text-gray-500"
@@ -205,8 +205,8 @@ const ConversationCard = ({
         <div className="flex items-center gap-[18px]">
           <button
             type="button"
-            onClick={(e) => {
-              e.stopPropagation(); 
+            onClick={e => {
+              e.stopPropagation();
               navigate(`/conversation/detail/${conversation.id}`);
             }}
             className="bg-sofia-electricOlive rounded-[4px] w-[64px] h-[24px]"

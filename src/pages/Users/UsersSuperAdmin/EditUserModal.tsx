@@ -85,7 +85,7 @@ const EditUserModal = ({
               value={email}
               onChange={e => setEmail(e.target.value)}
             />
-          </InputGroup> 
+          </InputGroup>
 
           <div className="flex justify-between items-center">
             <h3 className="text-lg font-medium">Roles</h3>

@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState } from "react";
 import { FiX } from "react-icons/fi";
 import { OrganizationRoleType } from "@utils/interfaces";
 import ContextMenu from "@components/ContextMenu";
@@ -18,9 +18,12 @@ const UserFilter: React.FC<UserFilterProps> = ({
   isSearchOpen,
   setIsSearchOpen,
   selectedRole,
-  selectRole
+  selectRole,
 }) => {
-  const [menuPosition, setMenuPosition] = useState<{ x: number; y: number } | null>(null);
+  const [menuPosition, setMenuPosition] = useState<{
+    x: number;
+    y: number;
+  } | null>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
   const handleOpenMenu = (e: React.MouseEvent) => {
@@ -40,7 +43,11 @@ const UserFilter: React.FC<UserFilterProps> = ({
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (buttonRef.current && !buttonRef.current.contains(event.target as Node) && menuPosition) {
+      if (
+        buttonRef.current &&
+        !buttonRef.current.contains(event.target as Node) &&
+        menuPosition
+      ) {
         handleCloseMenu();
       }
     };
@@ -53,30 +60,46 @@ const UserFilter: React.FC<UserFilterProps> = ({
 
   return (
     <div className="flex flex-col md:flex-row items-start md:items-center gap-2">
-      <div className={`relative mt-2 md:mt-0 ${isSearchOpen ? 'block' : 'hidden md:block'} w-full md:w-auto`}>
+      <div
+        className={`relative mt-2 md:mt-0 ${isSearchOpen ? "block" : "hidden md:block"} w-full md:w-auto`}
+      >
         <button
           ref={buttonRef}
           onClick={handleOpenMenu}
           className={`inline-flex items-center justify-between px-3 py-2 text-sm rounded-md border w-full md:w-auto ${
-            selectedRole ? ' bg-[#FCFCFC] border border-[#DBEAF2] text-gray-700' : 'bg-[#FCFCFC] border-[#DBEAF2] text-gray-700'
+            selectedRole
+              ? " bg-[#FCFCFC] border border-[#DBEAF2] text-gray-700"
+              : "bg-[#FCFCFC] border-[#DBEAF2] text-gray-700"
           }`}
           aria-label="Filtrar por rol"
           aria-expanded={menuPosition !== null}
           id="roleFilter"
         >
           <span className="mr-2">
-            {selectedRole ? 
-              (selectedRole === OrganizationRoleType.ADMIN ? "Administrador" : 
-                selectedRole === OrganizationRoleType.OWNER ? "Owner" : 
-                selectedRole === OrganizationRoleType.SUPERVISOR ? "Supervisor" : 
-                selectedRole === OrganizationRoleType.HITL ? "HITL" : 
-                selectedRole === OrganizationRoleType.USER ? "Usuario" : 
-                selectedRole === OrganizationRoleType.ING_PREVENTA ? "Ing. Preventa" : 
-                selectedRole === OrganizationRoleType.USR_TECNICO ? "Usuario Técnico" : 
-                "Rol desconocido") 
-            : "Todos los roles"}
+            {selectedRole
+              ? selectedRole === OrganizationRoleType.ADMIN
+                ? "Administrador"
+                : selectedRole === OrganizationRoleType.OWNER
+                  ? "Owner"
+                  : selectedRole === OrganizationRoleType.SUPERVISOR
+                    ? "Supervisor"
+                    : selectedRole === OrganizationRoleType.HITL
+                      ? "HITL"
+                      : selectedRole === OrganizationRoleType.USER
+                        ? "Usuario"
+                        : selectedRole === OrganizationRoleType.ING_PREVENTA
+                          ? "Ing. Preventa"
+                          : selectedRole === OrganizationRoleType.USR_TECNICO
+                            ? "Usuario Técnico"
+                            : "Rol desconocido"
+              : "Todos los roles"}
           </span>
-          <img src="/mvp/chevron-down.svg" alt="" className="w-4 h-4" aria-hidden="true" />
+          <img
+            src="/mvp/chevron-down.svg"
+            alt=""
+            className="w-4 h-4"
+            aria-hidden="true"
+          />
         </button>
         {menuPosition && (
           <ContextMenu
@@ -121,7 +144,9 @@ const UserFilter: React.FC<UserFilterProps> = ({
               Usuario
             </button>
             <button
-              onClick={() => handleRoleSelect(OrganizationRoleType.ING_PREVENTA)}
+              onClick={() =>
+                handleRoleSelect(OrganizationRoleType.ING_PREVENTA)
+              }
               className="w-full flex items-start text-sm text-gray-700"
             >
               Ing. Preventa
@@ -136,23 +161,36 @@ const UserFilter: React.FC<UserFilterProps> = ({
         )}
       </div>
       {!isSearchOpen && (
-        <button 
+        <button
           onClick={() => setIsSearchOpen(true)}
           className="p-2 md:hidden"
           aria-label="Abrir búsqueda"
           aria-expanded={isSearchOpen}
         >
-          <img src="/mvp/magnifying-glass-gray.svg" alt="Buscar" className="w-5 h-5 text-gray-500" />
+          <img
+            src="/mvp/magnifying-glass-gray.svg"
+            alt="Buscar"
+            className="w-5 h-5 text-gray-500"
+          />
         </button>
       )}
-      <div className={`relative ${isSearchOpen ? 'flex' : 'hidden'} md:flex w-full md:w-auto`}>
-        <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none" aria-hidden="true">
-          <img src="/mvp/magnifying-glass-gray.svg" alt="" className="w-5 h-5 text-gray-500" />
+      <div
+        className={`relative ${isSearchOpen ? "flex" : "hidden"} md:flex w-full md:w-auto`}
+      >
+        <div
+          className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none"
+          aria-hidden="true"
+        >
+          <img
+            src="/mvp/magnifying-glass-gray.svg"
+            alt=""
+            className="w-5 h-5 text-gray-500"
+          />
         </div>
         <input
           type="text"
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          onChange={e => setSearchTerm(e.target.value)}
           className="w-full md:w-[300px] py-2 pl-10 pr-4 text-sm bg-[#FCFCFC] border border-[#DBEAF2] rounded-[4px] focus:ring-[#DBEAF2] focus:border-[#DBEAF4]"
           placeholder="Búsqueda"
           aria-label="Búsqueda"
@@ -172,8 +210,6 @@ const UserFilter: React.FC<UserFilterProps> = ({
           <FiX className="w-4 h-4 text-gray-500" aria-hidden="true" />
         </button>
       </div>
-
-      
     </div>
   );
 };

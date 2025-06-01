@@ -243,45 +243,45 @@ const ConversationDetail = () => {
   return (
     <div className="w-full h-full relative">
       {/* Drawer de conversaciones en mobile */}
-      <div 
+      <div
         className={`fixed md:hidden inset-0 bg-black bg-opacity-50 z-20 transition-opacity duration-300 ${
-          showDrawer ? 'opacity-100' : 'opacity-0 pointer-events-none'
+          showDrawer ? "opacity-100" : "opacity-0 pointer-events-none"
         }`}
         onClick={() => setShowDrawer(false)}
       />
-      <div 
+      <div
         className={`fixed md:hidden left-0 top-0 h-full w-[345px] bg-white z-30 transform transition-transform duration-300 ease-in-out ${
-          showDrawer ? 'translate-x-0' : '-translate-x-full'
+          showDrawer ? "translate-x-0" : "-translate-x-full"
         }`}
       >
         <ConversationsList
           conversations={conversationsList}
-          onSelectConversation={(userId) => {
+          onSelectConversation={userId => {
             handleSelectConversation(userId);
             setShowDrawer(false);
           }}
           selectedId={Number(id)}
         />
       </div>
-    <div className="w-full h-full grid grid-cols-[minmax(0,1fr)] md:grid-cols-[345px,minmax(0,1fr)] xl:grid-cols-[345px,minmax(0,1fr)]">
-      {showContextMenu.show && conversation && (
-        <ConversationContextMenu
-          x={showContextMenu.x}
-          y={showContextMenu.y}
-          onClose={() => setShowContextMenu({ show: false, x: 0, y: 0 })}
-          conversation={conversation}
-          organizationId={selectOrganizationId || 0}
-          onDelete={handleDeleteConversation}
-        />
-      )}
-      {/* Left Column - Conversations List */}
-      <div className="hidden md:block h-full w-full overflow-hidden">
-        <ConversationsList
-          conversations={conversationsList}
-          onSelectConversation={handleSelectConversation}
-          selectedId={Number(id)}
-        />
-      </div>
+      <div className="w-full h-full grid grid-cols-[minmax(0,1fr)] md:grid-cols-[345px,minmax(0,1fr)] xl:grid-cols-[345px,minmax(0,1fr)]">
+        {showContextMenu.show && conversation && (
+          <ConversationContextMenu
+            x={showContextMenu.x}
+            y={showContextMenu.y}
+            onClose={() => setShowContextMenu({ show: false, x: 0, y: 0 })}
+            conversation={conversation}
+            organizationId={selectOrganizationId || 0}
+            onDelete={handleDeleteConversation}
+          />
+        )}
+        {/* Left Column - Conversations List */}
+        <div className="hidden md:block h-full w-full overflow-hidden">
+          <ConversationsList
+            conversations={conversationsList}
+            onSelectConversation={handleSelectConversation}
+            selectedId={Number(id)}
+          />
+        </div>
 
       {/* Middle Column - Chat */}
       <div className="h-full w-full overflow-hidden bg-sofia-blancoPuro flex flex-col"
@@ -324,8 +324,6 @@ const ConversationDetail = () => {
             ))}
             <div ref={messagesEndRef} />
           </div>
-        </div>
-
         {/* Message Input */}
         {conversation && (
           <MessageForm
