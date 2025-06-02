@@ -1,4 +1,3 @@
-import SelectDepartment from "./SelectDepartment";
 import { RootState } from "@store";
 import { useSelector, useDispatch } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
@@ -12,7 +11,6 @@ import {
   Notification,
   NotificationType,
 } from "@interfaces/notification.interface";
-import SelectOrganization from "./SelectOrganization";
 import { formatDateWithWeekday } from "@utils/format";
 import {
   setNotificationCount,
@@ -373,8 +371,6 @@ const Navbar = ({ mobileResolution }: NavbarProps) => {
           <div
             className={`flex gap-[24px] items-center w-full md:w-auto order-1 lg:order-none`}
           >
-            <SelectOrganization mobileResolution={mobileResolution} />
-            <SelectDepartment mobileResolution={mobileResolution} />
           </div>
         </div>
         <div
