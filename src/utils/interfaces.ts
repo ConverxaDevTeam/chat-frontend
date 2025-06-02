@@ -31,6 +31,7 @@ export type IOrganizarion = {
     updated_at: string;
     name: string;
     description: string;
+    logo?: string | null;
   };
 };
 

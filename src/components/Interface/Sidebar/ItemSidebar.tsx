@@ -9,6 +9,7 @@ interface ItemSidebarProps {
     text: string;
     active: string[];
     img: string;
+    imgWhite?: string;
   };
   sidebarMinimized: boolean;
   mobileResolution: boolean;
@@ -42,14 +43,14 @@ const ItemSidebar = ({
   return (
     <li
       className={`relative flex h-[35px] items-center gap-[16px] ${
-        active ? "bg-sofia-electricGreen" : "text-app-gray"
+        active ? "bg-sofia-superDark rounded-[4px] text-sofia-blancoPuro" : "text-app-gray"
       } ${active && (sidebarMinimized || mobileResolution) ? "w-full justify-center" : "w-full pl-[12px]"}`}
     >
       {(sidebarMinimized || mobileResolution) ? (
         <div className="group relative flex justify-center items-center w-full">
           <img
             className={`w-6 h-6 fill-current z-10 ${active ? "" : "cursor-pointer"}`}
-            src={`/mvp/${link.img}`}
+            src={active ? `/mvp/${link.imgWhite}` : `/mvp/${link.img}`}
             onClick={() => {
               navigate(link.to);
             }}
@@ -75,7 +76,7 @@ const ItemSidebar = ({
         <>
           <img
             className={`w-6 h-6 fill-current z-10 ${active ? "" : "cursor-pointer"}`}
-            src={`/mvp/${link.img}`}
+            src={active ? `/mvp/${link.imgWhite}` : `/mvp/${link.img}`}
             onClick={() => {
               navigate(link.to);
             }}
@@ -83,8 +84,8 @@ const ItemSidebar = ({
           />
           <Link
             to={link.to}
-            className={`z-10 font-normal text-[#001126] transition-all duration-300 ease-in-out ${
-              active ? "cursor-default" : "cursor-pointer"
+            className={`z-10 font-normal transition-all duration-300 ease-in-out ${
+              active ? "cursor-default text-sofia-blancoPuro" : "cursor-pointer text-[#001126]"
             }`}
           >
             {link.text}
