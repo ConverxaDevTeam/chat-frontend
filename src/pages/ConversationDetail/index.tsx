@@ -283,59 +283,58 @@ const ConversationDetail = () => {
           />
         </div>
 
-        {/* Middle Column - Chat */}
-        <div className="h-full w-full overflow-hidden bg-sofia-blancoPuro flex flex-col">
-          {/* Chat Header */}
-          <ChatHeader
-            avatar={null}
-            secret={
-              conversation?.chat_user?.secret ??
-              conversation?.chat_user?.identifier ??
-              ""
-            }
-            searchTerm={searchTerm}
-            onSearchChange={setSearchTerm}
-            onMenuClick={e => {
-              e.preventDefault();
-              setShowContextMenu({
-                show: true,
-                x: e.clientX,
-                y: e.clientY,
-              });
-            }}
-            onConversationsClick={() => setShowDrawer(true)}
-          />
+      {/* Middle Column - Chat */}
+      <div className="h-full w-full overflow-hidden bg-sofia-blancoPuro flex flex-col"
+        style={{
+          backgroundImage: "url('/mvp/background-chats.png')",
+          backgroundRepeat: 'repeat', 
+          backgroundSize: 'contain',
+          backgroundPosition: 'center',
+        }}>
+        {/* Chat Header */}
+        <ChatHeader
+          avatar={null}
+          secret={
+            conversation?.chat_user?.secret ??
+            conversation?.chat_user?.identifier ??
+            ""
+          }
+          searchTerm={searchTerm}
+          onSearchChange={setSearchTerm}
+          onMenuClick={e => {
+            e.preventDefault();
+            setShowContextMenu({
+              show: true,
+              x: e.clientX,
+              y: e.clientY,
+            });
+          }}
+          onConversationsClick={() => setShowDrawer(true)}
+        />
 
-          {/* Chat Content */}
-          <div className="flex-1 bg-sofia-celeste overflow-y-auto">
-            <div className="flex flex-col gap-4 p-4">
-              {filteredMessages.map((message, index) => (
-                <MessageCard
-                  key={index}
-                  message={message}
-                  userName={conversation?.chat_user?.secret ?? ""}
-                />
-              ))}
-              <div ref={messagesEndRef} />
-            </div>
+        {/* Chat Content */}
+        <div className="flex-1 overflow-y-auto">
+          <div className="flex flex-col gap-4 p-4">
+            {filteredMessages.map((message, index) => (
+              <MessageCard
+                key={index}
+                message={message}
+                userName={conversation?.chat_user?.secret ?? ""}
+              />
+            ))}
+            <div ref={messagesEndRef} />
           </div>
-
-          {/* Message Input */}
-          {conversation && (
-            <MessageForm
-              form={{ register, handleSubmit, isSubmitting }}
-              onSubmit={onSubmit}
-              conversation={conversation}
-              user={{ id: user?.id ?? -1 }}
-              onUpdateConversation={getConversationDetailById}
-            />
-          )}
-        </div>
-
-        {/* Right Column - User Info */}
-        {/* <div className="hidden xl:block ml-4">
-        <UserInfoPanel conversation={conversation} />
-      </div> */}
+        {/* Message Input */}
+        {conversation && (
+          <MessageForm
+            form={{ register, handleSubmit, isSubmitting }}
+            onSubmit={onSubmit}
+            conversation={conversation}
+            user={{ id: user?.id ?? -1 }}
+            onUpdateConversation={getConversationDetailById}
+          />
+        )}
+      </div>
       </div>
     </div>
   );
