@@ -32,6 +32,7 @@ export type IOrganizarion = {
     updated_at: string;
     name: string;
     description: string;
+    logo?: string | null;
     type: OrganizationType;
     limitInfo?: {
       hasReachedLimit?: boolean;
