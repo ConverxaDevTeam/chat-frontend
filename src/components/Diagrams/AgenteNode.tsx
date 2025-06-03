@@ -8,7 +8,7 @@ import DefaultNode from "./DefaultNode";
 import { ContextMenuOption } from "./DiagramContextMenu";
 import { ActionButtons, ActionType } from "./agenteComponents/AgentInfo";
 import { useHumanCommunication } from "./hooks/useHumanCommunication";
-import InfoTooltip from "../../components/Common/InfoTooltip";
+import InfoTooltip from "@components/common/InfoTooltip";
 import { useApplicationsSidebar } from "@hooks/ApplicationsSidebarContext";
 
 const AgenteNode = (props: CustomTypeNodeProps<AgentData>) => {
