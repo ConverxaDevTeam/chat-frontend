@@ -18,7 +18,7 @@ import {
   BodyType,
 } from "@interfaces/functions.interface";
 import { Button } from "@components/common/Button";
-import InfoTooltip from "@components/Common/InfoTooltip";
+import InfoTooltip from "@components/common/InfoTooltip";
 
 // Tipos y constantes
 interface FunctionFormValues {

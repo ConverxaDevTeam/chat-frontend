@@ -324,17 +324,19 @@ const ConversationDetail = () => {
             ))}
             <div ref={messagesEndRef} />
           </div>
+        </div>
         {/* Message Input */}
-        {conversation && (
-          <MessageForm
-            form={{ register, handleSubmit, isSubmitting }}
-            onSubmit={onSubmit}
-            conversation={conversation}
-            user={{ id: user?.id ?? -1 }}
-            onUpdateConversation={getConversationDetailById}
-          />
-        )}
-      </div>
+        <div className="p-1">
+          {conversation && (
+            <MessageForm
+              form={{ register, handleSubmit, isSubmitting }}
+              onSubmit={onSubmit}
+              conversation={conversation}
+              user={{ id: user?.id ?? -1 }}
+              onUpdateConversation={getConversationDetailById}
+            />
+          )}
+        </div>
       </div>
     </div>
     </div>

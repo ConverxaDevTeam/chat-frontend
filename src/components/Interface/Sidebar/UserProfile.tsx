@@ -13,7 +13,7 @@ const UserProfile: React.FC<UserProfileProps> = ({
 }) => {
   const { user } = useSelector((state: RootState) => state.auth);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
+  const [, setMenuPosition] = useState({ x: 0, y: 0 });
 
   if (sidebarMinimized || mobileResolution) {
     return (
