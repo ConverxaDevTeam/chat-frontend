@@ -92,8 +92,8 @@ const WhatsAppManualIntegration: React.FC<WhatsAppManualIntegrationProps> = ({
   const handleUpdateWebhook = async () => {
     if (!data.id || !selectedDepartmentId || !selectOrganizationId) return;
     const response = await changeCodeIntegrationManual(
-      selectedDepartmentId,
       selectOrganizationId,
+      selectedDepartmentId,
       data.id
     );
     if (response) {
@@ -159,13 +159,28 @@ const WhatsAppManualIntegration: React.FC<WhatsAppManualIntegrationProps> = ({
               <label className="text-sofia-superDark font-bold text-[14px]">
                 Codigo de webhook
               </label>
-              <p
-                className={`text-[12px] text-white py-[2px] px-[8px] rounded-[4px] ${
-                  info.validated_webhook ? "bg-[#3AC0A0]" : "bg-[#FF616D]"
-                }`}
-              >
-                {info.validated_webhook ? "Validado" : "No validado"}
-              </p>
+              <div className="flex items-center gap-1">
+                <p
+                  className={`text-[12px] text-white py-[2px] px-[8px] rounded-[4px] ${
+                    info.validated_webhook ? "bg-[#3AC0A0]" : "bg-[#FF616D]"
+                  }`}
+                >
+                  {info.validated_webhook ? "Validado" : "No validado"}
+                </p>
+                {!info.validated_webhook && (
+                  <p
+                    className={`text-[12px] text-white py-[2px] px-[8px] rounded-[4px] bg-[#3AC0A0] flex items-center gap-2 cursor-pointer`}
+                    onClick={getIntegrationWhatsAppManualInfo}
+                  >
+                    <span>Verificar conexión</span>
+                    <img
+                      src="/mvp/rotate-ccw-key.svg"
+                      alt="Actualizar"
+                      className="w-[16px] h-[16px]"
+                    />
+                  </p>
+                )}
+              </div>
             </div>
             <div className="relative flex-1">
               <input
@@ -185,7 +200,7 @@ const WhatsAppManualIntegration: React.FC<WhatsAppManualIntegrationProps> = ({
                   }}
                 />
                 <img
-                  src="/mvp/refresh-cw.svg"
+                  src="/mvp/rotate-ccw-key.svg"
                   alt="Refresh"
                   className="cursor-pointer p-[8px] rounded-lg w-[36px] h-[36px]"
                   onClick={handleUpdateWebhook}
@@ -246,13 +261,6 @@ const WhatsAppManualIntegration: React.FC<WhatsAppManualIntegrationProps> = ({
                 onClick={onClose}
               >
                 Cancelar
-              </button>
-              <button
-                type="button"
-                className="text-sofia-superDark bg-sofia-electricGreen font-semibold text-[16px] flex-1 h-[48px] border rounded-[4px] flex justify-center items-center"
-                onClick={getIntegrationWhatsAppManualInfo}
-              >
-                Actualizar
               </button>
               <button
                 type="submit"
