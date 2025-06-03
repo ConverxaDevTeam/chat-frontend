@@ -7,7 +7,7 @@ import {
   analyticOptions,
   AnalyticDescription,
 } from "../../services/analyticTypes";
-import InfoTooltip from "../Common/InfoTooltip";
+import InfoTooltip from "@components/common/InfoTooltip";
 
 interface Option {
   id: AnalyticType | StatisticsDisplayType;
