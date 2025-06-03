@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { Control, UseFormRegister } from "react-hook-form";
 import { FormValues } from "./FunctionTemplateHooks";
-import InfoTooltip from "@components/Common/InfoTooltip";
+import InfoTooltip from "@components/common/InfoTooltip";
 import * as templateService from "@services/template.service";
 import {
   FunctionTemplateCategory,

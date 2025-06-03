@@ -5,7 +5,7 @@ import { TextArea } from "@components/forms/textArea";
 import { useState } from "react";
 import { agentService } from "@services/agent";
 import { useAlertContext } from "@components/Diagrams/components/AlertContext";
-import InfoTooltip from "@components/Common/InfoTooltip";
+import InfoTooltip from "@components/common/InfoTooltip";
 import { Button } from "@components/common/Button";
 
 const EXAMPLES_INSTRUCTIONS = {

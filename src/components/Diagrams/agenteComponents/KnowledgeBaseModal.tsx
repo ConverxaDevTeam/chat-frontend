@@ -12,7 +12,7 @@ import { useAlertContext } from "../components/AlertContext";
 import Modal from "@components/Modal";
 import { useRef } from "react";
 import { Button } from "@components/common/Button";
-import InfoTooltip from "@components/Common/InfoTooltip";
+import InfoTooltip from "@components/common/InfoTooltip";
 
 interface KnowledgeBaseModalProps {
   isShown: boolean;

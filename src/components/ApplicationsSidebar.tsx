@@ -7,7 +7,7 @@ import {
   FunctionTemplate,
   FunctionTemplateApplication,
 } from "@interfaces/template.interface";
-import InfoTooltip from "./Common/InfoTooltip";
+import InfoTooltip from "@components/common/InfoTooltip";
 import Loading from "./Loading";
 import { TemplateWizard } from "./TemplateWizard/TemplateWizard";
 
