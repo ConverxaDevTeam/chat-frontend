@@ -203,7 +203,6 @@ const edgeFactory = {
   },
 };
 
-
 interface AgentState {
   agentFunctions: {
     id: number;
@@ -386,8 +385,8 @@ const DiagramFlow = ({
         type: "default",
       }}
       style={{
-        backgroundImage: 'radial-gradient(#DEDEDE 0.6px, transparent 0.8px)', 
-        backgroundSize: '10px 10px'
+        backgroundImage: "radial-gradient(#DEDEDE 0.6px, transparent 0.8px)",
+        backgroundSize: "10px 10px",
       }}
       fitView
     ></ReactFlow>

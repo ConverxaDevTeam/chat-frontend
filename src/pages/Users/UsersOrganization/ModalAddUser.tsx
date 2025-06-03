@@ -12,7 +12,12 @@ interface ModalAddUserProps {
   users?: IUserApi[];
 }
 
-const ModalAddUser = ({ close, getAllUsers, editUser, users = [] }: ModalAddUserProps) => {
+const ModalAddUser = ({
+  close,
+  getAllUsers,
+  editUser,
+  users = [],
+}: ModalAddUserProps) => {
   const { selectOrganizationId } = useSelector(
     (state: RootState) => state.auth
   );
@@ -28,8 +33,10 @@ const ModalAddUser = ({ close, getAllUsers, editUser, users = [] }: ModalAddUser
     e.preventDefault();
     if (!selectOrganizationId) return;
 
-    const emailExists = users.some(user => user.email.toLowerCase() === data.email.toLowerCase());
-    
+    const emailExists = users.some(
+      user => user.email.toLowerCase() === data.email.toLowerCase()
+    );
+
     if (emailExists) {
       toast.error("Ya existe un usuario con este correo electrónico", {
         position: "bottom-right",
@@ -76,7 +83,7 @@ const ModalAddUser = ({ close, getAllUsers, editUser, users = [] }: ModalAddUser
   return (
     <div
       className="fixed inset-0 bg-opacity-50 flex items-center justify-center z-50"
-      onClick={(e) => e.target === e.currentTarget && close(false)}
+      onClick={e => e.target === e.currentTarget && close(false)}
     >
       <div className="bg-white rounded-[4px] p-6 w-full max-w-md relative">
         <button
