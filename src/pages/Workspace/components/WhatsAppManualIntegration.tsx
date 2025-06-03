@@ -200,7 +200,7 @@ const WhatsAppManualIntegration: React.FC<WhatsAppManualIntegrationProps> = ({
                   }}
                 />
                 <img
-                  src="/mvp/rotate-ccw-key.svg"
+                  src="/mvp/refresh-cw.svg"
                   alt="Refresh"
                   className="cursor-pointer p-[8px] rounded-lg w-[36px] h-[36px]"
                   onClick={handleUpdateWebhook}
