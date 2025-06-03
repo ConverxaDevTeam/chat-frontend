@@ -96,7 +96,7 @@ export const useSweetAlert = () => {
     cancelButtonText?: string;
     onConfirm?: () => Promise<boolean | void>;
   }): Promise<boolean> => {
-    return new Promise<boolean>((resolve) => {
+    return new Promise<boolean>(resolve => {
       setModalOptions({ ...options, resolve });
       setIsOpen(true);
     });
@@ -107,7 +107,7 @@ export const useSweetAlert = () => {
       try {
         if (modalOptions.onConfirm) {
           const result = await modalOptions.onConfirm();
-          if (typeof result === 'boolean' && result === false) {
+          if (typeof result === "boolean" && result === false) {
             modalOptions.resolve(false);
             return;
           }
@@ -116,7 +116,7 @@ export const useSweetAlert = () => {
         setIsOpen(false);
         setModalOptions(null);
       } catch (error) {
-        console.error('Error in confirmation:', error);
+        console.error("Error in confirmation:", error);
         modalOptions.resolve(false);
         setIsOpen(false);
         setModalOptions(null);
@@ -188,7 +188,7 @@ export const useSweetAlert = () => {
       result = await operation();
 
       hideOperationModal();
-      await new Promise<void>((resolve) => {
+      await new Promise<void>(resolve => {
         showOperationModal({
           title: options.successTitle,
           text: options.successText,
@@ -204,8 +204,8 @@ export const useSweetAlert = () => {
       hideOperationModal();
 
       const errorMessage = formatError(error);
-      
-      await new Promise<void>((resolve) => {
+
+      await new Promise<void>(resolve => {
         showOperationModal({
           title: options.errorTitle,
           text: errorMessage,

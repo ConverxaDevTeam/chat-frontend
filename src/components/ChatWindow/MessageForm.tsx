@@ -60,7 +60,7 @@ const defaultConfig: ConfigWebChat = {
   button_color: "#ededed",
   text_title: "#001126",
   message_radius: 8,
-  button_text: "#BAF88F",
+  button_text: "#15ECDA",
 };
 
 const useImageUpload = () => {
@@ -140,7 +140,7 @@ const InputSection = ({
   emojiPicker: ReturnType<typeof useEmojiPicker>;
 }) => (
   <div className="flex-1 relative min-w-0">
-    <div className="flex items-center gap-[10px] h-[44px] px-4 py-2.5 border border-[#343E4F] rounded-lg bg-white min-w-0">
+    <div className="flex items-center gap-[10px] h-[40px] px-4 py-2.5 border border-[#343E4F] rounded-[32px] bg-white/80 backdrop-blur-sm min-w-0">
       <input
         {...register("message", {
           required: imageUpload.selectedImages.length === 0,
@@ -148,11 +148,11 @@ const InputSection = ({
         type="text"
         disabled={showHitl && conversation?.user?.id !== user?.id}
         placeholder="Escribe un mensaje..."
-        className="w-full text-[14px] text-black bg-white focus:outline-none"
+        className="w-full text-[14px] text-black bg-transparent focus:outline-none"
       />
       <label
         htmlFor="image-upload"
-        className="hover:bg-gray-100 rounded-full transition-colors cursor-pointer"
+        className="flex items-center gap-2 cursor-pointer transition-colors px-2"
       >
         <input
           type="file"
@@ -162,7 +162,12 @@ const InputSection = ({
           onChange={imageUpload.handleImageSelect}
           className="hidden"
         />
-        <img src="/mvp/paperclip.svg" alt="sofia" className="w-6 h-6" />
+        <img
+          src="/mvp/smile.svg"
+          alt="sofia"
+          className="w-[20px] h-[20px]"
+        />
+        <img src="/mvp/paperclip.svg" alt="sofia" className="w-[20px] h-[20px]" />
       </label>
       {emojiPicker.showEmojiPicker && (
         <div className="absolute bottom-full left-0 mb-2 w-full">
@@ -245,12 +250,13 @@ export const MessageForm = ({
 
   return (
     <div
-      className="h-[73px] px-3 py-3.5 flex items-center bg-app-lightGray min-w-0 rounded-br-[8px]"
-      style={{ backgroundColor: config.button_color }}
+      className="h-[73px] px-3 py-3.5 flex items-center bg-transparent min-w-0 rounded-b-lg"
+      style={{ backgroundColor: 'transparent' }}
     >
       <form
         onSubmit={handleSubmit(handleFormSubmit)}
-        className="flex items-center gap-[16px] w-full min-w-0"
+        className="flex items-center gap-[8px] w-full min-w-0 rounded-b-lg bg-transparent"
+        style={{ backgroundColor: 'transparent' }}
       >
         {!showHitl || conversation?.user?.id === user?.id ? (
           <button
@@ -261,11 +267,6 @@ export const MessageForm = ({
             }
             className="hover:bg-gray-100 rounded-full transition-colors shrink-0"
           >
-            <img
-              src="/mvp/smile.svg"
-              alt="sofia"
-              className="w-[22px] h-[22px]"
-            />
           </button>
         ) : null}
         {showHitl && conversation?.user?.id !== user?.id ? (
@@ -288,7 +289,7 @@ export const MessageForm = ({
             <SendMessageButton
               type="submit"
               disabled={isSubmitting}
-              className="w-[38px] h-[38px] flex items-center justify-center hover:bg-sofia-electricOlive-700 rounded-full transition-colors disabled:opacity-50"
+              className="w-[38px] h-[38px] flex items-center justify-center hover:bg-sofia-electricGreen rounded-full transition-colors disabled:opacity-50"
               style={{
                 backgroundColor: config.button_text,
               }}

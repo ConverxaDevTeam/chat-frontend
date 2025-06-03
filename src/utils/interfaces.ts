@@ -1,3 +1,4 @@
+import { OrganizationType } from "@interfaces/organization.interface";
 import { Socket } from "socket.io-client";
 
 export type IUser = {
@@ -31,6 +32,14 @@ export type IOrganizarion = {
     updated_at: string;
     name: string;
     description: string;
+    logo?: string | null;
+    type: OrganizationType;
+    limitInfo?: {
+      hasReachedLimit?: boolean;
+      limit?: number;
+      current?: number;
+      daysRemaining?: number;
+    };
   };
 };
 

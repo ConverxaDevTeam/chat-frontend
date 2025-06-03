@@ -2,6 +2,7 @@ import { Fragment, useState } from "react";
 import { ReactFlowProvider } from "@xyflow/react";
 import Diagram from "@components/Diagrams";
 import Chat from "@components/workspace/components/chat/Chat";
+import DepartmentTabs from "@components/Interface/Navbar/DepartmentTabs";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { RootState } from "@store";
@@ -44,7 +45,7 @@ const ChatWrapper = ({ agentId }: ChatWrapperProps) => {
     <Fragment>
       {isChatVisible ? (
         <div
-          className={`relative h-full bg-gray-100 border-l border-gray-300 shadow-lg transition-all duration-300 ${
+          className={`relative h-full bg-gray-100 border-gray-300 shadow-lg transition-all duration-300 ${
             isChatVisible ? "w-80" : "w-0"
           } overflow-hidden`}
         >
@@ -53,9 +54,9 @@ const ChatWrapper = ({ agentId }: ChatWrapperProps) => {
       ) : (
         <button
           onClick={toggleChat}
-          className="absolute w-[56px] h-[40px] top-19 right-5 px-4 py-2 border border-black bg-sofia-electricOlive rounded-lg shadow-lg hover:bg-[#d2f3ac] focus:outline-none transition-transform"
+          className="absolute w-[56px] h-[40px] top-19 right-5 flex items-center justify-center border border-sofia-navyBlue bg-sofia-superDark rounded-lg shadow-lg focus:outline-none transition-transform"
         >
-          <img src="/mvp/messages-square.svg" alt="Chat-icon" />
+          <img src="/mvp/messages-square-white.svg" alt="Chat-icon"/>
         </button>
       )}
     </Fragment>
@@ -84,11 +85,16 @@ const WorkspaceContent = () => {
   return (
     <div className="grid grid-cols-[1fr,auto] h-full w-full">
       {/* Diagram Section */}
-      <div className="relative w-full h-full p-4">
+      <div className="relative w-full h-full">
         {/* Margen agregado */}
-        <ReactFlowProvider>
-          <Diagram onAgentIdChange={setAgentId} />
-        </ReactFlowProvider>
+        <div className="w-full h-full">
+          <ReactFlowProvider>
+            <Diagram onAgentIdChange={setAgentId} />
+          </ReactFlowProvider>
+        </div>
+        <div className="absolute top-4 left-0 right-0 flex justify-center">
+          <DepartmentTabs />
+        </div>
       </div>
       {agentId !== null && <ChatWrapper agentId={agentId} />}
       <ApplicationsWrapper agentId={agentId || -1} />

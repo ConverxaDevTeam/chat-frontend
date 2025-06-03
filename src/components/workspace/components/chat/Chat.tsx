@@ -44,7 +44,7 @@ const Chat = memo(({ onClose, agentId }: ChatProps) => {
   }, [onClose]);
 
   return (
-    <div className="grid grid-rows-[auto,1fr,auto] max-w-full w-full h-full bg-gray-100 border-r border-gray-300 shadow-lg">
+    <div className="grid grid-rows-[auto,1fr,auto] max-w-full w-full h-full border-[0.5px] border-sofia-superDark rounded-lg shadow-lg bg-[url('/mvp/background-chats.png')] bg-cover bg-center bg-no-repeat">
       <div className="w-full">
         <ChatHeader onClose={handleChatClose} />
       </div>

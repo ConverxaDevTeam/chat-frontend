@@ -1,9 +1,18 @@
 import { AppDispatch } from "@store";
 import { logOutAsync } from "@store/actions/auth";
 import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 const BlockingPage = () => {
   const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Redirigir al usuario a la página de configuración inicial
+    navigate("/initial-setup");
+  }, [navigate]);
+
   return (
     <div className="flex flex-col w-full h-full bg-app-background relative overflow-hidden">
       <div className="w-full h-full absolute bg-[url('/demo/more.png')] bg-repeat z-10"></div>
