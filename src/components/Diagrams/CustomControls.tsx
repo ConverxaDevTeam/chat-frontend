@@ -47,9 +47,17 @@ export const CustomControls = () => {
 
   const buttons = [
     { onClick: handleZoomIn, icon: "mvp/circle-plus.svg", tooltip: "Zoom in" },
-    { onClick: handleZoomOut, icon: "mvp/circle-minus.svg", tooltip: "Zoom out" },
+    {
+      onClick: handleZoomOut,
+      icon: "mvp/circle-minus.svg",
+      tooltip: "Zoom out",
+    },
     { onClick: handleFitView, icon: "mvp/scan.svg", tooltip: "Fit view" },
-    { onClick: handleLock, icon: isLocked ? "mvp/lock.svg" : "mvp/unlock.svg", tooltip: isLocked ? "Unlock" : "Lock" },
+    {
+      onClick: handleLock,
+      icon: isLocked ? "mvp/lock.svg" : "mvp/unlock.svg",
+      tooltip: isLocked ? "Unlock" : "Lock",
+    },
   ];
 
   return (
