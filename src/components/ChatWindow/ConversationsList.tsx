@@ -35,7 +35,7 @@ const ScrollButton = ({ direction, onClick, disabled }: ScrollButtonProps) => {
       {direction === "left" ? (
         <IoChevronBack className="w-4 h-4 text-app-newGray" />
       ) : (
-        <IoChevronForward className="w-4 h-4 text-app-newGray" />
+        <IoChevronForward className="w-4 h-4 text-app-newGray mr-2" />
       )}
     </button>
   );
@@ -87,7 +87,7 @@ const TabsCarousel = ({
             disabled={!canScrollLeft}
           />
 
-          <div className="flex gap-4 mx-2 overflow-hidden flex-1">
+          <div className="flex gap-3 mx-1 overflow-hidden flex-1">
             {visibleScrollableTabs.map(tab => (
               <Tab
                 key={tab}
@@ -116,9 +116,9 @@ interface ConversationsListProps {
 }
 
 const tabBaseStyles =
-  "flex flex-col justify-center text-xs font-semibold self-stretch whitespace-nowrap px-1";
+  "flex flex-col justify-center text-xs font-medium self-stretch whitespace-nowrap px-1";
 const tabSelectedStyles =
-  "bg-sofia-darkBlue text-sofia-superDark rounded flex items-center gap-2.5";
+  "bg-sofia-darkBlue text-sofia-superDark rounded flex items-center gap-2.5 px-2 py-1";
 const tabNormalStyles = "text-app-newGray";
 
 export const ConversationsList = ({
@@ -145,7 +145,7 @@ export const ConversationsList = ({
 
   return (
     <div className="w-[345px] h-full bg-sofia-blancoPuro border border-app-lightGray rounded-l-lg flex flex-col">
-      <div className="flex flex-col gap-6 p-[10px] flex-none">
+      <div className="flex flex-col gap-6 py-[24px] px-[16px] flex-none">
         <div className="relative flex h-[37px] items-center">
           <input
             type="text"
@@ -157,8 +157,13 @@ export const ConversationsList = ({
                 return () => clearTimeout(timer);
               },
             })}
-            className="w-full h-full px-4 rounded-lg border border-app-newGray bg-sofia-blancoPuro flex items-center text-xs font-medium placeholder:text-app-newGray"
+            className="w-full h-full px-4 rounded-lg border border-sofia-darkBlue bg-[#FCFCFC] focus:ring-none  flex items-center text-xs font-medium placeholder:text-app-newGray"
             placeholder="Búsqueda por ID o nombre"
+          />
+          <img
+            src="/mvp/magnifying-glass.svg"
+            alt="Buscar"
+            className="hidden lg:block absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none"
           />
         </div>
         <TabsCarousel

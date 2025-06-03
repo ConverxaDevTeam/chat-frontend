@@ -6,6 +6,8 @@ export const apiUrls = {
   refreshToken: () => `${baseUrl}/api/auth/refresh-token`,
   logOut: () => `${baseUrl}/api/auth/log-out`,
   logIn: () => `${baseUrl}/api/auth/log-in`,
+  signUp: () => `${baseUrl}/api/auth/sign-up`,
+  googleLogin: () => `${baseUrl}/api/auth/google-login`,
   requestResetPassword: () => `${baseUrl}/api/auth/request-reset-password`,
   resetPassword: () => `${baseUrl}/api/auth/reset-password`,
   getSessions: () => `/api/auth/session`,
@@ -192,6 +194,13 @@ export const apiUrls = {
     generateWithAI: () => `/api/function-templates/generate-with-ai`,
     continueGenerateWithAI: () =>
       `/api/function-templates/generate-with-ai/continue`,
+  },
+  plan: {
+    requestCustom: () => `/api/plan/request-custom`,
+    setCustom: (organizationId: number) =>
+      `/api/plan/${organizationId}/set-custom`,
+    updateDetails: (organizationId: number) =>
+      `/api/plan/${organizationId}/details`,
   },
 } as const;
 

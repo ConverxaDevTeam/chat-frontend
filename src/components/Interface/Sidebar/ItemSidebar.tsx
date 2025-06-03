@@ -46,7 +46,7 @@ const ItemSidebar = ({
         active ? "bg-sofia-superDark rounded-[4px] text-sofia-blancoPuro" : "text-app-gray"
       } ${active && (sidebarMinimized || mobileResolution) ? "w-full justify-center" : "w-full pl-[12px]"}`}
     >
-      {(sidebarMinimized || mobileResolution) ? (
+      {sidebarMinimized || mobileResolution ? (
         <div className="group relative flex justify-center items-center w-full">
           <img
             className={`w-6 h-6 fill-current z-10 ${active ? "" : "cursor-pointer"}`}
@@ -63,10 +63,10 @@ const ItemSidebar = ({
               font-[400] whitespace-nowrap tracking-[0.17px] leading-[143%] text-left
               shadow-md items-center pointer-events-none
             `}
-            style={{ 
-              marginLeft: '10px',
-              top: '50%',
-              transform: 'translateY(-50%)'
+            style={{
+              marginLeft: "10px",
+              top: "50%",
+              transform: "translateY(-50%)",
             }}
           >
             {link.text}
