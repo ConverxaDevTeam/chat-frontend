@@ -2,6 +2,7 @@ import { Fragment, useState } from "react";
 import { ReactFlowProvider } from "@xyflow/react";
 import Diagram from "@components/Diagrams";
 import Chat from "@components/workspace/components/chat/Chat";
+import DepartmentTabs from "@components/Interface/Navbar/DepartmentTabs";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { RootState } from "@store";
@@ -84,11 +85,16 @@ const WorkspaceContent = () => {
   return (
     <div className="grid grid-cols-[1fr,auto] h-full w-full">
       {/* Diagram Section */}
-      <div className="relative w-full h-full p-4">
+      <div className="relative w-full h-full">
         {/* Margen agregado */}
-        <ReactFlowProvider>
-          <Diagram onAgentIdChange={setAgentId} />
-        </ReactFlowProvider>
+        <div className="w-full h-full">
+          <ReactFlowProvider>
+            <Diagram onAgentIdChange={setAgentId} />
+          </ReactFlowProvider>
+        </div>
+        <div className="absolute top-4 left-0 right-0 flex justify-center">
+          <DepartmentTabs />
+        </div>
       </div>
       {agentId !== null && <ChatWrapper agentId={agentId} />}
       <ApplicationsWrapper agentId={agentId || -1} />
