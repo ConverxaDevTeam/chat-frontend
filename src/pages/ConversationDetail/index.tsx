@@ -337,6 +337,7 @@ const ConversationDetail = () => {
       </div>
       </div>
     </div>
+    </div>
   );
 };
 
