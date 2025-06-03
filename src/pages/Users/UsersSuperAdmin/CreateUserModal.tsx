@@ -102,7 +102,6 @@ const CreateUserModal = ({
         )}
         <div className="flex justify-end gap-2">
           <Button type="submit" disabled={isSubmitting} variant="primary">
-
             {isSubmitting
               ? "Creando..."
               : email

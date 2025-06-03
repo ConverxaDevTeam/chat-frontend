@@ -7,7 +7,12 @@ interface InputGroupProps {
   tooltip?: React.ReactNode;
 }
 
-export const InputGroup = ({ label, children, errors, tooltip }: InputGroupProps) => {
+export const InputGroup = ({
+  label,
+  children,
+  errors,
+  tooltip,
+}: InputGroupProps) => {
   // Aseguramos que los errores sean un array de FieldError
   const errorMessages = Array.isArray(errors)
     ? errors.filter((error): error is FieldError => error !== undefined) // Filtramos los undefined
@@ -31,7 +36,6 @@ export const InputGroup = ({ label, children, errors, tooltip }: InputGroupProps
           ))}
         </div>
       )}
-      
     </div>
   );
 };

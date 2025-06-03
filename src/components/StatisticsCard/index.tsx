@@ -244,7 +244,11 @@ const CardContent: React.FC<{
         metricsRef={metricsRef}
       />
     ) : data?.chartData ? (
-      <ChartView data={data} displayType={displayType} showLegend={showLegend} />
+      <ChartView
+        data={data}
+        displayType={displayType}
+        showLegend={showLegend}
+      />
     ) : null}
   </div>
 );
@@ -296,11 +300,11 @@ export const StatisticsCard = ({
 
   const handleTitleChange = (newTitle: string) => {
     setLocalTitle(newTitle);
-    
+
     if (titleTimeoutRef.current) {
       clearTimeout(titleTimeoutRef.current);
     }
-    
+
     titleTimeoutRef.current = setTimeout(() => {
       onUpdateCard?.({ id, title: newTitle });
     }, 500);

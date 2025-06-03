@@ -1,5 +1,4 @@
 import { apiUrls } from "@config/config";
-import { Avatar } from "@components/ChatWindow/Avatar";
 import { ConversationResponseMessage } from "@interfaces/conversation";
 import { formatDateOrTime } from "@utils/format";
 import { MessageType } from "@utils/interfaces";
@@ -28,8 +27,8 @@ const defaultConfig: ConfigWebChat = {
   edge_radius: 8,
   bg_color: "#FFFFFF",
   bg_chat: "#F5F5F5",
-  bg_user: "#FFFFFF",
-  bg_assistant: "#d0fbf8",
+  bg_user: "#343E4F",
+  bg_assistant: "#fff",
   text_color: "#000000",
   text_date: "#a6a8ab",
   button_color: "#007BFF",
@@ -64,13 +63,13 @@ const MessageHeader = ({
   return (
     <div className="flex justify-center items-center gap-2">
       <span
-        className="text-[14px] font-bold"
+        className="text-[14px] font-semibold"
         style={{ color: config.text_color }}
       >
-        {message.type === MessageType.USER ? "Usuario" : "Asistente"}
+        {message.type === MessageType.USER ? "Usuario" : "SOF.IA"}
       </span>
       <span
-        className="text-[14px] font-bold"
+        className="text-[10px] font-normal"
         style={{ color: config.text_date }}
       >
         {formatDateOrTime(message.created_at)}
@@ -82,7 +81,7 @@ const MessageHeader = ({
 const renderContent = (
   message: ConversationResponseMessage,
   textColor: string,
-  onImageClick: (imageUrl: string) => void,
+  onImageClick: (imageUrl: string) => void
 ) => {
   return (
     <div className="flex flex-col gap-2">
@@ -108,11 +107,11 @@ const renderContent = (
         />
       )}
       {message.text && (
-        <div className={`text-[14px] font-medium`} style={{ color: textColor }}>
-          {message.audio && <span className="font-bold">Transcripcion: </span>}
+        <div className={`text-[14px] font-normal`} style={{ color: textColor }}>
+          {message.audio && <span className="font-normal">Transcripcion: </span>}
           <ReactMarkdown
             components={{
-              p: ({ ...props }) => <p className="mb-2 last:mb-0" {...props} />,
+              p: ({ ...props }) => <p className="mb-2 last:mb-0 font-normal" {...props} />,
               a: ({ ...props }) => (
                 <a className="text-blue-500 hover:underline" {...props} />
               ),
@@ -137,7 +136,6 @@ const renderContent = (
 
 const MessageCard = ({
   message,
-  userName,
   config = defaultConfig,
 }: MessageCardProps) => {
   const [modalOpen, setModalOpen] = useState(false);
@@ -152,16 +150,11 @@ const MessageCard = ({
     return (
       <MessageContainer align="start">
         <div className="flex flex-col gap-1">
-          <Avatar
-            avatar={config.logo || "/mvp/sofia-chat-logo.svg"}
-            secret={userName}
-            className="w-[40px] h-[40px]"
-          />
         </div>
         <div className="flex flex-col items-start gap-1">
           <MessageHeader message={message} config={config} />
           <div
-            className="flex justify-center items-center self-stretch p-2 shadow-[2px_2px_4px_0px_rgba(0,0,0,0.10)]"
+            className="flex justify-center items-center self-stretch p-2 border border-[#DBEAF2]"
             style={{
               backgroundColor: config.bg_assistant,
               borderRadius: config.message_radius + "px",
@@ -171,10 +164,10 @@ const MessageCard = ({
           </div>
         </div>
         <ImageModal
-        isOpen={modalOpen}
-        imageUrl={selectedImage}
-        onClose={() => setModalOpen(false)}
-      />
+          isOpen={modalOpen}
+          imageUrl={selectedImage}
+          onClose={() => setModalOpen(false)}
+        />
       </MessageContainer>
     );
   }
@@ -185,7 +178,7 @@ const MessageCard = ({
       <div className="flex flex-col items-end gap-1">
         <MessageHeader message={message} config={config} />
         <div
-          className="flex justify-center items-center self-stretch p-2 shadow-[2px_2px_4px_0px_rgba(0,0,0,0.10)]"
+          className="flex justify-center items-center self-stretch p-2 border border-[#DBEAF2]"
           style={{
             backgroundColor: config.bg_user,
             borderRadius: config.message_radius + "px",
@@ -194,14 +187,11 @@ const MessageCard = ({
           {renderContent(message, textColor, handleImageClick)}
         </div>
       </div>
-      <div className="flex flex-col gap-1">
-        <Avatar avatar={null} secret={userName} className="w-[40px] h-[40px]" />
-      </div>
       <ImageModal
-      isOpen={modalOpen}
-      imageUrl={selectedImage}
-      onClose={() => setModalOpen(false)}
-    />
+        isOpen={modalOpen}
+        imageUrl={selectedImage}
+        onClose={() => setModalOpen(false)}
+      />
     </MessageContainer>
   );
 };

@@ -72,9 +72,9 @@ export const TimeRangeSelector = ({
           onMouseDown={handleMouseDown}
           className="inline-flex w-[126px] items-center justify-between px-2 py-1 text-sofia-superDark rounded-lg hover:bg-white/50 bg-sofia-secundario border border-sofia-superDark"
         >
-            <span className="text-xs font-medium truncate">
-              {timeRangeLabels[timeRange]}
-            </span>
+          <span className="text-xs font-medium truncate">
+            {timeRangeLabels[timeRange]}
+          </span>
           <img
             src="/mvp/chevron-down.svg"
             alt="chevron"
@@ -88,10 +88,10 @@ export const TimeRangeSelector = ({
           onMouseDown={handleMouseDown}
           className="inline-flex w-6 h-6 p-[5px_2px] flex-col justify-center items-center gap-2.5 flex-shrink-0 rounded-full border border-sofia-superDark bg-sofia-secundario"
         >
-          <img 
+          <img
             src={`/mvp/${timeRangeOptions.find(opt => opt.id === timeRange)?.icon}`}
-            alt="icon" 
-            className="w-3 h-3.5" 
+            alt="icon"
+            className="w-3 h-3.5"
           />
         </button>
       )}
@@ -102,7 +102,7 @@ export const TimeRangeSelector = ({
           y={menuPosition.y}
           onClose={onMenuClose}
         >
-          {timeRangeOptions.map((option) => (
+          {timeRangeOptions.map(option => (
             <button
               key={option.id}
               className="w-[128px] flex items-center gap-2 text-left text-[14px] font-medium text-sofia-superDark leading-none self-stretch [font-feature-settings:'liga'_off,'clig'_off]"
