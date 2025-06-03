@@ -5,6 +5,7 @@ import { RootState } from "@store";
 import { useSelector } from "react-redux";
 import BlockingPage from "./BlockingPage";
 import Navbar from "./Navbar";
+import PlanStatusBanner from "../PlanStatusBanner";
 import Loading from "@components/Loading";
 import { OrganizationStrip } from "../OrganizationStrip";
 
@@ -59,6 +60,28 @@ const Interface = () => {
   }
 
   return (
+    <div className="flex flex-col h-screen w-screen overflow-hidden">
+      <PlanStatusBanner />
+      <div className="flex flex-1 w-full bg-sofia-background overflow-hidden">
+        <Sidebar
+          windowHeight={windowHeight}
+          sidebarMinimized={sidebarMinimized}
+          setSidebarMinimized={setSidebarMinimized}
+          mobileResolution={mobileResolution}
+        />
+        <div
+          className={`flex flex-1 flex-col min-h-full overflow-hidden ${
+            mobileResolution ? "px-[10px] pb-[10px]" : "px-[20px] pb-[20px]"
+          }`}
+        >
+          <Navbar
+            windowWidth={windowWidth}
+            sidebarMinimized={sidebarMinimized}
+            mobileResolution={mobileResolution}
+          />
+          <div className="flex-1 min-h-0 mt-4 overflow-auto">
+            <Outlet />
+          </div>
     <div className="fixed inset-0 flex flex-col w-full h-full bg-sofia-background overflow-hidden">
       <div className="flex flex-1 w-full overflow-hidden pl-[74px]">
         <OrganizationStrip />

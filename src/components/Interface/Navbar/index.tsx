@@ -245,11 +245,7 @@ const NotificationsMenu = ({
   return (
     <div className="relative w-5 h-5">
       <div className="flex items-center">
-        <img
-          src="/mvp/bell.svg"
-          alt="Bell"
-            onClick={handleBellClick}
-        />
+        <img src="/mvp/bell.svg" alt="Bell" onClick={handleBellClick} />
         {notificationCount > 0 && (
           <span className="absolute -top-1 -right-1 bg-sofia-error text-white text-[10px] rounded-full w-[12px] h-[12px] flex items-center justify-center">
             {notificationCount}
@@ -315,8 +311,8 @@ const UserActions = ({
       <div
         className={`
           bg-[#F1F5F9] rounded-[8px] shadow-[1px_1px_2px_0px_#B8CCE0,-1px_-1px_2px_0px_#FFFFFF,1px_1px_2px_0px_#B8CCE0_inset,-1px_-1px_2px_0px_#FFFFFF_inset] relative flex justify-between items-center gap-2 p-3 cursor-pointer h-[36px] ${
-          mobileResolution ? "w-full" : "w-auto"
-        }`}
+            mobileResolution ? "w-full" : "w-auto"
+          }`}
       >
         <NotificationsMenu
           contextMenu={contextMenu}

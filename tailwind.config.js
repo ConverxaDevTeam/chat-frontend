@@ -40,7 +40,7 @@ export default {
           c4: "#020202",
         },
         sofia: {
-          superDark: "#001126",
+          superDark: "#001130",
           darkBlue: "#DBEAF2",
           darkLight: "#1A273B",
           electricOlive: "#BAF88F",

@@ -5,7 +5,7 @@ import pdfMake from "pdfmake/build/pdfmake";
 interface PdfCell {
   text: string;
   style: string;
-  alignment?: 'left' | 'center' | 'right';
+  alignment?: "left" | "center" | "right";
   color?: string;
   fillColor?: string;
 }
@@ -41,20 +41,24 @@ const ButtonExportAllUsers = ({ users }: ButtonExportAllUsersProps) => {
 
           const tableBody: PdfCell[][] = [
             [
-              { text: 'ID', style: 'tableHeader' },
-              { text: 'Email', style: 'tableHeader' },
-              { text: 'Nombre', style: 'tableHeader' },
-              { text: 'Apellido', style: 'tableHeader' },
-              { text: 'Organizaciones', style: 'tableHeader' },
-              { text: 'Rol', style: 'tableHeader' },
-              { text: 'Verificado', style: 'tableHeader' },
-              { text: 'Último Login', style: 'tableHeader' }
-            ]
+              { text: "ID", style: "tableHeader" },
+              { text: "Email", style: "tableHeader" },
+              { text: "Nombre", style: "tableHeader" },
+              { text: "Apellido", style: "tableHeader" },
+              { text: "Organizaciones", style: "tableHeader" },
+              { text: "Rol", style: "tableHeader" },
+              { text: "Verificado", style: "tableHeader" },
+              { text: "Último Login", style: "tableHeader" },
+            ],
           ];
 
           const sortedUsers = [...users].sort((a, b) => {
-            const orgCountA = a.userOrganizations.filter(org => org.organization).length;
-            const orgCountB = b.userOrganizations.filter(org => org.organization).length;
+            const orgCountA = a.userOrganizations.filter(
+              org => org.organization
+            ).length;
+            const orgCountB = b.userOrganizations.filter(
+              org => org.organization
+            ).length;
             return orgCountB - orgCountA;
           });
 
@@ -64,34 +68,38 @@ const ButtonExportAllUsers = ({ users }: ButtonExportAllUsersProps) => {
               .map(org => org.organization?.name)
               .filter(Boolean)
               .join(", ");
-            
-            const uniqueRoles = [...new Set(user.userOrganizations.map(org => org.role))];
+
+            const uniqueRoles = [
+              ...new Set(user.userOrganizations.map(org => org.role)),
+            ];
             const rolesString = uniqueRoles.join(", ");
 
-            const verificationStatus = user.email_verified ? "Verificado" : "No Verificado";
-            
+            const verificationStatus = user.email_verified
+              ? "Verificado"
+              : "No Verificado";
+
             const lastLogin = user.last_login
               ? new Date(user.last_login).toLocaleDateString()
               : "Nunca";
 
             tableBody.push([
-              { text: user.id.toString(), style: 'tableCell' },
-              { text: user.email, style: 'tableCell' },
-              { text: user.first_name || "-", style: 'tableCell' },
-              { text: user.last_name || "-", style: 'tableCell' },
-              { text: organizationNames || "-", style: 'tableCell' },
-              { text: rolesString, style: 'tableCell' },
-              { text: verificationStatus, style: 'tableCell' },
-              { text: lastLogin, style: 'tableCell' }
+              { text: user.id.toString(), style: "tableCell" },
+              { text: user.email, style: "tableCell" },
+              { text: user.first_name || "-", style: "tableCell" },
+              { text: user.last_name || "-", style: "tableCell" },
+              { text: organizationNames || "-", style: "tableCell" },
+              { text: rolesString, style: "tableCell" },
+              { text: verificationStatus, style: "tableCell" },
+              { text: lastLogin, style: "tableCell" },
             ]);
           });
 
           const docDefinition = {
-            pageSize: 'A4',
-            pageOrientation: 'landscape',
+            pageSize: "A4",
+            pageOrientation: "landscape",
             pageMargins: [20, 60, 20, 60],
             defaultStyle: {
-              font: 'Roboto'
+              font: "Roboto",
             },
             header: {
               columns: [
@@ -99,109 +107,123 @@ const ButtonExportAllUsers = ({ users }: ButtonExportAllUsersProps) => {
                   image: base64data,
                   width: 120,
                   height: 21,
-                  margin: [20, 20, 0, 0]
+                  margin: [20, 20, 0, 0],
                 },
                 {
-                  text: 'SOFIA CHAT',
-                  alignment: 'right',
+                  text: "SOFIA CHAT",
+                  alignment: "right",
                   margin: [0, 20, 20, 0],
                   fontSize: 10,
-                  color: '#666'
-                }
-              ]
+                  color: "#666",
+                },
+              ],
             },
-            footer: function(currentPage: number, pageCount: number) {
+            footer: function (currentPage: number, pageCount: number) {
               return {
                 columns: [
                   {
                     stack: [
                       {
-                        text: 'Fecha: ' + getFormattedDate(),
+                        text: "Fecha: " + getFormattedDate(),
                         fontSize: 8,
-                        color: '#666'
+                        color: "#666",
                       },
                       {
                         text: "Resumen generado por: Sofia Chat",
                         fontSize: 8,
-                        color: '#666',
-                        margin: [0, 2, 0, 0]
-                      }
+                        color: "#666",
+                        margin: [0, 2, 0, 0],
+                      },
                     ],
-                    margin: [20, 0, 0, 0]
+                    margin: [20, 0, 0, 0],
                   },
                   {
-                    text: 'Página ' + currentPage.toString() + ' de ' + pageCount,
-                    alignment: 'right',
+                    text:
+                      "Página " + currentPage.toString() + " de " + pageCount,
+                    alignment: "right",
                     margin: [0, 0, 20, 0],
                     fontSize: 8,
-                    color: '#666'
-                  }
-                ]
+                    color: "#666",
+                  },
+                ],
               };
             },
             content: [
               {
-                text: 'Estadística de Usuarios',
-                style: 'header',
-                margin: [0, 10, 0, 10]
+                text: "Estadística de Usuarios",
+                style: "header",
+                margin: [0, 10, 0, 10],
               },
               {
                 text: `Total de usuarios: ${users.length}`,
-                style: 'subheader',
-                margin: [0, 0, 0, 10]
+                style: "subheader",
+                margin: [0, 0, 0, 10],
               },
               {
                 table: {
                   headerRows: 1,
-                  widths: ['auto', '*', 'auto', 'auto', '*', 'auto', 'auto', 'auto'],
-                  body: tableBody
+                  widths: [
+                    "auto",
+                    "*",
+                    "auto",
+                    "auto",
+                    "*",
+                    "auto",
+                    "auto",
+                    "auto",
+                  ],
+                  body: tableBody,
                 },
                 layout: {
-                  hLineWidth: function(i: number, node: any) {
-                    return (i === 0 || i === 1 || i === node.table.body.length) ? 1 : 0.5;
+                  hLineWidth: function (i: number, node: any) {
+                    return i === 0 || i === 1 || i === node.table.body.length
+                      ? 1
+                      : 0.5;
                   },
-                  vLineWidth: function(i: number, node: any) {
-                    return (i === 0 || i === node.table.widths.length) ? 1 : 0.5;
+                  vLineWidth: function (i: number, node: any) {
+                    return i === 0 || i === node.table.widths.length ? 1 : 0.5;
                   },
-                  hLineColor: function(i: number) {
-                    return (i === 0 || i === 1) ? '#AAAAAA' : '#DDDDDD';
+                  hLineColor: function (i: number) {
+                    return i === 0 || i === 1 ? "#AAAAAA" : "#DDDDDD";
                   },
-                  vLineColor: function(i: number, node: any) {
-                    return (i === 0 || i === node.table.widths.length) ? '#AAAAAA' : '#DDDDDD';
-                  }
-                } as any
-              }
+                  vLineColor: function (i: number, node: any) {
+                    return i === 0 || i === node.table.widths.length
+                      ? "#AAAAAA"
+                      : "#DDDDDD";
+                  },
+                } as any,
+              },
             ],
             styles: {
               header: {
                 fontSize: 18,
                 bold: true,
-                color: '#001130'
+                color: "#001130",
               },
               subheader: {
                 fontSize: 14,
                 bold: true,
-                color: '#666'
+                color: "#666",
               },
               tableHeader: {
                 bold: true,
                 fontSize: 10,
-                color: '#001130',
-                fillColor: '#F2F2F2'
+                color: "#001130",
+                fillColor: "#F2F2F2",
               },
               tableCell: {
-                fontSize: 9
+                fontSize: 9,
               },
               footer: {
                 fontSize: 8,
-                color: '#666'
-              }
-            }
+                color: "#666",
+              },
+            },
           };
 
-          pdfMake.createPdf(docDefinition as any, undefined, pdfMakeFonts).download(
-            `usuarios_${getPdfMonthDayYear()}.pdf`
-          );
+          pdfMake
+            .createPdf(docDefinition as any, undefined, pdfMakeFonts)
+            .download(`usuarios_${getPdfMonthDayYear()}.pdf`);
         };
       })
       .catch(error => console.error("Error cargando la imagen:", error));
