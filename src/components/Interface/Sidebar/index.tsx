@@ -1,10 +1,13 @@
 import { AppDispatch, RootState } from "@store";
 import ItemSidebar from "./ItemSidebar";
 import UserProfile from "./UserProfile";
+import OrganizationHeaderItem from "./OrganizationHeaderItem";
 import { useDispatch, useSelector } from "react-redux";
 import { sidebarAdminLinks, sidebarLinks } from "@utils/lists";
 import { logOutAsync } from "@store/actions/auth";
 import { OrganizationRoleType } from "@utils/interfaces";
+import { useState } from "react";
+import ConfirmationModal from "@components/ConfirmationModal";
 
 type SidebarProps = {
   sidebarMinimized: boolean;
@@ -21,6 +24,16 @@ const Sidebar = ({
   const { selectOrganizationId, user, myOrganizations } = useSelector(
     (state: RootState) => state.auth
   );
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+
+  const handleLogout = async () => {
+    await dispatch(logOutAsync());
+    return true;
+  };
+
+  const handleLogoutClick = () => {
+    setShowLogoutModal(true);
+  };
 
   const userRoles = myOrganizations.map(organization => organization.role);
   const sidebarAdminRoles = [OrganizationRoleType.ING_PREVENTA];
@@ -72,7 +85,15 @@ const Sidebar = ({
               />
             )}
           </div>
+          <div className="w-full border-b border-gray-200 mb-3"></div>
           <ul className="flex flex-col w-full gap-[15px]">
+            {!sidebarMinimized && !mobileResolution && (
+              <OrganizationHeaderItem 
+                organizationName={myOrganizations.find(org => org.organization?.id === selectOrganizationId)?.organization?.name || "Organización"}
+                sidebarMinimized={sidebarMinimized}
+                mobileResolution={mobileResolution}
+              />
+            )}
             {(selectOrganizationId === null && useSidebarAdmin) ||
               (selectOrganizationId === 0 && useSidebarAdmin)
               ? userSidebarAdminLinks.map((link, index) => {
@@ -119,7 +140,7 @@ const Sidebar = ({
                   <img
                     className="w-6 h-6 fill-current cursor-pointer"
                     src="/mvp/exit.svg"
-                    onClick={() => dispatch(logOutAsync())}
+                    onClick={handleLogoutClick}
                     alt="Cerrar sesión"
                   />
                   <div
@@ -143,11 +164,11 @@ const Sidebar = ({
                   <img
                     className="w-6 h-6 fill-current cursor-pointer"
                     src="/mvp/exit.svg"
-                    onClick={() => dispatch(logOutAsync())}
+                    onClick={handleLogoutClick}
                     alt="Cerrar sesión"
                   />
                   <p
-                    onClick={() => dispatch(logOutAsync())}
+                    onClick={handleLogoutClick}
                     className="font-normal text-[#001126] transition-all duration-300 ease-in-out cursor-pointer"
                   >
                     Cerrar sesión
@@ -162,6 +183,15 @@ const Sidebar = ({
           </div>
         </div>
       </div>
+      <ConfirmationModal
+        isShown={showLogoutModal}
+        title="Cierre de sesión"
+        text="¿Estás seguro de que deseas cerrar sesión?"
+        confirmText="Cerrar sesión"
+        cancelText="Cancelar"
+        onConfirm={handleLogout}
+        onClose={() => setShowLogoutModal(false)}
+      />
     </div>
   );
 };
