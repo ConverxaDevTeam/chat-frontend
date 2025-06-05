@@ -47,13 +47,13 @@ const Sidebar = ({
 
   return (
     <div
-      className={`transition-all duration-150 ease-in-out flex flex-col ${mobileResolution ? "" : ""} pr-[0px] ${sidebarMinimized || mobileResolution ? `${mobileResolution ? "w-[80px]" : "w-[100px]"}` : "w-[280px]"}`}
+      className={`transition-all duration-150 ease-in-out flex flex-col ${mobileResolution ? "" : ""}${sidebarMinimized || mobileResolution ? `${mobileResolution ? "w-[80px]" : "w-[80px]"}` : "w-[260px]"}`}
     >
       <div
         style={{
           height: "100vh",
         }}
-        className={`fixed bg-[#F8F9FA] border border-gray-200 rounded-b-[4px] ${sidebarMinimized || mobileResolution ? `w-[80px]` : "w-[260px]"}`}
+        className={`fixed bg-white border-r border-sofia-darkBlue rounded-b-[4px] ${sidebarMinimized || mobileResolution ? `w-[80px]` : "w-[260px]"}`}
       >
         <div className="flex flex-col w-full h-full relative px-4">
           {!mobileResolution && (
@@ -85,7 +85,7 @@ const Sidebar = ({
               />
             )}
           </div>
-          <div className="w-full border-b border-gray-200 mb-3"></div>
+          <div className="w-full border-b border-gray-200 mb-3 -ml-8 relative" style={{ width: 'calc(100% + 3rem)' }}></div>
           <ul className="flex flex-col w-full gap-[15px]">
             {!sidebarMinimized && !mobileResolution && (
               <OrganizationHeaderItem 

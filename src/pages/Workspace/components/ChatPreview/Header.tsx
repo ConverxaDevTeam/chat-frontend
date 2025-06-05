@@ -13,7 +13,7 @@ interface HeaderProps {
 const Header = ({ conversation, config, setConversation }: HeaderProps) => {
   return (
     <div
-      className="flex items-center justify-between py-[24px] px-0"
+      className="flex items-start justify-between py-[24px] px-0"
       style={{
         backgroundColor: config.bg_color,
         color: config.text_title,

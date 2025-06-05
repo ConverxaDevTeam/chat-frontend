@@ -154,15 +154,19 @@ const EditCors = ({ integration, setIntegration }: EditCorsProps) => {
   const { script, handleCopy } = useScriptManager(integration.id);
 
   return (
-    <div className="flex flex-col gap-[24px] w-[375px]">
-      <label className="text-sofia-superDark text-[14px] font-semibold leading-[16px]">
-        Dominios
-      </label>
-      <CorsTagList
-        cors={integration.config.cors}
-        onRemove={handleRemoveDomain}
-      />
-      <CorsInput value={domain} onChange={setDomain} onAdd={handleAddDomain} />
+    <div className="flex flex-col gap-[24px] w-full max-w-[1000px] overflow-y-auto pr-[20px]">
+      <div className="flex flex-col gap-[16px]">
+        <label className="text-sofia-superDark text-[14px] font-normal leading-[16px]">
+          Dominios
+        </label>
+        <CorsInput value={domain} onChange={setDomain} onAdd={handleAddDomain} />
+        {integration.config.cors.length > 0 && (
+          <CorsTagList
+            cors={integration.config.cors}
+            onRemove={handleRemoveDomain}
+          />
+        )}
+      </div>
       <ScriptViewer script={script} onCopy={handleCopy} />
     </div>
   );

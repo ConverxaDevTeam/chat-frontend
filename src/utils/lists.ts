@@ -225,6 +225,19 @@ export const themeColors: themeColor[] = [
     button_text: "#FFFFFF",
     text_date: "#A3C9A3",
   },
+  {
+    id: 9,
+    name: "sofia_blue",
+    bg_color: "#DBEAF2",
+    text_title: "#000000",
+    bg_chat: "#F5F5F5",
+    text_color: "#000000",
+    bg_assistant: "#FFF",
+    bg_user: "#343E4F",
+    button_color: "#15ECDA",
+    button_text: "#15ECDA",
+    text_date: "#969696",
+  },
 ];
 
 export const conversationsExample: IConversation[] = [
