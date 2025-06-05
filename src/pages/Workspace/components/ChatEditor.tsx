@@ -26,7 +26,7 @@ const ThemeSelector = ({
     <h3 className="my-2 text-sofia-superDark text-[14px] font-semibold leading-[16px]">
       Temas predeterminados
     </h3>
-    <div className="grid grid-cols-5 auto-rows-auto gap-2 w-full">
+    <div className="grid grid-cols-5 auto-rows-auto gap-2 w-full px-1">
       {themeColors.map(theme => (
         <button
           key={theme.id}
@@ -304,14 +304,18 @@ const ChatEditor = ({ integration, setIntegration }: ChatEditorProps) => {
   const [themeId, setThemeId] = useState<number>(0);
 
   return (
-    <div className="grid grid-cols-[1fr_auto] gap-[30px]">
+    <div className="grid grid-cols-[1fr_auto] gap-[20px] w-full max-w-[1000px] overflow-y-auto pr-[20px]">
+      
       <ChatConfigurations
         integration={integration}
         setIntegration={setIntegration}
         themeId={themeId}
         setThemeId={setThemeId}
       />
-      <div className="w-[375px]">
+      <div className="w-[320px]">
+      <h3 className="text-sofia-superDark text-[14px] font-semibold leading-[16px] mb-2">
+      Vista previa del chat
+    </h3>
         <ChatPreview config={integration.config} />
       </div>
     </div>

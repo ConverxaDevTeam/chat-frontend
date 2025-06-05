@@ -350,13 +350,10 @@ const Navbar = ({ mobileResolution }: NavbarProps) => {
 
   return (
     <div
-      className={`w-full ${mobileResolution ? "mt-[10px]" : "mt-[20px]"} h-auto`}
+      className="w-full h-auto bg-white border-b border-sofia-darkBlue py-[17px]"
     >
       <div
-        style={{
-          width: "100%",
-        }}
-        className={`flex flex-col gap-4 lg:gap-0 lg:flex-row justify-between items-start lg:items-center`}
+        className="flex flex-col gap-4 lg:gap-0 lg:flex-row justify-between items-start lg:items-center w-full px-6"
       >
         <div className="flex flex-col md:flex-col lg:flex-row items-start lg:items-center gap-4 w-full">
           <div
