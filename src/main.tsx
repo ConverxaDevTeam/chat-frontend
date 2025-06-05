@@ -6,6 +6,10 @@ import { Provider } from "react-redux";
 import store from "./store";
 import { CounterProvider } from "@hooks/CounterContext";
 import { GoogleOAuthProvider } from "@react-oauth/google";
+import { initFacebookSDK } from "./utils/facebook-init";
+
+// Inicializar el SDK de Facebook
+initFacebookSDK();
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <BrowserRouter
