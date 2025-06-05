@@ -45,24 +45,46 @@ const ButtonMessagerIntegration = ({
   const handleConnectFacebook = async () => {
     setLoading(true);
     try {
+      console.log("ButtonMessagerIntegration: Ensuring Facebook SDK is loaded");
       // Ensure Facebook SDK is loaded and initialized before using FB.login
       await ensureFBSDKLoaded();
 
-      FB.login(
+      console.log(
+        "ButtonMessagerIntegration: Facebook SDK loaded, calling FB.login"
+      );
+      if (typeof window.FB === "undefined") {
+        throw new Error(
+          "Facebook SDK is still undefined after ensureFBSDKLoaded"
+        );
+      }
+
+      window.FB.login(
         response => {
+          console.log(
+            "ButtonMessagerIntegration: FB.login response received",
+            response
+          );
           if (response.authResponse && response.authResponse.code) {
             setOpenModal(true);
             const code = response.authResponse.code;
             if (departmentId && selectOrganizationId) {
-              getPagesFacebook(departmentId, selectOrganizationId, code).then(
-                response => {
+              getPagesFacebook(departmentId, selectOrganizationId, code)
+                .then(response => {
                   setPages(response);
                   setLoading(false);
-                }
-              );
+                })
+                .catch(error => {
+                  console.error("Error getting Facebook pages:", error);
+                  setLoading(false);
+                });
+            } else {
+              setLoading(false);
             }
           } else {
             // Handle case where login was not successful
+            console.log(
+              "ButtonMessagerIntegration: FB.login failed or was cancelled"
+            );
             setLoading(false);
           }
         },
@@ -78,7 +100,7 @@ const ButtonMessagerIntegration = ({
         }
       );
     } catch (error) {
-      console.error("Error initializing Facebook SDK:", error);
+      console.error("Error in Facebook login process:", error);
       setLoading(false);
     }
     setMenuIntegracion(false);
