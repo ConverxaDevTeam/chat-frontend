@@ -14,8 +14,6 @@ const UserProfile: React.FC<UserProfileProps> = ({
   const { user } = useSelector((state: RootState) => state.auth);
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const [, setMenuPosition] = useState({ x: 0, y: 0 });
-
   if (sidebarMinimized || mobileResolution) {
     return (
       <div className="flex justify-center items-center py-3 mb-2">

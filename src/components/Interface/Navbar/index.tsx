@@ -324,7 +324,7 @@ const UserActions = ({
 };
 
 const Navbar = ({ mobileResolution }: NavbarProps) => {
-  const { user } = useSelector((state: RootState) => state.auth);
+  const { user, selectOrganizationId, myOrganizations } = useSelector((state: RootState) => state.auth);
   const location = useLocation();
 
   const pathSegments = location.pathname
@@ -332,9 +332,11 @@ const Navbar = ({ mobileResolution }: NavbarProps) => {
     .filter(Boolean)
     .filter(segment => segment !== "dashboard");
 
+  const currentOrganization = myOrganizations.find(org => org.organization?.id === selectOrganizationId)?.organization?.name || "Organización";
+
   let accumulatedPath = "";
   const breadcrumbItems = [
-    { path: "/dashboard", label: "Dashboard" },
+    { path: "/dashboard", label: currentOrganization },
     ...pathSegments.map(segment => {
       accumulatedPath += `/${segment}`;
       return {
