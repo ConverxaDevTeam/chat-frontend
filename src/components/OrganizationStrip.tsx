@@ -101,12 +101,12 @@ export const OrganizationStrip: React.FC<OrganizationStripProps> = ({ }) => {
     }
   };
 
-  const isGlobalUser = user?.is_super_admin || myOrganizations.some(org => !org.organization);
+  const isSuperAdmin = user?.is_super_admin;
 
   return (
     <div className="fixed top-0 left-0 flex flex-col items-center gap-0 p-0 w-[74px] h-full bg-[#F4FAFF] z-10 overflow-visible">
       <div className="w-full flex flex-col items-center pt-[70px] pb-2 gap-4 overflow-visible">
-        {isGlobalUser && (
+        {isSuperAdmin && (
           <div className="group relative overflow-visible">
             <button
               className={`w-8 h-8 rounded-md bg-[#F8E473] flex items-center justify-center text-[#343E4F] font-bold border ${selectOrganizationId === null ? 'border-[#343E4F] border-2' : 'border-[#343E4F] border'} text-[10px]`}
