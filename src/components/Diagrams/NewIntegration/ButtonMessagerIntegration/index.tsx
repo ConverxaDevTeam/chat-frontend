@@ -38,7 +38,6 @@ const ButtonMessagerIntegration = ({
   const [pages, setPages] = useState<FacebookPage[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [openModal, setOpenModal] = useState<boolean>(false);
-  const [data, setData] = useState({ code: "" });
   const { selectOrganizationId } = useSelector(
     (state: RootState) => state.auth
   );

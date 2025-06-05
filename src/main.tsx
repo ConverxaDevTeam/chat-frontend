@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
 import { BrowserRouter } from "react-router-dom";
@@ -13,7 +13,7 @@ import { initFacebookSDK, isFacebookSDKReady } from "./utils/facebook-init";
 console.log("Iniciando carga del SDK de Facebook desde main.tsx");
 const fbPromise = initFacebookSDK();
 fbPromise
-  .then(FB => {
+  .then(() => {
     console.log("SDK de Facebook inicializado exitosamente desde main.tsx");
   })
   .catch(error => {
@@ -25,13 +25,10 @@ fbPromise
 
 // Componente que garantiza que el SDK de Facebook esté inicializado
 const AppWithFacebookSDK = () => {
-  const [sdkStatus, setSdkStatus] = useState<string>("initializing");
-
   useEffect(() => {
     // Verificar el estado de inicialización del SDK
     const checkSDKStatus = () => {
       if (isFacebookSDKReady()) {
-        setSdkStatus("ready");
         console.log("SDK de Facebook listo para su uso en la aplicación");
       } else {
         console.log("Esperando a que el SDK de Facebook esté listo...");
