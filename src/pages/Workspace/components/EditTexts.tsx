@@ -177,8 +177,8 @@ const EditTexts = ({
   }, [watch]);
 
   return (
-    <div className="grid grid-cols-[1fr_auto] gap-[20px] items-start">
-      <div className="flex flex-col flex-1 gap-[10px] items-start w-[338px]">
+    <div className="grid grid-cols-[1fr_auto] gap-[20px] items-start w-full max-w-[1000px] overflow-y-auto pr-[20px]">
+      <div className="flex flex-col flex-1 gap-[10px] items-start w-full max-w-[550px]">
         <AvatarUploader
           integration={integration}
           handleSaveLogo={handleSaveLogo}
@@ -188,7 +188,7 @@ const EditTexts = ({
         <label className="block text-[12px] font-medium text-[#A6A8AB] leading-[10px]">
           Formatos admitidos: png, jpg, jpeg.
         </label>
-        <form className="w-full mt-[30px] grid grid-cols-1 gap-[30px]">
+        <form className="w-full mt-[15px] grid grid-cols-1 gap-[30px]">
           <TextInput
             label="Nombre del chat"
             name="title"
@@ -214,7 +214,12 @@ const EditTexts = ({
           />
         </form>
       </div>
-      <ChatPreview config={integration.config} />
+      <div className="w-[320px]">
+      <h3 className="text-sofia-superDark text-[14px] font-semibold leading-[16px] mb-2">
+      Vista previa del chat
+    </h3>
+        <ChatPreview config={integration.config} />
+      </div>
     </div>
   );
 };
