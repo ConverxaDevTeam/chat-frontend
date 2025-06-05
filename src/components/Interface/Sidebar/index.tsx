@@ -85,7 +85,7 @@ const Sidebar = ({
               />
             )}
           </div>
-          <div className="w-full border-b border-gray-200 mb-3"></div>
+          <div className="w-full border-b border-gray-200 mb-3 -ml-8 relative" style={{ width: 'calc(100% + 3rem)' }}></div>
           <ul className="flex flex-col w-full gap-[15px]">
             {!sidebarMinimized && !mobileResolution && (
               <OrganizationHeaderItem 
