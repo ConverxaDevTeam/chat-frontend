@@ -44,7 +44,7 @@ const ItemSidebar = ({
     <li
       className={`relative flex h-[35px] items-center gap-[16px] ${
         active ? "bg-sofia-superDark rounded-[4px] text-sofia-blancoPuro" : "text-app-gray"
-      } ${active && (sidebarMinimized || mobileResolution) ? "w-full justify-center" : "w-full pl-[12px]"}`}
+      } ${(sidebarMinimized || mobileResolution) ? "w-full justify-center" : "w-full pl-[12px]"}`}
     >
       {sidebarMinimized || mobileResolution ? (
         <div className="group relative flex justify-center items-center w-full">
