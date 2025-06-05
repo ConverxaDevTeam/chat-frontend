@@ -2,6 +2,7 @@
 declare global {
   interface Window {
     fbAsyncInit: () => void;
+    fbSDKInitialized?: boolean;
     FB: {
       init: (options: {
         appId: string;
@@ -35,10 +36,11 @@ declare global {
 
 // Singleton promise to track Facebook SDK initialization
 let fbSDKPromise: Promise<void> | null = null;
+let fbSDKInitialized = false;
 
 /**
  * Initializes the Facebook SDK
- * This follows the official Facebook SDK initialization pattern
+ * This follows the official Facebook SDK initialization pattern with additional safeguards
  */
 export function initFacebookSDK(): Promise<void> {
   // Return existing promise if already initializing
@@ -50,34 +52,60 @@ export function initFacebookSDK(): Promise<void> {
 
   // Create a new promise for the initialization
   fbSDKPromise = new Promise<void>(resolve => {
+    // Check if FB is already available and initialized
+    if (typeof window.FB !== "undefined" && window.fbSDKInitialized === true) {
+      console.log("Facebook SDK already initialized globally");
+      fbSDKInitialized = true;
+      resolve();
+      return;
+    }
+
     // 1. Define the async init function that Facebook will call when SDK is loaded
     window.fbAsyncInit = function () {
       console.log("Facebook SDK loaded, initializing...");
-      window.FB.init({
-        appId: import.meta.env.VITE_FB_APP_ID,
-        autoLogAppEvents: true,
-        status: true,
-        cookie: true,
-        xfbml: true,
-        version: "v22.0",
-      });
+      try {
+        window.FB.init({
+          appId: import.meta.env.VITE_FB_APP_ID,
+          autoLogAppEvents: true,
+          status: true,
+          cookie: true,
+          xfbml: true,
+          version: "v22.0",
+        });
 
-      console.log("Facebook SDK initialized successfully");
-      resolve();
+        // Mark as initialized both locally and globally
+        fbSDKInitialized = true;
+        window.fbSDKInitialized = true;
+        console.log("Facebook SDK initialized successfully");
+        resolve();
+      } catch (error) {
+        console.error("Error initializing Facebook SDK:", error);
+        // Still resolve to prevent hanging promises
+        resolve();
+      }
     };
 
-    // 2. Load the SDK asynchronously
-    (function (d, s, id) {
+    // 2. Load the SDK asynchronously if not already loaded
+    if (!document.getElementById("facebook-jssdk")) {
       console.log("Loading Facebook SDK script...");
-      var js,
-        fjs = d.getElementsByTagName(s)[0];
-      if (d.getElementById(id)) return;
-      js = d.createElement(s) as HTMLScriptElement;
-      js.id = id;
+      const js = document.createElement("script");
+      js.id = "facebook-jssdk";
       js.src = "https://connect.facebook.net/es_LA/sdk.js";
-      fjs.parentNode?.insertBefore(js, fjs);
-      console.log("Facebook SDK script added to DOM");
-    })(document, "script", "facebook-jssdk");
+      js.async = true;
+      js.defer = true;
+      js.crossOrigin = "anonymous";
+
+      const fjs = document.getElementsByTagName("script")[0];
+      if (fjs && fjs.parentNode) {
+        fjs.parentNode.insertBefore(js, fjs);
+        console.log("Facebook SDK script added to DOM");
+      } else {
+        document.head.appendChild(js);
+        console.log("Facebook SDK script added to head");
+      }
+    } else {
+      console.log("Facebook SDK script already in DOM");
+    }
   });
 
   return fbSDKPromise;
@@ -86,22 +114,31 @@ export function initFacebookSDK(): Promise<void> {
 /**
  * Ensures the Facebook SDK is loaded and initialized before using FB functions
  * Call this before any FB.login() or other FB methods
+ * Returns the FB object to ensure proper scoping
  */
-export async function ensureFBSDKLoaded(): Promise<void> {
-  // If FB is already defined, we can use it directly
-  if (typeof window.FB !== "undefined") {
-    console.log("Facebook SDK already available");
-    return Promise.resolve();
+export async function ensureFBSDKLoaded(): Promise<typeof window.FB> {
+  // First check if already initialized
+  if (typeof window.FB !== "undefined" && window.fbSDKInitialized === true) {
+    console.log("Facebook SDK already initialized and available");
+    return window.FB;
   }
 
   // Otherwise initialize or wait for initialization
   console.log("Waiting for Facebook SDK to load...");
-  return fbSDKPromise || initFacebookSDK();
+  await (fbSDKPromise || initFacebookSDK());
+
+  // Double check that FB is actually available after initialization
+  if (typeof window.FB === "undefined") {
+    console.error("Facebook SDK still not available after initialization");
+    throw new Error("Facebook SDK failed to initialize properly");
+  }
+
+  return window.FB;
 }
 
 /**
  * Function to check if FB SDK is ready
  */
 export function isFacebookSDKReady(): boolean {
-  return typeof window.FB !== "undefined" && fbSDKPromise !== null;
+  return typeof window.FB !== "undefined" && window.fbSDKInitialized === true;
 }

@@ -40,12 +40,13 @@ const ButtonWhatsAppIntegration = ({
     try {
       console.log("ButtonWhatsAppIntegration: Ensuring Facebook SDK is loaded");
       // Ensure Facebook SDK is loaded and initialized before using FB.login
-      await ensureFBSDKLoaded();
+      // The ensureFBSDKLoaded function now returns the FB object
+      const FB = await ensureFBSDKLoaded();
 
       console.log(
         "ButtonWhatsAppIntegration: Facebook SDK loaded, calling FB.login"
       );
-      // Use the global FB object directly
+      // Use the returned FB object directly
       FB.login(
         response => {
           console.log(
