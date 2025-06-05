@@ -1,16 +1,14 @@
 import { FC } from "react";
-import { IDepartment } from "../../interfaces/departments";
-import { toast } from "react-toastify";
-import CardItem from "../../components/Card/CardItem";
-import { deleteDepartment } from "@services/department";
-import { useAlertContext } from "@components/Diagrams/components/AlertContext";
+import { IDepartment } from "@interfaces/departments";
+import { useSelector } from "react-redux";
 import { useAppDispatch } from "@store/hooks";
-import { removeDepartment } from "@store/reducers/department";
+import { toggleDepartmentVisibility } from "@store/reducers/department";
+import { RootState } from "@store";
 
 interface DepartmentCardProps {
   department: IDepartment;
   onUpdate: () => void;
-  onDelete: (id: number) => void;
+  onDelete: (department: IDepartment) => void;
 }
 
 const DepartmentCard: FC<DepartmentCardProps> = ({
@@ -18,66 +16,63 @@ const DepartmentCard: FC<DepartmentCardProps> = ({
   onUpdate,
   onDelete,
 }) => {
-  const { showConfirmation } = useAlertContext();
   const dispatch = useAppDispatch();
-
-  const handleDelete = async () => {
-    const confirmed = await showConfirmation({
-      title: "¿Estás seguro de querer eliminar este departamento?",
-      text: "Esta acción no se podrá deshacer",
-      confirmButtonText: "Eliminar",
-      cancelButtonText: "Cancelar",
-    });
-
-    if (confirmed) {
-      try {
-        await deleteDepartment(department.id);
-
-        dispatch(removeDepartment(department.id));
-        onDelete(department.id);
-        toast.success("Departamento eliminado exitosamente");
-      } catch (error: unknown) {
-        if (
-          (error as { response?: { status: number } })?.response?.status === 500
-        ) {
-          toast.error(
-            "Este departamento no se puede eliminar debido a que tiene agente asignado"
-          );
-        } else {
-          toast.error("Error al eliminar departamento");
-        }
-      }
-    }
+  const { hiddenDepartmentIds } = useSelector((state: RootState) => state.department);
+  
+  const isVisible = !hiddenDepartmentIds.includes(department.id.toString());
+  
+  const toggleVisibility = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    dispatch(toggleDepartmentVisibility(department.id.toString()));
   };
-
   return (
-    <div className="bg-[#F1F5F9] rounded-xl p-5 flex flex-col justify-between border-2 border-[#DBEAF2] w-full min-h-[250px]">
-      <div className="text-center">
-        <CardItem label="">
-          <h3 className="text-xl font-bold text-gray-900">{department.name}</h3>
-        </CardItem>
-        <CardItem label="">
-          <p className="text-[12px] 2xl:text-[12px] font-semibold text-app-gray">
-            ID: {department.id}
-          </p>
-        </CardItem>
-        <p className="text-gray-600 text-center mt-3 line-clamp-3">
+    <div className="min-h-[60px] text-[14px] border-b border-b-app-lightGray hover:bg-gray-50 flex items-center cursor-pointer">
+      <div className="pl-[16px] pr-[8px] w-[25%]">
+        <p className="text-sofia-superDark text-[14px] font-normal leading-normal truncate max-w-[90%]">
+          {department.name}
+        </p>
+      </div>
+      <div className="px-[8px] w-[35%]">
+        <p className="text-sofia-superDark text-[14px] font-normal leading-normal truncate max-w-[90%]">
           {department.description || "Sin descripción"}
         </p>
       </div>
-
-      <div className="flex flex-col sm:flex-row justify-center gap-2 sm:gap-4 mt-4">
-        <button
-          onClick={handleDelete}
-          className="w-full px-4 py-1 text-gray-500 border-2 rounded-md text-sm font-semibold"
+      <div className="px-[8px] w-[15%]">
+        <p className="text-sofia-superDark text-[14px] font-normal leading-normal truncate max-w-[90%]">
+          {department.id}
+        </p>
+      </div>
+      <div className="w-[10%] flex justify-center">
+        <button 
+          className="p-0" 
+          onClick={toggleVisibility}
         >
-          Eliminar
+          <img 
+            src={isVisible ? "/mvp/eye.svg" : "/mvp/eye-closed.svg"} 
+            alt={isVisible ? "Ocultar" : "Mostrar"} 
+            className="w-5 h-5 cursor-pointer p-0" 
+            title={isVisible ? "Ocultar departamento" : "Mostrar departamento"}
+          />
         </button>
-        <button
-          onClick={onUpdate}
-          className="w-full px-4 py-1 bg-sofia-electricGreen text-gray-900 rounded-md text-sm font-semibold hover:bg-opacity-50 transition-all"
+      </div>
+      <div className="w-[15%] flex items-center justify-center gap-0">
+        <button 
+          className="p-0" 
+          onClick={(e) => {
+            e.stopPropagation();
+            onDelete(department);
+          }}
         >
-          Editar
+          <img src="/mvp/trash.svg" alt="Eliminar" className="w-5 h-5 cursor-pointer" />
+        </button>
+        <button 
+          className="p-0 ml-2" 
+          onClick={(e) => {
+            e.stopPropagation();
+            onUpdate();
+          }}
+        >
+          <img src="/mvp/square-pen.svg" alt="Editar" className="w-5 h-5 cursor-pointer" />
         </button>
       </div>
     </div>
