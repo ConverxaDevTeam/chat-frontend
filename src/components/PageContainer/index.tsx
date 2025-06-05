@@ -24,7 +24,7 @@ const PageContainer = ({
           {buttonText && onButtonClick && (
             <button
               onClick={onButtonClick}
-              className="flex items-center gap-1 px-4 py-2 bg-[#001130] text-white rounded-lg hover:bg-opacity-90"
+              className="flex items-center gap-1 px-4 py-2 bg-[#001130] text-white rounded-[4px] hover:bg-opacity-90"
             >
               {buttonText}
             </button>
