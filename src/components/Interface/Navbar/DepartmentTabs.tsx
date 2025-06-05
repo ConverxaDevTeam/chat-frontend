@@ -27,6 +27,14 @@ const DepartmentTabs: React.FC<DepartmentTabsProps> = ({ className = '' }) => {
   );
   
   const visibleDepartments = 10;
+  
+  const { hiddenDepartmentIds } = useSelector(
+    (state: RootState) => state.department
+  );
+  
+  const filteredDepartments = departments.filter(
+    department => !hiddenDepartmentIds.includes(department.id.toString())
+  );
 
   useEffect(() => {
     if (selectOrganizationId) {
@@ -60,21 +68,21 @@ const DepartmentTabs: React.FC<DepartmentTabsProps> = ({ className = '' }) => {
     return null;
   }
 
-  const showNavButtons = departments.length > visibleDepartments;
+  const showNavButtons = filteredDepartments.length > visibleDepartments;
   
-  const visibleDepartmentsList = departments.slice(
+  const visibleDepartmentsList = filteredDepartments.slice(
     visibleIndex,
     visibleIndex + visibleDepartments
   );
   
-  const hasNext = visibleIndex + visibleDepartments < departments.length;
+  const hasNext = visibleIndex + visibleDepartments < filteredDepartments.length;
   const hasPrev = visibleIndex > 0;
   
   const getContainerWidth = () => {
-    if (departments.length <= 1) return 'w-auto min-w-[50px]';
-    if (departments.length <= 3) return 'w-auto min-w-[100px]';
-    if (departments.length <= 5) return 'w-auto min-w-[150px]';
-    if (departments.length <= 8) return 'w-auto min-w-[200px]';
+    if (filteredDepartments.length <= 1) return 'w-auto min-w-[50px]';
+    if (filteredDepartments.length <= 3) return 'w-auto min-w-[100px]';
+    if (filteredDepartments.length <= 5) return 'w-auto min-w-[150px]';
+    if (filteredDepartments.length <= 8) return 'w-auto min-w-[200px]';
     return 'w-[560px]';
   };
 
@@ -104,7 +112,7 @@ const DepartmentTabs: React.FC<DepartmentTabsProps> = ({ className = '' }) => {
               >
                 <span className={`px-2 py-1 rounded max-w-[120px] inline-block ${selectedDepartmentId === department.id ? 'bg-white' : ''}`}>
                   <span className="truncate block" title={department.name}>
-                    {department.name.length > 12 ? `${department.name.substring(0, 12)}...` : department.name}
+                    {department.name}
                   </span>
                 </span>
               </button>

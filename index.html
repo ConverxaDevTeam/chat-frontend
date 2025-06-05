@@ -6,7 +6,14 @@
     <link rel="stylesheet" href="/styles.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Sofia Chat</title>
-    <!-- El SDK de Facebook ahora se carga desde facebook-init.ts -->
+    <!-- Cargar el SDK de Facebook directamente en el HTML para asegurar que se cargue lo antes posible -->
+    <script>
+      window.fbAsyncInit = function() {
+        console.log('Facebook SDK async init called from HTML');
+        // La inicialización real se maneja en facebook-init.ts
+      };
+    </script>
+    <script async defer crossorigin="anonymous" src="https://connect.facebook.net/es_LA/sdk.js" id="facebook-jssdk"></script>
     <style>
      @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;700&display=swap');
     </style>
