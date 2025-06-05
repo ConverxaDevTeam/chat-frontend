@@ -9,6 +9,7 @@ import { useState } from "react";
 import Modal from "@components/Modal";
 import Loading from "@components/Loading";
 import { createIntegrationMessagerManual } from "@services/integration";
+import { ensureFBSDKLoaded } from "@utils/facebook-init";
 
 interface ButtonMessagerIntegrationProps {
   getDataIntegrations: () => void;
@@ -43,32 +44,65 @@ const ButtonMessagerIntegration = ({
 
   const handleConnectFacebook = async () => {
     setLoading(true);
-    FB.login(
-      response => {
-        if (response.authResponse && response.authResponse.code) {
-          setOpenModal(true);
-          const code = response.authResponse.code;
-          if (departmentId && selectOrganizationId) {
-            getPagesFacebook(departmentId, selectOrganizationId, code).then(
-              response => {
-                setPages(response);
-                setLoading(false);
-              }
-            );
-          }
-        }
-      },
-      {
-        config_id: import.meta.env.VITE_FB_CONFIG_ID,
-        response_type: "code",
-        override_default_response_type: true,
-        extras: {
-          setup: {},
-          featureType: "",
-          sessionInfoVersion: "3",
-        },
+    try {
+      console.log("ButtonMessagerIntegration: Ensuring Facebook SDK is loaded");
+      // Ensure Facebook SDK is loaded and initialized before using FB.login
+      await ensureFBSDKLoaded();
+
+      console.log(
+        "ButtonMessagerIntegration: Facebook SDK loaded, calling FB.login"
+      );
+      if (typeof window.FB === "undefined") {
+        throw new Error(
+          "Facebook SDK is still undefined after ensureFBSDKLoaded"
+        );
       }
-    );
+
+      window.FB.login(
+        response => {
+          console.log(
+            "ButtonMessagerIntegration: FB.login response received",
+            response
+          );
+          if (response.authResponse && response.authResponse.code) {
+            setOpenModal(true);
+            const code = response.authResponse.code;
+            if (departmentId && selectOrganizationId) {
+              getPagesFacebook(departmentId, selectOrganizationId, code)
+                .then(response => {
+                  setPages(response);
+                  setLoading(false);
+                })
+                .catch(error => {
+                  console.error("Error getting Facebook pages:", error);
+                  setLoading(false);
+                });
+            } else {
+              setLoading(false);
+            }
+          } else {
+            // Handle case where login was not successful
+            console.log(
+              "ButtonMessagerIntegration: FB.login failed or was cancelled"
+            );
+            setLoading(false);
+          }
+        },
+        {
+          config_id: import.meta.env.VITE_FB_CONFIG_ID,
+          response_type: "code",
+          override_default_response_type: true,
+          extras: {
+            setup: {},
+            featureType: "",
+            sessionInfoVersion: "3",
+          },
+        }
+      );
+    } catch (error) {
+      console.error("Error in Facebook login process:", error);
+      setLoading(false);
+    }
     setMenuIntegracion(false);
   };
 

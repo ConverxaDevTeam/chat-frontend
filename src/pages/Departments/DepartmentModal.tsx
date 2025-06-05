@@ -99,31 +99,19 @@ const DepartmentModal: FC<DepartmentModalProps> = ({
         >
           <img src="/mvp/vector-x.svg" alt="Cerrar" />
         </button>
-        <h2 className="text-xl font-bold mb-4">
+        <h2 className="text-xl font-semibold mb-4">
           {department ? "Editar" : "Nuevo"} departamento
         </h2>
-        <hr className="border-t border-gray-300 mb-4 -mx-6" />
+        <hr className="border-t border-gray-150 mb-4 -mx-6" />
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          {department && (
-            <div>
-              <label className="block text-gray-700 font-semibold mb-2">
-                ID
-              </label>
-              <input
-                type="text"
-                value={department.id}
-                disabled
-                className="w-full p-3 border text-gray-400 rounded-lg cursor-not-allowed"
-              />
-            </div>
-          )}
+
           <div>
             <label className="block text-gray-700 font-semibold mb-2">
               Nombre
             </label>
             <input
               {...register("name", { required: "Nombre es requerido" })}
-              className="w-full p-3 border rounded-lg focus:outline-none  focus:ring-1 mb-2"
+              className="w-full p-3 border rounded-[4px] focus:outline-none mb-2"
               placeholder="Nombre del departamento"
             />
             {errors.name && (
@@ -138,7 +126,7 @@ const DepartmentModal: FC<DepartmentModalProps> = ({
             </label>
             <textarea
               {...register("description")}
-              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-1"
+              className="w-full px-3 py-2 border rounded-[4px] focus:outline-none"
               rows={4}
               placeholder="Ingrese una descripción para el departamento"
             />
@@ -146,7 +134,7 @@ const DepartmentModal: FC<DepartmentModalProps> = ({
           <div className="flex justify-end gap-2">
             <button
               type="submit"
-              className="w-full p-4 mt-5 bg-[#001130] text-white rounded-[4px] text-base font-semibold transition-all leading-none"
+              className="w-full p-4 mt-5 bg-[#001130] text-white rounded-[4px] text-base font-normal transition-all leading-none"
             >
               {department ? "Actualizar" : "Crear"}
             </button>
