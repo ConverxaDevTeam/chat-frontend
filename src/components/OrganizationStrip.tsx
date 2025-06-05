@@ -134,7 +134,7 @@ export const OrganizationStrip: React.FC<OrganizationStripProps> = ({ }) => {
         )}
       </div>
       
-      <div className="w-full flex-1 overflow-y-auto overflow-x-visible flex flex-col items-center gap-4 py-2 custom-scrollbar">
+      <div className="w-full flex-1 overflow-y-auto overflow-x-visible flex flex-col items-center gap-4 py-3 custom-scrollbar">
         {realOrganizations.map((org) => {
         const orgName = org.organization.name;
         const isSelected = selectOrganizationId === org.organization.id;
@@ -150,15 +150,19 @@ export const OrganizationStrip: React.FC<OrganizationStripProps> = ({ }) => {
               }}
             >
               {org.organization.logo ? (
-                <img 
-                  src={org.organization.logo} 
-                  alt={`${orgName} logo`} 
-                  className="w-full h-full object-cover"
-                />
+                <div className="w-6 h-6 flex items-center justify-center">
+                  <img 
+                    src={org.organization.logo} 
+                    alt={`${orgName} logo`} 
+                    className={`w-full h-full object-cover rounded-sm ${isSelected ? '' : 'filter grayscale opacity-60'}`}
+                  />
+                </div>
               ) : (
-                <span className="text-[#343E4F] text-[10px] bg-gray-200 w-full h-full flex items-center justify-center">
-                  {getInitials(orgName)}
-                </span>
+                <div className="w-6 h-6 flex items-center justify-center">
+                  <span className={`text-[10px] w-full h-full flex items-center justify-center ${isSelected ? 'text-[#343E4F] bg-gray-200' : 'text-[#A6A8AB] bg-gray-100'}`}>
+                    {getInitials(orgName)}
+                  </span>
+                </div>
               )}
             </button>
             <div
@@ -183,7 +187,7 @@ export const OrganizationStrip: React.FC<OrganizationStripProps> = ({ }) => {
         {isAdmin && (
           <div className="group relative overflow-visible">
             <button
-              className="w-8 h-8 rounded-md bg-[#EEEEEE] flex items-center justify-center text-[#343E4F] hover:bg-gray-200 transition"
+              className="w-7 h-7 rounded-md bg-[#EEEEEE] flex items-center justify-center text-[#343E4F] hover:bg-gray-200 transition"
               aria-label="Agregar organización"
               onClick={() => setShowCreateModal(true)}
               onMouseEnter={(e) => {
