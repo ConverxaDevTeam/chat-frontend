@@ -42,6 +42,8 @@ jobs:
             VITE_PUBLIC_TOKEN_REFRESH_NAME=${{ secrets.VITE_PUBLIC_TOKEN_REFRESH_NAME_DEV }}
             VITE_PUBLIC_URL_FILES=${{ secrets.VITE_PUBLIC_URL_FILES_DEV }}  # Cambia a la URL de desarrollo
             VITE_GOOGLE_CLIENT_ID=${{ secrets.VITE_GOOGLE_CLIENT_ID_DEV }}
+            VITE_FB_APP_ID=${{ secrets.VITE_FB_APP_ID_DEV }}
+            VITE_FB_CONFIG_ID=${{ secrets.VITE_FB_CONFIG_ID_DEV }}
             NODE_OPTIONS="--max-old-space-size=1536"
             EOF
             export NODE_OPTIONS="--max-old-space-size=1536"
