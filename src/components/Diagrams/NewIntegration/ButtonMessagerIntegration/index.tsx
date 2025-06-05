@@ -38,6 +38,7 @@ const ButtonMessagerIntegration = ({
   const [pages, setPages] = useState<FacebookPage[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [openModal, setOpenModal] = useState<boolean>(false);
+  const [data, setData] = useState({ code: "" });
   const { selectOrganizationId } = useSelector(
     (state: RootState) => state.auth
   );
@@ -45,24 +46,28 @@ const ButtonMessagerIntegration = ({
   const handleConnectFacebook = async () => {
     setLoading(true);
     try {
-      console.log("ButtonMessagerIntegration: Ensuring Facebook SDK is loaded");
-      // Ensure Facebook SDK is loaded and initialized before using FB.login
-      // The ensureFBSDKLoaded function now returns the FB object
+      console.log(
+        "ButtonMessagerIntegration: Asegurando que el SDK de Facebook esté cargado"
+      );
+
+      // Obtener el objeto FB inicializado
       const FB = await ensureFBSDKLoaded();
 
       console.log(
-        "ButtonMessagerIntegration: Facebook SDK loaded, calling FB.login"
+        "ButtonMessagerIntegration: SDK de Facebook cargado, llamando a FB.login"
       );
-      // Use the returned FB object directly
+
+      // Usar el objeto FB devuelto directamente
       FB.login(
         response => {
           console.log(
-            "ButtonMessagerIntegration: FB.login response received",
+            "ButtonMessagerIntegration: Respuesta de FB.login recibida",
             response
           );
+          // Respuesta recibida de la integración de Messenger
           if (response.authResponse && response.authResponse.code) {
-            setOpenModal(true);
             const code = response.authResponse.code;
+            setOpenModal(true);
             if (departmentId && selectOrganizationId) {
               getPagesFacebook(departmentId, selectOrganizationId, code)
                 .then(response => {
@@ -70,16 +75,15 @@ const ButtonMessagerIntegration = ({
                   setLoading(false);
                 })
                 .catch(error => {
-                  console.error("Error getting Facebook pages:", error);
+                  console.error("Error al obtener páginas de Facebook:", error);
                   setLoading(false);
                 });
             } else {
               setLoading(false);
             }
           } else {
-            // Handle case where login was not successful
             console.log(
-              "ButtonMessagerIntegration: FB.login failed or was cancelled"
+              "ButtonMessagerIntegration: FB.login falló o fue cancelado"
             );
             setLoading(false);
           }
