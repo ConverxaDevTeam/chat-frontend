@@ -9,7 +9,10 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import { initFacebookSDK } from "./utils/facebook-init";
 
 // Inicializar el SDK de Facebook
-initFacebookSDK();
+// This will start loading the SDK but components will wait for it to be ready before using it
+initFacebookSDK().catch(error => {
+  console.error("Error initializing Facebook SDK:", error);
+});
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <BrowserRouter
