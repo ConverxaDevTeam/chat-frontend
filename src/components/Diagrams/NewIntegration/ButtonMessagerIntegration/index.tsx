@@ -9,6 +9,7 @@ import { useState } from "react";
 import Modal from "@components/Modal";
 import Loading from "@components/Loading";
 import { createIntegrationMessagerManual } from "@services/integration";
+import { ensureFBSDKLoaded } from "@utils/facebook-init";
 
 interface ButtonMessagerIntegrationProps {
   getDataIntegrations: () => void;
@@ -43,32 +44,43 @@ const ButtonMessagerIntegration = ({
 
   const handleConnectFacebook = async () => {
     setLoading(true);
-    FB.login(
-      response => {
-        if (response.authResponse && response.authResponse.code) {
-          setOpenModal(true);
-          const code = response.authResponse.code;
-          if (departmentId && selectOrganizationId) {
-            getPagesFacebook(departmentId, selectOrganizationId, code).then(
-              response => {
-                setPages(response);
-                setLoading(false);
-              }
-            );
+    try {
+      // Ensure Facebook SDK is loaded and initialized before using FB.login
+      await ensureFBSDKLoaded();
+
+      FB.login(
+        response => {
+          if (response.authResponse && response.authResponse.code) {
+            setOpenModal(true);
+            const code = response.authResponse.code;
+            if (departmentId && selectOrganizationId) {
+              getPagesFacebook(departmentId, selectOrganizationId, code).then(
+                response => {
+                  setPages(response);
+                  setLoading(false);
+                }
+              );
+            }
+          } else {
+            // Handle case where login was not successful
+            setLoading(false);
           }
-        }
-      },
-      {
-        config_id: import.meta.env.VITE_FB_CONFIG_ID,
-        response_type: "code",
-        override_default_response_type: true,
-        extras: {
-          setup: {},
-          featureType: "",
-          sessionInfoVersion: "3",
         },
-      }
-    );
+        {
+          config_id: import.meta.env.VITE_FB_CONFIG_ID,
+          response_type: "code",
+          override_default_response_type: true,
+          extras: {
+            setup: {},
+            featureType: "",
+            sessionInfoVersion: "3",
+          },
+        }
+      );
+    } catch (error) {
+      console.error("Error initializing Facebook SDK:", error);
+      setLoading(false);
+    }
     setMenuIntegracion(false);
   };
 
