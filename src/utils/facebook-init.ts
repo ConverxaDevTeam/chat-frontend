@@ -70,22 +70,13 @@ export function initFacebookSDK(): Promise<typeof window.FB> {
       }
 
       try {
-        console.log("SDK de Facebook cargado, inicializando...");
-        console.log({
-          appId: import.meta.env.VITE_FB_APP_ID,
-          autoLogAppEvents: true,
-          status: true,
-          cookie: true,
-          xfbml: true,
-          version: "v22.0",
-        });
         window.FB.init({
           appId: import.meta.env.VITE_FB_APP_ID,
           autoLogAppEvents: true,
           status: true,
           cookie: true,
           xfbml: true,
-          version: "v22.0",
+          version: "v23.0",
         });
 
         isFBInitialized = true;
