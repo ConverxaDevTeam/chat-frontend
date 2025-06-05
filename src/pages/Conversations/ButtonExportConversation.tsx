@@ -173,9 +173,8 @@ const ButtonExportConversation = ({
     <button
       type="button"
       onClick={generatePDF}
-      className="bg-sofia-superDark rounded-[4px] w-[63px] h-[24px]"
     >
-      <p className="text-[12px] text-white">Exportar</p>
+      <img src="/mvp/icon-export.svg" alt="Exportar" className="w-[18px] h-[18px]"/>
     </button>
   );
 };
