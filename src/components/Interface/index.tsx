@@ -71,14 +71,14 @@ const Interface = () => {
             mobileResolution={mobileResolution}
           />
           <div
-            className={`flex flex-1 flex-col min-h-full overflow-hidden ${mobileResolution ? "px-[10px] pb-[10px]" : "px-[20px] pb-[20px]"}`}
+            className={`flex flex-1 flex-col min-h-full overflow-hidden ${mobileResolution ? "pb-[10px]" : "pb-[20px]"}`}
           >
             <Navbar
               windowWidth={windowWidth}
               sidebarMinimized={sidebarMinimized}
               mobileResolution={mobileResolution}
             />
-            <div className="flex-1 min-h-0 mt-4 overflow-auto">
+            <div className="flex-1 min-h-0 mt-4 ml-4 overflow-auto">
               <Outlet />
             </div>
           </div>
