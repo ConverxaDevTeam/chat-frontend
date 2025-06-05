@@ -52,13 +52,8 @@ const ButtonMessagerIntegration = ({
       console.log(
         "ButtonMessagerIntegration: Facebook SDK loaded, calling FB.login"
       );
-      if (typeof window.FB === "undefined") {
-        throw new Error(
-          "Facebook SDK is still undefined after ensureFBSDKLoaded"
-        );
-      }
-
-      window.FB.login(
+      // Use the global FB object directly
+      FB.login(
         response => {
           console.log(
             "ButtonMessagerIntegration: FB.login response received",
