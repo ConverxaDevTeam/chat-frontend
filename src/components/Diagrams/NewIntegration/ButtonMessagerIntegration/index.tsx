@@ -59,7 +59,7 @@ const ButtonMessagerIntegration = ({
         }
       },
       {
-        config_id: "967210214990389",
+        config_id: import.meta.env.VITE_FB_CONFIG_ID,
         response_type: "code",
         override_default_response_type: true,
         extras: {
