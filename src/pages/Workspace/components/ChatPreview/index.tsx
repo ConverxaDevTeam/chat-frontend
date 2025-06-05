@@ -20,7 +20,7 @@ const ChatPreview = ({ config }: ChatPreviewProps) => {
 
   return (
     <div
-      className="w-[350px] h-full flex flex-col overflow-hidden font-sans"
+      className="w-[320px] h-[550px] flex flex-col overflow-hidden font-sans"
       style={{
         color: config.text_color,
         backgroundColor: config.bg_chat,
