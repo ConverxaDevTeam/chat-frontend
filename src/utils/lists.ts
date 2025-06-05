@@ -111,14 +111,14 @@ export const themeColors: themeColor[] = [
   {
     id: 0,
     name: "sofia",
-    bg_color: "#15ECDA",
+    bg_color: "#DBEAF2",
     text_title: "#000000",
     bg_chat: "#F5F5F5",
     text_color: "#000000",
-    bg_assistant: "#b1f6f0",
-    bg_user: "#ffffff",
+    bg_assistant: "#FFF",
+    bg_user: "#343E4F",
     button_color: "#15ECDA",
-    button_text: "#ffffff",
+    button_text: "#15ECDA",
     text_date: "#969696",
   },
   {
@@ -224,6 +224,19 @@ export const themeColors: themeColor[] = [
     button_color: "#2ECC71",
     button_text: "#FFFFFF",
     text_date: "#A3C9A3",
+  },
+  {
+    id: 9,
+    name: "sofia",
+    bg_color: "#15ECDA",
+    text_title: "#000000",
+    bg_chat: "#F5F5F5",
+    text_color: "#000000",
+    bg_assistant: "#b1f6f0",
+    bg_user: "#ffffff",
+    button_color: "#15ECDA",
+    button_text: "#ffffff",
+    text_date: "#969696",
   },
 ];
 
