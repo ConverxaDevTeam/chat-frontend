@@ -21,9 +21,9 @@ export const InputGroup = ({
       : [];
 
   return (
-    <div className="flex flex-col items-start gap-4 self-stretch">
+    <div className="flex flex-col items-start gap-3 self-stretch">
       <div className="flex items-center gap-2 group-re">
-        <label className="text-sofia-superDark text-[16px] font-[600] leading-[16px]">
+        <label className="text-sofia-superDark text-[16px] font-normal leading-[16px]">
           {label}
         </label>
         {tooltip}
