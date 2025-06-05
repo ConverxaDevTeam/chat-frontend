@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
 import { BrowserRouter } from "react-router-dom";
@@ -7,21 +7,41 @@ import { Provider } from "react-redux";
 import store from "./store";
 import { CounterProvider } from "@hooks/CounterContext";
 import { GoogleOAuthProvider } from "@react-oauth/google";
-import { initFacebookSDK } from "./utils/facebook-init";
+import { initFacebookSDK, isFacebookSDKReady } from "./utils/facebook-init";
 
-// Initialize Facebook SDK immediately
+// Inicializar el SDK de Facebook inmediatamente al cargar la aplicación
+console.log("Iniciando carga del SDK de Facebook desde main.tsx");
 const fbPromise = initFacebookSDK();
-fbPromise.catch(error => {
-  console.error("Error initializing Facebook SDK:", error);
-});
-
-// Create a wrapper component to ensure FB SDK is initialized before rendering the app
-const AppWithFacebookSDK = () => {
-  useEffect(() => {
-    // Log when component mounts to confirm initialization sequence
-    console.log(
-      "App component mounted, Facebook SDK initialization in progress"
+fbPromise
+  .then(FB => {
+    console.log("SDK de Facebook inicializado exitosamente desde main.tsx");
+  })
+  .catch(error => {
+    console.error(
+      "Error al inicializar el SDK de Facebook desde main.tsx:",
+      error
     );
+  });
+
+// Componente que garantiza que el SDK de Facebook esté inicializado
+const AppWithFacebookSDK = () => {
+  const [sdkStatus, setSdkStatus] = useState<string>("initializing");
+
+  useEffect(() => {
+    // Verificar el estado de inicialización del SDK
+    const checkSDKStatus = () => {
+      if (isFacebookSDKReady()) {
+        setSdkStatus("ready");
+        console.log("SDK de Facebook listo para su uso en la aplicación");
+      } else {
+        console.log("Esperando a que el SDK de Facebook esté listo...");
+        // Verificar nuevamente en 1 segundo
+        setTimeout(checkSDKStatus, 1000);
+      }
+    };
+
+    // Iniciar verificación
+    checkSDKStatus();
   }, []);
 
   return (

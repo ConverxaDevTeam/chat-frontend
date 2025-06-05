@@ -38,28 +38,31 @@ const ButtonWhatsAppIntegration = ({
 
   const handleConnectFacebook = async () => {
     try {
-      console.log("ButtonWhatsAppIntegration: Ensuring Facebook SDK is loaded");
-      // Ensure Facebook SDK is loaded and initialized before using FB.login
-      // The ensureFBSDKLoaded function now returns the FB object
+      console.log(
+        "ButtonWhatsAppIntegration: Asegurando que el SDK de Facebook esté cargado"
+      );
+
+      // Obtener el objeto FB inicializado
       const FB = await ensureFBSDKLoaded();
 
       console.log(
-        "ButtonWhatsAppIntegration: Facebook SDK loaded, calling FB.login"
+        "ButtonWhatsAppIntegration: SDK de Facebook cargado, llamando a FB.login"
       );
-      // Use the returned FB object directly
+
+      // Usar el objeto FB devuelto directamente
       FB.login(
         response => {
           console.log(
-            "ButtonWhatsAppIntegration: FB.login response received",
+            "ButtonWhatsAppIntegration: Respuesta de FB.login recibida",
             response
           );
-          // Response received from WhatsApp integration
+          // Respuesta recibida de la integración de WhatsApp
           if (response.authResponse && response.authResponse.code) {
             const code = response.authResponse.code;
             setData(prev => ({ ...prev, code }));
           } else {
             console.log(
-              "ButtonWhatsAppIntegration: FB.login failed or was cancelled"
+              "ButtonWhatsAppIntegration: FB.login falló o fue cancelado"
             );
           }
         },
@@ -75,7 +78,10 @@ const ButtonWhatsAppIntegration = ({
         }
       );
     } catch (error) {
-      console.error("Error in Facebook login process:", error);
+      console.error(
+        "Error en el proceso de inicio de sesión de Facebook:",
+        error
+      );
     }
   };
 
