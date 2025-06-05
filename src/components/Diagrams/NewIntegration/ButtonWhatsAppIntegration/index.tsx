@@ -5,6 +5,7 @@ import { RootState } from "@store";
 import { useEffect, useMemo, useState } from "react";
 import Modal from "@components/Modal";
 import { createIntegrationWhatsAppManual } from "@services/integration";
+import { ensureFBSDKLoaded } from "@utils/facebook-init";
 
 interface ButtonWhatsAppIntegrationProps {
   getDataIntegrations: () => void;
@@ -36,25 +37,41 @@ const ButtonWhatsAppIntegration = ({
   }, [data]);
 
   const handleConnectFacebook = async () => {
-    FB.login(
-      response => {
-        // Response received from WhatsApp integration
-        if (response.authResponse && response.authResponse.code) {
-          const code = response.authResponse.code;
-          setData(prev => ({ ...prev, code }));
-        }
-      },
-      {
-        config_id: "587940300399443",
-        response_type: "code",
-        override_default_response_type: true,
-        extras: {
-          setup: {},
-          featureType: "",
-          sessionInfoVersion: "3",
-        },
+    try {
+      console.log("ButtonWhatsAppIntegration: Ensuring Facebook SDK is loaded");
+      // Ensure Facebook SDK is loaded and initialized before using FB.login
+      await ensureFBSDKLoaded();
+      
+      console.log("ButtonWhatsAppIntegration: Facebook SDK loaded, calling FB.login");
+      if (typeof window.FB === 'undefined') {
+        throw new Error("Facebook SDK is still undefined after ensureFBSDKLoaded");
       }
-    );
+      
+      window.FB.login(
+        response => {
+          console.log("ButtonWhatsAppIntegration: FB.login response received", response);
+          // Response received from WhatsApp integration
+          if (response.authResponse && response.authResponse.code) {
+            const code = response.authResponse.code;
+            setData(prev => ({ ...prev, code }));
+          } else {
+            console.log("ButtonWhatsAppIntegration: FB.login failed or was cancelled");
+          }
+        },
+        {
+          config_id: "587940300399443",
+          response_type: "code",
+          override_default_response_type: true,
+          extras: {
+            setup: {},
+            featureType: "",
+            sessionInfoVersion: "3",
+          },
+        }
+      );
+    } catch (error) {
+      console.error("Error in Facebook login process:", error);
+    }
   };
 
   const handleMessage = async (event: MessageEvent) => {
