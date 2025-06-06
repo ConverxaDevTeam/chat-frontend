@@ -38,28 +38,36 @@ const ButtonWhatsAppIntegration = ({
 
   const handleConnectFacebook = async () => {
     try {
-      console.log("ButtonWhatsAppIntegration: Ensuring Facebook SDK is loaded");
-      // Ensure Facebook SDK is loaded and initialized before using FB.login
-      await ensureFBSDKLoaded();
-      
-      console.log("ButtonWhatsAppIntegration: Facebook SDK loaded, calling FB.login");
-      if (typeof window.FB === 'undefined') {
-        throw new Error("Facebook SDK is still undefined after ensureFBSDKLoaded");
-      }
-      
-      window.FB.login(
+      console.log(
+        "ButtonWhatsAppIntegration: Asegurando que el SDK de Facebook esté cargado"
+      );
+
+      // Obtener el objeto FB inicializado
+      const FB = await ensureFBSDKLoaded();
+
+      console.log(
+        "ButtonWhatsAppIntegration: SDK de Facebook cargado, llamando a FB.login"
+      );
+
+      // Usar el objeto FB devuelto directamente
+      FB.login(
         response => {
-          console.log("ButtonWhatsAppIntegration: FB.login response received", response);
-          // Response received from WhatsApp integration
+          console.log(
+            "ButtonWhatsAppIntegration: Respuesta de FB.login recibida",
+            response
+          );
+          // Respuesta recibida de la integración de WhatsApp
           if (response.authResponse && response.authResponse.code) {
             const code = response.authResponse.code;
             setData(prev => ({ ...prev, code }));
           } else {
-            console.log("ButtonWhatsAppIntegration: FB.login failed or was cancelled");
+            console.log(
+              "ButtonWhatsAppIntegration: FB.login falló o fue cancelado"
+            );
           }
         },
         {
-          config_id: "587940300399443",
+          config_id: import.meta.env.VITE_FB_CONFIG_ID,
           response_type: "code",
           override_default_response_type: true,
           extras: {
@@ -70,7 +78,10 @@ const ButtonWhatsAppIntegration = ({
         }
       );
     } catch (error) {
-      console.error("Error in Facebook login process:", error);
+      console.error(
+        "Error en el proceso de inicio de sesión de Facebook:",
+        error
+      );
     }
   };
 
