@@ -6,6 +6,7 @@ import { ConversationListItem } from "@interfaces/conversation";
 import { useAppSelector } from "@store/hooks";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import ButtonExportAllConversations from "./ButtonExportAllConversations";
 
 const Conversations = () => {
   const navigate = useNavigate();
@@ -46,13 +47,16 @@ const Conversations = () => {
 
   return (
     <div className="w-full flex flex-col">
+      <div className="flex gap-4 mb-5">
       <button
         type="button"
-        className="bg-sofia-electricOlive rounded-[8px] w-[161px] h-[34px] mb-[10px]"
+        className="bg-sofia-electricGreen flex items-center justify-center rounded-[4px] w-[145px] h-[30px] p-2"
         onClick={handleViewAllChats}
       >
-        <p className="text-[14px] text-sofia-superDark">Ver todos los chats</p>
+        <p className="text-[14px] font-medium text-sofia-superDark">Ver todos los chats</p>
       </button>
+      <ButtonExportAllConversations conversations={conversations} />
+      </div>
       <div className="w-full overflow-x-auto">
         <div className="w-full min-w-[900px] border-spacing-0 mb-[16px]">
           <div className="h-[36px] text-[16px] flex">
@@ -98,14 +102,19 @@ const Conversations = () => {
                 <RiArrowUpDownFill className="text-[#A6A8AB] cursor-pointer hover:text-sofia-superDark" />
               </div>
             </div>
-            <div className="w-[calc(100%/19*4)]">
+            <div className="w-[calc(100%/19*3)]">
               <div className="flex gap-[10px] items-center">
                 <p>Asistencia humana</p>
                 <RiArrowUpDownFill className="text-[#A6A8AB] cursor-pointer hover:text-sofia-superDark" />
               </div>
             </div>
+            <div className="w-[calc(100%/19*1)]">
+              <div className="flex justify-center items-center pr-[16px]">
+                <p>Acciones</p>
+              </div>
+            </div>
           </div>
-          <div className="bg-custom-gradient rounded-[8px] border-[2px] border-[#B8CCE0] border-inherit bg-app-c2">
+          <div className="bg-white rounded-[4px] border border-app-lightGray border-inherit">
             {conversations.map(conversation => (
               <ConversationCard
                 key={conversation.id}

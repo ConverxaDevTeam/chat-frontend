@@ -133,7 +133,7 @@ const ConversationCard = ({
 
   return (
     <div
-      className="min-h-[60px] text-[14px] border-b-[1px] border-b-[#DBEAF2] hover:bg-gray-50 flex items-center cursor-pointer"
+      className="min-h-[60px] text-[14px] border-b-[1px] border-b-app-lightGray last:border-b-0 hover:bg-gray-50 flex items-center cursor-pointer"
       onClick={handleRowClick}
     >
       <div className="pl-[16px] w-[calc(100%/19*2)]">
@@ -163,20 +163,11 @@ const ConversationCard = ({
       </div>
       <div className="w-[calc(100%/19*5)] py-[8px] pr-[16px]">
         <div className="relative">
-          <div className="h-[48px] overflow-hidden">
+          <div className="h-[50px] overflow-hidden">
             <p className="line-clamp-2 text-[14px]">
               <MessagePreview type={lastMessage.type} text={lastMessage.text} />
             </p>
           </div>
-          <button
-            onClick={e => {
-              e.stopPropagation();
-              navigate(`/conversation/detail/${conversation.id}`);
-            }}
-            className="text-xs font-medium hover:underline my-2 text-gray-500"
-          >
-            Leer más
-          </button>
         </div>
       </div>
       <div className="w-[calc(100%/19*2)]">
@@ -197,24 +188,14 @@ const ConversationCard = ({
           />
         )}
       </div>
-      <div className="w-[calc(100%/19*4)] flex items-center justify-between pr-[16px]">
+      <div className="w-[calc(100%/19*3)] flex items-center">
         <HitlButton
           conversation={conversation}
           onUpdateConversation={onUpdateConversation}
         />
-        <div className="flex items-center gap-[18px]">
-          <button
-            type="button"
-            onClick={e => {
-              e.stopPropagation();
-              navigate(`/conversation/detail/${conversation.id}`);
-            }}
-            className="bg-sofia-electricOlive rounded-[4px] w-[64px] h-[24px]"
-          >
-            <p className="text-[12px] text-sofia-superDark">Ver Chat</p>
-          </button>
-          <ButtonExportConversation conversation={conversation} />
-        </div>
+      </div>
+      <div className="w-[calc(100%/19*1)] flex items-center justify-center pr-[12px]">
+        <ButtonExportConversation conversation={conversation} />
       </div>
     </div>
   );

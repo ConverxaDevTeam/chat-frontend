@@ -352,7 +352,7 @@ export const StatisticsCard = ({
   return (
     <div
       ref={containerRef}
-      className={`statistics-card-container h-full w-full bg-[#F1F5F9] rounded-lg p-4 relative shadow-[-1px_-1px_0px_0px_#FFF_inset,_-2px_-2px_2px_0px_#B8CCE0_inset,_-1px_-1px_0px_0px_#FFF,_-2px_-2px_2px_0px_#B8CCE0] overflow-hidden flex flex-col ${className}`}
+      className={`statistics-card-container h-full w-full bg-white rounded border border-app-lightGray p-4 relative overflow-hidden flex flex-col ${className}`}
     >
       <div className="flex justify-between items-start gap-2 w-full">
         <CardHeader
