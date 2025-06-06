@@ -201,6 +201,8 @@ export const apiUrls = {
       `/api/plan/${organizationId}/set-custom`,
     updateDetails: (organizationId: number) =>
       `/api/plan/${organizationId}/details`,
+    changeType: (organizationId: number) =>
+      `/api/plan/${organizationId}/change-type`,
   },
 } as const;
 
