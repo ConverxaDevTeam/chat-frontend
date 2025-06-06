@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { deleteGlobalUser, getGlobalUsers } from "@services/user";
+import RoleBadge from "@components/RoleBadge";
 import Table from "@components/Card/Table";
 import TableHeader from "@components/Card/TableHeader";
 import TableBody from "@components/Card/TableBody";
@@ -69,7 +70,6 @@ const UserRow = ({
     .join(", ");
 
   const uniqueRoles = [...new Set(user.userOrganizations.map(org => org.role))];
-  const rolesString = uniqueRoles.join(", ");
 
   return (
     <>
@@ -100,7 +100,13 @@ const UserRow = ({
         <td className="px-4 py-2">{user.first_name || "-"}</td>
         <td className="px-4 py-2">{user.last_name || "-"}</td>
         <td className="px-4 py-2">{organizationNames || "-"}</td>
-        <td className="px-4 py-2">{rolesString}</td>
+        <td className="px-4 py-2">
+          <div className="flex flex-wrap gap-1">
+            {uniqueRoles.map((role, index) => (
+              <RoleBadge key={index} role={role} />
+            ))}
+          </div>
+        </td>
         <td className="px-4 py-2">
           <span
             className={`px-2 py-1 rounded-full text-xs ${
