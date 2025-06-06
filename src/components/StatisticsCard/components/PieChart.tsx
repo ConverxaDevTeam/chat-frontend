@@ -24,9 +24,9 @@ const createGradient = (ctx: CanvasRenderingContext2D, color: string) => {
     const rgb = hexToRgb(color);
     return `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${opacity})`;
   };
-  gradient.addColorStop(0, colorWithOpacity(0.9));
-  gradient.addColorStop(0.5, colorWithOpacity(0.5));
-  gradient.addColorStop(1, colorWithOpacity(0.1));
+  gradient.addColorStop(0, colorWithOpacity(1.0));
+  gradient.addColorStop(0.4, colorWithOpacity(0.8));
+  gradient.addColorStop(0.8, colorWithOpacity(0.6));
   return gradient;
 };
 
