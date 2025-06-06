@@ -50,21 +50,27 @@ const Sidebar = ({
       className={`transition-all duration-150 ease-in-out flex flex-col ${mobileResolution ? "" : ""}${sidebarMinimized || mobileResolution ? `${mobileResolution ? "w-[80px]" : "w-[80px]"}` : "w-[260px]"}`}
     >
       <div
-        style={{
-          height: "100vh",
-        }}
-        className={`fixed bg-white border-r border-sofia-darkBlue rounded-b-[4px] ${sidebarMinimized || mobileResolution ? `w-[80px]` : "w-[260px]"}`}
+        className={`fixed top-0 bottom-0 bg-white border-r border-sofia-darkBlue rounded-b-[4px] ${sidebarMinimized || mobileResolution ? `w-[80px]` : "w-[260px]"}`}
+        style={{ top: "var(--banner-height, 0px)" }}
       >
         <div className="flex flex-col w-full h-full relative px-4">
           {!mobileResolution && (
-            <div 
+            <div
               className="absolute -right-4 top-1/2 transform -translate-y-1/2 cursor-pointer rounded-full p-1"
               onClick={() => setSidebarMinimized(!sidebarMinimized)}
             >
               {sidebarMinimized ? (
-                <img src="/mvp/double-chevron-right.svg" alt="Expandir sidebar" className="w-6 h-6" />
+                <img
+                  src="/mvp/double-chevron-right.svg"
+                  alt="Expandir sidebar"
+                  className="w-6 h-6"
+                />
               ) : (
-                <img src="/mvp/double-chevron-left.svg" alt="Minimizar sidebar" className="w-6 h-6" />
+                <img
+                  src="/mvp/double-chevron-left.svg"
+                  alt="Minimizar sidebar"
+                  className="w-6 h-6"
+                />
               )}
             </div>
           )}
@@ -85,38 +91,45 @@ const Sidebar = ({
               />
             )}
           </div>
-          <div className="w-full border-b border-gray-200 mb-3 -ml-8 relative" style={{ width: 'calc(100% + 3rem)' }}></div>
+          <div
+            className="w-full border-b border-gray-200 mb-3 -ml-8 relative"
+            style={{ width: "calc(100% + 3rem)" }}
+          ></div>
           <ul className="flex flex-col w-full gap-[15px]">
             {!sidebarMinimized && !mobileResolution && (
-              <OrganizationHeaderItem 
-                organizationName={myOrganizations.find(org => org.organization?.id === selectOrganizationId)?.organization?.name || "Organización"}
+              <OrganizationHeaderItem
+                organizationName={
+                  myOrganizations.find(
+                    org => org.organization?.id === selectOrganizationId
+                  )?.organization?.name || "Organización"
+                }
                 sidebarMinimized={sidebarMinimized}
                 mobileResolution={mobileResolution}
               />
             )}
             {(selectOrganizationId === null && useSidebarAdmin) ||
-              (selectOrganizationId === 0 && useSidebarAdmin)
+            (selectOrganizationId === 0 && useSidebarAdmin)
               ? userSidebarAdminLinks.map((link, index) => {
-                return (
-                  <ItemSidebar
-                    key={`${link.text}-${index}`}
-                    link={link}
-                    sidebarMinimized={sidebarMinimized}
-                    mobileResolution={mobileResolution}
-                  />
-                );
-              })
+                  return (
+                    <ItemSidebar
+                      key={`${link.text}-${index}`}
+                      link={link}
+                      sidebarMinimized={sidebarMinimized}
+                      mobileResolution={mobileResolution}
+                    />
+                  );
+                })
               : sidebarLinks.map((link, index) => {
-                return (
-                  <ItemSidebar
-                    key={`${link.text}-${index}`}
-                    link={link}
-                    role={link.role || []}
-                    sidebarMinimized={sidebarMinimized}
-                    mobileResolution={mobileResolution}
-                  />
-                );
-              })}
+                  return (
+                    <ItemSidebar
+                      key={`${link.text}-${index}`}
+                      link={link}
+                      role={link.role || []}
+                      sidebarMinimized={sidebarMinimized}
+                      mobileResolution={mobileResolution}
+                    />
+                  );
+                })}
           </ul>
           <div className="mt-auto">
             {!(sidebarMinimized || mobileResolution) && (
@@ -135,7 +148,7 @@ const Sidebar = ({
             <div
               className={`mt-[18px] mb-[18px] flex h-[35px] items-center gap-[8px] ${sidebarMinimized || mobileResolution ? "w-full justify-center" : "w-full pl-[12px]"}`}
             >
-              {(sidebarMinimized || mobileResolution) ? (
+              {sidebarMinimized || mobileResolution ? (
                 <div className="group relative flex justify-center items-center">
                   <img
                     className="w-6 h-6 fill-current cursor-pointer"
@@ -150,10 +163,10 @@ const Sidebar = ({
                       font-[400] whitespace-nowrap tracking-[0.17px] leading-[143%] text-left
                       shadow-md items-center
                     `}
-                    style={{ 
-                      marginLeft: '10px',
-                      top: '50%',
-                      transform: 'translateY(-50%)'
+                    style={{
+                      marginLeft: "10px",
+                      top: "50%",
+                      transform: "translateY(-50%)",
                     }}
                   >
                     Cerrar sesión
@@ -176,9 +189,9 @@ const Sidebar = ({
                 </>
               )}
             </div>
-            <UserProfile 
-              sidebarMinimized={sidebarMinimized} 
-              mobileResolution={mobileResolution} 
+            <UserProfile
+              sidebarMinimized={sidebarMinimized}
+              mobileResolution={mobileResolution}
             />
           </div>
         </div>

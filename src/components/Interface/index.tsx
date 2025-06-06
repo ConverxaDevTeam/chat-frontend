@@ -61,8 +61,11 @@ const Interface = () => {
 
   return (
     <div className="flex flex-col h-screen w-screen overflow-hidden">
+      {/* Banner fuera del contenido principal para que desplace todo hacia abajo */}
       <PlanStatusBanner />
-      <div className="fixed inset-0 flex flex-col w-full h-full bg-sofia-background overflow-hidden">
+
+      {/* Contenido principal que se desplaza hacia abajo cuando el banner está presente */}
+      <div className="flex flex-col flex-1 w-full bg-sofia-background overflow-hidden relative">
         <div className="flex flex-1 w-full overflow-hidden pl-[74px]">
           <OrganizationStrip />
           <Sidebar
