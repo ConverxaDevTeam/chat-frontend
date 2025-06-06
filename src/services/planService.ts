@@ -2,6 +2,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { axiosInstance } from "@store/actions/auth"; // Assuming axiosInstance is exported from here
 import { apiUrls } from "@config/config";
+import { OrganizationType } from "@interfaces/organization.interface";
 
 const handleServiceError = (error: unknown, defaultMessage: string): never => {
   const errorMessage =
@@ -103,5 +104,61 @@ export const updateCustomPlanDetails = async (
         "Error al actualizar los detalles del plan personalizado."
       );
     }
+  }
+};
+
+/**
+ * Change the organization type (Super Admin only).
+ * @param organizationId The ID of the organization to change the type for
+ * @param type The new organization type
+ * @param daysToUpdate Optional, required only if type is "custom"
+ */
+export const changeOrganizationType = async (
+  organizationId: number,
+  type: OrganizationType,
+  daysToUpdate?: number
+): Promise<any> => {
+  try {
+    const payload: { type: OrganizationType; daysToUpdate?: number } = { type };
+    
+    if (type === OrganizationType.CUSTOM && daysToUpdate !== undefined) {
+      payload.daysToUpdate = daysToUpdate;
+    }
+    
+    const response = await axiosInstance.patch(
+      apiUrls.plan.changeType(organizationId),
+      payload
+    );
+    
+    const typeLabels = {
+      [OrganizationType.PRODUCTION]: "Producción",
+      [OrganizationType.MVP]: "MVP",
+      [OrganizationType.FREE]: "Gratuito",
+      [OrganizationType.CUSTOM]: "Personalizado"
+    };
+    
+    toast.success(`Tipo de organización cambiado a ${typeLabels[type]} exitosamente.`);
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      if (error.response?.status === 400) {
+        throw handleServiceError(
+          error,
+          "Datos inválidos. Asegúrese de proporcionar los días para actualizar si el tipo es personalizado."
+        );
+      } else if (error.response?.status === 403) {
+        throw handleServiceError(
+          error,
+          "No tiene permisos de superadmin para realizar esta acción."
+        );
+      } else if (error.response?.status === 404) {
+        throw handleServiceError(error, "Organización no encontrada.");
+      }
+    }
+    
+    throw handleServiceError(
+      error,
+      "Error al cambiar el tipo de organización."
+    );
   }
 };

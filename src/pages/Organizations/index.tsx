@@ -11,7 +11,7 @@ import { FiPlus, FiSearch, FiX } from "react-icons/fi";
 import { useAlertContext } from "@components/Diagrams/components/AlertContext";
 import { IOrganization } from "@interfaces/organization.interface";
 import ButtonExportAllOrganizations from "./ButtonExportAllOrganizations";
-import SetCustomPlanModal from "./SetCustomPlanModal";
+import ChangeOrganizationTypeModal from "./ChangeOrganizationTypeModal";
 
 type EditFormData = {
   owner_id: number;
@@ -324,7 +324,7 @@ const Organizations = () => {
             setSelectedPlanOrg(null);
           }}
         >
-          <SetCustomPlanModal
+          <ChangeOrganizationTypeModal
             organization={selectedPlanOrg}
             onClose={() => {
               setIsCustomPlanModalOpen(false);
