@@ -118,10 +118,10 @@ const OrganizationCard = ({
             >
               <img
                 src="/mvp/sliders-vertical.svg"
-                alt="Set Custom Plan"
+                alt="Cambiar tipo de organización"
                 className="w-4 h-4"
               />
-              <span>Set Custom Plan</span>
+              <span>Cambiar tipo de organización</span>
             </button>
           )}
         </ContextMenu>
