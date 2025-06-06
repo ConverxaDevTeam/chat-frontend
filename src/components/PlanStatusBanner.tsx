@@ -66,7 +66,7 @@ const PlanStatusBanner: React.FC = () => {
   };
 
   return (
-    <div className="w-full bg-[#FFF3CD] text-[#856404] py-2.5 px-5 text-center border-b border-[#FFEEBA] text-sm z-50 relative">
+    <div className="w-full bg-sofia-electricLight text-sofia-superDark py-2.5 px-5 text-center text-xs z-50 relative">
       {typeof daysRemaining === "number" && daysRemaining >= 0 && (
         <span>
           Te quedan {daysRemaining} día{daysRemaining !== 1 ? "s" : ""} de tu
@@ -78,9 +78,9 @@ const PlanStatusBanner: React.FC = () => {
       )}
       <button
         onClick={handleRequestCustomPlan}
-        className="ml-4 px-2.5 py-1.5 bg-[#007bff] text-white border-none rounded cursor-pointer font-bold"
+        className="ml-5 px-[8px] py-[4px] bg-[#2C6212] text-white border-none rounded cursor-pointer font-normal"
       >
-        ¡Actualiza a Pro!
+        ¡Mejora tu plan ahora!
       </button>
     </div>
   );
