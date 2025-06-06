@@ -92,9 +92,9 @@ const UsersOrganization = () => {
           <button
             type="button"
             onClick={() => setModalAddUser(true)}
-            className="flex justify-center items-center gap-2 w-[170px] h-[40px] text-white rounded-lg leading-[24px] bg-[#001130] hover:bg-opacity-90"
+            className="flex justify-center items-center gap-2 w-[170px] h-[40px] text-white rounded-[4px] leading-[24px] bg-[#001130] hover:bg-opacity-90"
           >
-            + Agregar usuario
+            + Crear usuario
           </button>
         )}
         {loading ? (

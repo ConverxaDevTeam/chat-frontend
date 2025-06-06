@@ -36,9 +36,8 @@ const LogIn = () => {
   }
 
   return (
-    <div className="flex flex-col w-full h-full bg-sofia-background">
-      <div className="flex flex-col w-[446px] bg-custom-gradient p-[12px] rounded-2xl border-[1px] border-[#B8CCE0] border-inherit m-auto">
-        <div className="bg-[#F1F5F9] rounded-lg px-[32px] pt-[53px] pb-[40px] [box-shadow:0px_4px_8px_0px_rgba(201,_217,_232,_0.8)]">
+    <div className="flex flex-col w-full h-full bg-whiite">
+      <div className="flex flex-col w-[446px] px-[43px] pt-[53px] pb-[40px] rounded-[4px] border border-[#B8CCE0] border-inherit m-auto">
           <img
             className="mx-auto mb-[48px] h-[34px]"
             src="/mvp/logo-sofia.svg"
@@ -56,7 +55,7 @@ const LogIn = () => {
                 Email
               </label>
               <input
-                className="rounded-lg mb-[16px] py-[10px] px-[14px] border-[1px] text-[#717680] text-[16px] font-normal"
+                className=" bg-[#FCFCFC] rounded-[4px] mb-[16px] py-[10px] px-[14px] border text-[#717680] text-[14px] font-normal"
                 type="email"
                 id="email"
                 placeholder="Ingresa tu correo"
@@ -72,7 +71,7 @@ const LogIn = () => {
                 Contraseña
               </label>
               <input
-                className="rounded-lg mb-[16px] py-[10px] px-[14px] border-[1px] text-[#717680] text-[16px] font-normal"
+                className=" bg-[#FCFCFC] rounded-[4px] mb-[16px] py-[10px] px-[14px] border-[1px] text-[#717680] text-[14px] font-normal"
                 type="password"
                 id="password"
                 placeholder="Contraseña"
@@ -91,7 +90,7 @@ const LogIn = () => {
               </Link>
             </div>
             <button
-              className="w-full rounded-[8px] py-[10px] bg-sofia-electricGreen text-sofia-superDark text-[16px] font-semibold mb-[16px] disabled:bg-app-lightGray"
+              className="w-full rounded-[4px] py-[10px] px-[18px] bg-sofia-electricGreen text-sofia-superDark text-[16px] font-semibold mb-[16px] disabled:bg-app-lightGray"
               type="submit"
               disabled={active}
             >
@@ -117,13 +116,12 @@ const LogIn = () => {
               </span>
               <Link
                 to="/sign-up"
-                className="text-[14px] font-medium text-sofia-superDark hover:text-sofia-electricGreen hover:underline"
+                className="text-[14px] font-semibold text-sofia-superDark hover:text-sofia-electricGreen hover:underline"
               >
                 Regístrate
               </Link>
             </div>
           </form>
-        </div>
       </div>
 
       <p className="mx-auto text-[12px] mb-[38px] font-normal text-center text-sofia-superDark">
