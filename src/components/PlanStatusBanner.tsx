@@ -32,30 +32,91 @@ const PlanStatusBanner: React.FC = () => {
     (state: RootState) => state.auth
   );
 
-  if (
-    !myOrganizations ||
-    myOrganizations.length === 0 ||
-    selectOrganizationId === null
-  ) {
-    return null; // No organizations or no selected organization
+  // Referencia para medir la altura del banner - IMPORTANTE: los hooks deben estar al inicio
+  const bannerRef = React.useRef<HTMLDivElement>(null);
+
+  // Función para establecer la altura del banner como variable CSS
+  const setBannerHeight = (height: number) => {
+    document.documentElement.style.setProperty(
+      "--banner-height",
+      `${height}px`
+    );
+  };
+
+  // Efecto para limpiar la variable CSS cuando el componente se desmonta
+  // IMPORTANTE: todos los useEffect deben estar juntos al inicio del componente
+  React.useEffect(() => {
+    return () => {
+      document.documentElement.style.removeProperty("--banner-height");
+    };
+  }, []);
+
+  // Efecto para medir y establecer la altura del banner cuando se renderiza
+  React.useEffect(() => {
+    // Si el banner no debe mostrarse, establecer altura en 0
+    if (!shouldShowBanner()) {
+      setBannerHeight(0);
+      return;
+    }
+
+    // Si el banner debe mostrarse, medir su altura
+    if (bannerRef.current) {
+      const height = bannerRef.current.offsetHeight;
+      setBannerHeight(height);
+    }
+
+    // Actualizar la altura si cambia el tamaño de la ventana
+    const handleResize = () => {
+      if (bannerRef.current && shouldShowBanner()) {
+        const height = bannerRef.current.offsetHeight;
+        setBannerHeight(height);
+      } else {
+        setBannerHeight(0);
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, [myOrganizations, selectOrganizationId]); // Dependencias actualizadas para re-ejecutar cuando cambian
+
+  // Función para determinar si se debe mostrar el banner
+  function shouldShowBanner(): boolean {
+    if (
+      !myOrganizations ||
+      myOrganizations.length === 0 ||
+      selectOrganizationId === null
+    ) {
+      return false;
+    }
+
+    const selectedUserOrg = myOrganizations.find(
+      (userOrg: UserOrganization) =>
+        userOrg.organization.id === selectOrganizationId
+    );
+
+    if (!selectedUserOrg || !selectedUserOrg.organization) {
+      return false;
+    }
+
+    const currentOrganization = selectedUserOrg.organization;
+    return currentOrganization.type === OrganizationType.FREE;
   }
 
+  // Si no se debe mostrar el banner, retornar null
+  if (!shouldShowBanner()) {
+    return null;
+  }
+
+  // Obtener la organización actual para mostrar información relevante
   const selectedUserOrg = myOrganizations.find(
     (userOrg: UserOrganization) =>
       userOrg.organization.id === selectOrganizationId
   );
-
-  if (!selectedUserOrg || !selectedUserOrg.organization) {
-    return null; // Selected organization not found in the list
-  }
-
-  const currentOrganization = selectedUserOrg.organization;
-  // Display banner only for 'free' plan type
-  if (currentOrganization.type !== OrganizationType.FREE) {
-    return null;
-  }
-
+  const currentOrganization = selectedUserOrg!.organization;
   const daysRemaining = currentOrganization.limitInfo?.daysRemaining;
+
   const handleRequestCustomPlan = async () => {
     try {
       await requestCustomPlan(currentOrganization.id);
@@ -66,7 +127,10 @@ const PlanStatusBanner: React.FC = () => {
   };
 
   return (
-    <div className="w-full bg-sofia-electricLight text-sofia-superDark py-2.5 px-5 text-center text-xs z-50 relative">
+    <div
+      ref={bannerRef}
+      className="w-full bg-sofia-electricLight text-sofia-superDark py-2.5 px-5 text-center text-xs"
+    >
       {typeof daysRemaining === "number" && daysRemaining >= 0 && (
         <span>
           Te quedan {daysRemaining} día{daysRemaining !== 1 ? "s" : ""} de tu
