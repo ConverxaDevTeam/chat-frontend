@@ -7,6 +7,8 @@ import { axiosInstance } from "@store/actions/auth";
 import { apiUrls } from "@config/config";
 import { getMyOrganizationsAsync } from "@store/actions/auth";
 import { OrganizationType } from "@interfaces/organization.interface";
+import EditButton from "@pages/Workspace/components/EditButton";
+import DeleteButton from "@pages/Workspace/components/DeleteButton";
 
 enum SetupStep {
   ORGANIZATION = "organization",
@@ -165,108 +167,135 @@ const InitialSetup = () => {
   };
 
   const renderOrganizationForm = () => (
-    <form onSubmit={createOrganization} className="space-y-4">
-      <h2 className="text-2xl font-semibold text-sofia-superDark mb-6">
+    <form onSubmit={createOrganization} className="space-y-5">
+      <h2 className="text-xl font-semibold text-sofia-superDark ">
         Crea tu organización
       </h2>
-
+      <hr className="border-t border-sofia-darkBlue mb-4 -mx-6" style={{ width: "calc(100% + 3rem)" }} />
       <div className="space-y-2">
-        <label className="block text-sm font-medium text-gray-700">
-          Nombre de la organización
-        </label>
-        <input
-          type="text"
-          name="name"
-          value={orgFormData.name}
-          onChange={handleOrgInputChange}
-          className="w-full rounded-lg py-2 px-3 border border-gray-300 focus:ring-sofia-electricGreen focus:border-sofia-electricGreen"
-          required
-        />
-      </div>
-
-      <div className="space-y-2">
-        <label className="block text-sm font-medium text-gray-700">
-          Descripción
-        </label>
-        <textarea
-          name="description"
-          value={orgFormData.description}
-          onChange={handleOrgInputChange}
-          className="w-full rounded-lg py-2 px-3 border border-gray-300 focus:ring-sofia-electricGreen focus:border-sofia-electricGreen"
-          rows={3}
-          required
-        />
-      </div>
-
-      <div className="space-y-2">
-        <label className="block text-sm font-medium text-gray-700">Logo</label>
-        <div className="flex items-center space-x-4">
+        <label className="block text-sm font-semibold leading-4 text-gray-700">Imagen para tu organización</label>
+        <div className="relative h-16 w-16 mb-2">
+          <img
+            src={previewImage || "/mvp/avatar.svg"}
+            alt="avatar"
+            className="h-full w-full object-cover rounded-full"
+          />
+          <div className="absolute -bottom-2 left-10 flex z-10">
+            <button
+              type="button"
+              onClick={() => document.getElementById("avatar-upload")?.click()}
+              className="rounded-lg flex items-center justify-center"
+              style={{ width: 28, height: 28 }}
+            >
+              <EditButton />
+            </button>
+            <button
+              type="button"
+              onClick={() => setPreviewImage(null)}
+              className="rounded-lg flex items-center justify-center"
+              style={{ width: 28, height: 28 }}
+            >
+              <DeleteButton />
+            </button>
+          </div>
           <input
             type="file"
             accept="image/*"
             onChange={handleFileChange}
-            className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-sofia-electricGreen file:text-sofia-superDark hover:file:bg-green-400"
+            className="hidden"
+            id="avatar-upload"
           />
-          {previewImage && (
-            <div className="h-16 w-16 rounded-md overflow-hidden border border-gray-300">
-              <img
-                src={previewImage}
-                alt="Preview"
-                className="h-full w-full object-cover"
-              />
-            </div>
-          )}
         </div>
+        <span className="text-[12px] font-normal text-app-newGray mt-3">Formatos admitidos: png, jpg, jpeg.</span>
       </div>
 
-      <button
-        type="submit"
-        disabled={loading}
-        className="w-full py-2 px-4 bg-sofia-electricGreen text-sofia-superDark font-medium rounded-md hover:bg-green-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sofia-electricGreen disabled:bg-gray-300"
-      >
-        {loading ? "Creando..." : "Crear organización"}
-      </button>
-    </form>
-  );
-
-  const renderDepartmentForm = () => (
-    <form onSubmit={createDepartment} className="space-y-4">
-      <h2 className="text-2xl font-semibold text-sofia-superDark mb-6">
-        Crea tu departamento
-      </h2>
-
       <div className="space-y-2">
-        <label className="block text-sm font-medium text-gray-700">
-          Nombre del departamento
+        <label className="block text-sm font-semibold text-gray-700">
+          Nombre
         </label>
         <input
           type="text"
           name="name"
-          value={deptFormData.name}
-          onChange={handleDeptInputChange}
-          className="w-full rounded-lg py-2 px-3 border border-gray-300 focus:ring-sofia-electricGreen focus:border-sofia-electricGreen"
+          placeholder="Nombre de la organización"
+          value={orgFormData.name}
+          onChange={handleOrgInputChange}
+          className="bg-[#FCFCFC] w-full rounded-[4px] py-3 px-3 border border-sofia-darkBlue text-[14px] font-normal"
           required
         />
       </div>
 
       <div className="space-y-2">
-        <label className="block text-sm font-medium text-gray-700">
+        <label className="block text-sm font-semibold text-gray-700">
           Descripción
         </label>
         <textarea
           name="description"
-          value={deptFormData.description}
-          onChange={handleDeptInputChange}
-          className="w-full rounded-lg py-2 px-3 border border-gray-300 focus:ring-sofia-electricGreen focus:border-sofia-electricGreen"
+          placeholder="Descripción de la organización"
+          value={orgFormData.description}
+          onChange={handleOrgInputChange}
+          className="bg-[#FCFCFC] w-full rounded-[4px] py-3 px-3 border border-sofia-darkBlue text-[14px] font-normal"
           rows={3}
           required
         />
       </div>
 
+      <div className="flex flex-row gap-3 mt-2">
+        <button
+          type="button"
+          onClick={() => window.location.href = '/'}
+          className="w-1/2 py-3 px-4 border border-sofia-superDark text-sofia-superDark text-[14px] font-medium rounded-[4px] bg-white"
+        >
+          Volver al login
+        </button>
+        <button
+          type="submit"
+          className="w-1/2 py-3 px-4 bg-sofia-electricGreen text-sofia-superDark text-[14px] font-semibold rounded-[4px]"
+        >
+        {loading ? "Creando..." : "Crear organización"}
+        </button>
+      </div>
+    </form>
+  );
+
+  const renderDepartmentForm = () => (
+    <form onSubmit={createDepartment} className="space-y-5">
+      <h2 className="text-xl font-semibold text-sofia-superDark">
+        Crea tu departamento
+      </h2>
+      <hr className="border-t border-sofia-darkBlue mb-4 -mx-6" style={{ width: 'calc(100% + 3rem)' }} />
+      <div className="flex flex-col">
+        <label className="text-[14px] font-medium text-[#414651] mb-[6px]" htmlFor="name">
+          Nombre
+        </label>
+        <input
+          type="text"
+          name="name"
+          id="name"
+          placeholder="Nombre del departamento"
+          value={deptFormData.name}
+          onChange={handleDeptInputChange}
+          className="bg-[#FCFCFC] w-full rounded-[4px] py-3 px-3 border border-sofia-darkBlue text-[14px] font-normal"
+          required
+        />
+      </div>
+      <div className="flex flex-col">
+        <label className="text-[14px] font-medium text-[#414651] mb-[6px]" htmlFor="description">
+          Descripción
+        </label>
+        <textarea
+          name="description"
+          id="description"
+          placeholder="Descripción del departamento"
+          value={deptFormData.description}
+          onChange={handleDeptInputChange}
+          className="bg-[#FCFCFC] w-full rounded-[4px] py-3 px-3 border border-sofia-darkBlue text-[14px] font-normal resize-none"
+          rows={3}
+          required
+        />
+      </div>
       <button
         type="submit"
-        disabled={loading}
-        className="w-full py-2 px-4 bg-sofia-electricGreen text-sofia-superDark font-medium rounded-md hover:bg-green-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sofia-electricGreen disabled:bg-gray-300"
+        className="w-full py-3 px-4 bg-sofia-electricGreen text-sofia-superDark text-[14px] font-semibold rounded-[4px]"
       >
         {loading ? "Creando..." : "Crear departamento"}
       </button>
@@ -274,29 +303,27 @@ const InitialSetup = () => {
   );
 
   const renderCompletionMessage = () => (
-    <div className="text-center space-y-6">
-      <h2 className="text-2xl font-semibold text-sofia-superDark">
-        ¡Configuración completada!
+    <div className="flex flex-col items-center justify-center min-h-[350px]">
+      <h2 className="font-semibold text-[24px] text-sofia-superDark mb-2 text-center">
+        Configuración completada
       </h2>
-
-      <div className="p-6 bg-white rounded-lg shadow-md">
-        <p className="text-lg mb-4">
+      <div className="p-6 bg-white w-full max-w-md rounded-[4px] border border-app-lightGray mt-2">
+        <p className="text-[14px] font-normal text-[#414651] mb-4 text-center">
           Tu cuenta ha sido configurada correctamente.
         </p>
-        <p className="mb-4">Tienes disponibles:</p>
-        <ul className="list-disc list-inside mb-6 text-left">
+        <p className="text-[14px] font-normal text-[#414651] mb-4 text-center">Tienes disponibles:</p>
+        <ul className="list-disc list-inside mb-6 text-left text-[14px] font-normal text-[#414651] pl-4">
           <li className="mb-2">50 mensajes</li>
           <li className="mb-2">15 días para utilizarlos</li>
         </ul>
-        <p className="mb-6">
+        <p className="text-[14px] font-normal text-[#414651] mb-6 text-center">
           Si necesitas más mensajes o extender tu período de uso, contáctanos.
         </p>
-
         <button
-          onClick={() => (window.location.href = "/dashboard")}
-          className="w-full py-2 px-4 bg-sofia-electricGreen text-sofia-superDark font-medium rounded-md hover:bg-green-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sofia-electricGreen"
+          className="w-full py-3 px-4 bg-sofia-electricGreen text-sofia-superDark text-[14px] font-semibold rounded-[4px]"
+          onClick={() => window.location.href = "/dashboard"}
         >
-          Contactar
+          Ir al dashboard
         </button>
       </div>
     </div>
@@ -305,7 +332,7 @@ const InitialSetup = () => {
   return (
     <div className="flex flex-col min-h-screen bg-sofia-background">
       <div className="flex-grow flex items-center justify-center p-6">
-        <div className="w-full max-w-md bg-white rounded-lg shadow-lg p-8">
+        <div className="w-full max-w-md bg-white rounded-[4px] border border-app-lightGray p-[24px]">
           {currentStep === SetupStep.ORGANIZATION && renderOrganizationForm()}
           {currentStep === SetupStep.DEPARTMENT && renderDepartmentForm()}
           {currentStep === SetupStep.COMPLETE && renderCompletionMessage()}
