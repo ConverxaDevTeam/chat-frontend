@@ -70,7 +70,7 @@ export const TimeRangeSelector = ({
           ref={buttonRef}
           onClick={handleClick}
           onMouseDown={handleMouseDown}
-          className="inline-flex w-[126px] items-center justify-between px-2 py-1 text-sofia-superDark rounded-lg hover:bg-white/50 bg-sofia-secundario border border-sofia-superDark"
+          className="inline-flex w-[126px] items-center justify-between pr-[8px] pl-[10px] py-[6px] text-sofia-superDark rounded hover:bg-white/50 bg-sofia-secundario border-[0.5px] border-sofia-superDark"
         >
           <span className="text-xs font-medium truncate">
             {timeRangeLabels[timeRange]}
@@ -86,7 +86,7 @@ export const TimeRangeSelector = ({
           ref={buttonRef}
           onClick={handleClick}
           onMouseDown={handleMouseDown}
-          className="inline-flex w-6 h-6 p-[5px_2px] flex-col justify-center items-center gap-2.5 flex-shrink-0 rounded-full border border-sofia-superDark bg-sofia-secundario"
+          className="inline-flex w-6 h-6 p-[5px_2px] flex-col justify-center items-center gap-2.5 flex-shrink-0 rounded-full border-[0.5px] border-sofia-superDark bg-sofia-secundario"
         >
           <img
             src={`/mvp/${timeRangeOptions.find(opt => opt.id === timeRange)?.icon}`}
