@@ -47,7 +47,7 @@ export default {
           electricLight: "#DDFBC7",
           electricGreen: "#15ECDA",
           background: "#F6F6F6",
-          secundario: "#d0fbf8",
+          secundario: "#F4FAFF",
           blancoPuro: "#FFFFFF",
           celeste: "#F6FBFF",
           hitlPending: "#FFBB93",

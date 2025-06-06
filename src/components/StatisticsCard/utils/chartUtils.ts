@@ -3,8 +3,9 @@ export const createChartGradient = (
   color: string
 ) => {
   const gradient = ctx.createLinearGradient(0, 0, 0, 400);
-  gradient.addColorStop(0, `${color}CC`); // 80% opacity
-  gradient.addColorStop(0.15, `${color}99`); // 60% opacity
-  gradient.addColorStop(0.3, `${color}00`); // 0% opacity
+  gradient.addColorStop(0, `${color}66`); // 40% opacity
+  gradient.addColorStop(0.3, `${color}4D`); // 30% opacity
+  gradient.addColorStop(0.7, `${color}33`); // 20% opacity
+  gradient.addColorStop(1, `${color}1A`); // 10% opacity
   return gradient;
 };

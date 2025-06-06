@@ -9,9 +9,9 @@ import { axiosInstance } from "@store/actions/auth";
 import { apiUrls } from "@config/config";
 
 const CHANNEL_METADATA = {
-  whatsapp: { color: "#25D366", icon: "whatsapp" },
-  facebook: { color: "#1877F2", icon: "messenger" },
-  web: { color: "#60A5FA", icon: "globe" },
+  whatsapp: { color: "#93EC15", icon: "whatsapp" },
+  facebook: { color: "#1593EC", icon: "messenger" },
+  web: { color: "#DBEAF2", icon: "globe" },
 } as const;
 
 const ANALYTIC_METADATA: Record<
@@ -20,19 +20,19 @@ const ANALYTIC_METADATA: Record<
 > = {
   [AnalyticType.TOTAL_USERS]: {
     label: "Total Usuarios",
-    color: "#10B981",
+    color: "#BAF88F",
   },
   [AnalyticType.NEW_USERS]: {
     label: "Nuevos Usuarios",
-    color: "#10B981",
+    color: "#15EC6F",
   },
   [AnalyticType.RECURRING_USERS]: {
     label: "Usuarios Recurrentes",
-    color: "#10B981",
+    color: "#0FBFB0",
   },
   [AnalyticType.SESSIONS]: {
     label: "Sesiones",
-    color: "#8B5CF6",
+    color: "#6F15EC",
   },
   [AnalyticType.IA_MESSAGES]: {
     label: "Mensajes IA",
@@ -40,23 +40,23 @@ const ANALYTIC_METADATA: Record<
   },
   [AnalyticType.HITL_MESSAGES]: {
     label: "Mensajes HITL",
-    color: "#001126",
+    color: "#DA15EC",
   },
   [AnalyticType.TOTAL_MESSAGES]: {
     label: "Total Mensajes",
-    color: "#60A5FA",
+    color: "#1593EC",
   },
   [AnalyticType.IA_MESSAGES_PER_SESSION]: {
     label: "Mensajes IA por Sesión",
-    color: "#60A5FA",
+    color: "#15ECDA",
   },
   [AnalyticType.HITL_MESSAGES_PER_SESSION]: {
     label: "Mensajes HITL por Sesión",
-    color: "#60A5FA",
+    color: "#DA15EC",
   },
   [AnalyticType.SESSIONS_PER_USER]: {
     label: "Sesiones por Usuario",
-    color: "#8B5CF6",
+    color: "#6F15EC",
   },
   [AnalyticType.MESSAGES_BY_WHATSAPP]: {
     label: "Mensajes por WhatsApp",
@@ -72,11 +72,11 @@ const ANALYTIC_METADATA: Record<
   },
   [AnalyticType.FUNCTION_CALLS]: {
     label: "Llamadas a Funciones",
-    color: "#F59E0B",
+    color: "#ECDA15",
   },
   [AnalyticType.FUNCTIONS_PER_SESSION]: {
     label: "Funciones por Sesión",
-    color: "#F59E0B",
+    color: "#ECDA15",
   },
 };
 
