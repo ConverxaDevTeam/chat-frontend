@@ -26,6 +26,12 @@ const EXAMPLES_SUMMARIES = {
     "Asistente de soporte técnico: Diagnostica problemas y proporciona soluciones paso a paso.",
 };
 
+const EXAMPLES_TITLES = {
+  example1: "Atención al cliente",
+  example2: "Ventas",
+  example3: "Soporte técnico",
+};
+
 interface AgentFormValues {
   name: string;
   description: string;
@@ -142,10 +148,10 @@ export const AgenteForm = ({
             <div className="group relative">
               <button
                 type="button"
-                className="w-[84px] h-[24px] px-[12px] text-sofia-superDark font-medium text-[12px] border-sofia-superDark border-[1px] rounded-[4px] hover:bg-gray-100 transition-colors"
+                className="w-auto h-[24px] px-[12px] text-sofia-superDark font-medium text-[12px] border-sofia-superDark border-[1px] rounded-[4px] hover:bg-gray-100 transition-colors"
                 onClick={() => examples("example1")}
               >
-                Ejemplo 1
+                {EXAMPLES_TITLES.example1}
               </button>
               <div className="absolute z-10 left-0 bottom-full mb-2 hidden group-hover:block bg-[#F6F6F6] border border-[#001126] text-[#001126] text-[12px] px-2 py-1.5 rounded whitespace-normal w-[180px]">
                 {EXAMPLES_SUMMARIES.example1}
@@ -154,10 +160,10 @@ export const AgenteForm = ({
             <div className="group relative">
               <button
                 type="button"
-                className="w-[84px] h-[24px] px-[12px] text-sofia-superDark font-medium text-[12px] border-sofia-superDark border-[1px] rounded-[4px] hover:bg-gray-100 transition-colors"
+                className="w-auto h-[24px] px-[12px] text-sofia-superDark font-medium text-[12px] border-sofia-superDark border-[1px] rounded-[4px] hover:bg-gray-100 transition-colors"
                 onClick={() => examples("example2")}
               >
-                Ejemplo 2
+                {EXAMPLES_TITLES.example2}
               </button>
               <div className="absolute z-10 left-0 bottom-full mb-2 hidden group-hover:block bg-[#F6F6F6] border border-[#001126] text-[#001126] text-[12px] px-2 py-1.5 rounded whitespace-normal w-[180px]">
                 {EXAMPLES_SUMMARIES.example2}
@@ -166,10 +172,10 @@ export const AgenteForm = ({
             <div className="group relative">
               <button
                 type="button"
-                className="w-[84px] h-[24px] px-[12px] text-sofia-superDark font-medium text-[12px] border-sofia-superDark border-[1px] rounded-[4px] hover:bg-gray-100 transition-colors"
+                className="w-auto h-[24px] px-[12px] text-sofia-superDark font-medium text-[12px] border-sofia-superDark border-[1px] rounded-[4px] hover:bg-gray-100 transition-colors"
                 onClick={() => examples("example3")}
               >
-                Ejemplo 3
+                {EXAMPLES_TITLES.example3}
               </button>
               <div className="absolute z-10 left-0 bottom-full mb-2 hidden group-hover:block bg-[#F6F6F6] border border-[#001126] text-[#001126] text-[12px] px-2 py-1.5 rounded whitespace-normal w-[180px]">
                 {EXAMPLES_SUMMARIES.example3}

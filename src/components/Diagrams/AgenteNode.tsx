@@ -9,14 +9,12 @@ import { ContextMenuOption } from "./DiagramContextMenu";
 import { ActionButtons, ActionType } from "./agenteComponents/AgentInfo";
 import { useHumanCommunication } from "./hooks/useHumanCommunication";
 import InfoTooltip from "@components/common/InfoTooltip";
-import { useApplicationsSidebar } from "@hooks/ApplicationsSidebarContext";
 
 const AgenteNode = (props: CustomTypeNodeProps<AgentData>) => {
   const { data, selected } = props;
   const [eventOpen, setEventOpen] = useState<string | null>(null);
   const { humanCommunication, handleHumanCommunicationToggle } =
     useHumanCommunication(data.agentId);
-  const { openApplicationsSidebar } = useApplicationsSidebar();
 
   const contextMenuOptions: ContextMenuOption[] = [
     {
@@ -58,21 +56,6 @@ const AgenteNode = (props: CustomTypeNodeProps<AgentData>) => {
     },
     {
       child: (
-        <div className="flex items-center gap-[10px]">
-          <img
-            src="/mvp/layout-grid-plus.svg"
-            alt="Agregar aplicación"
-            className="w-4 h-4"
-          />
-          <span className="text-[#001126] text-[14px] font-[500] leading-normal">
-            Agregar aplicación
-          </span>
-        </div>
-      ),
-      onClick: () => openApplicationsSidebar(),
-    },
-    {
-      child: (
         <div className="relative flex items-center gap-[10px]">
           <img
             src="/mvp/bot.svg"
@@ -84,8 +67,8 @@ const AgenteNode = (props: CustomTypeNodeProps<AgentData>) => {
             className="w-4 h-4"
           />
           <span className="text-[#001126] text-[14px] font-[500] leading-normal flex items-center gap-[5px]">
-            Comunicación humana
-            <InfoTooltip text="El agente ahora podrá escalar conversaciones a un humano" />
+            Escalar a agente humano
+            <InfoTooltip text="Permite que la IA derive la conversación a un agente humano en tiempo real." />
           </span>
           <label className="relative inline-flex items-center cursor-pointer">
             <input

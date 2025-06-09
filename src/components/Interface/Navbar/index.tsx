@@ -317,7 +317,7 @@ const UserActions = ({
       </p>
       <div
         className={`
-          bg-[#F1F5F9] rounded-[8px] shadow-[1px_1px_2px_0px_#B8CCE0,-1px_-1px_2px_0px_#FFFFFF,1px_1px_2px_0px_#B8CCE0_inset,-1px_-1px_2px_0px_#FFFFFF_inset] relative flex justify-between items-center gap-2 p-3 cursor-pointer h-[36px] ${
+          relative flex justify-between items-center gap-2 p-3 cursor-pointer h-[36px] ${
             mobileResolution ? "w-full" : "w-auto"
           }`}
       >
