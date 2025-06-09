@@ -32,8 +32,8 @@ const OperationModal: React.FC<OperationModalProps> = ({
 
   return ReactDOM.createPortal(
     <div
-      className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 transition-opacity duration-300 ease-in-out"
-      style={{ zIndex: 999 }}
+      className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 transition-opacity duration-300 ease-in-out"
+      style={{ zIndex: 1100 }}
       onClick={e => {
         if (onClose && e.target === e.currentTarget && type !== "loading") {
           onClose();
