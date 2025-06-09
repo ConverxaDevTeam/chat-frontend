@@ -11,8 +11,9 @@ interface OrganizationData {
   updated_at: string;
   name: string;
   description: string;
-  plan_type?: string; // Using plan_type instead of type
-  plan_info?: {
+  logo?: string | null;
+  type?: OrganizationType;
+  limitInfo?: {
     hasReachedLimit?: boolean;
     limit?: number;
     current?: number;
@@ -93,7 +94,7 @@ const PlanStatusBanner: React.FC = () => {
 
     const selectedUserOrg = myOrganizations.find(
       (userOrg: UserOrganization) =>
-        userOrg.organization.id === selectOrganizationId
+        userOrg.organization && userOrg.organization.id === selectOrganizationId
     );
 
     if (!selectedUserOrg || !selectedUserOrg.organization) {
@@ -112,15 +113,23 @@ const PlanStatusBanner: React.FC = () => {
   // Obtener la organización actual para mostrar información relevante
   const selectedUserOrg = myOrganizations.find(
     (userOrg: UserOrganization) =>
-      userOrg.organization.id === selectOrganizationId
+      userOrg.organization && userOrg.organization.id === selectOrganizationId
   );
-  const currentOrganization = selectedUserOrg!.organization;
+  
+  // Verificar que selectedUserOrg existe antes de acceder a sus propiedades
+  if (!selectedUserOrg || !selectedUserOrg.organization) {
+    return null;
+  }
+  
+  const currentOrganization = selectedUserOrg.organization;
   const daysRemaining = currentOrganization.limitInfo?.daysRemaining;
 
   const handleRequestCustomPlan = async () => {
     try {
-      await requestCustomPlan(currentOrganization.id);
-      // Success toast is handled by the service
+      if (currentOrganization && currentOrganization.id) {
+        await requestCustomPlan(currentOrganization.id);
+        // Success toast is handled by the service
+      }
     } catch (error) {
       // Error toast is handled by the service
     }
