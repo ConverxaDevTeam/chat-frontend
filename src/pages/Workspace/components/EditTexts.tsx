@@ -215,9 +215,9 @@ const EditTexts = ({
         </form>
       </div>
       <div className="w-[320px]">
-      <h3 className="text-sofia-superDark text-[14px] font-semibold leading-[16px] mb-2">
-      Vista previa del chat
-    </h3>
+        <h3 className="text-sofia-superDark text-[14px] font-semibold leading-[16px] mb-2">
+          Vista previa del chat
+        </h3>
         <ChatPreview config={integration.config} />
       </div>
     </div>
