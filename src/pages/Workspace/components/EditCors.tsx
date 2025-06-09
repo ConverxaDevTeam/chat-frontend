@@ -48,7 +48,7 @@ const CorsInput = ({
   onChange: (value: string) => void;
   onAdd: () => void;
 }) => (
-  <div className="w-full">
+  <div className="w-full mb-[16px]">
     <InputGroup label="">
       <div className="relative w-full">
         <Input
@@ -85,7 +85,26 @@ const ScriptViewer = ({
   script: string;
   onCopy: () => void;
 }) => (
-  <InputGroup label="Script de Integración">
+  <InputGroup 
+    label="Script de Integración"
+    description={
+      <>
+        <span className="flex items-center gap-1 mb-1">
+          <span className="font-bold">Instrucción de Integración:</span>
+        </span>
+        Copia y pega el siguiente script <span className="font-bold">dentro de la etiqueta <code className="bg-gray-100 px-1 rounded">&lt;head&gt;</code></span> de tu sitio web, justo como se muestra a continuación:
+        
+        <div className="bg-[#FCFCFC] rounded p-3 my-2 border border-sofia-darkBlue font-mono text-sm">
+          <div className="text-gray-500">&lt;head&gt;</div>
+          <div className="pl-4 text-gray-600">...</div>
+          <div className="pl-4 text-green-500">{script}</div>
+          <div className="text-gray-500">&lt;/head&gt;</div>
+        </div>
+        
+        <p className="text-sofia-navyBlue text-[12px] mt-2">Este paso es necesario para habilitar el Web Chat de Sofia en tu sitio.</p>
+      </>
+    }
+  >
     <div className="flex p-[12px] justify-between items-center gap-10 self-stretch rounded-lg border border-sofia-darkBlue">
       <div className="flex-1 truncate text-sofia-superDark text-xs font-normal">
         {script}
@@ -155,10 +174,15 @@ const EditCors = ({ integration, setIntegration }: EditCorsProps) => {
 
   return (
     <div className="flex flex-col gap-[24px] w-full max-w-[1000px] overflow-y-auto pr-[20px]">
-      <div className="flex flex-col gap-[16px]">
-        <label className="text-sofia-superDark text-[14px] font-normal leading-[16px]">
+      <div className="flex flex-col gap-1">
+        <label className="text-sofia-superDark text-[16px] font-normal leading-[16px]">
           Dominios
-        </label>
+        </label>  
+        <p className="text-sofia-navyBlue text-[12px]">
+          Escribe el dominio donde deseas mostrar el Web Chat (por eje https://tu-sitio.com) y haz click en el botón + para agregarlo. <span className="font-bold">
+            Solo los dominios registrados aquí podrán cargar el Web Chat por seguridad.
+          </span>
+        </p>
         <CorsInput value={domain} onChange={setDomain} onAdd={handleAddDomain} />
         {integration.config.cors.length > 0 && (
           <CorsTagList
