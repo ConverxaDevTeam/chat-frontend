@@ -12,6 +12,7 @@ import EditTexts from "./EditTexts";
 import EditCors from "./EditCors";
 import ConfigPanel from "@components/ConfigPanel";
 import { Button } from "@components/common/Button";
+import { useCounter } from "@hooks/CounterContext";
 
 interface CustomizeChatProps {
   onClose: () => void;
@@ -81,6 +82,7 @@ const useIntegrationData = (
   organizationId: number | null,
   departmentId: number | null
 ) => {
+  const { increment } = useCounter();
   const [integration, setIntegration] = useState<Integracion | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -99,6 +101,8 @@ const useIntegrationData = (
             },
           };
         });
+        // Actualizar el diagrama usando el contador
+        increment();
       }
       return !!success;
     } catch (error) {
@@ -122,6 +126,8 @@ const useIntegrationData = (
             },
           };
         });
+        // Actualizar el diagrama usando el contador
+        increment();
       }
       return success;
     } catch (error) {
@@ -148,7 +154,11 @@ const useIntegrationData = (
       button_text: integration.config.button_text,
       text_date: integration.config.text_date,
     };
-    await updateIntegrationWebChat(integration.id, data);
+    const response = await updateIntegrationWebChat(integration.id, data);
+    if (response) {
+      // Actualizar el diagrama usando el contador
+      increment();
+    }
   };
 
   useEffect(() => {

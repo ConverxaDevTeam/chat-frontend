@@ -49,13 +49,10 @@ export function initFacebookSDK(): Promise<typeof window.FB> {
     return fbSDKPromise;
   }
 
-  console.log("Iniciando inicialización del SDK de Facebook");
-
   // Creamos una nueva promesa para la inicialización
   fbSDKPromise = new Promise<typeof window.FB>((resolve, reject) => {
     // Comprobamos si el SDK ya está disponible
     if (typeof window.FB !== "undefined" && isFBInitialized) {
-      console.log("SDK de Facebook ya inicializado");
       resolve(window.FB);
       return;
     }
@@ -80,10 +77,8 @@ export function initFacebookSDK(): Promise<typeof window.FB> {
         });
 
         isFBInitialized = true;
-        console.log("SDK de Facebook inicializado correctamente");
         resolve(window.FB);
       } catch (error) {
-        console.error("Error al inicializar el SDK de Facebook:", error);
         reject(error);
       }
     };
@@ -96,18 +91,15 @@ export function initFacebookSDK(): Promise<typeof window.FB> {
       script.async = true;
       script.defer = true;
       script.crossOrigin = "anonymous";
-      script.onerror = error => {
-        console.error("Error al cargar el script del SDK de Facebook:", error);
+      script.onerror = () => {
         reject(new Error("No se pudo cargar el script del SDK de Facebook"));
       };
 
       const firstScript = document.getElementsByTagName("script")[0];
       if (firstScript && firstScript.parentNode) {
         firstScript.parentNode.insertBefore(script, firstScript);
-        console.log("Script del SDK de Facebook añadido al DOM");
       } else {
         document.head.appendChild(script);
-        console.log("Script del SDK de Facebook añadido al head");
       }
     }
   });
