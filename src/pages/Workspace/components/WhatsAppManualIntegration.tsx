@@ -11,6 +11,7 @@ import { RootState } from "@store";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { alertConfirm } from "@utils/alerts";
+import { useCounter } from "@hooks/CounterContext";
 
 interface WhatsAppManualIntegrationProps {
   isOpen: boolean;
@@ -32,6 +33,7 @@ const WhatsAppManualIntegration: React.FC<WhatsAppManualIntegrationProps> = ({
   onClose,
   data,
 }) => {
+  const { increment } = useCounter();
   const { selectOrganizationId } = useSelector(
     (state: RootState) => state.auth
   );
@@ -64,6 +66,8 @@ const WhatsAppManualIntegration: React.FC<WhatsAppManualIntegrationProps> = ({
     if (response) {
       alertConfirm("Se ha guardado la información");
       getIntegrationWhatsAppManualInfo();
+      // Actualizar el diagrama usando el contador
+      increment();
     }
   };
 
@@ -112,11 +116,11 @@ const WhatsAppManualIntegration: React.FC<WhatsAppManualIntegrationProps> = ({
 
   return (
     <RawModal isShown={isOpen} onClose={onClose}>
-      <div
-        className={`flex flex-col w-[500px] ${loading ? "min-h-[300px] bg-transparent" : "bg-white"} p-[24px] rounded-[4px] justify-center`}
-      >
+      <div className="flex flex-col w-[500px] bg-white p-[24px] rounded-[4px] justify-center">
         {loading ? (
-          <Loading />
+          <div className="w-full min-h-[300px] flex justify-center items-center">
+            <Loading />
+          </div>
         ) : (
           <form onSubmit={handleSubmit} className="flex flex-col gap-[8px]">
             <div className="w-full flex justify-between items-center mb-3">
@@ -170,7 +174,11 @@ const WhatsAppManualIntegration: React.FC<WhatsAppManualIntegrationProps> = ({
                 {!info.validated_webhook && (
                   <p
                     className={`text-[12px] text-white py-[2px] px-[8px] rounded-[4px] bg-[#3AC0A0] flex items-center gap-2 cursor-pointer`}
-                    onClick={getIntegrationWhatsAppManualInfo}
+                    onClick={() => {
+                      getIntegrationWhatsAppManualInfo();
+                      // También incrementamos el contador al verificar la conexión
+                      increment();
+                    }}
                   >
                     <span>Verificar conexión</span>
                     <img

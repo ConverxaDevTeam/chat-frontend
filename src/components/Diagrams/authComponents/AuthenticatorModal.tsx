@@ -1,5 +1,6 @@
 import Modal from "@components/Modal";
 import { useState, useEffect, useCallback, Fragment } from "react";
+import { useCounter } from "../../../hooks/CounterContext";
 import { FaPlus } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { useAlertContext } from "../components/AlertContext";
@@ -71,6 +72,7 @@ const useAuthenticatorSubmit = (
   setAuthenticators: React.Dispatch<React.SetStateAction<AuthenticatorType[]>>,
   onClose: () => void
 ) => {
+  const { increment } = useCounter();
   return {
     onSubmit: async (data: AuthenticatorType) => {
       try {
@@ -93,6 +95,8 @@ const useAuthenticatorSubmit = (
         toast.success(
           `Autenticador ${authenticatorData.id ? "actualizado" : "creado"} exitosamente`
         );
+        // Actualizar el diagrama usando el contador
+        increment();
         onClose();
       } catch {
         toast.error("Error al guardar el autenticador");
@@ -111,6 +115,7 @@ const useAuthenticatorDelete = (
     cancelButtonText?: string;
   }) => Promise<boolean>
 ) => {
+  const { increment } = useCounter();
   return useCallback(
     async (id: number) => {
       const confirmed = await showConfirmation({
@@ -124,6 +129,8 @@ const useAuthenticatorDelete = (
         await authenticatorService.remove(id);
         setAuthenticators(prev => prev.filter(auth => auth.id !== id));
         toast.success("Autenticador eliminado exitosamente");
+        // Actualizar el diagrama usando el contador
+        increment();
       } catch {
         toast.error("Error al eliminar el autenticador");
       }
@@ -267,6 +274,7 @@ export function AuthenticatorModal({
   handleAuthenticatorUpdate,
   onAuthenticatorChange,
 }: AuthenticatorModalProps) {
+  const { increment } = useCounter();
   const {
     authenticators,
     setAuthenticators,
@@ -303,6 +311,8 @@ export function AuthenticatorModal({
                 ? "Autenticador asignado exitosamente"
                 : "Autenticador removido exitosamente"
             );
+            // Actualizar el diagrama usando el contador
+            increment();
           } catch (error) {
             toast.error("Error al asignar el autenticador");
             return;
