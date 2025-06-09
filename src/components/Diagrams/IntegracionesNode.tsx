@@ -40,6 +40,7 @@ const IntegracionesNode = ({
     (state: RootState) => state.department.selectedDepartmentId
   );
   const [isMenuVisible, setIsMenuVisible] = useState(false);
+  const [, setSelectedIntegrationType] = useState<IntegrationType | null>(null);
 
   const toggleMenu = () => {
     setIsMenuVisible(!isMenuVisible);
@@ -48,16 +49,46 @@ const IntegracionesNode = ({
   const contextMenuOptions: ContextMenuOption[] = [
     {
       child: (
-        <div className="group relative">
-          <img src="/mvp/circle-plus.svg" alt="Nueva Integración" />
-          <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-5 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 bg-gray-800 text-white font-normal text-xs px-2 py-1 rounded whitespace-nowrap">
-            Agregar integración
+        <div className="group relative p-1">
+          <img src="/mvp/whatsapp.svg" alt="WhatsApp" className="w-6 h-6" />
+          <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 bg-gray-800 text-white font-normal text-xs px-2 py-1 rounded whitespace-nowrap z-[9999]">
+            WhatsApp
           </div>
         </div>
       ),
-      onClick: () => setIsMenuVisible(true),
+      onClick: () => {
+        setSelectedIntegrationType(IntegrationType.WHATSAPP);
+        setIsMenuVisible(true);
+      },
     },
-    // Add more options here if needed
+    {
+      child: (
+        <div className="group relative p-1">
+          <img src="/mvp/slack.svg" alt="Slack" className="w-6 h-6" />
+          <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 bg-gray-800 text-white font-normal text-xs px-2 py-1 rounded whitespace-nowrap z-[9999]">
+            Slack
+          </div>
+        </div>
+      ),
+      onClick: () => {
+        setSelectedIntegrationType(IntegrationType.SLACK);
+        setIsMenuVisible(true);
+      },
+    },
+    {
+      child: (
+        <div className="group relative p-1">
+          <img src="/mvp/messenger.svg" alt="Facebook Messenger" className="w-6 h-6" />
+          <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 bg-gray-800 text-white font-normal text-xs px-2 py-1 rounded whitespace-nowrap z-[9999]">
+            Facebook Messenger
+          </div>
+        </div>
+      ),
+      onClick: () => {
+        setSelectedIntegrationType(IntegrationType.MESSENGER);
+        setIsMenuVisible(true);
+      },
+    },
   ];
 
   const getDataIntegrations = () => {
