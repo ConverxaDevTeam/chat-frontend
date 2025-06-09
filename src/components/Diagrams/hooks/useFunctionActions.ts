@@ -4,6 +4,7 @@ import {
   HttpRequestFunction,
 } from "@interfaces/functions.interface";
 import { functionsService } from "@services/functions.service";
+import { useCounter } from "@hooks/CounterContext";
 import { useAlertContext } from "../components/AlertContext";
 
 // Hook para manejar el estado de la función
@@ -153,6 +154,7 @@ const useDeleteFunction = (
   ) => Promise<{ success: boolean; data?: T; error?: unknown }>
 ) => {
   const { setLoadingState, resetError } = state;
+  const { increment } = useCounter();
 
   return useCallback(async () => {
     if (!functionId) return false;
@@ -189,7 +191,10 @@ const useDeleteFunction = (
         }
       );
 
-      if (!success && error) {
+      if (success) {
+        // Actualizar el diagrama usando el contador
+        increment();
+      } else if (error) {
         console.error("Error deleting function:", error);
       }
 
@@ -227,6 +232,7 @@ export const useFunctionSuccess = (
     }
   ) => Promise<{ success: boolean; data?: T; error?: unknown }>
 ) => {
+  const { increment } = useCounter();
   const state = useFunctionState({} as FunctionData<HttpRequestFunction>);
   const createFunction = useCreateFunction(
     selectedAgentId || -1,
@@ -245,6 +251,8 @@ export const useFunctionSuccess = (
               ...savedFunction,
               functionId: savedFunction.functionId ?? savedFunction.id,
             });
+            // Actualizar el diagrama usando el contador
+            increment();
             onSuccess?.();
           }
         } catch (error) {

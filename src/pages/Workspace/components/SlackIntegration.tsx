@@ -8,6 +8,7 @@ import {
 import Loading from "@components/Loading";
 import { RootState } from "@store";
 import { useSelector } from "react-redux";
+import { useCounter } from "@hooks/CounterContext";
 
 interface SlackIntegrationProps {
   isOpen: boolean;
@@ -20,6 +21,7 @@ const SlackIntegration: React.FC<SlackIntegrationProps> = ({
   onClose,
   data,
 }) => {
+  const { increment } = useCounter();
   const { selectOrganizationId } = useSelector(
     (state: RootState) => state.auth
   );
@@ -52,6 +54,8 @@ const SlackIntegration: React.FC<SlackIntegrationProps> = ({
       channelName
     );
     if (respone) {
+      // Actualizar el diagrama usando el contador
+      increment();
       onClose();
     }
   };

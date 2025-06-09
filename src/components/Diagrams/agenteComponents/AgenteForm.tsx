@@ -7,6 +7,7 @@ import { agentService } from "@services/agent";
 import { useAlertContext } from "@components/Diagrams/components/AlertContext";
 import InfoTooltip from "@components/common/InfoTooltip";
 import { Button } from "@components/common/Button";
+import { useCounter } from "@hooks/CounterContext";
 
 const EXAMPLES_INSTRUCTIONS = {
   example1:
@@ -55,6 +56,7 @@ export const AgenteForm = ({
 }: AgenteFormProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const { handleOperation } = useAlertContext();
+  const { increment } = useCounter();
 
   const {
     register,
@@ -100,6 +102,8 @@ export const AgenteForm = ({
         }
       );
 
+      // Actualizar el diagrama usando el contador
+      increment();
       onSuccess?.();
     } catch (error) {
       console.error("Error updating agent:", error);
