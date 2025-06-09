@@ -106,7 +106,7 @@ const IntegracionesNode = ({
           />
         }
         onClose={toggleMenu}
-        header={<h2 className="text-xl font-bold">Agregar Canales</h2>}
+        header={<h2 className="text-xl font-bold">Agregar canales</h2>}
       />
       <DefaultNode
         selected={selected}
