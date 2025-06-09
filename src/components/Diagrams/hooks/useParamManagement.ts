@@ -6,6 +6,7 @@ import {
 import { paramsService } from "@services/params.service";
 import { useAlertContext } from "../components/AlertContext";
 import { toast } from "react-toastify";
+import { useCounter } from "@hooks/CounterContext";
 
 interface UseParamManagementProps {
   functionId: number;
@@ -20,6 +21,7 @@ export const useParamManagement = ({
 }: UseParamManagementProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const { showConfirmation, handleOperation } = useAlertContext();
+  const { increment } = useCounter();
 
   const createParam = async (param: CreateFunctionParamDto) => {
     try {
@@ -27,6 +29,8 @@ export const useParamManagement = ({
       const newParam = await paramsService.create(param, functionId);
       setParams([...params, newParam]);
       toast.success("Parámetro creado exitosamente");
+      // Actualizar el diagrama usando el contador
+      increment();
       return true;
     } catch (error) {
       toast.error("Error al crear el parámetro");
@@ -48,6 +52,8 @@ export const useParamManagement = ({
       newParams[index] = updatedParam;
       setParams(newParams);
       toast.success("Parámetro actualizado exitosamente");
+      // Actualizar el diagrama usando el contador
+      increment();
       return true;
     } catch (error) {
       toast.error("Error al actualizar el parámetro");
@@ -80,6 +86,8 @@ export const useParamManagement = ({
         const newParams = [...params];
         newParams.splice(index, 1);
         setParams(newParams);
+        // Actualizar el diagrama usando el contador
+        increment();
         return true;
       }
     }

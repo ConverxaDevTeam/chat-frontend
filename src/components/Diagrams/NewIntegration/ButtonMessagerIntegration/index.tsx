@@ -45,24 +45,12 @@ const ButtonMessagerIntegration = ({
   const handleConnectFacebook = async () => {
     setLoading(true);
     try {
-      console.log(
-        "ButtonMessagerIntegration: Asegurando que el SDK de Facebook esté cargado"
-      );
-
       // Obtener el objeto FB inicializado
       const FB = await ensureFBSDKLoaded();
-
-      console.log(
-        "ButtonMessagerIntegration: SDK de Facebook cargado, llamando a FB.login"
-      );
 
       // Usar el objeto FB devuelto directamente
       FB.login(
         response => {
-          console.log(
-            "ButtonMessagerIntegration: Respuesta de FB.login recibida",
-            response
-          );
           // Respuesta recibida de la integración de Messenger
           if (response.authResponse && response.authResponse.code) {
             const code = response.authResponse.code;
@@ -81,9 +69,6 @@ const ButtonMessagerIntegration = ({
               setLoading(false);
             }
           } else {
-            console.log(
-              "ButtonMessagerIntegration: FB.login falló o fue cancelado"
-            );
             setLoading(false);
           }
         },
