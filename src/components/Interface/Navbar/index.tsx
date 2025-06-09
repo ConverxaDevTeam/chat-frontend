@@ -289,6 +289,7 @@ const UserActions = ({
   mobileResolution,
   contextMenu,
   setContextMenu,
+  pathname,
 }: {
   user: { email: string } | null;
   mobileResolution: boolean;
@@ -296,13 +297,19 @@ const UserActions = ({
   setContextMenu: (
     contextMenu: { notifications: Notification[] } | null
   ) => void;
+  pathname: string;
 }) => {
   return (
     <div
       className={`flex gap-[8px] items-center ${mobileResolution ? "self-end" : ""}`}
     >
+      {pathname === "/departments" && (
+        <p className="text-sofia-superDark font-normal text-[14px] whitespace-nowrap mr-4">
+          Plan actual: 100/250 conversaciones
+        </p>
+      )}
       <p
-        className={`text-sofia-superDark font-normal text-[14px] ${
+        className={`text-sofia-superDark font-normal text-[14px] whitespace-nowrap ${
           mobileResolution ? "" : "mr-3"
         }`}
       >
@@ -376,6 +383,7 @@ const Navbar = ({ mobileResolution }: NavbarProps) => {
             mobileResolution={mobileResolution}
             contextMenu={contextMenu}
             setContextMenu={setContextMenu}
+            pathname={location.pathname}
           />
         </div>
       </div>

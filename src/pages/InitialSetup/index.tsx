@@ -10,11 +10,6 @@ import { OrganizationType } from "@interfaces/organization.interface";
 import EditButton from "@pages/Workspace/components/EditButton";
 import DeleteButton from "@pages/Workspace/components/DeleteButton";
 
-enum SetupStep {
-  ORGANIZATION = "organization",
-  DEPARTMENT = "department",
-  COMPLETE = "complete",
-}
 
 interface OrganizationFormData {
   name: string;
@@ -22,16 +17,8 @@ interface OrganizationFormData {
   logo: File | null;
 }
 
-interface DepartmentFormData {
-  name: string;
-  description: string;
-}
 
 const InitialSetup = () => {
-  const [currentStep, setCurrentStep] = useState<SetupStep>(
-    SetupStep.ORGANIZATION
-  );
-  const [organizationId, setOrganizationId] = useState<number | null>(null);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -39,11 +26,6 @@ const InitialSetup = () => {
     name: "",
     description: "",
     logo: null,
-  });
-
-  const [deptFormData, setDeptFormData] = useState<DepartmentFormData>({
-    name: "",
-    description: "",
   });
 
   const dispatch = useDispatch<AppDispatch>();
@@ -78,12 +60,6 @@ const InitialSetup = () => {
     setOrgFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleDeptInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = e.target;
-    setDeptFormData(prev => ({ ...prev, [name]: value }));
-  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
@@ -129,9 +105,8 @@ const InitialSetup = () => {
 
       if (response.data.ok) {
         alertConfirm("Organización creada exitosamente");
-        setOrganizationId(response.data.organization.id);
-        setCurrentStep(SetupStep.DEPARTMENT);
-        dispatch(getMyOrganizationsAsync());
+        await dispatch(getMyOrganizationsAsync());
+        window.location.href = "/departments";
       } else {
         alertError(response.data.message || "Error al crear la organización");
       }
@@ -142,29 +117,6 @@ const InitialSetup = () => {
     }
   };
 
-  const createDepartment = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-
-    try {
-      const response = await axiosInstance.post(apiUrls.departments.base(), {
-        name: deptFormData.name,
-        description: deptFormData.description,
-        organizacion_id: organizationId,
-      });
-
-      if (response.data.ok) {
-        alertConfirm("Departamento creado exitosamente");
-        setCurrentStep(SetupStep.COMPLETE);
-      } else {
-        alertError(response.data.message || "Error al crear el departamento");
-      }
-    } catch (error) {
-      alertError("Error al crear el departamento");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const renderOrganizationForm = () => (
     <form onSubmit={createOrganization} className="space-y-5">
@@ -257,85 +209,11 @@ const InitialSetup = () => {
     </form>
   );
 
-  const renderDepartmentForm = () => (
-    <form onSubmit={createDepartment} className="space-y-5">
-      <h2 className="text-xl font-semibold text-sofia-superDark">
-        Crea tu departamento
-      </h2>
-      <hr className="border-t border-sofia-darkBlue mb-4 -mx-6" style={{ width: 'calc(100% + 3rem)' }} />
-      <div className="flex flex-col">
-        <label className="text-[14px] font-medium text-[#414651] mb-[6px]" htmlFor="name">
-          Nombre
-        </label>
-        <input
-          type="text"
-          name="name"
-          id="name"
-          placeholder="Nombre del departamento"
-          value={deptFormData.name}
-          onChange={handleDeptInputChange}
-          className="bg-[#FCFCFC] w-full rounded-[4px] py-3 px-3 border border-sofia-darkBlue text-[14px] font-normal"
-          required
-        />
-      </div>
-      <div className="flex flex-col">
-        <label className="text-[14px] font-medium text-[#414651] mb-[6px]" htmlFor="description">
-          Descripción
-        </label>
-        <textarea
-          name="description"
-          id="description"
-          placeholder="Descripción del departamento"
-          value={deptFormData.description}
-          onChange={handleDeptInputChange}
-          className="bg-[#FCFCFC] w-full rounded-[4px] py-3 px-3 border border-sofia-darkBlue text-[14px] font-normal resize-none"
-          rows={3}
-          required
-        />
-      </div>
-      <button
-        type="submit"
-        className="w-full py-3 px-4 bg-sofia-electricGreen text-sofia-superDark text-[14px] font-semibold rounded-[4px]"
-      >
-        {loading ? "Creando..." : "Crear departamento"}
-      </button>
-    </form>
-  );
-
-  const renderCompletionMessage = () => (
-    <div className="flex flex-col items-center justify-center min-h-[350px]">
-      <h2 className="font-semibold text-[24px] text-sofia-superDark mb-2 text-center">
-        Configuración completada
-      </h2>
-      <div className="p-6 bg-white w-full max-w-md rounded-[4px] border border-app-lightGray mt-2">
-        <p className="text-[14px] font-normal text-[#414651] mb-4 text-center">
-          Tu cuenta ha sido configurada correctamente.
-        </p>
-        <p className="text-[14px] font-normal text-[#414651] mb-4 text-center">Tienes disponibles:</p>
-        <ul className="list-disc list-inside mb-6 text-left text-[14px] font-normal text-[#414651] pl-4">
-          <li className="mb-2">50 mensajes</li>
-          <li className="mb-2">15 días para utilizarlos</li>
-        </ul>
-        <p className="text-[14px] font-normal text-[#414651] mb-6 text-center">
-          Si necesitas más mensajes o extender tu período de uso, contáctanos.
-        </p>
-        <button
-          className="w-full py-3 px-4 bg-sofia-electricGreen text-sofia-superDark text-[14px] font-semibold rounded-[4px]"
-          onClick={() => window.location.href = "/dashboard"}
-        >
-          Ir al dashboard
-        </button>
-      </div>
-    </div>
-  );
-
   return (
     <div className="flex flex-col min-h-screen bg-sofia-background">
       <div className="flex-grow flex items-center justify-center p-6">
         <div className="w-full max-w-md bg-white rounded-[4px] border border-app-lightGray p-[24px]">
-          {currentStep === SetupStep.ORGANIZATION && renderOrganizationForm()}
-          {currentStep === SetupStep.DEPARTMENT && renderDepartmentForm()}
-          {currentStep === SetupStep.COMPLETE && renderCompletionMessage()}
+          {renderOrganizationForm()}
         </div>
       </div>
 
