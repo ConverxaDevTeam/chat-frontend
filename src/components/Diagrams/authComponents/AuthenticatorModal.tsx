@@ -1,15 +1,17 @@
 import Modal from "@components/Modal";
 import { useState, useEffect, useCallback, Fragment } from "react";
-import { useCounter } from "../../../hooks/CounterContext";
 import { FaPlus } from "react-icons/fa";
-import { toast } from "react-toastify";
 import { useAlertContext } from "../components/AlertContext";
-import { authenticatorService } from "@/services/authenticator.service";
-import { functionsService } from "@/services/functions.service";
 import AuthenticatorFormModal from "./AuthenticatorFormModal";
 import { AuthenticatorType } from "@interfaces/autenticators.interface";
 import { Button } from "@components/common/Button";
 import { DataList } from "@components/common/DataList";
+import {
+  useFetchAuthenticators,
+  useDeleteAuthenticator,
+  useAssignAuthenticator,
+  useAuthenticatorSuccess,
+} from "../hooks/useAuthenticatorActions";
 
 interface AuthenticatorModalProps {
   show: boolean;
@@ -54,59 +56,40 @@ const useAuthenticatorState = () => {
   };
 };
 
-const useFetchAuthenticators = (
+const useFetchAuthenticatorsWrapper = (
   organizationId: number,
   setAuthenticators: React.Dispatch<React.SetStateAction<AuthenticatorType[]>>
 ) => {
+  const fetchAuthenticators = useFetchAuthenticators();
+
   return useCallback(async () => {
-    try {
-      const data = await authenticatorService.fetchAll(organizationId);
-      setAuthenticators(data);
-    } catch {
-      toast.error("Error al cargar autenticadores");
+    const result = await fetchAuthenticators(organizationId);
+    if (result.success && result.data) {
+      setAuthenticators(result.data);
     }
-  }, [organizationId]);
+  }, [organizationId, fetchAuthenticators, setAuthenticators]);
 };
 
 const useAuthenticatorSubmit = (
   setAuthenticators: React.Dispatch<React.SetStateAction<AuthenticatorType[]>>,
   onClose: () => void
 ) => {
-  const { increment } = useCounter();
+  const success = useAuthenticatorSuccess();
+
   return {
-    onSubmit: async (data: AuthenticatorType) => {
-      try {
-        const authenticatorData = data;
-        const result = authenticatorData.id
-          ? await authenticatorService.update(
-              authenticatorData.id,
-              authenticatorData
-            )
-          : await authenticatorService.create(authenticatorData);
-
-        setAuthenticators(prev =>
-          authenticatorData.id
-            ? prev.map(auth =>
-                auth.id === authenticatorData.id ? result : auth
-              )
-            : [...prev, result]
-        );
-
-        toast.success(
-          `Autenticador ${authenticatorData.id ? "actualizado" : "creado"} exitosamente`
-        );
-        // Actualizar el diagrama usando el contador
-        increment();
-        onClose();
-      } catch {
-        toast.error("Error al guardar el autenticador");
-        throw new Error();
-      }
+    onSubmit: async (data: AuthenticatorType, result: AuthenticatorType) => {
+      setAuthenticators(prev =>
+        data.id
+          ? prev.map(auth => (auth.id === data.id ? result : auth))
+          : [...prev, result]
+      );
+      success();
+      onClose();
     },
   };
 };
 
-const useAuthenticatorDelete = (
+const useAuthenticatorDeleteWrapper = (
   setAuthenticators: React.Dispatch<React.SetStateAction<AuthenticatorType[]>>,
   showConfirmation: (options: {
     title: string;
@@ -115,7 +98,8 @@ const useAuthenticatorDelete = (
     cancelButtonText?: string;
   }) => Promise<boolean>
 ) => {
-  const { increment } = useCounter();
+  const deleteAuthenticator = useDeleteAuthenticator();
+
   return useCallback(
     async (id: number) => {
       const confirmed = await showConfirmation({
@@ -125,17 +109,12 @@ const useAuthenticatorDelete = (
 
       if (!confirmed) return;
 
-      try {
-        await authenticatorService.remove(id);
+      const result = await deleteAuthenticator(id);
+      if (result.success) {
         setAuthenticators(prev => prev.filter(auth => auth.id !== id));
-        toast.success("Autenticador eliminado exitosamente");
-        // Actualizar el diagrama usando el contador
-        increment();
-      } catch {
-        toast.error("Error al eliminar el autenticador");
       }
     },
-    [setAuthenticators, showConfirmation]
+    [setAuthenticators, showConfirmation, deleteAuthenticator]
   );
 };
 
@@ -151,7 +130,7 @@ const useAuthenticatorActions = (
     cancelButtonText?: string;
   }) => Promise<boolean>
 ) => {
-  const fetchAuthenticators = useFetchAuthenticators(
+  const fetchAuthenticators = useFetchAuthenticatorsWrapper(
     organizationId,
     setAuthenticators
   );
@@ -159,7 +138,7 @@ const useAuthenticatorActions = (
     setAuthenticators,
     onClose
   );
-  const handleDelete = useAuthenticatorDelete(
+  const handleDelete = useAuthenticatorDeleteWrapper(
     setAuthenticators,
     showConfirmation
   );
@@ -274,7 +253,6 @@ export function AuthenticatorModal({
   handleAuthenticatorUpdate,
   onAuthenticatorChange,
 }: AuthenticatorModalProps) {
-  const { increment } = useCounter();
   const {
     authenticators,
     setAuthenticators,
@@ -286,6 +264,7 @@ export function AuthenticatorModal({
   } = useAuthenticatorState();
 
   const { showConfirmation } = useAlertContext();
+  const assignAuthenticator = useAssignAuthenticator();
 
   const { fetchAuthenticators, handleSubmit, handleDelete, handleSelect } =
     useAuthenticatorActions(
@@ -294,30 +273,20 @@ export function AuthenticatorModal({
       handleCloseForm,
       async id => {
         if (functionId) {
-          try {
-            // If the authenticator is already selected, deselect it by sending null
-            const newAuthenticatorId =
-              id === selectedAuthenticatorId ? null : id;
-            await functionsService.assignAuthenticator(
-              functionId,
-              newAuthenticatorId
-            );
+          // If the authenticator is already selected, deselect it by sending null
+          const newAuthenticatorId = id === selectedAuthenticatorId ? null : id;
+
+          const result = await assignAuthenticator(
+            functionId,
+            newAuthenticatorId
+          );
+          if (result.success) {
             handleAuthenticatorUpdate?.(newAuthenticatorId || undefined);
             if (newAuthenticatorId) {
               onAuthenticatorChange?.(functionId, newAuthenticatorId);
             }
-            toast.success(
-              newAuthenticatorId
-                ? "Autenticador asignado exitosamente"
-                : "Autenticador removido exitosamente"
-            );
-            // Actualizar el diagrama usando el contador
-            increment();
-          } catch (error) {
-            toast.error("Error al asignar el autenticador");
-            return;
+            onClose();
           }
-          onClose();
         }
       },
       showConfirmation
