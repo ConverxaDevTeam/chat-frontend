@@ -11,6 +11,7 @@ import { RootState } from "@store";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { alertConfirm } from "@utils/alerts";
+import { useCounter } from "@hooks/CounterContext";
 
 interface MessengerManualIntegrationProps {
   isOpen: boolean;
@@ -31,6 +32,7 @@ const MessengerManualIntegration: React.FC<MessengerManualIntegrationProps> = ({
   onClose,
   data,
 }) => {
+  const { increment } = useCounter();
   const { selectOrganizationId } = useSelector(
     (state: RootState) => state.auth
   );
@@ -59,6 +61,8 @@ const MessengerManualIntegration: React.FC<MessengerManualIntegrationProps> = ({
     if (response) {
       alertConfirm("Se ha guardado la información");
       getIntegrationMessangerManualInfo();
+      // Actualizar el diagrama usando el contador
+      increment();
     }
   };
 
@@ -96,6 +100,8 @@ const MessengerManualIntegration: React.FC<MessengerManualIntegrationProps> = ({
         code_webhook: response,
         validated_webhook: false,
       });
+      // Actualizar el diagrama usando el contador cuando se actualiza el webhook
+      increment();
     }
   };
 
