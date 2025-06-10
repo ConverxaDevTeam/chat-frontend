@@ -11,7 +11,7 @@ interface UserCardProps {
 const UserCard = ({ userData, onEdit, onDelete }: UserCardProps) => {
   return (
     <>
-      <div className="bg-white rounded-[4px] p-5 flex flex-col border border-app-lightGray w-full min-h-[250px]">
+      <div className="bg-white rounded p-4 flex flex-col border border-app-lightGray w-full min-h-[240px]">
         <div className="flex flex-col items-center gap-[16px] flex-1">
           <div className="flex justify-center items-center border-sofiaCall-electricGreen border-[1px] w-[58px] h-[60px] rounded-full bg-sofiaCall-light overflow-hidden">
             <p className="text-sofiaCall-dark font-poppinsSemiBold text-[24px]">
