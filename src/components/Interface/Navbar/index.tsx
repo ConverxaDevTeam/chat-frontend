@@ -379,7 +379,6 @@ const Navbar = ({ mobileResolution }: NavbarProps) => {
             mobileResolution={mobileResolution}
             contextMenu={contextMenu}
             setContextMenu={setContextMenu}
-            // pathname={location.pathname}
           />
         </div>
       </div>
