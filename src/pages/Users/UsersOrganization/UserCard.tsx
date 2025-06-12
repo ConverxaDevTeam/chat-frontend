@@ -6,9 +6,15 @@ interface UserCardProps {
   userData: IUserApi;
   onEdit: () => void;
   onDelete: () => void;
+  onChangeRole: () => void;
 }
 
-const UserCard = ({ userData, onEdit, onDelete }: UserCardProps) => {
+const UserCard = ({
+  userData,
+  onEdit,
+  onDelete,
+  onChangeRole,
+}: UserCardProps) => {
   return (
     <>
       <div className="bg-white rounded p-4 flex flex-col border border-app-lightGray w-full min-h-[240px]">
@@ -30,7 +36,8 @@ const UserCard = ({ userData, onEdit, onDelete }: UserCardProps) => {
                 <RoleBadge
                   key={index}
                   role={organization.role}
-                  className="cursor-pointer"
+                  className="cursor-pointer hover:opacity-80 transition-opacity"
+                  onClick={onChangeRole}
                 />
               ))}
             </div>
