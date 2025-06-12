@@ -117,27 +117,29 @@ export const changeOrganizationType = async (
   organizationId: number,
   type: OrganizationType,
   daysToUpdate?: number
-): Promise<any> => {
+): Promise<{ success: boolean; message?: string; data?: unknown }> => {
   try {
     const payload: { type: OrganizationType; daysToUpdate?: number } = { type };
-    
+
     if (type === OrganizationType.CUSTOM && daysToUpdate !== undefined) {
       payload.daysToUpdate = daysToUpdate;
     }
-    
+
     const response = await axiosInstance.patch(
       apiUrls.plan.changeType(organizationId),
       payload
     );
-    
+
     const typeLabels = {
       [OrganizationType.PRODUCTION]: "Producción",
       [OrganizationType.MVP]: "MVP",
       [OrganizationType.FREE]: "Gratuito",
-      [OrganizationType.CUSTOM]: "Personalizado"
+      [OrganizationType.CUSTOM]: "Personalizado",
     };
-    
-    toast.success(`Tipo de organización cambiado a ${typeLabels[type]} exitosamente.`);
+
+    toast.success(
+      `Tipo de organización cambiado a ${typeLabels[type]} exitosamente.`
+    );
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
@@ -155,7 +157,7 @@ export const changeOrganizationType = async (
         throw handleServiceError(error, "Organización no encontrada.");
       }
     }
-    
+
     throw handleServiceError(
       error,
       "Error al cambiar el tipo de organización."

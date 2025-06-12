@@ -120,6 +120,14 @@ const Sidebar = ({
                   );
                 })
               : sidebarLinks.map((link, index) => {
+                  // Debug log para sistema HITL
+                  if (link.text === "Sistema HITL") {
+                    console.log("🔍 DEBUG SIDEBAR - Sistema HITL encontrado:");
+                    console.log("   - link.role:", link.role);
+                    console.log("   - selectOrganizationId:", selectOrganizationId);
+                    console.log("   - myOrganizations:", myOrganizations);
+                  }
+                  
                   return (
                     <ItemSidebar
                       key={`${link.text}-${index}`}

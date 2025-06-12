@@ -331,7 +331,9 @@ const UserActions = ({
 };
 
 const Navbar = ({ mobileResolution }: NavbarProps) => {
-  const { user, selectOrganizationId, myOrganizations } = useSelector((state: RootState) => state.auth);
+  const { user, selectOrganizationId, myOrganizations } = useSelector(
+    (state: RootState) => state.auth
+  );
   const location = useLocation();
 
   const pathSegments = location.pathname
@@ -339,7 +341,9 @@ const Navbar = ({ mobileResolution }: NavbarProps) => {
     .filter(Boolean)
     .filter(segment => segment !== "dashboard");
 
-  const currentOrganization = myOrganizations.find(org => org.organization?.id === selectOrganizationId)?.organization?.name || "Organización";
+  const currentOrganization =
+    myOrganizations.find(org => org.organization?.id === selectOrganizationId)
+      ?.organization?.name || "Organización";
 
   let accumulatedPath = "";
   const breadcrumbItems = [
@@ -358,12 +362,8 @@ const Navbar = ({ mobileResolution }: NavbarProps) => {
   } | null>(null);
 
   return (
-    <div
-      className="w-full h-auto bg-white border-b border-sofia-darkBlue py-[17px]"
-    >
-      <div
-        className="flex flex-col gap-4 lg:gap-0 lg:flex-row justify-between items-start lg:items-center w-full px-6"
-      >
+    <div className="w-full h-auto bg-white border-b border-sofia-darkBlue py-[17px]">
+      <div className="flex flex-col gap-4 lg:gap-0 lg:flex-row justify-between items-start lg:items-center w-full px-6">
         <div className="flex flex-col md:flex-col lg:flex-row items-start lg:items-center gap-4 w-full">
           <div
             className={`${mobileResolution ? "" : "block"} order-1 lg:order-none`}
@@ -372,8 +372,7 @@ const Navbar = ({ mobileResolution }: NavbarProps) => {
           </div>
           <div
             className={`flex gap-[24px] items-center w-full md:w-auto order-1 lg:order-none`}
-          >
-          </div>
+          ></div>
         </div>
         <div
           className={`flex gap-[8px] items-center ${mobileResolution ? "ml-auto " : ""}`}
