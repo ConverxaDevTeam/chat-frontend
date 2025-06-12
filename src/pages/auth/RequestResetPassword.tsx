@@ -37,7 +37,11 @@ export const RequestResetPassword = () => {
     <div className="flex flex-col w-full h-full bg-white">
       <div className="flex flex-col w-[446px] p-[12px] rounded border border-[#B8CCE0] border-inherit m-auto">
         <div className="bg-white px-[32px] pt-[53px] pb-[40px]">
-          <img className="mx-auto mb-[48px] h-[34px]" src="/mvp/logo.png" alt="logo" />
+          <img
+            className="mx-auto mb-[48px] h-[34px]"
+            src="/mvp/logo.png"
+            alt="logo"
+          />
           <h2 className="font-semibold text-[30px] text-sofia-superDark mb-[16px] text-center">
             Restablecer contraseña
           </h2>
