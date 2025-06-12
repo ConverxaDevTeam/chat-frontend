@@ -113,7 +113,7 @@ export const getGlobalUsers = async () => {
     const response = await axiosInstance.get(apiUrls.getGlobalUsers());
     if (response.data.ok) {
       const usersWithDetails = await Promise.all(
-        response.data.users.map(async (user: { id: number; [key: string]: unknown }) => {
+        response.data.users.map(async (user: { id: number }) => {
           try {
             const detailedUser = await getGlobalUser(user.id);
             return detailedUser || user;
@@ -250,5 +250,30 @@ export const changeUserPassword = async (
   } catch (error) {
     handleAxiosError(error);
     return false;
+  }
+};
+
+export const deleteUserFromOrganization = async (
+  organizationId: number,
+  userId: number
+) => {
+  try {
+    const response = await axiosInstance.delete(
+      apiUrls.deleteUserFromOrganization(organizationId, userId)
+    );
+    if (response.data.ok) {
+      return {
+        success: true,
+        userDeleted: response.data.userDeleted,
+        roleDeleted: response.data.roleDeleted,
+        message: response.data.message,
+      };
+    } else {
+      alertError(response.data.message || "Error al eliminar usuario");
+      return { success: false };
+    }
+  } catch (error) {
+    handleAxiosError(error);
+    return { success: false };
   }
 };

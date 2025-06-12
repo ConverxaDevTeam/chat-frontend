@@ -10,6 +10,9 @@ import { toast } from "react-toastify";
 import { useAlertContext } from "@components/Diagrams/components/AlertContext";
 import { useAppDispatch } from "@store/hooks";
 import { removeDepartment } from "@store/reducers/department";
+import TablePagination from "@pages/Users/UsersSuperAdmin/components/TablePagination";
+
+const ITEMS_PER_PAGE = 10;
 
 const Departments = () => {
   const { selectOrganizationId } = useSelector(
@@ -21,6 +24,7 @@ const Departments = () => {
   const [selectedDepartment, setSelectedDepartment] = useState<IDepartment>();
   const { showConfirmation } = useAlertContext();
   const dispatch = useAppDispatch();
+  const [currentPage, setCurrentPage] = useState<number>(1);
 
   const getAllDepartments = async () => {
     if (!selectOrganizationId) return;
@@ -39,6 +43,17 @@ const Departments = () => {
   useEffect(() => {
     getAllDepartments();
   }, [selectOrganizationId]);
+  
+  const totalPages = Math.ceil(departments.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const endIndex = startIndex + ITEMS_PER_PAGE;
+  const currentDepartments = departments.slice(startIndex, endIndex);
+  
+  const goToPage = (pageNumber: number) => {
+    if (pageNumber >= 1 && pageNumber <= totalPages) {
+      setCurrentPage(pageNumber);
+    }
+  };
 
   const handleOpenModal = (department?: IDepartment) => {
     setSelectedDepartment(department);
@@ -146,7 +161,7 @@ const Departments = () => {
           </div>
 
           <div className="bg-white rounded-md border border-app-lightGray shadow-sm">
-            {departments.map(department => (
+            {currentDepartments.map(department => (
               <DepartmentCard
                 key={department.id}
                 department={department}
@@ -155,6 +170,11 @@ const Departments = () => {
               />
             ))}
           </div>
+          <TablePagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            goToPage={goToPage}
+          />
         </div>
       </div>
     </PageContainer>

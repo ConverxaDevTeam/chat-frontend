@@ -1,7 +1,10 @@
 import Loading from "@components/Loading";
 import { useEffect, useState } from "react";
 import UserCard from "./UserCard";
-import { getUserMyOrganization } from "../../../services/user";
+import {
+  getUserMyOrganization,
+  deleteUserFromOrganization,
+} from "../../../services/user";
 import { useSelector } from "react-redux";
 import { RootState } from "@store";
 import { OrganizationRoleType } from "@utils/interfaces";
@@ -52,11 +55,41 @@ const UsersOrganization = () => {
     }
   };
 
-  const handleDelete = () => {
-    toast.error("No tienes permisos para realizar esta acción", {
-      position: "top-right",
-      autoClose: 3000,
-    });
+  const handleDelete = async (user: IUserApi) => {
+    if (role !== OrganizationRoleType.OWNER) {
+      toast.error("No tienes permisos para realizar esta acción", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+      return;
+    }
+
+    if (!selectOrganizationId) {
+      toast.error("No se ha seleccionado una organización", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+      return;
+    }
+
+    try {
+      const result = await deleteUserFromOrganization(
+        selectOrganizationId,
+        user.id
+      );
+      if (result.success) {
+        toast.success(result.message || "Usuario eliminado correctamente", {
+          position: "top-right",
+          autoClose: 3000,
+        });
+        await getAllUsers(); // Refrescar la lista
+      }
+    } catch (error) {
+      toast.error("Error al eliminar usuario", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+    }
   };
 
   const handleEdit = (user: IUserApi) => {
@@ -107,7 +140,7 @@ const UsersOrganization = () => {
                   key={user.id}
                   userData={user}
                   onEdit={() => handleEdit(user)}
-                  onDelete={handleDelete}
+                  onDelete={() => handleDelete(user)}
                 />
               );
             })}

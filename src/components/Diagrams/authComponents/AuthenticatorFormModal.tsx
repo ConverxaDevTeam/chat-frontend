@@ -412,7 +412,7 @@ const AuthenticatorFormModal = ({
         <div className="flex justify-end gap-2">
           <button
             type="submit"
-            className="w-full px-4 py-3 bg-sofia-electricGreen text-gray-900 rounded-md text-sm font-semibold hover:bg-opacity-50 transition-all"
+            className="w-full px-4 py-3 bg-sofia-superDark text-white rounded text-sm font-normal hover:bg-opacity-50 transition-all"
           >
             {initialData ? "Actualizar" : "Crear"}
           </button>
