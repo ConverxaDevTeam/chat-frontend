@@ -16,6 +16,9 @@ import {
   setNotificationCount,
   decrementNotificationCount,
 } from "@/store/reducers/notifications";
+import { toast } from "react-toastify";
+import { getHitlTypes } from "@services/hitl.service";
+import { assignConversationToHitl } from "@services/conversations";
 
 interface NavbarProps {
   windowWidth: number;
@@ -126,16 +129,218 @@ const NotificationItem = ({
   onClose: () => void;
 }) => {
   const dispatch = useDispatch();
+  const { user, selectOrganizationId, myOrganizations } = useSelector(
+    (state: RootState) => state.auth
+  );
+
   const handleMarkNotificationAsRead = async (notificationId: number) => {
     await markNotificationAsRead(notificationId);
   };
 
+  const isHitlNotification = (title: string): boolean => {
+    return /^\[(.+?)\]/.test(title);
+  };
+
+  const extractHitlTypeFromMessage = (message: string): string | null => {
+    const match = message.match(/^\[([^\]]+)\]/);
+    return match ? match[1].trim() : null;
+  };
+
+  const verifyHitlTypeExists = async (
+    hitlTypeName: string,
+    organizationId: number
+  ): Promise<boolean> => {
+    try {
+      const hitlTypes = await getHitlTypes(organizationId);
+      return hitlTypes.some(
+        type => type.name.toLowerCase() === hitlTypeName.toLowerCase()
+      );
+    } catch (error) {
+      console.error("Error verificando tipos HITL:", error);
+      return false;
+    }
+  };
+
+  const extractConversationIdFromLink = (link: string): number | null => {
+    const match = link.match(/\/conversation\/detail\/(\d+)/);
+    return match ? parseInt(match[1], 10) : null;
+  };
+
+  const handleHitlAutoAssignment = async (
+    conversationId: number,
+    hitlTypeName: string
+  ) => {
+    try {
+      const result = await assignConversationToHitl(conversationId);
+
+      if (result.ok) {
+        toast.success(
+          `Conversación asignada automáticamente para tipo HITL: ${hitlTypeName}`,
+          {
+            position: "top-right",
+            autoClose: 4000,
+          }
+        );
+      } else {
+        const errorMessage = result.message || "Error al asignar conversación";
+
+        if (
+          errorMessage.toLowerCase().includes("ya asignado") ||
+          errorMessage.toLowerCase().includes("already assigned")
+        ) {
+          toast.info(`Esta conversación ya fue asignada a otro agente`, {
+            position: "top-right",
+            autoClose: 3000,
+          });
+        } else {
+          toast.error(errorMessage, {
+            position: "top-right",
+            autoClose: 3000,
+          });
+        }
+      }
+    } catch (error: any) {
+      const errorMessage = error?.response?.data?.message || error?.message;
+
+      if (
+        errorMessage?.toLowerCase().includes("ya asignado") ||
+        errorMessage?.toLowerCase().includes("already assigned")
+      ) {
+        toast.info(`Esta conversación ya fue asignada a otro agente`, {
+          position: "top-right",
+          autoClose: 3000,
+        });
+      } else {
+        toast.error("Error al asignar conversación", {
+          position: "top-right",
+          autoClose: 3000,
+        });
+      }
+    }
+  };
+
   const handleClick = async () => {
+    // Obtener rol del usuario en la organización actual
+    const currentUserRole = myOrganizations.find(
+      org => org.organization?.id === selectOrganizationId
+    )?.role;
+
+    // Log debug persistente
+    sessionStorage.setItem(
+      "navbar_click_debug",
+      JSON.stringify({
+        timestamp: new Date().toISOString(),
+        step: "click_started",
+        notificationTitle: notification.title,
+        userRole: currentUserRole,
+        hasLink: !!notification.link,
+        isHitl: isHitlNotification(notification.title || ""),
+        selectOrganizationId,
+        organizationsCount: myOrganizations.length,
+      })
+    );
+
+    console.log("🔍 DEBUG: NotificationItem click iniciado", {
+      notification: notification.title,
+      userRole: currentUserRole,
+      hasLink: !!notification.link,
+      selectOrganizationId,
+      myOrganizations: myOrganizations.length,
+    });
+
+    // Verificar si es notificación HITL
+    if (
+      isHitlNotification(notification.title || "") &&
+      currentUserRole === "hitl"
+    ) {
+      sessionStorage.setItem(
+        "navbar_click_debug",
+        JSON.stringify({
+          timestamp: new Date().toISOString(),
+          step: "hitl_detected",
+          title: notification.title,
+        })
+      );
+
+      console.log(
+        "🔍 DEBUG: Notificación HITL detectada, procesando auto-asignación"
+      );
+
+      // Extraer tipo HITL y conversationId
+      const hitlTypeName = extractHitlTypeFromMessage(notification.title || "");
+      const conversationId = notification.link
+        ? extractConversationIdFromLink(notification.link)
+        : null;
+
+      if (hitlTypeName && conversationId && selectOrganizationId) {
+        // Verificar que el tipo HITL existe en la organización
+        const typeExists = await verifyHitlTypeExists(
+          hitlTypeName,
+          selectOrganizationId
+        );
+
+        if (typeExists) {
+          // Mostrar toast clickeable para auto-asignación
+          toast.warning(
+            <div className="cursor-pointer">
+              <div className="font-medium text-sm">
+                Notificación HITL: {hitlTypeName}
+              </div>
+              <div className="text-xs text-gray-600 mt-1">
+                {notification.title}
+              </div>
+              <div className="text-xs text-blue-600 mt-2 font-medium">
+                Click para asignar automáticamente
+              </div>
+            </div>,
+            {
+              position: "top-right",
+              autoClose: 8000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              onClick: () => {
+                console.log("🔍 DEBUG: Usuario hizo click en toast HITL");
+                handleHitlAutoAssignment(conversationId, hitlTypeName);
+              },
+            }
+          );
+        } else {
+          console.log(
+            "🔍 DEBUG: Tipo HITL no existe en la organización, flujo normal"
+          );
+          // Si el tipo no existe, proceder con flujo normal
+          if (notification.link) {
+            window.location.href = notification.link;
+          }
+        }
+      }
+
+      onClose();
+      return;
+    }
+
+    // Flujo normal para notificaciones no-HITL
+    sessionStorage.setItem(
+      "navbar_click_debug",
+      JSON.stringify({
+        timestamp: new Date().toISOString(),
+        step: "normal_flow",
+        willNavigate: !!notification.link,
+      })
+    );
+
     if (!notification.isRead && notification.type === NotificationType.USER) {
       await handleMarkNotificationAsRead(notification.id);
       dispatch(decrementNotificationCount());
     }
-    if (notification.link) window.location.href = notification.link;
+
+    if (notification.link) {
+      console.log("🔍 DEBUG: Navegando a:", notification.link);
+      window.location.href = notification.link;
+    }
+
     onClose();
   };
 
