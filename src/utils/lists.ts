@@ -40,6 +40,7 @@ export const sidebarLinks = [
       OrganizationRoleType.OWNER,
       OrganizationRoleType.ADMIN,
       OrganizationRoleType.USER,
+      OrganizationRoleType.HITL,
     ],
   },
   {

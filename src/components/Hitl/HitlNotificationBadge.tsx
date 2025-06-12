@@ -2,6 +2,9 @@ import React, { useState } from "react";
 import { HitlNotification } from "@interfaces/hitl.interface";
 import { useHitlNotifications } from "@hooks/useHitlNotifications";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { RootState } from "@store";
+// import { handleHitlNotification } from "@hooks/useHitlNotificationHandler";
 
 interface HitlNotificationBadgeProps {
   organizationId: number;
@@ -12,8 +15,15 @@ export const HitlNotificationBadge: React.FC<HitlNotificationBadgeProps> = ({
   organizationId,
   className = "",
 }) => {
+  console.log("🔍 DEBUG: HitlNotificationBadge montado", { organizationId });
+
   const navigate = useNavigate();
   const [showDropdown, setShowDropdown] = useState(false);
+
+  const { myOrganizations } = useSelector((state: RootState) => state.auth);
+  const userRole = myOrganizations.find(
+    org => org.organization?.id === organizationId
+  )?.role;
 
   const {
     hitlNotifications,
@@ -23,13 +33,55 @@ export const HitlNotificationBadge: React.FC<HitlNotificationBadgeProps> = ({
     markAllAsRead,
   } = useHitlNotifications({ organizationId });
 
-  const handleNotificationClick = (
+  const handleNotificationClick = async (
+    event: React.MouseEvent,
     notification: HitlNotification,
     index: number
   ) => {
-    markAsRead(index);
-    navigate(`/conversation/detail/${notification.conversationId}`);
-    setShowDropdown(false);
+    try {
+      console.log("🔍 DEBUG: CLICK INICIAL - Antes de cualquier cosa");
+
+      // Log persistente para detectar recargas
+      sessionStorage.setItem(
+        "hitl_debug_log",
+        JSON.stringify({
+          timestamp: new Date().toISOString(),
+          action: "click_captured",
+          notification: notification,
+          userRole: userRole,
+          organizationId: organizationId,
+        })
+      );
+
+      console.log("🔍 DEBUG: Evento click capturado");
+      event.preventDefault();
+      event.stopPropagation();
+
+      console.log("🔍 DEBUG: Click en notificación HITL", {
+        notification,
+        index,
+        userRole,
+        organizationId,
+      });
+
+      console.log("🔍 DEBUG: Marcando como leído...");
+      markAsRead(index);
+
+      console.log("🔍 DEBUG: Navegando a conversación...");
+      navigate(`/conversation/detail/${notification.conversationId}`);
+
+      setShowDropdown(false);
+    } catch (error) {
+      console.error("🔍 DEBUG: Error en handleNotificationClick:", error);
+      sessionStorage.setItem(
+        "hitl_debug_error",
+        JSON.stringify({
+          timestamp: new Date().toISOString(),
+          error: error.toString(),
+          stack: error.stack,
+        })
+      );
+    }
   };
 
   const formatTimestamp = (timestamp: string) => {
@@ -46,6 +98,21 @@ export const HitlNotificationBadge: React.FC<HitlNotificationBadgeProps> = ({
   };
 
   const recentNotifications = hitlNotifications.slice(0, 5);
+
+  // Verificar si hay logs de debug persistentes al cargar
+  React.useEffect(() => {
+    const debugLog = sessionStorage.getItem("hitl_debug_log");
+    if (debugLog) {
+      console.log(
+        "🔍 DEBUG: Log persistente encontrado:",
+        JSON.parse(debugLog)
+      );
+      // Mantener el log por 10 segundos más para debugging
+      setTimeout(() => {
+        sessionStorage.removeItem("hitl_debug_log");
+      }, 10000);
+    }
+  }, []);
 
   return (
     <div className={`relative ${className}`}>
@@ -148,7 +215,10 @@ export const HitlNotificationBadge: React.FC<HitlNotificationBadgeProps> = ({
                 recentNotifications.map((notification, index) => (
                   <div
                     key={`${notification.timestamp}-${index}`}
-                    onClick={() => handleNotificationClick(notification, index)}
+                    onClick={event => {
+                      console.log("🔍 DEBUG: DIV onClick ejecutado");
+                      handleNotificationClick(event, notification, index);
+                    }}
                     className={`p-4 border-b border-gray-100 hover:bg-gray-50 cursor-pointer transition-colors ${
                       !notification.read
                         ? "bg-blue-50 border-l-4 border-l-blue-500"

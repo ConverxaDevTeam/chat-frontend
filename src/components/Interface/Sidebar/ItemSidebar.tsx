@@ -30,20 +30,9 @@ const ItemSidebar = ({
     (state: RootState) => state.auth
   );
 
-  // Debug logs para sistema HITL
-  if (link.text === "Sistema HITL") {
-    console.log("🔍 DEBUG HITL - selectOrganizationId:", selectOrganizationId);
-    console.log("🔍 DEBUG HITL - myOrganizations:", myOrganizations);
-    console.log("🔍 DEBUG HITL - roles requeridos:", roles);
-  }
-
   const actualRoles = myOrganizations
     .filter(org => org.organization?.id === selectOrganizationId)
     .map(org => org.role);
-
-  if (link.text === "Sistema HITL") {
-    console.log("🔍 DEBUG HITL - actualRoles:", actualRoles);
-  }
 
   const linkUrl =
     link.isDynamic && typeof link.to === "function" && selectOrganizationId
@@ -59,20 +48,7 @@ const ItemSidebar = ({
     !actualRoles ||
     (roles.length > 0 && !roles.some(role => actualRoles!.includes(role)))
   ) {
-    if (link.text === "Sistema HITL") {
-      console.log("🚫 DEBUG HITL - Item oculto. Razón:");
-      console.log("   - !actualRoles:", !actualRoles);
-      console.log("   - roles.length > 0:", roles.length > 0);
-      console.log(
-        "   - !roles.some(role => actualRoles!.includes(role)):",
-        !roles.some(role => actualRoles!.includes(role))
-      );
-    }
     return null;
-  }
-
-  if (link.text === "Sistema HITL") {
-    console.log("✅ DEBUG HITL - Item visible");
   }
 
   return (
