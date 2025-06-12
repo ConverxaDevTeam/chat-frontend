@@ -84,7 +84,7 @@ const ButtonExportAllConversations = ({
             fontSize?: number;
           };
         }
-        
+
         const docDefinition: DocDefinition = {
           content: [
             {

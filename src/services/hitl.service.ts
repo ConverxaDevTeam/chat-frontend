@@ -197,5 +197,3 @@ export const removeUserFromHitlType = async (
     return false;
   }
 };
-
-

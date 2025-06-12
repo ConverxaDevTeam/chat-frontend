@@ -175,27 +175,45 @@ const ButtonExportAllUsers = ({ users }: ButtonExportAllUsersProps) => {
                   body: tableBody,
                 },
                 layout: {
-                  hLineWidth: function (i: number, node: { table: { body: unknown[] } }) {
+                  hLineWidth: function (
+                    i: number,
+                    node: { table: { body: unknown[] } }
+                  ) {
                     return i === 0 || i === 1 || i === node.table.body.length
                       ? 1
                       : 0.5;
                   },
-                  vLineWidth: function (i: number, node: { table: { widths: unknown[] } }) {
+                  vLineWidth: function (
+                    i: number,
+                    node: { table: { widths: unknown[] } }
+                  ) {
                     return i === 0 || i === node.table.widths.length ? 1 : 0.5;
                   },
                   hLineColor: function (i: number) {
                     return i === 0 || i === 1 ? "#AAAAAA" : "#DDDDDD";
                   },
-                  vLineColor: function (i: number, node: { table: { widths: unknown[] } }) {
+                  vLineColor: function (
+                    i: number,
+                    node: { table: { widths: unknown[] } }
+                  ) {
                     return i === 0 || i === node.table.widths.length
                       ? "#AAAAAA"
                       : "#DDDDDD";
                   },
                 } as {
-                  hLineWidth: (i: number, node: { table: { body: unknown[] } }) => number;
-                  vLineWidth: (i: number, node: { table: { widths: unknown[] } }) => number;
+                  hLineWidth: (
+                    i: number,
+                    node: { table: { body: unknown[] } }
+                  ) => number;
+                  vLineWidth: (
+                    i: number,
+                    node: { table: { widths: unknown[] } }
+                  ) => number;
                   hLineColor: (i: number) => string;
-                  vLineColor: (i: number, node: { table: { widths: unknown[] } }) => string;
+                  vLineColor: (
+                    i: number,
+                    node: { table: { widths: unknown[] } }
+                  ) => string;
                 },
               },
             ],

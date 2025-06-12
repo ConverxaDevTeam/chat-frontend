@@ -29,19 +29,19 @@ export const useHitlUserAssignments = ({
     try {
       const users = await getUserMyOrganization(organizationId);
       // Filter only users with HITL role
-      const hitlUsers = users?.filter(user => 
-        user.userOrganizations?.[0]?.role === 'hitl'
-      ) || [];
-      
+      const hitlUsers =
+        users?.filter(user => user.userOrganizations?.[0]?.role === "hitl") ||
+        [];
+
       // Transform to match HitlUserWithRole interface
       const transformedUsers: HitlUserWithRole[] = hitlUsers.map(user => ({
         id: user.id,
         email: user.email,
         first_name: user.first_name,
         last_name: user.last_name,
-        role: user.userOrganizations[0].role
+        role: user.userOrganizations[0].role,
       }));
-      
+
       setAvailableUsers(transformedUsers);
     } catch (error) {
       console.error("Error fetching HITL users:", error);

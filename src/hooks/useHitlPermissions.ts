@@ -14,11 +14,11 @@ export const useHitlPermissions = ({
   const [isLoading, setIsLoading] = useState(false);
   const [hasError, setHasError] = useState(false);
 
-  const userRoles = useMemo(() => 
-    organizationRoles(organizationId), 
+  const userRoles = useMemo(
+    () => organizationRoles(organizationId),
     [organizationRoles, organizationId]
   );
-  
+
   const userRole = useMemo(() => userRoles[0], [userRoles]);
 
   const permissions = useMemo((): HitlPermissions => {
@@ -29,8 +29,13 @@ export const useHitlPermissions = ({
       };
     }
 
-    const canManage = hasOrganizationRole(organizationId, [OrganizationRoleType.OWNER]);
-    const canReceive = hasOrganizationRole(organizationId, [OrganizationRoleType.HITL, OrganizationRoleType.OWNER]);
+    const canManage = hasOrganizationRole(organizationId, [
+      OrganizationRoleType.OWNER,
+    ]);
+    const canReceive = hasOrganizationRole(organizationId, [
+      OrganizationRoleType.HITL,
+      OrganizationRoleType.OWNER,
+    ]);
 
     return {
       canManageHitlTypes: canManage,
@@ -63,7 +68,9 @@ export const useHitlPermissions = ({
   }, [permissions.canReceiveHitlNotifications]);
 
   const hasAccessToHitlSystem = useCallback((): boolean => {
-    return permissions.canManageHitlTypes || permissions.canReceiveHitlNotifications;
+    return (
+      permissions.canManageHitlTypes || permissions.canReceiveHitlNotifications
+    );
   }, [permissions.canManageHitlTypes, permissions.canReceiveHitlNotifications]);
 
   useEffect(() => {

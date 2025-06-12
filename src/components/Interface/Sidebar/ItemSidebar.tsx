@@ -29,18 +29,18 @@ const ItemSidebar = ({
   const { selectOrganizationId, myOrganizations } = useSelector(
     (state: RootState) => state.auth
   );
-  
+
   // Debug logs para sistema HITL
   if (link.text === "Sistema HITL") {
     console.log("🔍 DEBUG HITL - selectOrganizationId:", selectOrganizationId);
     console.log("🔍 DEBUG HITL - myOrganizations:", myOrganizations);
     console.log("🔍 DEBUG HITL - roles requeridos:", roles);
   }
-  
+
   const actualRoles = myOrganizations
     .filter(org => org.organization?.id === selectOrganizationId)
     .map(org => org.role);
-    
+
   if (link.text === "Sistema HITL") {
     console.log("🔍 DEBUG HITL - actualRoles:", actualRoles);
   }
@@ -63,11 +63,14 @@ const ItemSidebar = ({
       console.log("🚫 DEBUG HITL - Item oculto. Razón:");
       console.log("   - !actualRoles:", !actualRoles);
       console.log("   - roles.length > 0:", roles.length > 0);
-      console.log("   - !roles.some(role => actualRoles!.includes(role)):", !roles.some(role => actualRoles!.includes(role)));
+      console.log(
+        "   - !roles.some(role => actualRoles!.includes(role)):",
+        !roles.some(role => actualRoles!.includes(role))
+      );
     }
     return null;
   }
-  
+
   if (link.text === "Sistema HITL") {
     console.log("✅ DEBUG HITL - Item visible");
   }
@@ -92,7 +95,7 @@ const ItemSidebar = ({
           />
           <div
             className={`
-              absolute z-50 left-full group-hover:flex hidden 
+              absolute z-50 left-full group-hover:flex hidden
               bg-[#F6F6F6] border border-[#001126] text-[#001126] text-[12px] px-2 py-1.5 rounded
               font-[400] whitespace-nowrap tracking-[0.17px] leading-[143%] text-left
               shadow-md items-center pointer-events-none
