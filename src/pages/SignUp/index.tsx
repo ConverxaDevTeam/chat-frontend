@@ -33,7 +33,8 @@ const SignUp = () => {
 
     setActive(true);
 
-    const { confirmPassword, ...dataToSubmit } = formData;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { confirmPassword: _, ...dataToSubmit } = formData;
     dispatch(
       signUpAsync({ data: dataToSubmit, setActive, setError, dispatch })
     );
