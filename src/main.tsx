@@ -10,29 +10,14 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import { initFacebookSDK, isFacebookSDKReady } from "./utils/facebook-init";
 
 // Inicializar el SDK de Facebook inmediatamente al cargar la aplicación
-console.log("Iniciando carga del SDK de Facebook desde main.tsx");
-const fbPromise = initFacebookSDK();
-fbPromise
-  .then(() => {
-    console.log("SDK de Facebook inicializado exitosamente desde main.tsx");
-  })
-  .catch(error => {
-    console.error(
-      "Error al inicializar el SDK de Facebook desde main.tsx:",
-      error
-    );
-  });
+initFacebookSDK();
 
 // Componente que garantiza que el SDK de Facebook esté inicializado
 const AppWithFacebookSDK = () => {
   useEffect(() => {
     // Verificar el estado de inicialización del SDK
     const checkSDKStatus = () => {
-      if (isFacebookSDKReady()) {
-        console.log("SDK de Facebook listo para su uso en la aplicación");
-      } else {
-        console.log("Esperando a que el SDK de Facebook esté listo...");
-        // Verificar nuevamente en 1 segundo
+      if (!isFacebookSDKReady()) {
         setTimeout(checkSDKStatus, 1000);
       }
     };

@@ -174,6 +174,7 @@ export const useSweetAlert = () => {
       successText: string;
       errorTitle: string;
       loadingTitle?: string;
+      showSuccess?: boolean;
     }
   ): Promise<OperationResult<T>> => {
     let result: T;
@@ -188,16 +189,19 @@ export const useSweetAlert = () => {
       result = await operation();
 
       hideOperationModal();
-      await new Promise<void>(resolve => {
-        showOperationModal({
-          title: options.successTitle,
-          text: options.successText,
-          type: "success",
-          autoCloseDelay: 3000,
-        }).then(() => {
-          resolve();
+
+      if (options.showSuccess !== false) {
+        await new Promise<void>(resolve => {
+          showOperationModal({
+            title: options.successTitle,
+            text: options.successText,
+            type: "success",
+            autoCloseDelay: 3000,
+          }).then(() => {
+            resolve();
+          });
         });
-      });
+      }
 
       return { success: true, data: result };
     } catch (error) {

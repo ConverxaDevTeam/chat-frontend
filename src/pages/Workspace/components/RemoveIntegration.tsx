@@ -3,6 +3,7 @@ import React from "react";
 import RawModal from "@components/RawModal";
 import { NodeData } from "@interfaces/workflow";
 import { deleteIntegrationbyId } from "@services/integration";
+import { useCounter } from "@hooks/CounterContext";
 
 interface RemoveIntegrationProps {
   isOpen: boolean;
@@ -15,12 +16,14 @@ const RemoveIntegration: React.FC<RemoveIntegrationProps> = ({
   onClose,
   data,
 }) => {
+  const { increment } = useCounter();
   const handleRemoveIntegration = async () => {
     if (!data.id) return;
     const respone = await deleteIntegrationbyId(data.id);
     if (respone) {
       onClose();
-      window.location.reload();
+      // Use the counter context to trigger a diagram update instead of page reload
+      increment();
     }
   };
   return (
