@@ -14,11 +14,11 @@ flowchart TD
     
     D --> E{Acción del usuario}
     E -->|Agregar| F[Modal ModalAddUser]
-    E -->|Editar| G[Modal ModalAddUser con datos]
+    E -->|Editar| G[Modal ModalAddUser - cambio password]
     E -->|Eliminar| H[Confirmar eliminación]
     
     F --> I[addUserInOrganizationById]
-    G --> J[Actualizar usuario existente]
+    G --> J[changeUserPassword]
     H --> K[deleteUserFromOrganization]
     
     I --> L[Refrescar lista]
@@ -41,9 +41,13 @@ flowchart TD
 - **UI**: Avatar, email, nombre, rol, botones de acción
 
 ### ModalAddUser (`/pages/Users/UsersOrganization/ModalAddUser.tsx`)
-- **Responsabilidad**: Formulario para agregar/editar usuarios
-- **Modos**: Creación y edición según prop editUser
-- **Validación**: Email requerido, formato válido
+- **Responsabilidad**: Formulario para agregar usuarios y cambiar contraseñas
+- **Modos**: 
+  - Creación: Campo email para invitar usuario
+  - Edición: Campo password para cambiar contraseña
+- **Validación**: 
+  - Agregar: Email requerido y formato válido
+  - Editar: Password mínimo 6 caracteres
 
 ## Servicios de Datos
 
@@ -58,6 +62,13 @@ flowchart TD
 - **Método**: POST
 - **Parámetros**: { email: string }
 - **Función**: Invita usuario a organización
+
+### changeUserPassword
+- **Endpoint**: `/api/user/change-password/${userId}`
+- **Método**: POST
+- **Parámetros**: { newPassword: string }
+- **Función**: Cambia contraseña de usuario existente
+- **Permisos**: OWNER o superadmin
 
 ### deleteUserFromOrganization
 - **Endpoint**: `/api/user/organization/${organizationId}/user/${userId}`
@@ -99,22 +110,28 @@ flowchart TD
 - **Otros roles**: Sin acceso a gestión de usuarios
 
 ### Validaciones
-- Email único por organización
-- No se puede eliminar el último OWNER
-- Usuario debe tener email válido
+- **Agregar**: Email único por organización y formato válido
+- **Editar**: Contraseña mínimo 6 caracteres
+- **Eliminar**: No se puede eliminar el último OWNER
 - Confirmación requerida para eliminación
 
-### Estados de Usuario
+### Estados y Operaciones
 - **Activo**: Usuario con acceso completo
-- **Invitado**: Usuario invitado pendiente de activación
+- **Invitado**: Usuario invitado pendiente de activación  
+- **Cambio password**: Actualización de credenciales por OWNER
 - **Eliminado**: Usuario removido de organización
 
-## Casos de Error
+### Casos de Error
 
 ### Permisos Insuficientes
 - **Código**: 403 Forbidden
 - **Mensaje**: "No tienes permisos para realizar esta acción"
 - **Acción**: Toast de error, bloqueo de UI
+
+### Password Inválido
+- **Validación**: Frontend
+- **Mensaje**: "La contraseña debe tener al menos 6 caracteres"
+- **Acción**: Bloquear submit, mostrar error
 
 ### Usuario No Encontrado
 - **Código**: 404 Not Found
