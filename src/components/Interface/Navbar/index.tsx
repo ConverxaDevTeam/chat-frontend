@@ -7,6 +7,7 @@ import {
   markAllNotificationsAsRead,
 } from "@services/notifications.service";
 import { Fragment, useState, useRef, useEffect } from "react";
+import PlanNavInfo from "./PlanNavInfo";
 import {
   Notification,
   NotificationType,
@@ -302,7 +303,7 @@ const UserActions = ({
       className={`flex gap-[8px] items-center ${mobileResolution ? "self-end" : ""}`}
     >
       <p className="text-sofia-superDark font-normal text-[14px] whitespace-nowrap mr-5">
-        <span className="font-bold">Plan actual:</span> 100/250 conversaciones
+        <span className="font-bold">Plan actual:</span> <PlanNavInfo />
       </p>
       <p
         className={`text-sofia-superDark font-normal text-[14px] whitespace-nowrap ${
