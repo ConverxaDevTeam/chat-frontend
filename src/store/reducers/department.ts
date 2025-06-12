@@ -3,7 +3,7 @@ import { IDepartment } from "@interfaces/departments";
 import { getDepartments } from "@services/department";
 import { logOutAsync, setOrganizationId } from "../actions/auth";
 
-const HIDDEN_DEPARTMENTS_KEY = 'sofia_hidden_departments';
+const HIDDEN_DEPARTMENTS_KEY = "sofia_hidden_departments";
 
 const getInitialHiddenDepartmentIds = (): string[] => {
   try {
@@ -12,7 +12,7 @@ const getInitialHiddenDepartmentIds = (): string[] => {
       return JSON.parse(hiddenDepartments);
     }
   } catch (error) {
-    console.error('Error al cargar departamentos ocultos:', error);
+    console.error("Error al cargar departamentos ocultos:", error);
   }
   return [];
 };
@@ -100,18 +100,29 @@ const departmentSlice = createSlice({
     toggleDepartmentVisibility: (state, action: PayloadAction<string>) => {
       const departmentId = action.payload;
       const isHidden = state.hiddenDepartmentIds.includes(departmentId);
-      
+
       if (isHidden) {
-        state.hiddenDepartmentIds = state.hiddenDepartmentIds.filter(id => id !== departmentId);
+        state.hiddenDepartmentIds = state.hiddenDepartmentIds.filter(
+          id => id !== departmentId
+        );
       } else {
-        state.hiddenDepartmentIds = [...state.hiddenDepartmentIds, departmentId];
+        state.hiddenDepartmentIds = [
+          ...state.hiddenDepartmentIds,
+          departmentId,
+        ];
       }
-      
-      localStorage.setItem(HIDDEN_DEPARTMENTS_KEY, JSON.stringify(state.hiddenDepartmentIds));
+
+      localStorage.setItem(
+        HIDDEN_DEPARTMENTS_KEY,
+        JSON.stringify(state.hiddenDepartmentIds)
+      );
     },
     setHiddenDepartmentIds: (state, action: PayloadAction<string[]>) => {
       state.hiddenDepartmentIds = action.payload;
-      localStorage.setItem(HIDDEN_DEPARTMENTS_KEY, JSON.stringify(action.payload));
+      localStorage.setItem(
+        HIDDEN_DEPARTMENTS_KEY,
+        JSON.stringify(action.payload)
+      );
     },
   },
   extraReducers: builder => {

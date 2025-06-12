@@ -16,7 +16,7 @@ const OrganizationHeaderItem = ({
   const navigate = useNavigate();
   const [showContextMenu, setShowContextMenu] = useState(false);
   const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
-  
+
   const handleOpenMenu = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -27,7 +27,7 @@ const OrganizationHeaderItem = ({
   const handleCloseMenu = () => {
     setShowContextMenu(false);
   };
-  
+
   const navigateToUsers = () => {
     handleCloseMenu();
     navigate("/users");
@@ -90,7 +90,11 @@ const OrganizationHeaderItem = ({
               onClick={navigateToUsers}
               className="flex items-center gap-2 w-full text-left"
             >
-              <img src="/mvp/plus.svg" alt="Agregar usuarios" className="w-4 h-4" />
+              <img
+                src="/mvp/plus.svg"
+                alt="Agregar usuarios"
+                className="w-4 h-4"
+              />
               <span>Agregar usuarios</span>
             </button>
           </ContextMenu>

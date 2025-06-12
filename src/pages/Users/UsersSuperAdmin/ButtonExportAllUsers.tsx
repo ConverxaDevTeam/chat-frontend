@@ -175,23 +175,28 @@ const ButtonExportAllUsers = ({ users }: ButtonExportAllUsersProps) => {
                   body: tableBody,
                 },
                 layout: {
-                  hLineWidth: function (i: number, node: any) {
+                  hLineWidth: function (i: number, node: { table: { body: unknown[] } }) {
                     return i === 0 || i === 1 || i === node.table.body.length
                       ? 1
                       : 0.5;
                   },
-                  vLineWidth: function (i: number, node: any) {
+                  vLineWidth: function (i: number, node: { table: { widths: unknown[] } }) {
                     return i === 0 || i === node.table.widths.length ? 1 : 0.5;
                   },
                   hLineColor: function (i: number) {
                     return i === 0 || i === 1 ? "#AAAAAA" : "#DDDDDD";
                   },
-                  vLineColor: function (i: number, node: any) {
+                  vLineColor: function (i: number, node: { table: { widths: unknown[] } }) {
                     return i === 0 || i === node.table.widths.length
                       ? "#AAAAAA"
                       : "#DDDDDD";
                   },
-                } as any,
+                } as {
+                  hLineWidth: (i: number, node: { table: { body: unknown[] } }) => number;
+                  vLineWidth: (i: number, node: { table: { widths: unknown[] } }) => number;
+                  hLineColor: (i: number) => string;
+                  vLineColor: (i: number, node: { table: { widths: unknown[] } }) => string;
+                },
               },
             ],
             styles: {
@@ -222,7 +227,7 @@ const ButtonExportAllUsers = ({ users }: ButtonExportAllUsersProps) => {
           };
 
           pdfMake
-            .createPdf(docDefinition as any, undefined, pdfMakeFonts)
+            .createPdf(docDefinition as unknown, undefined, pdfMakeFonts)
             .download(`usuarios_${getPdfMonthDayYear()}.pdf`);
         };
       })

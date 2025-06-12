@@ -27,9 +27,9 @@ const UserCard = ({ userData, onEdit, onDelete }: UserCardProps) => {
             </p>
             <div className="flex flex-col items-center w-full">
               {userData.userOrganizations?.map((organization, index) => (
-                <RoleBadge 
-                  key={index} 
-                  role={organization.role} 
+                <RoleBadge
+                  key={index}
+                  role={organization.role}
                   className="cursor-pointer"
                 />
               ))}
