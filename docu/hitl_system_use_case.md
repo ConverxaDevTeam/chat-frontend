@@ -39,15 +39,9 @@ graph TD
     S -->|No| T[Toast se auto-cierra]
     S -->|Sí| U[Asignar conversación automáticamente]
     U --> V{¿Asignación exitosa?}
-    V -->|Sí| W[Mensaje éxito + navegación]
+    V -->|Sí| W[Mensaje éxito - SIN navegación]
     V -->|Ya asignado| X[Mensaje informativo]
     V -->|Error| Y[Mensaje de error]
-```
-    
-    M --> N[Agente requiere intervención]
-    N --> O[Sistema envía notificación HITL]
-    O --> P[Usuario HITL recibe notificación]
-    P --> Q[Usuario HITL interviene en conversación]
 ```
 
 ## Componentes Involucrados
@@ -65,7 +59,7 @@ graph TD
 - `useHitlTypes` - `/src/hooks/useHitlTypes.ts` - Gestión CRUD tipos HITL
 - `useHitlUserAssignments` - `/src/hooks/useHitlUserAssignments.ts` - Asignación usuarios
 - `useHitlNotifications` - `/src/hooks/useHitlNotifications.ts` - Notificaciones tiempo real
-- `handleHitlNotification` - `/src/hooks/useHitlNotificationHandler.ts` - Función utilitaria para auto-asignación por tipo HITL
+
 - `useHitlPermissions` - `/src/hooks/useHitlPermissions.ts` - Verificación permisos
 
 ### Servicios
@@ -179,23 +173,23 @@ enum HitlStatus {
 - Confirmaciones para acciones destructivas
 
 ### ✅ Auto-Asignación por Notificaciones
-- Detección automática de notificaciones con formato `[tipo_hitl]`
+- Detección automática de notificaciones con formato `[tipo_hitl]` en Navbar
 - Verificación de existencia del tipo HITL en la organización
 - Solo para usuarios con rol HITL
-- Toast clickeable para asignación automática de conversaciones
+- Toast clickeable para asignación opcional de conversaciones
 - Manejo de casos donde la conversación ya está asignada
-- **No navega automáticamente** - Preserva el flujo del usuario
+- **Preserva el flujo del usuario** - Sin navegación automática
 
 #### Reglas de Negocio - Auto-Asignación
-- **Formato de mensaje**: Debe iniciar con `[nombre_tipo_hitl]`
+- **Formato de detección**: Notificaciones que inician con `[nombre_tipo_hitl]`
 - **Validación de tipo**: El tipo debe existir en la organización actual
-- **Permisos**: Solo usuarios con rol HITL pueden ver estas notificaciones
-- **Comportamiento de click**: Asigna automáticamente la conversación al usuario actual
-- **Carga lazy**: Los servicios HITL solo se cargan cuando se hace click
+- **Permisos**: Solo usuarios con rol HITL ven el toast de auto-asignación
+- **Comportamiento**: Toast clickeable que permite asignación opcional
+- **Sin navegación automática**: Preserva el flujo actual del usuario
 - **Estados de respuesta**:
-  - Éxito: Mensaje de confirmación (sin navegación automática)
+  - Éxito: Mensaje de confirmación
   - Ya asignado: Mensaje informativo
-  - Error: Mensaje de error genérico
+  - Error: Mensaje de error
 
 ### ✅ Gestión de Usuarios
 - Asignar/remover usuarios con rol HITL

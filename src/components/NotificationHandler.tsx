@@ -10,7 +10,6 @@ import {
   NotificationType,
 } from "@interfaces/notifications.interface";
 import { incrementNotificationCount } from "../store/reducers/notifications";
-import { handleHitlNotification } from "@hooks/useHitlNotificationHandler";
 
 const renderMessageRecivedNotification = (
   conversationId: number,
@@ -37,20 +36,13 @@ const renderMessageRecivedNotification = (
 
 const NotificationHandler = () => {
   const socket = useSelector((state: RootState) => state.auth.socket);
-  const { selectOrganizationId, myOrganizations } = useSelector(
-    (state: RootState) => state.auth
-  );
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
-  const userRole = myOrganizations.find(
-    org => org.organization?.id === selectOrganizationId
-  )?.role;
 
   useEffect(() => {
     if (!socket) return;
 
-    const handleNotification = async (
+    const handleNotification = (
       notification: NotificationMessage<MessageReceivedNotification>
     ) => {
       const { type, message, data } = notification;
@@ -58,34 +50,11 @@ const NotificationHandler = () => {
       switch (type) {
         case NotificationType.MESSAGE_RECEIVED: {
           dispatch(incrementNotificationCount());
-
-          // Intentar manejar como notificación HITL primero
-          console.log("🔍 DEBUG: Iniciando verificación notificación HITL", {
-            conversationId: data.conversationId,
-            message,
-            userRole,
-            selectOrganizationId,
-          });
-
-          const wasHandledAsHitl = await handleHitlNotification(
+          renderMessageRecivedNotification(
             data.conversationId,
             message,
-            userRole,
-            selectOrganizationId
+            navigate
           );
-
-          console.log("🔍 DEBUG: Resultado handleHitlNotification:", {
-            wasHandledAsHitl,
-          });
-
-          // Si no fue manejada como HITL, usar el comportamiento normal
-          if (!wasHandledAsHitl) {
-            renderMessageRecivedNotification(
-              data.conversationId,
-              message,
-              navigate
-            );
-          }
           break;
         }
         default:
@@ -104,7 +73,7 @@ const NotificationHandler = () => {
         socket.off("notification", handleNotification);
       }
     };
-  }, [socket, navigate, dispatch, userRole, selectOrganizationId]);
+  }, [socket, navigate, dispatch]);
   return null;
 };
 
