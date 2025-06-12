@@ -78,7 +78,11 @@ const IntegracionesNode = ({
     {
       child: (
         <div className="group relative p-1">
-          <img src="/mvp/messenger.svg" alt="Facebook Messenger" className="w-6 h-6" />
+          <img
+            src="/mvp/messenger.svg"
+            alt="Facebook Messenger"
+            className="w-6 h-6"
+          />
           <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 bg-gray-800 text-white font-normal text-xs px-2 py-1 rounded whitespace-nowrap z-[9999]">
             Facebook Messenger
           </div>

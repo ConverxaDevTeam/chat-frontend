@@ -5,11 +5,12 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 
 interface ItemSidebarProps {
   link: {
-    to: string;
+    to: string | ((orgId: number) => string);
     text: string;
     active: string[];
     img: string;
     imgWhite?: string;
+    isDynamic?: boolean;
   };
   sidebarMinimized: boolean;
   mobileResolution: boolean;
@@ -28,23 +29,56 @@ const ItemSidebar = ({
   const { selectOrganizationId, myOrganizations } = useSelector(
     (state: RootState) => state.auth
   );
+  
+  // Debug logs para sistema HITL
+  if (link.text === "Sistema HITL") {
+    console.log("🔍 DEBUG HITL - selectOrganizationId:", selectOrganizationId);
+    console.log("🔍 DEBUG HITL - myOrganizations:", myOrganizations);
+    console.log("🔍 DEBUG HITL - roles requeridos:", roles);
+  }
+  
   const actualRoles = myOrganizations
     .filter(org => org.organization?.id === selectOrganizationId)
     .map(org => org.role);
+    
+  if (link.text === "Sistema HITL") {
+    console.log("🔍 DEBUG HITL - actualRoles:", actualRoles);
+  }
 
-  const active = currentPath === link.to || link.active.includes(currentPath);
+  const linkUrl =
+    link.isDynamic && typeof link.to === "function" && selectOrganizationId
+      ? link.to(selectOrganizationId)
+      : typeof link.to === "string"
+        ? link.to
+        : "";
+
+  const active =
+    currentPath === linkUrl ||
+    link.active.some(path => currentPath.includes(path));
   if (
     !actualRoles ||
     (roles.length > 0 && !roles.some(role => actualRoles!.includes(role)))
   ) {
+    if (link.text === "Sistema HITL") {
+      console.log("🚫 DEBUG HITL - Item oculto. Razón:");
+      console.log("   - !actualRoles:", !actualRoles);
+      console.log("   - roles.length > 0:", roles.length > 0);
+      console.log("   - !roles.some(role => actualRoles!.includes(role)):", !roles.some(role => actualRoles!.includes(role)));
+    }
     return null;
+  }
+  
+  if (link.text === "Sistema HITL") {
+    console.log("✅ DEBUG HITL - Item visible");
   }
 
   return (
     <li
       className={`relative flex h-[35px] items-center gap-[16px] ${
-        active ? "bg-sofia-superDark rounded-[4px] text-sofia-blancoPuro" : "text-app-gray"
-      } ${(sidebarMinimized || mobileResolution) ? "w-full justify-center" : "w-full pl-[12px]"}`}
+        active
+          ? "bg-sofia-superDark rounded-[4px] text-sofia-blancoPuro"
+          : "text-app-gray"
+      } ${sidebarMinimized || mobileResolution ? "w-full justify-center" : "w-full pl-[12px]"}`}
     >
       {sidebarMinimized || mobileResolution ? (
         <div className="group relative flex justify-center items-center w-full">
@@ -52,7 +86,7 @@ const ItemSidebar = ({
             className={`w-6 h-6 fill-current z-10 ${active ? "" : "cursor-pointer"}`}
             src={active ? `/mvp/${link.imgWhite}` : `/mvp/${link.img}`}
             onClick={() => {
-              navigate(link.to);
+              navigate(linkUrl);
             }}
             alt={link.text}
           />
@@ -78,14 +112,16 @@ const ItemSidebar = ({
             className={`w-6 h-6 fill-current z-10 ${active ? "" : "cursor-pointer"}`}
             src={active ? `/mvp/${link.imgWhite}` : `/mvp/${link.img}`}
             onClick={() => {
-              navigate(link.to);
+              navigate(linkUrl);
             }}
             alt={link.text}
           />
           <Link
-            to={link.to}
+            to={linkUrl}
             className={`z-10 font-normal transition-all duration-300 ease-in-out ${
-              active ? "cursor-default text-sofia-blancoPuro" : "cursor-pointer text-[#001126]"
+              active
+                ? "cursor-default text-sofia-blancoPuro"
+                : "cursor-pointer text-[#001126]"
             }`}
           >
             {link.text}

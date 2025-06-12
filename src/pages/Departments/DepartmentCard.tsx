@@ -17,10 +17,12 @@ const DepartmentCard: FC<DepartmentCardProps> = ({
   onDelete,
 }) => {
   const dispatch = useAppDispatch();
-  const { hiddenDepartmentIds } = useSelector((state: RootState) => state.department);
-  
+  const { hiddenDepartmentIds } = useSelector(
+    (state: RootState) => state.department
+  );
+
   const isVisible = !hiddenDepartmentIds.includes(department.id.toString());
-  
+
   const toggleVisibility = (e: React.MouseEvent) => {
     e.stopPropagation();
     dispatch(toggleDepartmentVisibility(department.id.toString()));
@@ -43,36 +45,41 @@ const DepartmentCard: FC<DepartmentCardProps> = ({
         </p>
       </div>
       <div className="w-[10%] flex justify-center">
-        <button 
-          className="p-0" 
-          onClick={toggleVisibility}
-        >
-          <img 
-            src={isVisible ? "/mvp/eye.svg" : "/mvp/eye-closed.svg"} 
-            alt={isVisible ? "Ocultar" : "Mostrar"} 
-            className="w-5 h-5 cursor-pointer p-0" 
+        <button className="p-0" onClick={toggleVisibility}>
+          <img
+            src={isVisible ? "/mvp/eye.svg" : "/mvp/eye-closed.svg"}
+            alt={isVisible ? "Ocultar" : "Mostrar"}
+            className="w-5 h-5 cursor-pointer p-0"
             title={isVisible ? "Ocultar departamento" : "Mostrar departamento"}
           />
         </button>
       </div>
       <div className="w-[15%] flex items-center justify-center gap-0">
-        <button 
-          className="p-0" 
-          onClick={(e) => {
+        <button
+          className="p-0"
+          onClick={e => {
             e.stopPropagation();
             onDelete(department);
           }}
         >
-          <img src="/mvp/trash.svg" alt="Eliminar" className="w-5 h-5 cursor-pointer" />
+          <img
+            src="/mvp/trash.svg"
+            alt="Eliminar"
+            className="w-5 h-5 cursor-pointer"
+          />
         </button>
-        <button 
-          className="p-0 ml-2" 
-          onClick={(e) => {
+        <button
+          className="p-0 ml-2"
+          onClick={e => {
             e.stopPropagation();
             onUpdate();
           }}
         >
-          <img src="/mvp/square-pen.svg" alt="Editar" className="w-5 h-5 cursor-pointer" />
+          <img
+            src="/mvp/square-pen.svg"
+            alt="Editar"
+            className="w-5 h-5 cursor-pointer"
+          />
         </button>
       </div>
     </div>

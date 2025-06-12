@@ -204,6 +204,21 @@ export const apiUrls = {
     changeType: (organizationId: number) =>
       `/api/plan/${organizationId}/change-type`,
   },
+  // HITL System
+  hitl: {
+    types: (organizationId: number) =>
+      `/api/organizations/${organizationId}/hitl-types`,
+    typeById: (organizationId: number, hitlTypeId: number) =>
+      `/api/organizations/${organizationId}/hitl-types/${hitlTypeId}`,
+    typeUsers: (organizationId: number, hitlTypeId: number) =>
+      `/api/organizations/${organizationId}/hitl-types/${hitlTypeId}/users`,
+    removeUserFromType: (
+      organizationId: number,
+      hitlTypeId: number,
+      userId: number
+    ) =>
+      `/api/organizations/${organizationId}/hitl-types/${hitlTypeId}/users/${userId}`,
+  },
 } as const;
 
 export const tokenAccess = {
