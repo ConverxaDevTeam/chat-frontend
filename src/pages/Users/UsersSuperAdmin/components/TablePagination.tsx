@@ -24,9 +24,6 @@ const TablePagination: React.FC<TablePaginationProps> = ({
         >
           <img src="/mvp/chevron-left.svg" alt="Anterior" className="w-5 h-5" />
         </button>
-        <span className="flex items-center text-sm text-gray-600">
-          {currentPage} de {totalPages}
-        </span>
         <button
           onClick={() => goToPage(currentPage + 1)}
           disabled={currentPage === totalPages}
