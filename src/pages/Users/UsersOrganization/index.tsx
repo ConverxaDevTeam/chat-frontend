@@ -4,12 +4,14 @@ import UserCard from "./UserCard";
 import {
   getUserMyOrganization,
   deleteUserFromOrganization,
+  changeUserRole,
 } from "../../../services/user";
 import { useSelector } from "react-redux";
 import { RootState } from "@store";
 import { OrganizationRoleType } from "@utils/interfaces";
 import Modal from "@components/Modal";
 import ModalAddUser from "./ModalAddUser";
+import ModalChangeRole from "./ModalChangeRole";
 import { toast } from "react-toastify";
 
 export interface IUserApi {
@@ -35,6 +37,7 @@ const UsersOrganization = () => {
   );
   const [modalAddUser, setModalAddUser] = useState<boolean>(false);
   const [modalEditUser, setModalEditUser] = useState<boolean>(false);
+  const [modalChangeRole, setModalChangeRole] = useState<boolean>(false);
   const [selectedUser, setSelectedUser] = useState<IUserApi | null>(null);
   const [users, setUsers] = useState<IUserApi[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -97,6 +100,64 @@ const UsersOrganization = () => {
     setModalEditUser(true);
   };
 
+  const handleChangeRole = (user: IUserApi) => {
+    if (role !== OrganizationRoleType.OWNER) {
+      toast.error("No tienes permisos para realizar esta acción", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+      return;
+    }
+
+    const userRole = user.userOrganizations[0]?.role;
+    if (
+      userRole !== OrganizationRoleType.USER &&
+      userRole !== OrganizationRoleType.HITL
+    ) {
+      toast.error(
+        "Solo se puede cambiar entre roles de Usuario y Agente Humano",
+        {
+          position: "top-right",
+          autoClose: 3000,
+        }
+      );
+      return;
+    }
+
+    setSelectedUser(user);
+    setModalChangeRole(true);
+  };
+
+  const handleConfirmChangeRole = async (newRole: OrganizationRoleType) => {
+    if (!selectedUser || !selectOrganizationId) {
+      toast.error("Error en la selección de usuario u organización", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+      return;
+    }
+
+    try {
+      const result = await changeUserRole(
+        selectOrganizationId,
+        selectedUser.id,
+        newRole
+      );
+      if (result.success) {
+        toast.success(result.message || "Rol actualizado correctamente", {
+          position: "top-right",
+          autoClose: 3000,
+        });
+        await getAllUsers(); // Refrescar la lista
+      }
+    } catch (error) {
+      toast.error("Error al cambiar el rol del usuario", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+    }
+  };
+
   useEffect(() => {
     getAllUsers();
   }, []);
@@ -120,6 +181,22 @@ const UsersOrganization = () => {
         />
       </Modal>
 
+      <Modal
+        isShown={modalChangeRole}
+        onClose={() => setModalChangeRole(false)}
+      >
+        <div>
+          {selectedUser && (
+            <ModalChangeRole
+              close={() => setModalChangeRole(false)}
+              handleChangeRole={handleConfirmChangeRole}
+              currentRole={selectedUser.userOrganizations[0]?.role}
+              userEmail={selectedUser.email}
+            />
+          )}
+        </div>
+      </Modal>
+
       <div className="flex flex-1 flex-col gap-[20px] overflow-auto w-full">
         {role === OrganizationRoleType.OWNER && (
           <button
@@ -141,6 +218,7 @@ const UsersOrganization = () => {
                   userData={user}
                   onEdit={() => handleEdit(user)}
                   onDelete={() => handleDelete(user)}
+                  onChangeRole={() => handleChangeRole(user)}
                 />
               );
             })}

@@ -16,14 +16,17 @@ flowchart TD
     E -->|Agregar| F[Modal ModalAddUser]
     E -->|Editar| G[Modal ModalAddUser - cambio password]
     E -->|Eliminar| H[Confirmar eliminación]
+    E -->|Click en Rol| M[Modal ModalChangeRole]
     
     F --> I[addUserInOrganizationById]
     G --> J[changeUserPassword]
     H --> K[deleteUserFromOrganization]
+    M --> N[changeUserRole]
     
     I --> L[Refrescar lista]
     J --> L
     K --> L
+    N --> L
     L --> D
 ```
 
@@ -37,8 +40,8 @@ flowchart TD
 
 ### UserCard (`/pages/Users/UsersOrganization/UserCard.tsx`)
 - **Responsabilidad**: Mostrar información de usuario individual
-- **Props**: userData, onEdit, onDelete
-- **UI**: Avatar, email, nombre, rol, botones de acción
+- **Props**: userData, onEdit, onDelete, onChangeRole
+- **UI**: Avatar, email, nombre, rol clickeable, botones de acción
 
 ### ModalAddUser (`/pages/Users/UsersOrganization/ModalAddUser.tsx`)
 - **Responsabilidad**: Formulario para agregar usuarios y cambiar contraseñas
@@ -48,6 +51,12 @@ flowchart TD
 - **Validación**: 
   - Agregar: Email requerido y formato válido
   - Editar: Password mínimo 6 caracteres
+
+### ModalChangeRole (`/pages/Users/UsersOrganization/ModalChangeRole.tsx`)
+- **Responsabilidad**: Modal de confirmación para cambio de rol
+- **Props**: currentRole, userEmail, handleChangeRole, close
+- **Roles soportados**: USER ↔ HITL (intercambiables)
+- **UI**: Radio buttons para selección de nuevo rol
 
 ## Servicios de Datos
 
@@ -77,6 +86,14 @@ flowchart TD
 - **Función**: Elimina relación usuario-organización
 - **Respuesta**: { userDeleted, roleDeleted, message }
 
+### changeUserRole
+- **Endpoint**: `/api/user/organization/${organizationId}/users/${userId}/role`
+- **Método**: PATCH
+- **Parámetros**: { role: OrganizationRoleType }
+- **Función**: Cambia el rol de un usuario en la organización
+- **Permisos**: Solo OWNER puede cambiar roles
+- **Restricciones**: Solo entre USER y HITL, no se puede cambiar propio rol si es OWNER
+
 ## Estructura de Datos
 
 ### IUserApi Interface
@@ -105,7 +122,7 @@ flowchart TD
 ## Reglas de Negocio
 
 ### Permisos por Rol
-- **OWNER**: Puede agregar, editar y eliminar usuarios
+- **OWNER**: Puede agregar, editar, eliminar usuarios y cambiar roles
 - **ADMIN+**: Solo visualización (implementación futura)
 - **Otros roles**: Sin acceso a gestión de usuarios
 
@@ -113,7 +130,8 @@ flowchart TD
 - **Agregar**: Email único por organización y formato válido
 - **Editar**: Contraseña mínimo 6 caracteres
 - **Eliminar**: No se puede eliminar el último OWNER
-- Confirmación requerida para eliminación
+- **Cambio de rol**: Solo entre USER y HITL, OWNER no puede cambiar su propio rol
+- Confirmación requerida para eliminación y cambio de rol
 
 ### Estados y Operaciones
 - **Activo**: Usuario con acceso completo
@@ -152,7 +170,8 @@ flowchart TD
 
 ### UX/UI
 - Loading states en operaciones
-- Confirmación modal para delete
+- Confirmación modal para delete y cambio de rol
+- RoleBadge clickeable con hover effects
 - Toast notifications para feedback
 - Diseño responsive grid layout
 

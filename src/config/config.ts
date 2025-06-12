@@ -22,6 +22,8 @@ export const apiUrls = {
   deleteRole: (id: number) => `/api/user/role/${id}`,
   deleteUserFromOrganization: (organizationId: number, userId: number) =>
     `/api/user/organization/${organizationId}/user/${userId}`,
+  changeUserRole: (organizationId: number, userId: number) =>
+    `/api/user/organization/${organizationId}/users/${userId}/role`,
   //organizations
   getOrganizations: () => `/api/organization`,
   createOrganization: () => `/api/organization`,
