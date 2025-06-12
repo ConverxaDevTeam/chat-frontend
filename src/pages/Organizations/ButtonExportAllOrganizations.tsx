@@ -154,12 +154,18 @@ const ButtonExportAllOrganizations = ({
                   body: tableBody,
                 },
                 layout: {
-                  hLineWidth: function (i: number, node: { table: { body: unknown[] } }) {
+                  hLineWidth: function (
+                    i: number,
+                    node: { table: { body: unknown[] } }
+                  ) {
                     return i === 0 || i === 1 || i === node.table.body.length
                       ? 1
                       : 0.5;
                   },
-                  vLineWidth: function (i: number, node: { table: { widths: unknown[] } }) {
+                  vLineWidth: function (
+                    i: number,
+                    node: { table: { widths: unknown[] } }
+                  ) {
                     return i === 0 || i === node.table.widths.length ? 1 : 0.5;
                   },
                   hLineColor: function (i: number) {

@@ -10,7 +10,13 @@ export const toastConfig: ToastContainerProps = {
   closeButton: false,
   className: "!max-w-[500px] !w-[434px] !mb-3",
   bodyClassName: "p-4",
-  toastClassName: ({ type, data }: { type: string; data?: { subtitle?: string } }) => {
+  toastClassName: ({
+    type,
+    data,
+  }: {
+    type: string;
+    data?: { subtitle?: string };
+  }) => {
     const classes = `${baseClasses} ${data?.subtitle ? "flex-col gap-3" : ""}`;
     switch (type) {
       case "success":

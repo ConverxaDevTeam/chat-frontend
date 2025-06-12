@@ -43,12 +43,12 @@ const Departments = () => {
   useEffect(() => {
     getAllDepartments();
   }, [selectOrganizationId]);
-  
+
   const totalPages = Math.ceil(departments.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const endIndex = startIndex + ITEMS_PER_PAGE;
   const currentDepartments = departments.slice(startIndex, endIndex);
-  
+
   const goToPage = (pageNumber: number) => {
     if (pageNumber >= 1 && pageNumber <= totalPages) {
       setCurrentPage(pageNumber);
