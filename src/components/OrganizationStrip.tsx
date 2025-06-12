@@ -15,7 +15,7 @@ import { useAlertContext } from "@components/Diagrams/components/AlertContext";
 
 interface OrganizationStripProps {}
 
-export const OrganizationStrip: React.FC<OrganizationStripProps> = ({}) => {
+export const OrganizationStrip: React.FC<OrganizationStripProps> = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -118,7 +118,7 @@ export const OrganizationStrip: React.FC<OrganizationStripProps> = ({}) => {
             </button>
             <div
               className={`
-                fixed z-[9999] group-hover:flex hidden 
+                fixed z-[9999] group-hover:flex hidden
                 bg-[#F6F6F6] border border-[#001126] text-[#001126] text-[12px] px-2 py-1.5 rounded
                 font-[400] whitespace-nowrap tracking-[0.17px] leading-[143%] text-left
                 shadow-md items-center pointer-events-none
@@ -176,7 +176,7 @@ export const OrganizationStrip: React.FC<OrganizationStripProps> = ({}) => {
               </button>
               <div
                 className={`
-                fixed z-[9999] group-hover:flex hidden 
+                fixed z-[9999] group-hover:flex hidden
                 bg-[#F6F6F6] border border-[#001126] text-[#001126] text-[12px] px-2 py-1.5 rounded
                 font-[400] whitespace-nowrap tracking-[0.17px] leading-[143%] text-left
                 shadow-md items-center pointer-events-none
@@ -210,7 +210,7 @@ export const OrganizationStrip: React.FC<OrganizationStripProps> = ({}) => {
             </button>
             <div
               className={`
-                fixed z-[9999] group-hover:flex hidden 
+                fixed z-[9999] group-hover:flex hidden
                 bg-[#F6F6F6] border border-[#001126] text-[#001126] text-[12px] px-2 py-1.5 rounded
                 font-[400] whitespace-nowrap tracking-[0.17px] leading-[143%] text-left
                 shadow-md items-center pointer-events-none
