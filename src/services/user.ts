@@ -277,3 +277,28 @@ export const deleteUserFromOrganization = async (
     return { success: false };
   }
 };
+
+export const changeUserRole = async (
+  organizationId: number,
+  userId: number,
+  newRole: OrganizationRoleType
+) => {
+  try {
+    const response = await axiosInstance.patch(
+      apiUrls.changeUserRole(organizationId, userId),
+      { role: newRole }
+    );
+    if (response.data.ok) {
+      return {
+        success: true,
+        message: response.data.message || "Rol actualizado correctamente",
+      };
+    } else {
+      alertError(response.data.message || "Error al cambiar el rol");
+      return { success: false };
+    }
+  } catch (error) {
+    handleAxiosError(error);
+    return { success: false };
+  }
+};

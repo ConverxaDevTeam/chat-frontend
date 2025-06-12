@@ -90,9 +90,15 @@ const ScriptViewer = ({
       Script de Integración
     </label>
     <p className="text-sofia-navyBlue text-[12px]">
-      <span className="font-bold">Instrucción de Integración:</span> Copia y pega el siguiente script <span className="font-bold">dentro de la etiqueta <code className="bg-gray-100 px-1 rounded">&lt;head&gt;</code></span> de tu sitio web, justo como se muestra a continuación:
+      <span className="font-bold">Instrucción de Integración:</span> Copia y
+      pega el siguiente script{" "}
+      <span className="font-bold">
+        dentro de la etiqueta{" "}
+        <code className="bg-gray-100 px-1 rounded">&lt;head&gt;</code>
+      </span>{" "}
+      de tu sitio web, justo como se muestra a continuación:
     </p>
-    
+
     <div className="bg-[#FCFCFC] rounded p-3 my-2 border border-sofia-darkBlue font-mono text-sm relative">
       <button
         onClick={onCopy}
@@ -108,8 +114,10 @@ const ScriptViewer = ({
       <div className="pl-4 text-green-500">{script}</div>
       <div className="text-gray-500">&lt;/head&gt;</div>
     </div>
-    
-    <p className="text-sofia-navyBlue text-[12px]">Este paso es necesario para habilitar el Web Chat de Sofia en tu sitio.</p>
+
+    <p className="text-sofia-navyBlue text-[12px]">
+      Este paso es necesario para habilitar el Web Chat de Sofia en tu sitio.
+    </p>
   </div>
 );
 

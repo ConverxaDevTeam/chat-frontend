@@ -4,9 +4,14 @@ import { OrganizationRoleType } from "@utils/interfaces";
 interface RoleBadgeProps {
   role: OrganizationRoleType | string;
   className?: string;
+  onClick?: () => void;
 }
 
-const RoleBadge: React.FC<RoleBadgeProps> = ({ role, className = "" }) => {
+const RoleBadge: React.FC<RoleBadgeProps> = ({
+  role,
+  className = "",
+  onClick,
+}) => {
   const getBadgeStyle = () => {
     if (
       role === OrganizationRoleType.ADMIN ||
@@ -32,6 +37,7 @@ const RoleBadge: React.FC<RoleBadgeProps> = ({ role, className = "" }) => {
   return (
     <span
       className={`text-[12px] font-poppinsMedium px-[8px] py-[3px] rounded-[4px] inline-block ${getBadgeStyle()} ${className}`}
+      onClick={onClick}
     >
       {role}
     </span>
