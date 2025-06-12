@@ -108,36 +108,28 @@ const Sidebar = ({
               />
             )}
             {(selectOrganizationId === null && useSidebarAdmin) ||
-            (selectOrganizationId === 0 && useSidebarAdmin)
+              (selectOrganizationId === 0 && useSidebarAdmin)
               ? userSidebarAdminLinks.map((link, index) => {
-                  return (
-                    <ItemSidebar
-                      key={`${link.text}-${index}`}
-                      link={link}
-                      sidebarMinimized={sidebarMinimized}
-                      mobileResolution={mobileResolution}
-                    />
-                  );
-                })
+                return (
+                  <ItemSidebar
+                    key={`${link.text}-${index}`}
+                    link={link}
+                    sidebarMinimized={sidebarMinimized}
+                    mobileResolution={mobileResolution}
+                  />
+                );
+              })
               : sidebarLinks.map((link, index) => {
-                  // Debug log para sistema HITL
-                  if (link.text === "Sistema HITL") {
-                    console.log("🔍 DEBUG SIDEBAR - Sistema HITL encontrado:");
-                    console.log("   - link.role:", link.role);
-                    console.log("   - selectOrganizationId:", selectOrganizationId);
-                    console.log("   - myOrganizations:", myOrganizations);
-                  }
-                  
-                  return (
-                    <ItemSidebar
-                      key={`${link.text}-${index}`}
-                      link={link}
-                      role={link.role || []}
-                      sidebarMinimized={sidebarMinimized}
-                      mobileResolution={mobileResolution}
-                    />
-                  );
-                })}
+                return (
+                  <ItemSidebar
+                    key={`${link.text}-${index}`}
+                    link={link}
+                    role={link.role || []}
+                    sidebarMinimized={sidebarMinimized}
+                    mobileResolution={mobileResolution}
+                  />
+                );
+              })}
           </ul>
           <div className="mt-auto">
             {!(sidebarMinimized || mobileResolution) && (
@@ -145,12 +137,12 @@ const Sidebar = ({
                 <p className="text-white text-[16px]">
                   ¿Necesitas ayuda? Visita nuestro centro de soporte
                 </p>
-                <button
-                  type="button"
-                  className="text-[12px] text-sofia-navyBlue bg-white border-sofia-navyBlue border-[1px] py-[4px] px-[8px] rounded-[4px]"
+                <a
+                  href="mailto:gio@pixeldigita.com"
+                  className="flex justify-center items-center text-[12px] text-sofia-navyBlue bg-white border-sofia-navyBlue border-[1px] py-[4px] px-[8px] rounded-[4px]" 
                 >
                   Ir ahora
-                </button>
+                </a>
               </div>
             )}
             <div
