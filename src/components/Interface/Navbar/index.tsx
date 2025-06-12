@@ -129,7 +129,7 @@ const NotificationItem = ({
   onClose: () => void;
 }) => {
   const dispatch = useDispatch();
-  const { user, selectOrganizationId, myOrganizations } = useSelector(
+  const { selectOrganizationId, myOrganizations } = useSelector(
     (state: RootState) => state.auth
   );
 
@@ -171,36 +171,21 @@ const NotificationItem = ({
     hitlTypeName: string
   ) => {
     try {
-      const result = await assignConversationToHitl(conversationId);
-
-      if (result.ok) {
-        toast.success(
-          `Conversación asignada automáticamente para tipo HITL: ${hitlTypeName}`,
-          {
-            position: "top-right",
-            autoClose: 4000,
-          }
-        );
-      } else {
-        const errorMessage = result.message || "Error al asignar conversación";
-
-        if (
-          errorMessage.toLowerCase().includes("ya asignado") ||
-          errorMessage.toLowerCase().includes("already assigned")
-        ) {
-          toast.info(`Esta conversación ya fue asignada a otro agente`, {
-            position: "top-right",
-            autoClose: 3000,
-          });
-        } else {
-          toast.error(errorMessage, {
-            position: "top-right",
-            autoClose: 3000,
-          });
+      await assignConversationToHitl(conversationId);
+      toast.success(
+        `Conversación asignada automáticamente para tipo HITL: ${hitlTypeName}`,
+        {
+          position: "top-right",
+          autoClose: 4000,
         }
-      }
-    } catch (error: any) {
-      const errorMessage = error?.response?.data?.message || error?.message;
+      );
+    } catch (error: unknown) {
+      const apiError = error as {
+        response?: { data?: { message?: string } };
+        message?: string;
+      };
+      const errorMessage =
+        apiError?.response?.data?.message || apiError?.message;
 
       if (
         errorMessage?.toLowerCase().includes("ya asignado") ||
@@ -220,67 +205,27 @@ const NotificationItem = ({
   };
 
   const handleClick = async () => {
-    // Obtener rol del usuario en la organización actual
     const currentUserRole = myOrganizations.find(
       org => org.organization?.id === selectOrganizationId
     )?.role;
-
-    // Log debug persistente
-    sessionStorage.setItem(
-      "navbar_click_debug",
-      JSON.stringify({
-        timestamp: new Date().toISOString(),
-        step: "click_started",
-        notificationTitle: notification.title,
-        userRole: currentUserRole,
-        hasLink: !!notification.link,
-        isHitl: isHitlNotification(notification.title || ""),
-        selectOrganizationId,
-        organizationsCount: myOrganizations.length,
-      })
-    );
-
-    console.log("🔍 DEBUG: NotificationItem click iniciado", {
-      notification: notification.title,
-      userRole: currentUserRole,
-      hasLink: !!notification.link,
-      selectOrganizationId,
-      myOrganizations: myOrganizations.length,
-    });
 
     // Verificar si es notificación HITL
     if (
       isHitlNotification(notification.title || "") &&
       currentUserRole === "hitl"
     ) {
-      sessionStorage.setItem(
-        "navbar_click_debug",
-        JSON.stringify({
-          timestamp: new Date().toISOString(),
-          step: "hitl_detected",
-          title: notification.title,
-        })
-      );
-
-      console.log(
-        "🔍 DEBUG: Notificación HITL detectada, procesando auto-asignación"
-      );
-
-      // Extraer tipo HITL y conversationId
       const hitlTypeName = extractHitlTypeFromMessage(notification.title || "");
       const conversationId = notification.link
         ? extractConversationIdFromLink(notification.link)
         : null;
 
       if (hitlTypeName && conversationId && selectOrganizationId) {
-        // Verificar que el tipo HITL existe en la organización
         const typeExists = await verifyHitlTypeExists(
           hitlTypeName,
           selectOrganizationId
         );
 
         if (typeExists) {
-          // Mostrar toast clickeable para auto-asignación
           toast.warning(
             <div className="cursor-pointer">
               <div className="font-medium text-sm">
@@ -301,16 +246,11 @@ const NotificationItem = ({
               pauseOnHover: true,
               draggable: true,
               onClick: () => {
-                console.log("🔍 DEBUG: Usuario hizo click en toast HITL");
                 handleHitlAutoAssignment(conversationId, hitlTypeName);
               },
             }
           );
         } else {
-          console.log(
-            "🔍 DEBUG: Tipo HITL no existe en la organización, flujo normal"
-          );
-          // Si el tipo no existe, proceder con flujo normal
           if (notification.link) {
             window.location.href = notification.link;
           }
@@ -322,22 +262,12 @@ const NotificationItem = ({
     }
 
     // Flujo normal para notificaciones no-HITL
-    sessionStorage.setItem(
-      "navbar_click_debug",
-      JSON.stringify({
-        timestamp: new Date().toISOString(),
-        step: "normal_flow",
-        willNavigate: !!notification.link,
-      })
-    );
-
     if (!notification.isRead && notification.type === NotificationType.USER) {
       await handleMarkNotificationAsRead(notification.id);
       dispatch(decrementNotificationCount());
     }
 
     if (notification.link) {
-      console.log("🔍 DEBUG: Navegando a:", notification.link);
       window.location.href = notification.link;
     }
 
