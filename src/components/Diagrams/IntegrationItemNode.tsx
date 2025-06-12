@@ -116,7 +116,7 @@ export const contextMenuOptions = ({
     choices.push({
       child: <img src="/mvp/trash.svg" alt="Remove" />,
       onClick: () => setIsRemoveModalOpen(true),
-      tooltip: "Eliminar integración",
+      tooltip: "Eliminar canal ",
     });
   }
   return choices;
@@ -165,8 +165,8 @@ const IntegrationItemNode = memo((props: IntegrationItemProps) => {
       <AddWebchat isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
       <ConfirmationModal
         isShown={isRemoveModalOpen}
-        title="Eliminar integración"
-        text="¿Estás seguro de que deseas eliminar esta integración?"
+        title="Eliminar canal"
+        text="¿Estás seguro de que deseas eliminar este canal?"
         onConfirm={async () => {
           const success = await handleDeleteIntegration();
           if (success) {

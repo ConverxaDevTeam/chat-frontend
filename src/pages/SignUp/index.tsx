@@ -9,6 +9,7 @@ const SignUp = () => {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
+    confirmPassword: "",
     first_name: "",
     last_name: "",
   });
@@ -24,8 +25,16 @@ const SignUp = () => {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
+    
+    if (formData.password !== formData.confirmPassword) {
+      setError("Las contraseñas no coinciden");
+      return;
+    }
+    
     setActive(true);
-    dispatch(signUpAsync({ data: formData, setActive, setError, dispatch }));
+    
+    const { confirmPassword, ...dataToSubmit } = formData;
+    dispatch(signUpAsync({ data: dataToSubmit, setActive, setError, dispatch }));
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -38,9 +47,9 @@ const SignUp = () => {
 
   return (
     <div className="flex flex-col w-full h-full bg-whiite">
-      <div className="flex flex-col w-[446px] px-[43px] pt-[53px] pb-[40px] rounded-[4px] border border-[#B8CCE0] border-inherit m-auto">
+      <div className="flex flex-col w-[446px] px-[43px] pt-[43px] pb-[40px] rounded-[4px] border border-[#B8CCE0] border-inherit m-auto">
         <img
-          className="mx-auto mb-[48px] h-[34px]"
+          className="mx-auto mb-[18px] h-[34px]"
           src="/mvp/logo-sofia.svg"
           alt="logo"
         />
@@ -114,6 +123,24 @@ const SignUp = () => {
               onChange={handleChange}
               value={formData.password}
               name="password"
+              required
+              minLength={8}
+            />
+            
+            <label
+              className="text-[14px] font-medium text-[#414651] mb-[6px]"
+              htmlFor="confirmPassword"
+            >
+              Confirmar contraseña
+            </label>
+            <input
+              className="bg-[#FCFCFC] rounded-[4px] mb-[16px] py-[10px] px-[14px] border text-[#717680] text-[14px] font-normal"
+              type="password"
+              id="confirmPassword"
+              placeholder="Confirma tu contraseña"
+              onChange={handleChange}
+              value={formData.confirmPassword}
+              name="confirmPassword"
               required
               minLength={8}
             />

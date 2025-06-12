@@ -85,47 +85,32 @@ const ScriptViewer = ({
   script: string;
   onCopy: () => void;
 }) => (
-  <InputGroup
-    label="Script de Integración"
-    description={
-      <>
-        <span className="flex items-center gap-1 mb-1">
-          <span className="font-bold">Instrucción de Integración:</span>
-        </span>
-        Copia y pega el siguiente script{" "}
-        <span className="font-bold">
-          dentro de la etiqueta{" "}
-          <code className="bg-gray-100 px-1 rounded">&lt;head&gt;</code>
-        </span>{" "}
-        de tu sitio web, justo como se muestra a continuación:
-        <div className="bg-[#FCFCFC] rounded p-3 my-2 border border-sofia-darkBlue font-mono text-sm">
-          <div className="text-gray-500">&lt;head&gt;</div>
-          <div className="pl-4 text-gray-600">...</div>
-          <div className="pl-4 text-green-500">{script}</div>
-          <div className="text-gray-500">&lt;/head&gt;</div>
-        </div>
-        <p className="text-sofia-navyBlue text-[12px] mt-2">
-          Este paso es necesario para habilitar el Web Chat de Sofia en tu
-          sitio.
-        </p>
-      </>
-    }
-  >
-    <div className="flex p-[12px] justify-between items-center gap-10 self-stretch rounded-lg border border-sofia-darkBlue">
-      <div className="flex-1 truncate text-sofia-superDark text-xs font-normal">
-        {script}
-      </div>
+  <div className="flex flex-col gap-1">
+    <label className="text-sofia-superDark text-[16px] font-normal leading-[16px]">
+      Script de Integración
+    </label>
+    <p className="text-sofia-navyBlue text-[12px]">
+      <span className="font-bold">Instrucción de Integración:</span> Copia y pega el siguiente script <span className="font-bold">dentro de la etiqueta <code className="bg-gray-100 px-1 rounded">&lt;head&gt;</code></span> de tu sitio web, justo como se muestra a continuación:
+    </p>
+    
+    <div className="bg-[#FCFCFC] rounded p-3 my-2 border border-sofia-darkBlue font-mono text-sm relative">
       <button
         onClick={onCopy}
         type="button"
-        className="flex-none text-gray-500 hover:text-gray-700 w-[24px] h-[24px]"
+        className="absolute bottom-2 right-2 text-gray-500 hover:text-gray-700 w-[24px] h-[24px]"
         aria-label="Copiar script"
         title="Copiar script"
       >
         <img src="/mvp/copy.svg" alt="Copiar script" />
       </button>
+      <div className="text-gray-500">&lt;head&gt;</div>
+      <div className="pl-4 text-gray-600">...</div>
+      <div className="pl-4 text-green-500">{script}</div>
+      <div className="text-gray-500">&lt;/head&gt;</div>
     </div>
-  </InputGroup>
+    
+    <p className="text-sofia-navyBlue text-[12px]">Este paso es necesario para habilitar el Web Chat de Sofia en tu sitio.</p>
+  </div>
 );
 
 const useDomainManager = (
