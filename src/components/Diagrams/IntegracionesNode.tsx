@@ -1,14 +1,14 @@
-import { useState } from "react";
 import DefaultNode from "./DefaultNode";
 import { CustomTypeNodeProps, NodeData } from "@interfaces/workflow";
-import Modal from "@components/Modal";
-import NewIntegration from "./NewIntegration";
 import { RootState } from "@store";
 import { useSelector } from "react-redux";
 import { ConfigWebChat } from "@pages/Workspace/components/CustomizeChat";
 import { ContextMenuOption } from "./DiagramContextMenu";
 import { IntegrationType } from "@interfaces/integrations";
 import { useCounter } from "@hooks/CounterContext";
+import { createIntegrationWhatsAppManual, createIntegrationMessagerManual } from "@services/integration";
+import { baseUrl } from "@config/config";
+import { alertError, alertConfirm } from "@utils/alerts";
 
 export interface ConfigWhatsApp {
   name_app: string | null;
@@ -39,11 +39,88 @@ const IntegracionesNode = ({
   const selectedDepartmentId = useSelector(
     (state: RootState) => state.department.selectedDepartmentId
   );
-  const [isMenuVisible, setIsMenuVisible] = useState(false);
-  const [, setSelectedIntegrationType] = useState<IntegrationType | null>(null);
+  const { selectOrganizationId } = useSelector(
+    (state: RootState) => state.auth
+  );
 
-  const toggleMenu = () => {
-    setIsMenuVisible(!isMenuVisible);
+  const getDataIntegrations = () => {
+    increment();
+  };
+
+  // Función para integración manual de WhatsApp
+  const handleCreateIntegrationWhatsAppManual = async () => {
+    if (!selectedDepartmentId || !selectOrganizationId) return;
+
+    try {
+      const response = await createIntegrationWhatsAppManual(
+        selectOrganizationId,
+        selectedDepartmentId
+      );
+      if (response) {
+        getDataIntegrations();
+        alertConfirm("Canal creado exitosamente", "Configura los detalles y comienza a utilizarlo");
+      }
+    } catch (error) {
+      alertError("Error al crear el canal de WhatsApp");
+    }
+  };
+
+  // Función para integración manual de Messenger
+  const handleCreateIntegrationMessagerManual = async () => {
+    if (!selectedDepartmentId || !selectOrganizationId) return;
+
+    try {
+      const response = await createIntegrationMessagerManual(
+        selectOrganizationId,
+        selectedDepartmentId
+      );
+      if (response) {
+        getDataIntegrations();
+        alertConfirm("Canal creado exitosamente", "Configura los detalles y comienza a utilizarlo");
+      }
+    } catch (error) {
+      alertError("Error al crear el canal de Facebook Messenger");
+    }
+  };
+
+  // Función para integración de Slack
+  const slackAuthUrl = async () => {
+    if (!selectedDepartmentId || !selectOrganizationId) return;
+    const clientId = "7464676423766.8502943266896";
+    const redirectUri = encodeURIComponent(`${baseUrl}/api/slack/auth`);
+    const scopes = encodeURIComponent(
+      "channels:read,chat:write,im:history,im:write,mpim:read,users:read,users:read.email,users.profile:read,channels:manage,chat:write.public,commands,groups:write,conversations.connect:read,channels:history"
+    );
+    const state = encodeURIComponent(
+      btoa(
+        JSON.stringify({
+          department_id: selectedDepartmentId,
+          organization_id: selectOrganizationId,
+        })
+      )
+    );
+    const slackAuthUrl = `https://slack.com/oauth/v2/authorize?client_id=${clientId}&scope=${scopes}&redirect_uri=${redirectUri}&state=${state}`;
+
+    const popup = window.open(
+      slackAuthUrl,
+      "popup",
+      "scrollbars=no,resizable=no"
+    );
+
+    window.addEventListener("message", event => {
+      if (event.data?.success) {
+        getDataIntegrations();
+        alertConfirm("Canal creado exitosamente", "Configura los detalles y comienza a utilizarlo");
+      } else {
+        alertError(event.data?.message);
+      }
+    });
+
+    const checkPopupClosed = setInterval(() => {
+      if (popup?.closed) {
+        clearInterval(checkPopupClosed);
+      }
+    }, 500);
   };
 
   const contextMenuOptions: ContextMenuOption[] = [
@@ -56,10 +133,7 @@ const IntegracionesNode = ({
           </div>
         </div>
       ),
-      onClick: () => {
-        setSelectedIntegrationType(IntegrationType.WHATSAPP);
-        setIsMenuVisible(true);
-      },
+      onClick: handleCreateIntegrationWhatsAppManual,
     },
     {
       child: (
@@ -70,10 +144,7 @@ const IntegracionesNode = ({
           </div>
         </div>
       ),
-      onClick: () => {
-        setSelectedIntegrationType(IntegrationType.SLACK);
-        setIsMenuVisible(true);
-      },
+      onClick: slackAuthUrl,
     },
     {
       child: (
@@ -84,30 +155,12 @@ const IntegracionesNode = ({
           </div>
         </div>
       ),
-      onClick: () => {
-        setSelectedIntegrationType(IntegrationType.MESSENGER);
-        setIsMenuVisible(true);
-      },
+      onClick: handleCreateIntegrationMessagerManual,
     },
   ];
 
-  const getDataIntegrations = () => {
-    increment();
-  };
   return (
     <>
-      <Modal
-        isShown={isMenuVisible}
-        children={
-          <NewIntegration
-            setIsMenuVisible={setIsMenuVisible}
-            getDataIntegrations={getDataIntegrations}
-            departmentId={selectedDepartmentId}
-          />
-        }
-        onClose={toggleMenu}
-        header={<h2 className="text-xl font-bold">Agregar canales</h2>}
-      />
       <DefaultNode
         selected={selected}
         data={{
@@ -120,25 +173,6 @@ const IntegracionesNode = ({
         contextMenuOptions={contextMenuOptions}
         {...rest}
       >
-        {/* <div className="bg-transparent rounded-md text-black flex flex-col gap-[10px]">
-          <button
-            onClick={toggleMenu}
-            className="w-full py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition duration-300 flex items-center justify-center gap-2"
-          >
-            <HiPlusCircle className="w-6 h-6" size={24} color="blue" />
-            Agregar Integración
-          </button>
-          {integrations
-            .filter(
-              integration => integration.type !== IntegrationType.CHAT_WEB
-            )
-            .map(integration => (
-              <ButtonIntegrationActive
-                key={integration.id}
-                integration={integration}
-              />
-            ))}
-        </div> */}
       </DefaultNode>
     </>
   );

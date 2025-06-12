@@ -20,6 +20,10 @@ import {
   FieldError,
   FieldErrors,
 } from "react-hook-form";
+import {
+  useCreateAuthenticator,
+  useUpdateAuthenticator,
+} from "../hooks/useAuthenticatorActions";
 
 type NestedKeys =
   | keyof EndpointAuthenticatorType
@@ -36,7 +40,10 @@ type NestedKeys =
 interface AuthenticatorFormModalProps {
   isShown: boolean;
   onClose: () => void;
-  onSubmit: (data: AuthenticatorType) => Promise<void>;
+  onSubmit: (
+    data: AuthenticatorType,
+    result: AuthenticatorType
+  ) => Promise<void>;
   initialData?: AuthenticatorType;
   organizationId: number;
   zindex?: number;
@@ -65,6 +72,9 @@ const useAuthenticatorForm = ({
   AuthenticatorFormModalProps,
   "initialData" | "organizationId" | "onSubmit"
 >) => {
+  const createAuthenticator = useCreateAuthenticator();
+  const updateAuthenticator = useUpdateAuthenticator();
+
   const form = useForm<AuthenticatorType>({
     defaultValues: initialData || DEFAULT_VALUES(organizationId),
   });
@@ -77,6 +87,7 @@ const useAuthenticatorForm = ({
     formState: { errors },
     setValue,
   } = form;
+
   const getNestedError = (path: NestedKeys): FieldError | undefined => {
     const [first, ...rest] = path.split(".");
     const firstError = errors[first as keyof typeof errors];
@@ -92,13 +103,23 @@ const useAuthenticatorForm = ({
     return nestedErrors[nestedPath];
   };
 
+  const handleFormSubmit = async (data: AuthenticatorType) => {
+    const result = data.id
+      ? await updateAuthenticator(data.id, data)
+      : await createAuthenticator(data);
+
+    if (result.success && result.data) {
+      await onSubmit(data, result.data);
+    }
+  };
+
   return {
     register,
     getNestedError,
     errors,
     reset,
     control,
-    handleSubmit: handleSubmit(onSubmit),
+    handleSubmit: handleSubmit(handleFormSubmit),
     setValue,
   };
 };
@@ -391,7 +412,7 @@ const AuthenticatorFormModal = ({
         <div className="flex justify-end gap-2">
           <button
             type="submit"
-            className="w-full px-4 py-3 bg-sofia-electricGreen text-gray-900 rounded-md text-sm font-semibold hover:bg-opacity-50 transition-all"
+            className="w-full px-4 py-3 bg-sofia-superDark text-white rounded text-sm font-normal hover:bg-opacity-50 transition-all"
           >
             {initialData ? "Actualizar" : "Crear"}
           </button>

@@ -12,6 +12,8 @@ import EditTexts from "./EditTexts";
 import EditCors from "./EditCors";
 import ConfigPanel from "@components/ConfigPanel";
 import { Button } from "@components/common/Button";
+import { useCounter } from "@hooks/CounterContext";
+import { useAlertContext } from "@components/Diagrams/components/AlertContext";
 
 interface CustomizeChatProps {
   onClose: () => void;
@@ -81,92 +83,150 @@ const useIntegrationData = (
   organizationId: number | null,
   departmentId: number | null
 ) => {
+  const { increment } = useCounter();
+  const { handleOperation } = useAlertContext();
   const [integration, setIntegration] = useState<Integracion | null>(null);
-  const [loading, setLoading] = useState(true);
 
   const handleSaveLogo = async (logo: Blob): Promise<boolean> => {
     if (!integration) return false;
-    try {
-      const success = await updateIntegrationLogo(integration.id, logo);
-      if (success) {
-        setIntegration(prev => {
-          if (!prev) return prev;
-          return {
-            ...prev,
-            config: {
-              ...prev.config,
-              logo: URL.createObjectURL(logo),
-            },
-          };
-        });
+    const result = await handleOperation(
+      async () => {
+        const success = await updateIntegrationLogo(integration.id, logo);
+        if (!success) {
+          throw new Error("Error al guardar el logo");
+        }
+        return success;
+      },
+      {
+        title: "Guardando logo",
+        successTitle: "Logo guardado",
+        successText: "El logo se ha guardado exitosamente",
+        errorTitle: "Error al guardar logo",
+        loadingTitle: "Guardando logo del chat",
       }
-      return !!success;
-    } catch (error) {
-      console.error("Error saving logo:", error);
-      return false;
+    );
+
+    if (result.success) {
+      setIntegration(prev => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          config: {
+            ...prev.config,
+            logo: URL.createObjectURL(logo),
+          },
+        };
+      });
+      increment();
+      return true;
     }
+    return false;
   };
 
   const handleDeleteLogo = async (): Promise<boolean> => {
     if (!integration) return false;
-    try {
-      const success = await deleteIntegrationLogo(integration.id);
-      if (success) {
-        setIntegration(prev => {
-          if (!prev) return prev;
-          return {
-            ...prev,
-            config: {
-              ...prev.config,
-              logo: "",
-            },
-          };
-        });
+    const result = await handleOperation(
+      async () => {
+        const success = await deleteIntegrationLogo(integration.id);
+        if (!success) {
+          throw new Error("Error al eliminar el logo");
+        }
+        return success;
+      },
+      {
+        title: "Eliminando logo",
+        successTitle: "Logo eliminado",
+        successText: "El logo se ha eliminado exitosamente",
+        errorTitle: "Error al eliminar logo",
+        loadingTitle: "Eliminando logo del chat",
       }
-      return success;
-    } catch (error) {
-      console.error("Error deleting logo:", error);
-      return false;
+    );
+
+    if (result.success) {
+      setIntegration(prev => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          config: {
+            ...prev.config,
+            logo: "",
+          },
+        };
+      });
+      increment();
+      return true;
     }
+    return false;
   };
 
   const handleSaveChat = async () => {
     if (!integration) return;
-    const data = {
-      cors: integration.config.cors,
-      title: integration.config.title,
-      name: integration.config.name,
-      sub_title: integration.config.sub_title,
-      description: integration.config.description,
-      bg_color: integration.config.bg_color,
-      text_title: integration.config.text_title,
-      bg_chat: integration.config.bg_chat,
-      text_color: integration.config.text_color,
-      bg_assistant: integration.config.bg_assistant,
-      bg_user: integration.config.bg_user,
-      button_color: integration.config.button_color,
-      button_text: integration.config.button_text,
-      text_date: integration.config.text_date,
-    };
-    await updateIntegrationWebChat(integration.id, data);
+    const result = await handleOperation(
+      async () => {
+        const data = {
+          cors: integration.config.cors,
+          title: integration.config.title,
+          name: integration.config.name,
+          sub_title: integration.config.sub_title,
+          description: integration.config.description,
+          bg_color: integration.config.bg_color,
+          text_title: integration.config.text_title,
+          bg_chat: integration.config.bg_chat,
+          text_color: integration.config.text_color,
+          bg_assistant: integration.config.bg_assistant,
+          bg_user: integration.config.bg_user,
+          button_color: integration.config.button_color,
+          button_text: integration.config.button_text,
+          text_date: integration.config.text_date,
+        };
+        const response = await updateIntegrationWebChat(integration.id, data);
+        if (!response) {
+          throw new Error("Error al guardar la configuración");
+        }
+        return response;
+      },
+      {
+        title: "Guardando configuración",
+        successTitle: "Configuración guardada",
+        successText: "La configuración del chat se ha guardado exitosamente",
+        errorTitle: "Error al guardar",
+        loadingTitle: "Guardando configuración del chat",
+      }
+    );
+
+    if (result.success) {
+      increment();
+    }
   };
 
   useEffect(() => {
     const fetchData = async () => {
       if (!organizationId || !departmentId) {
-        setLoading(false);
         return;
       }
-      try {
-        const response = await getIntegrationWebChat(
-          departmentId,
-          organizationId
-        );
-        if (response) setIntegration(response);
-      } catch (error) {
-        console.error("Error getting web chat integration:", error);
-      } finally {
-        setLoading(false);
+      const result = await handleOperation(
+        async () => {
+          const response = await getIntegrationWebChat(
+            departmentId,
+            organizationId
+          );
+          if (!response) {
+            throw new Error("Error al cargar la configuración");
+          }
+          return response;
+        },
+        {
+          title: "Cargando configuración",
+          successTitle: "Configuración cargada",
+          successText: "Se ha cargado la configuración del chat",
+          errorTitle: "Error al cargar",
+          loadingTitle: "Cargando configuración del chat",
+          showSuccess: false,
+        }
+      );
+
+      if (result.success && result.data) {
+        setIntegration(result.data);
       }
     };
     fetchData();
@@ -175,7 +235,6 @@ const useIntegrationData = (
   return {
     integration,
     setIntegration,
-    loading,
     handleSaveChat,
     handleSaveLogo,
     handleDeleteLogo,
@@ -247,29 +306,24 @@ const CustomizeChat: FC<CustomizeChatProps> = ({ onClose }) => {
   const { selectOrganizationId } = useSelector(
     (state: RootState) => state.auth
   );
-  const selectedDepartmentId = useSelector(
-    (state: RootState) => state.department.selectedDepartmentId
+  const { selectedDepartmentId } = useSelector(
+    (state: RootState) => state.department
   );
-
+  const { activeTab, setActiveTab, tabs } = useTabNavigation("cors");
   const {
     integration,
     setIntegration,
-    loading,
     handleSaveChat,
     handleSaveLogo,
     handleDeleteLogo,
-  } = useIntegrationData(
-    selectOrganizationId || null,
-    selectedDepartmentId || null
-  );
-  const { activeTab, setActiveTab, tabs } = useTabNavigation("cors");
+  } = useIntegrationData(selectOrganizationId, selectedDepartmentId);
 
   return (
     <ConfigPanel
       activeTab={activeTab}
       onTabChange={setActiveTab}
       tabs={tabs}
-      isLoading={loading}
+      isLoading={false}
       actions={<ActionButtons onCancel={onClose} onSave={handleSaveChat} />}
     >
       {integration && (
