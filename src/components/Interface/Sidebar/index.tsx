@@ -108,28 +108,28 @@ const Sidebar = ({
               />
             )}
             {(selectOrganizationId === null && useSidebarAdmin) ||
-              (selectOrganizationId === 0 && useSidebarAdmin)
+            (selectOrganizationId === 0 && useSidebarAdmin)
               ? userSidebarAdminLinks.map((link, index) => {
-                return (
-                  <ItemSidebar
-                    key={`${link.text}-${index}`}
-                    link={link}
-                    sidebarMinimized={sidebarMinimized}
-                    mobileResolution={mobileResolution}
-                  />
-                );
-              })
+                  return (
+                    <ItemSidebar
+                      key={`${link.text}-${index}`}
+                      link={link}
+                      sidebarMinimized={sidebarMinimized}
+                      mobileResolution={mobileResolution}
+                    />
+                  );
+                })
               : sidebarLinks.map((link, index) => {
-                return (
-                  <ItemSidebar
-                    key={`${link.text}-${index}`}
-                    link={link}
-                    role={link.role || []}
-                    sidebarMinimized={sidebarMinimized}
-                    mobileResolution={mobileResolution}
-                  />
-                );
-              })}
+                  return (
+                    <ItemSidebar
+                      key={`${link.text}-${index}`}
+                      link={link}
+                      role={link.role || []}
+                      sidebarMinimized={sidebarMinimized}
+                      mobileResolution={mobileResolution}
+                    />
+                  );
+                })}
           </ul>
           <div className="mt-auto">
             {!(sidebarMinimized || mobileResolution) && (
@@ -139,7 +139,7 @@ const Sidebar = ({
                 </p>
                 <a
                   href="mailto:gio@pixeldigita.com"
-                  className="flex justify-center items-center text-[12px] text-sofia-navyBlue bg-white border-sofia-navyBlue border-[1px] py-[4px] px-[8px] rounded-[4px]" 
+                  className="flex justify-center items-center text-[12px] text-sofia-navyBlue bg-white border-sofia-navyBlue border-[1px] py-[4px] px-[8px] rounded-[4px]"
                 >
                   Ir ahora
                 </a>
@@ -158,7 +158,7 @@ const Sidebar = ({
                   />
                   <div
                     className={`
-                      absolute z-[9999] left-full group-hover:flex hidden 
+                      absolute z-[9999] left-full group-hover:flex hidden
                       bg-[#F6F6F6] border border-[#001126] text-[#001126] text-[12px] px-2 py-1.5 rounded
                       font-[400] whitespace-nowrap tracking-[0.17px] leading-[143%] text-left
                       shadow-md items-center

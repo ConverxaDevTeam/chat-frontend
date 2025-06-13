@@ -277,7 +277,8 @@ export const FunctionForm = (props: FunctionFormProps) => {
       options: HTTP_METHODS,
       helpText: (
         <p className="text-gray-700 text-[12px] font-[500] leading-[16px] -mt-2">
-          Selecciona el método HTTP a utilizar (GET: para leer datos, POST: para enviar información.)
+          Selecciona el método HTTP a utilizar (GET: para leer datos, POST: para
+          enviar información.)
         </p>
       ),
       tooltip: (

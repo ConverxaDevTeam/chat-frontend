@@ -58,64 +58,67 @@ const Conversations = () => {
   return (
     <div className="w-full flex flex-col">
       <div className="flex gap-4 mb-5">
-      <button
-        type="button"
-        className="bg-sofia-electricGreen flex items-center justify-center rounded-[4px] w-[145px] h-[30px] p-2"
-        onClick={handleViewAllChats}
-      >
-        <p className="text-[14px] font-medium text-sofia-superDark">Ver todos los chats</p>
-      </button>
-      <ButtonExportAllConversations conversations={conversations} />
+        <button
+          type="button"
+          className="bg-sofia-electricGreen flex items-center justify-center rounded-[4px] w-[145px] h-[30px] p-2"
+          onClick={handleViewAllChats}
+        >
+          <p className="text-[14px] font-medium text-sofia-superDark">
+            Ver todos los chats
+          </p>
+        </button>
+        <ButtonExportAllConversations conversations={conversations} />
       </div>
       <div className="w-full overflow-x-auto">
         <div className="w-full min-w-[900px] border-spacing-0 mb-[16px]">
-          <div className="h-[36px] text-[16px] flex">
-            <div className="w-[calc(100%/19*2)]">
-              <div className="flex gap-[10px] items-center pl-[16px]">
-                <p>Usuario</p>
+          <div className="h-[36px] text-[14px] md:text-[16px] flex w-full">
+            <div className="pl-[16px] w-[calc(100%/19*2)]">
+              <div className="flex gap-[10px] items-center">
+                <p className="whitespace-normal break-words">Usuario</p>
                 <RiArrowUpDownFill className="text-[#A6A8AB] cursor-pointer hover:text-sofia-superDark" />
               </div>
             </div>
             <div className="w-[calc(100%/19*2)]">
               <div className="flex gap-[10px] items-center">
-                <p>ID</p>
+                <p className="whitespace-normal break-words">ID</p>
                 <RiArrowUpDownFill className="text-[#A6A8AB] cursor-pointer hover:text-sofia-superDark" />
               </div>
             </div>
             <div className="w-[calc(100%/19*2)]">
               <div className="flex gap-[10px] items-center">
-                <p>Departamento</p>
-                <RiArrowUpDownFill className="text-[#A6A8AB] cursor-pointer hover:text-sofia-superDark" />
+                <p className="whitespace-normal break-words">Departamento</p>
               </div>
             </div>
             <div className="w-[calc(100%/19*2)]">
               <div className="flex gap-[10px] items-center">
-                <p>Estatus</p>
+                <p className="whitespace-normal break-words">Estatus</p>
                 <RiArrowUpDownFill className="text-[#A6A8AB] cursor-pointer hover:text-sofia-superDark" />
               </div>
             </div>
-            <div className="hidden md:table-cell w-[calc(100%/19*2)]">
+            <div className="hidden md:block w-[calc(100%/19*2)]">
               <div className="flex gap-[10px] items-center">
-                <p>Iniciado</p>
+                <p className="whitespace-normal break-words">Iniciado</p>
                 <RiArrowUpDownFill className="text-[#A6A8AB] cursor-pointer hover:text-sofia-superDark" />
               </div>
             </div>
             <div className="w-[calc(100%/19*5)]">
               <div className="flex gap-[10px] items-center">
-                <p>Último mensaje</p>
+                <p className="whitespace-normal break-words">Último mensaje</p>
                 <RiArrowUpDownFill className="text-[#A6A8AB] cursor-pointer hover:text-sofia-superDark" />
               </div>
             </div>
             <div className="w-[calc(100%/19*2)]">
-              <div className="flex gap-[10px] items-center">
-                <p>Canal</p>
+              <div className="flex gap-[10px] items-center justify-center">
+                <p className="whitespace-normal break-words">Canal</p>
                 <RiArrowUpDownFill className="text-[#A6A8AB] cursor-pointer hover:text-sofia-superDark" />
               </div>
             </div>
             <div className="w-[calc(100%/19*3)]">
               <div className="flex gap-[10px] items-center">
-                <p>Asistencia humana</p>
-                <RiArrowUpDownFill className="text-[#A6A8AB] cursor-pointer hover:text-sofia-superDark" />
+                <p className="whitespace-nowrap break-words" title="Asistencia humana">
+                  <span className="hidden md:block">Asistencia humana</span>
+                </p>
+
               </div>
             </div>
             <div className="w-[calc(100%/19*1)]">

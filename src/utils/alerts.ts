@@ -7,14 +7,23 @@ interface ToastDisplayContent {
   description?: string;
 }
 
-const buildToastContent = ({ message, description }: ToastDisplayContent): ToastContent => {
+const buildToastContent = ({
+  message,
+  description,
+}: ToastDisplayContent): ToastContent => {
   if (description) {
-    return (
-      React.createElement("div", {}, [
-        React.createElement("p", { className: "font-normal", key: "message" }, message),
-        React.createElement("p", { className: "text-[14px] mt-1 opacity-90", key: "description" }, description)
-      ])
-    );
+    return React.createElement("div", {}, [
+      React.createElement(
+        "p",
+        { className: "font-normal", key: "message" },
+        message
+      ),
+      React.createElement(
+        "p",
+        { className: "text-[14px] mt-1 opacity-90", key: "description" },
+        description
+      ),
+    ]);
   }
   return message;
 };
