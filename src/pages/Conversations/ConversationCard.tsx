@@ -156,7 +156,7 @@ const ConversationCard = ({
           {lastMessage.type === MessageType.AGENT ? "Respondido" : "Pendiente"}
         </p>
       </div>
-      <div className="w-[calc(100%/19*2)]">
+      <div className="hidden md:block w-[calc(100%/19*2)]">
         <p className="text-sofia-superDark text-[14px]">
           {convertISOToReadable(conversation.created_at, false)}
         </p>
@@ -170,7 +170,7 @@ const ConversationCard = ({
           </div>
         </div>
       </div>
-      <div className="w-[calc(100%/19*2)]">
+      <div className="w-[calc(100%/19*2)] flex justify-center items-center">
         {conversation.type === IntegrationType.CHAT_WEB && (
           <img className="select-none" src="/img/icon-web.svg" alt="Web" />
         )}
