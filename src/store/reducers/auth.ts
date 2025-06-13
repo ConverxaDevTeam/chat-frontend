@@ -14,19 +14,29 @@ import {
   setOrganizationId,
 } from "../actions/auth";
 
-const initialState: IAuthState = {
+interface ExtendedAuthState extends IAuthState {
+  conversationCounts: Record<number, number>;
+}
+
+const initialState: ExtendedAuthState = {
   authenticated: false,
   loading: true,
   user: null,
   selectOrganizationId: null,
   myOrganizations: [],
   socket: null,
+  conversationCounts: {},
 };
 
 export const authSlice = createSlice({
   name: "auth",
   initialState,
-  reducers: {},
+  reducers: {
+    updateConversationCount: (state, action: { payload: { organizationId: number; count: number } }) => {
+      const { organizationId, count } = action.payload;
+      state.conversationCounts[organizationId] = count;
+    },
+  },
   extraReducers: builder => {
     builder
       .addCase(verifySessionAsync.fulfilled, state => {
@@ -95,5 +105,7 @@ export const authSlice = createSlice({
       });
   },
 });
+
+export const { updateConversationCount } = authSlice.actions;
 
 export default authSlice.reducer;
