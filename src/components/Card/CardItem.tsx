@@ -7,11 +7,16 @@ interface CardItemProps {
   size?: "sm" | "md" | "lg";
 }
 
-const CardItem: FC<CardItemProps> = ({ label, children, className = "", size = "md" }) => {
+const CardItem: FC<CardItemProps> = ({
+  label,
+  children,
+  className = "",
+  size = "md",
+}) => {
   const sizeClasses = {
     sm: "text-xs",
     md: "text-sm",
-    lg: "text-base"
+    lg: "text-base",
   };
 
   return (

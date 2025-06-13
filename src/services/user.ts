@@ -113,7 +113,7 @@ export const getGlobalUsers = async () => {
     const response = await axiosInstance.get(apiUrls.getGlobalUsers());
     if (response.data.ok) {
       const usersWithDetails = await Promise.all(
-        response.data.users.map(async (user: any) => {
+        response.data.users.map(async (user: { id: number }) => {
           try {
             const detailedUser = await getGlobalUser(user.id);
             return detailedUser || user;
@@ -250,5 +250,55 @@ export const changeUserPassword = async (
   } catch (error) {
     handleAxiosError(error);
     return false;
+  }
+};
+
+export const deleteUserFromOrganization = async (
+  organizationId: number,
+  userId: number
+) => {
+  try {
+    const response = await axiosInstance.delete(
+      apiUrls.deleteUserFromOrganization(organizationId, userId)
+    );
+    if (response.data.ok) {
+      return {
+        success: true,
+        userDeleted: response.data.userDeleted,
+        roleDeleted: response.data.roleDeleted,
+        message: response.data.message,
+      };
+    } else {
+      alertError(response.data.message || "Error al eliminar usuario");
+      return { success: false };
+    }
+  } catch (error) {
+    handleAxiosError(error);
+    return { success: false };
+  }
+};
+
+export const changeUserRole = async (
+  organizationId: number,
+  userId: number,
+  newRole: OrganizationRoleType
+) => {
+  try {
+    const response = await axiosInstance.patch(
+      apiUrls.changeUserRole(organizationId, userId),
+      { role: newRole }
+    );
+    if (response.data.ok) {
+      return {
+        success: true,
+        message: response.data.message || "Rol actualizado correctamente",
+      };
+    } else {
+      alertError(response.data.message || "Error al cambiar el rol");
+      return { success: false };
+    }
+  } catch (error) {
+    handleAxiosError(error);
+    return { success: false };
   }
 };

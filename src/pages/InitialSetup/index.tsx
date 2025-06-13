@@ -10,13 +10,11 @@ import { OrganizationType } from "@interfaces/organization.interface";
 import EditButton from "@pages/Workspace/components/EditButton";
 import DeleteButton from "@pages/Workspace/components/DeleteButton";
 
-
 interface OrganizationFormData {
   name: string;
   description: string;
   logo: File | null;
 }
-
 
 const InitialSetup = () => {
   const [previewImage, setPreviewImage] = useState<string | null>(null);
@@ -59,7 +57,6 @@ const InitialSetup = () => {
     const { name, value } = e.target;
     setOrgFormData(prev => ({ ...prev, [name]: value }));
   };
-
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
@@ -117,15 +114,19 @@ const InitialSetup = () => {
     }
   };
 
-
   const renderOrganizationForm = () => (
     <form onSubmit={createOrganization} className="space-y-5">
       <h2 className="text-xl font-semibold text-sofia-superDark ">
         Crea tu organización
       </h2>
-      <hr className="border-t border-sofia-darkBlue mb-4 -mx-6" style={{ width: "calc(100% + 3rem)" }} />
+      <hr
+        className="border-t border-sofia-darkBlue mb-4 -mx-6"
+        style={{ width: "calc(100% + 3rem)" }}
+      />
       <div className="space-y-2">
-        <label className="block text-sm font-semibold leading-4 text-gray-700">Imagen para tu organización</label>
+        <label className="block text-sm font-semibold leading-4 text-gray-700">
+          Imagen para tu organización
+        </label>
         <div className="relative h-16 w-16 mb-2">
           <img
             src={previewImage || "/mvp/avatar.svg"}
@@ -158,7 +159,9 @@ const InitialSetup = () => {
             id="avatar-upload"
           />
         </div>
-        <span className="text-[12px] font-normal text-app-newGray mt-3">Formatos admitidos: png, jpg, jpeg.</span>
+        <span className="text-[12px] font-normal text-app-newGray mt-3">
+          Formatos admitidos: png, jpg, jpeg.
+        </span>
       </div>
 
       <div className="space-y-2">
@@ -194,7 +197,7 @@ const InitialSetup = () => {
       <div className="flex flex-row gap-3 mt-2">
         <button
           type="button"
-          onClick={() => window.location.href = '/'}
+          onClick={() => (window.location.href = "/")}
           className="w-1/2 py-3 px-4 border border-sofia-superDark text-sofia-superDark text-[14px] font-medium rounded-[4px] bg-white"
         >
           Volver al login
@@ -203,7 +206,7 @@ const InitialSetup = () => {
           type="submit"
           className="w-1/2 py-3 px-4 bg-sofia-electricGreen text-sofia-superDark text-[14px] font-semibold rounded-[4px]"
         >
-        {loading ? "Creando..." : "Crear organización"}
+          {loading ? "Creando..." : "Crear organización"}
         </button>
       </div>
     </form>
