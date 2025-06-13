@@ -60,29 +60,15 @@ const ButtonExportAllConversations = ({
 
         const base64data = reader.result as string;
         interface DocDefinition {
-          content: Array<{
-            image?: string;
-            text?: string;
-            style?: string;
-            alignment?: string;
-            margin?: number[];
-            columns?: Array<{
-              text: string;
-              style?: string;
-              alignment?: string;
-            }>;
-          }>;
+          content: any[];
           styles?: {
-            [key: string]: {
-              fontSize?: number;
-              bold?: boolean;
-              alignment?: string;
-              margin?: number[];
-            };
+            [key: string]: any;
           };
           defaultStyle?: {
             fontSize?: number;
           };
+          background?: any;
+          footer?: any;
         }
 
         const docDefinition: DocDefinition = {
@@ -90,27 +76,25 @@ const ButtonExportAllConversations = ({
             {
               image: base64data,
               width: 120,
-              height: 21,
               alignment: "center",
-              marginBottom: 20,
+              margin: [0, 0, 0, 20],
             },
             {
               text: `Reporte de todas las conversaciones`,
               style: "header",
               alignment: "center",
-              marginBottom: 10,
+              margin: [0, 0, 0, 10],
             },
             {
               text: `Fecha de generación: ${getPdfMonthDayYear()}`,
               style: "subheader",
               alignment: "center",
-              marginBottom: 20,
+              margin: [0, 0, 0, 20],
             },
             {
               text: `Total de conversaciones: ${conversations.length}`,
-              color: "#666",
               style: "subheader",
-              marginBottom: 30,
+              margin: [0, 0, 0, 30],
             },
           ],
           background: function () {
@@ -153,11 +137,11 @@ const ButtonExportAllConversations = ({
               fontSize: 16,
               bold: true,
               color: "#343E4F",
-              marginTop: 15,
+              margin: [0, 15, 0, 0],
             },
             message: {
               fontSize: 12,
-              marginLeft: 10,
+              margin: [10, 0, 0, 0],
             },
           },
           footer: function (currentPage: number, pageCount: number) {
@@ -190,8 +174,7 @@ const ButtonExportAllConversations = ({
           if (!conversationDetail) {
             docDefinition.content.push({
               text: `Error al cargar la conversación ID: ${conversation.id}`,
-              color: "red",
-              marginBottom: 10,
+              margin: [0, 0, 0, 10],
             });
             return;
           }
@@ -227,8 +210,7 @@ const ButtonExportAllConversations = ({
                   lineColor: "#DBEAF2",
                 },
               ],
-              marginTop: 20,
-              marginBottom: 20,
+              margin: [0, 20, 0, 20],
             });
           }
 
@@ -254,15 +236,14 @@ const ButtonExportAllConversations = ({
               { text: "Mensajes: ", bold: true },
               { text: `${messages.length}`, bold: false },
             ],
-            marginBottom: 10,
+            margin: [0, 0, 0, 10],
           });
 
           if (messages.length > 0) {
             docDefinition.content.push({
               text: "Mensajes:",
               style: "subheader",
-              marginBottom: 5,
-              marginTop: 5,
+              margin: [0, 5, 0, 5],
             });
 
             for (const message of messages) {
@@ -283,7 +264,6 @@ const ButtonExportAllConversations = ({
                         ? "Usuario: "
                         : "Asistente: ",
                     bold: true,
-                    marginRight: 5,
                   },
                   {
                     width: "*",
@@ -291,20 +271,19 @@ const ButtonExportAllConversations = ({
                     style: "message",
                   },
                 ],
-                marginBottom: 5,
+                margin: [0, 0, 0, 5],
               });
             }
           } else {
             docDefinition.content.push({
               text: "No hay mensajes disponibles",
               italics: true,
-              color: "#999",
             });
           }
         });
 
         pdfMake
-          .createPdf(docDefinition)
+          .createPdf(docDefinition as any)
           .download(`reporte-todas-conversaciones-${getPdfMonthDayYear()}.pdf`);
 
         alertConfirm("Exportación completada con éxito");
