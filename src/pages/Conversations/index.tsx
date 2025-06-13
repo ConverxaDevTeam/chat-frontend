@@ -3,13 +3,16 @@ import { useEffect, useState } from "react";
 import ConversationCard from "./ConversationCard";
 import { RiArrowUpDownFill } from "react-icons/ri";
 import { ConversationListItem } from "@interfaces/conversation";
-import { useAppSelector } from "@store/hooks";
+import { useAppSelector, useAppDispatch } from "@store/hooks";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import ButtonExportAllConversations from "./ButtonExportAllConversations";
+import { getMyOrganizationsAsync } from "@store/actions/auth";
+import { updateConversationCount } from "@store/reducers/auth";
 
 const Conversations = () => {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const organizationId = useAppSelector(
     state => state.auth.selectOrganizationId
   );
@@ -21,6 +24,13 @@ const Conversations = () => {
   const fetchConversations = async () => {
     const response = await getConversationsByOrganizationId(organizationId);
     setConversations(response);
+    
+    dispatch(updateConversationCount({
+      organizationId: organizationId,
+      count: response.length
+    }));
+    
+    await dispatch(getMyOrganizationsAsync());
   };
 
   useEffect(() => {
