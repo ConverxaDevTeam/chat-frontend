@@ -170,11 +170,12 @@ const ButtonExportConversation = ({
   }
 
   return (
-    <button
-      type="button"
-      onClick={generatePDF}
-    >
-      <img src="/mvp/icon-export.svg" alt="Exportar" className="w-[18px] h-[18px]"/>
+    <button type="button" onClick={generatePDF}>
+      <img
+        src="/mvp/icon-export.svg"
+        alt="Exportar"
+        className="w-[18px] h-[18px]"
+      />
     </button>
   );
 };

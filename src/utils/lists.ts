@@ -37,6 +37,7 @@ export const sidebarLinks = [
       OrganizationRoleType.OWNER,
       OrganizationRoleType.ADMIN,
       OrganizationRoleType.USER,
+      OrganizationRoleType.HITL,
     ],
   },
   {
@@ -52,6 +53,15 @@ export const sidebarLinks = [
     active: ["/users"],
     img: "users.svg",
     role: [OrganizationRoleType.OWNER],
+  },
+  {
+    to: (orgId: number) => `/organizations/${orgId}/hitl-types`,
+    text: "Sistema HITL",
+    active: ["/hitl-types"],
+    img: "headset.svg",
+    imgWhite: "headset-white.svg",
+    role: [OrganizationRoleType.OWNER],
+    isDynamic: true,
   },
 ];
 

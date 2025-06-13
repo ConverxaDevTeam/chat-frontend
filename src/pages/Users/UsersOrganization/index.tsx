@@ -10,6 +10,8 @@ import { RootState } from "@store";
 import { OrganizationRoleType } from "@utils/interfaces";
 import Modal from "@components/Modal";
 import ModalAddUser from "./ModalAddUser";
+import ModalChangeRole from "./ModalChangeRole";
+import { useUserRoleManagement } from "@hooks/useUserRoleManagement";
 import { toast } from "react-toastify";
 
 export interface IUserApi {
@@ -54,6 +56,18 @@ const UsersOrganization = () => {
       setLoading(false);
     }
   };
+
+  const {
+    isModalOpen: isRoleModalOpen,
+    selectedUser: selectedRoleUser,
+    handleInitiateRoleChange,
+    handleConfirmRoleChange,
+    handleCloseModal: handleCloseRoleModal,
+  } = useUserRoleManagement({
+    userRole: role!,
+    organizationId: selectOrganizationId,
+    onSuccess: getAllUsers,
+  });
 
   const handleDelete = async (user: IUserApi) => {
     if (role !== OrganizationRoleType.OWNER) {
@@ -120,6 +134,17 @@ const UsersOrganization = () => {
         />
       </Modal>
 
+      {selectedRoleUser && (
+        <Modal isShown={isRoleModalOpen} onClose={handleCloseRoleModal}>
+          <ModalChangeRole
+            close={handleCloseRoleModal}
+            handleChangeRole={handleConfirmRoleChange}
+            currentRole={selectedRoleUser.userOrganizations[0]?.role}
+            userEmail={selectedRoleUser.email}
+          />
+        </Modal>
+      )}
+
       <div className="flex flex-1 flex-col gap-[20px] overflow-auto w-full">
         {role === OrganizationRoleType.OWNER && (
           <button
@@ -141,6 +166,7 @@ const UsersOrganization = () => {
                   userData={user}
                   onEdit={() => handleEdit(user)}
                   onDelete={() => handleDelete(user)}
+                  onChangeRole={() => handleInitiateRoleChange(user)}
                 />
               );
             })}

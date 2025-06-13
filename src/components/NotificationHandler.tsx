@@ -48,7 +48,7 @@ const NotificationHandler = () => {
       const { type, message, data } = notification;
 
       switch (type) {
-        case NotificationType.MESSAGE_RECEIVED:
+        case NotificationType.MESSAGE_RECEIVED: {
           dispatch(incrementNotificationCount());
           renderMessageRecivedNotification(
             data.conversationId,
@@ -56,6 +56,7 @@ const NotificationHandler = () => {
             navigate
           );
           break;
+        }
         default:
           console.warn("Tipo de notificación no manejado:", type);
       }

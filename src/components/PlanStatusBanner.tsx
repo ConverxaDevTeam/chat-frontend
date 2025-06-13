@@ -115,12 +115,12 @@ const PlanStatusBanner: React.FC = () => {
     (userOrg: UserOrganization) =>
       userOrg.organization && userOrg.organization.id === selectOrganizationId
   );
-  
+
   // Verificar que selectedUserOrg existe antes de acceder a sus propiedades
   if (!selectedUserOrg || !selectedUserOrg.organization) {
     return null;
   }
-  
+
   const currentOrganization = selectedUserOrg.organization;
   const daysRemaining = currentOrganization.limitInfo?.daysRemaining;
 

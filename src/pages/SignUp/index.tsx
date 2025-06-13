@@ -25,16 +25,19 @@ const SignUp = () => {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
-    
+
     if (formData.password !== formData.confirmPassword) {
       setError("Las contraseñas no coinciden");
       return;
     }
-    
+
     setActive(true);
-    
-    const { confirmPassword, ...dataToSubmit } = formData;
-    dispatch(signUpAsync({ data: dataToSubmit, setActive, setError, dispatch }));
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { confirmPassword: _, ...dataToSubmit } = formData;
+    dispatch(
+      signUpAsync({ data: dataToSubmit, setActive, setError, dispatch })
+    );
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -126,7 +129,7 @@ const SignUp = () => {
               required
               minLength={8}
             />
-            
+
             <label
               className="text-[14px] font-medium text-[#414651] mb-[6px]"
               htmlFor="confirmPassword"

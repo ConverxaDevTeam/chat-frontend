@@ -48,14 +48,16 @@ const Conversations = () => {
   return (
     <div className="w-full flex flex-col">
       <div className="flex gap-4 mb-5">
-      <button
-        type="button"
-        className="bg-sofia-electricGreen flex items-center justify-center rounded-[4px] w-[145px] h-[30px] p-2"
-        onClick={handleViewAllChats}
-      >
-        <p className="text-[14px] font-medium text-sofia-superDark">Ver todos los chats</p>
-      </button>
-      <ButtonExportAllConversations conversations={conversations} />
+        <button
+          type="button"
+          className="bg-sofia-electricGreen flex items-center justify-center rounded-[4px] w-[145px] h-[30px] p-2"
+          onClick={handleViewAllChats}
+        >
+          <p className="text-[14px] font-medium text-sofia-superDark">
+            Ver todos los chats
+          </p>
+        </button>
+        <ButtonExportAllConversations conversations={conversations} />
       </div>
       <div className="w-full overflow-x-auto">
         <div className="w-full min-w-[900px] border-spacing-0 mb-[16px]">
