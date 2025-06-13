@@ -6,7 +6,10 @@ import { ConfigWebChat } from "@pages/Workspace/components/CustomizeChat";
 import { ContextMenuOption } from "./DiagramContextMenu";
 import { IntegrationType } from "@interfaces/integrations";
 import { useCounter } from "@hooks/CounterContext";
-import { createIntegrationWhatsAppManual, createIntegrationMessagerManual } from "@services/integration";
+import {
+  createIntegrationWhatsAppManual,
+  createIntegrationMessagerManual,
+} from "@services/integration";
 import { baseUrl } from "@config/config";
 import { alertError, alertConfirm } from "@utils/alerts";
 
@@ -58,7 +61,10 @@ const IntegracionesNode = ({
       );
       if (response) {
         getDataIntegrations();
-        alertConfirm("Canal creado exitosamente", "Configura los detalles y comienza a utilizarlo");
+        alertConfirm(
+          "Canal creado exitosamente",
+          "Configura los detalles y comienza a utilizarlo"
+        );
       }
     } catch (error) {
       alertError("Error al crear el canal de WhatsApp");
@@ -76,7 +82,10 @@ const IntegracionesNode = ({
       );
       if (response) {
         getDataIntegrations();
-        alertConfirm("Canal creado exitosamente", "Configura los detalles y comienza a utilizarlo");
+        alertConfirm(
+          "Canal creado exitosamente",
+          "Configura los detalles y comienza a utilizarlo"
+        );
       }
     } catch (error) {
       alertError("Error al crear el canal de Facebook Messenger");
@@ -110,7 +119,10 @@ const IntegracionesNode = ({
     window.addEventListener("message", event => {
       if (event.data?.success) {
         getDataIntegrations();
-        alertConfirm("Canal creado exitosamente", "Configura los detalles y comienza a utilizarlo");
+        alertConfirm(
+          "Canal creado exitosamente",
+          "Configura los detalles y comienza a utilizarlo"
+        );
       } else {
         alertError(event.data?.message);
       }
@@ -149,7 +161,11 @@ const IntegracionesNode = ({
     {
       child: (
         <div className="group relative p-1">
-          <img src="/mvp/messenger.svg" alt="Facebook Messenger" className="w-6 h-6" />
+          <img
+            src="/mvp/messenger.svg"
+            alt="Facebook Messenger"
+            className="w-6 h-6"
+          />
           <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 bg-gray-800 text-white font-normal text-xs px-2 py-1 rounded whitespace-nowrap z-[9999]">
             Facebook Messenger
           </div>
@@ -172,8 +188,7 @@ const IntegracionesNode = ({
         icon={<img src="/mvp/cable.svg" alt="Integraciones" />}
         contextMenuOptions={contextMenuOptions}
         {...rest}
-      >
-      </DefaultNode>
+      ></DefaultNode>
     </>
   );
 };

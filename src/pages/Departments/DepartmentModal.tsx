@@ -104,7 +104,6 @@ const DepartmentModal: FC<DepartmentModalProps> = ({
         </h2>
         <hr className="border-t border-gray-150 mb-4 -mx-6" />
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-
           <div>
             <label className="block text-gray-700 font-semibold mb-2">
               Nombre
