@@ -245,7 +245,7 @@ const ButtonExportAllUsers = ({ users }: ButtonExportAllUsersProps) => {
           };
 
           pdfMake
-            .createPdf(docDefinition as unknown, undefined, pdfMakeFonts)
+            .createPdf(docDefinition as any, undefined, pdfMakeFonts)
             .download(`usuarios_${getPdfMonthDayYear()}.pdf`);
         };
       })
