@@ -4,7 +4,7 @@ import { RootState } from "@store";
 import { OrganizationType } from "@interfaces/organization.interface";
 
 const PlanNavInfo: React.FC = () => {
-    const { myOrganizations, selectOrganizationId } = useSelector(
+    const { myOrganizations, selectOrganizationId, conversationCounts } = useSelector(
         (state: RootState) => state.auth
     );
 
@@ -25,8 +25,12 @@ const PlanNavInfo: React.FC = () => {
 
     let planText = "";
 
+    const conversationCount = selectOrganizationId && conversationCounts[selectOrganizationId] !== undefined
+        ? conversationCounts[selectOrganizationId]
+        : limitInfo?.current || 0;
+    
     if (type === OrganizationType.FREE) {
-        planText = `${limitInfo?.current || 0}/${limitInfo?.limit} conversaciones`;
+        planText = `${conversationCount}/${limitInfo?.limit} conversaciones`;
         if (limitInfo?.daysRemaining !== undefined && limitInfo.daysRemaining > 0) {
             planText += ` (${limitInfo.daysRemaining} días)`;
         }
@@ -35,7 +39,7 @@ const PlanNavInfo: React.FC = () => {
     } else if (type === OrganizationType.PRODUCTION) {
         planText = "Conversaciones ilimitadas";
     } else if (type === OrganizationType.CUSTOM) {
-        planText = `${limitInfo?.current || 0}/${limitInfo?.limit} conversaciones`;
+        planText = `${conversationCount}/${limitInfo?.limit} conversaciones`;
     } else {
         planText = "Plan no definido";
     }
