@@ -243,7 +243,6 @@ export const JsonStructureEditor = ({
       // Si hay un campo padre, establecer la ruta para la anidación
       const path = findFieldPath(fields, parentField.id);
       if (path) {
-
         setCurrentPath(path);
       }
     } else {
