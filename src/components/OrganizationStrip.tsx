@@ -105,7 +105,7 @@ export const OrganizationStrip: React.FC<OrganizationStripProps> = () => {
   const isSuperAdmin = user?.is_super_admin;
 
   return (
-    <div className="fixed top-0 left-0 flex flex-col items-center gap-0 p-0 w-[74px] h-full bg-[#F4FAFF] z-10 overflow-visible">
+    <div className="absolute top-0 left-0 flex flex-col items-center gap-0 p-0 w-[74px] h-full bg-[#F4FAFF] z-10 overflow-visible">
       <div className="w-full flex flex-col items-center pt-[70px] pb-2 gap-4 overflow-visible">
         {isSuperAdmin && (
           <div className="group relative overflow-visible">

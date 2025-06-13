@@ -56,14 +56,14 @@ const ItemSidebar = ({
       className={`relative flex h-[35px] items-center gap-[16px] ${
         active
           ? "bg-sofia-superDark rounded-[4px] text-sofia-blancoPuro"
-          : "text-app-gray"
+          : "text-app-gray hover:bg-[#F6F6F6] rounded"
       } ${sidebarMinimized || mobileResolution ? "w-full justify-center" : "w-full pl-[12px]"}`}
     >
       {sidebarMinimized || mobileResolution ? (
         <div className="group relative flex justify-center items-center w-full">
           <img
-            className={`w-6 h-6 fill-current z-10 ${active ? "" : "cursor-pointer"}`}
-            src={active ? `/mvp/${link.imgWhite}` : `/mvp/${link.img}`}
+            className={`w-6 h-6 fill-current z-10 ${active ? "brightness-0 invert" : "cursor-pointer"}`}
+            src={`/mvp/${link.img}`}
             onClick={() => {
               navigate(linkUrl);
             }}
@@ -88,8 +88,8 @@ const ItemSidebar = ({
       ) : (
         <>
           <img
-            className={`w-6 h-6 fill-current z-10 ${active ? "" : "cursor-pointer"}`}
-            src={active ? `/mvp/${link.imgWhite}` : `/mvp/${link.img}`}
+            className={`w-6 h-6 fill-current z-10 ${active ? "brightness-0 invert" : "cursor-pointer"}`}
+            src={`/mvp/${link.img}`}
             onClick={() => {
               navigate(linkUrl);
             }}

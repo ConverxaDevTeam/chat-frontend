@@ -175,8 +175,8 @@ const DashboardOrganization = () => {
         breakpoints={BREAKPOINTS}
         cols={COLS}
         rowHeight={35}
-        margin={[10, 10]}
-        containerPadding={[10, 10]}
+        margin={[10, 10 ]}
+        containerPadding={[1, 10]}
         isResizable
         isDraggable
         useCSSTransforms
