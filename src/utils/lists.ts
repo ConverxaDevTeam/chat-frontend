@@ -11,7 +11,6 @@ export const sidebarLinks = [
     text: "Dashboard",
     active: ["/", "/dashboard"],
     img: "house.svg",
-    imgWhite: "house-white.svg",
     role: [
       OrganizationRoleType.OWNER,
       OrganizationRoleType.ADMIN,
@@ -23,7 +22,6 @@ export const sidebarLinks = [
     text: "Espacios de trabajo",
     active: ["/workspace"],
     img: "workflow.svg",
-    imgWhite: "workflow-white.svg",
     role: [
       OrganizationRoleType.OWNER,
       OrganizationRoleType.ADMIN,
@@ -35,7 +33,6 @@ export const sidebarLinks = [
     text: "Conversaciones",
     active: ["/conversations"],
     img: "chat-dots.svg",
-    imgWhite: "chat-dots-white.svg",
     role: [
       OrganizationRoleType.OWNER,
       OrganizationRoleType.ADMIN,
@@ -47,7 +44,6 @@ export const sidebarLinks = [
     text: "Departamentos",
     active: ["/departments"],
     img: "hotel.svg",
-    imgWhite: "hotel-white.svg",
     role: [OrganizationRoleType.OWNER, OrganizationRoleType.ADMIN],
   },
   {
@@ -55,7 +51,6 @@ export const sidebarLinks = [
     text: "Usuarios",
     active: ["/users"],
     img: "users.svg",
-    imgWhite: "users-white.svg",
     role: [OrganizationRoleType.OWNER],
   },
 ];
@@ -66,14 +61,12 @@ export const sidebarAdminLinks = [
     text: "Dashboard",
     active: ["/", "/dashboard"],
     img: "house.svg",
-    imgWhite: "house-white.svg",
   },
   {
     to: "/templateCreation",
     text: "Function Templates",
     active: ["/templateCreation"],
     img: "file-code.svg",
-    imgWhite: "layout-template-white.svg",
     role: [OrganizationRoleType.ADMIN],
   },
   {
@@ -81,7 +74,6 @@ export const sidebarAdminLinks = [
     text: "Usuarios",
     active: ["/users"],
     img: "house.svg",
-    imgWhite: "house-white.svg",
   },
   {
     to: "/organizations",
@@ -89,7 +81,6 @@ export const sidebarAdminLinks = [
     active: ["/organizations"],
     roles: [OrganizationRoleType.ING_PREVENTA],
     img: "house.svg",
-    imgWhite: "house-white.svg",
   },
 ];
 
