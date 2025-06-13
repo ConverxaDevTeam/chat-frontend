@@ -43,12 +43,12 @@ const Departments = () => {
   useEffect(() => {
     getAllDepartments();
   }, [selectOrganizationId]);
-  
+
   const totalPages = Math.ceil(departments.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const endIndex = startIndex + ITEMS_PER_PAGE;
   const currentDepartments = departments.slice(startIndex, endIndex);
-  
+
   const goToPage = (pageNumber: number) => {
     if (pageNumber >= 1 && pageNumber <= totalPages) {
       setCurrentPage(pageNumber);
@@ -121,19 +121,31 @@ const Departments = () => {
             <div className="w-[25%]">
               <div className="flex gap-[10px] items-center pl-[16px] ">
                 <p className="font-medium leading-normal">Nombre</p>
-                <img src="/mvp/arrow-down-up.svg" alt="Ordenar" className="text-[#A6A8AB] cursor-pointer hover:text-sofia-superDark" />
+                <img
+                  src="/mvp/arrow-down-up.svg"
+                  alt="Ordenar"
+                  className="text-[#A6A8AB] cursor-pointer hover:text-sofia-superDark"
+                />
               </div>
             </div>
             <div className="w-[35%]">
               <div className="flex gap-[10px] items-center">
                 <p className="font-medium leading-normal">Descripción</p>
-                <img src="/mvp/arrow-down-up.svg" alt="Ordenar" className="text-[#A6A8AB] cursor-pointer hover:text-sofia-superDark" />
+                <img
+                  src="/mvp/arrow-down-up.svg"
+                  alt="Ordenar"
+                  className="text-[#A6A8AB] cursor-pointer hover:text-sofia-superDark"
+                />
               </div>
             </div>
             <div className="w-[15%]">
               <div className="flex gap-[10px] items-center">
                 <p className="font-medium leading-normal">ID</p>
-                <img src="/mvp/arrow-down-up.svg" alt="Ordenar" className="text-[#A6A8AB] cursor-pointer hover:text-sofia-superDark" />
+                <img
+                  src="/mvp/arrow-down-up.svg"
+                  alt="Ordenar"
+                  className="text-[#A6A8AB] cursor-pointer hover:text-sofia-superDark"
+                />
               </div>
             </div>
             <div className="w-[10%]">
@@ -147,7 +159,7 @@ const Departments = () => {
               </div>
             </div>
           </div>
-          
+
           <div className="bg-white rounded-md border border-app-lightGray shadow-sm">
             {currentDepartments.map(department => (
               <DepartmentCard

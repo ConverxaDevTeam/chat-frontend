@@ -53,7 +53,9 @@ const ConfigPanel: FC<ConfigPanelProps> = ({
           </div>
         </div>
         {actions && (
-          <div className="flex justify-end gap-[10px] pr-[24px] pb-[24px] mt-auto">{actions}</div>
+          <div className="flex justify-end gap-[10px] pr-[24px] pb-[24px] mt-auto">
+            {actions}
+          </div>
         )}
       </>
     )}

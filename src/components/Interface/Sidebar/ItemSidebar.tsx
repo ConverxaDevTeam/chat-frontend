@@ -5,11 +5,12 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 
 interface ItemSidebarProps {
   link: {
-    to: string;
+    to: string | ((orgId: number) => string);
     text: string;
     active: string[];
     img: string;
     imgWhite?: string;
+    isDynamic?: boolean;
   };
   sidebarMinimized: boolean;
   mobileResolution: boolean;
@@ -28,11 +29,21 @@ const ItemSidebar = ({
   const { selectOrganizationId, myOrganizations } = useSelector(
     (state: RootState) => state.auth
   );
+
   const actualRoles = myOrganizations
     .filter(org => org.organization?.id === selectOrganizationId)
     .map(org => org.role);
 
-  const active = currentPath === link.to || link.active.includes(currentPath);
+  const linkUrl =
+    link.isDynamic && typeof link.to === "function" && selectOrganizationId
+      ? link.to(selectOrganizationId)
+      : typeof link.to === "string"
+        ? link.to
+        : "";
+
+  const active =
+    currentPath === linkUrl ||
+    link.active.some(path => currentPath.includes(path));
   if (
     !actualRoles ||
     (roles.length > 0 && !roles.some(role => actualRoles!.includes(role)))
@@ -43,10 +54,10 @@ const ItemSidebar = ({
   return (
     <li
       className={`relative flex h-[35px] items-center gap-[16px] ${
-        active 
-          ? "bg-sofia-superDark rounded-[4px] text-sofia-blancoPuro" 
+        active
+          ? "bg-sofia-superDark rounded-[4px] text-sofia-blancoPuro"
           : "text-app-gray hover:bg-[#F6F6F6] rounded"
-      } ${(sidebarMinimized || mobileResolution) ? "w-full justify-center" : "w-full pl-[12px]"}`}
+      } ${sidebarMinimized || mobileResolution ? "w-full justify-center" : "w-full pl-[12px]"}`}
     >
       {sidebarMinimized || mobileResolution ? (
         <div className="group relative flex justify-center items-center w-full">
@@ -54,13 +65,13 @@ const ItemSidebar = ({
             className={`w-6 h-6 fill-current z-10 ${active ? "brightness-0 invert" : "cursor-pointer"}`}
             src={`/mvp/${link.img}`}
             onClick={() => {
-              navigate(link.to);
+              navigate(linkUrl);
             }}
             alt={link.text}
           />
           <div
             className={`
-              absolute z-50 left-full group-hover:flex hidden 
+              absolute z-50 left-full group-hover:flex hidden
               bg-[#F6F6F6] border border-[#001126] text-[#001126] text-[12px] px-2 py-1.5 rounded
               font-[400] whitespace-nowrap tracking-[0.17px] leading-[143%] text-left
               shadow-md items-center pointer-events-none
@@ -80,14 +91,16 @@ const ItemSidebar = ({
             className={`w-6 h-6 fill-current z-10 ${active ? "brightness-0 invert" : "cursor-pointer"}`}
             src={`/mvp/${link.img}`}
             onClick={() => {
-              navigate(link.to);
+              navigate(linkUrl);
             }}
             alt={link.text}
           />
           <Link
-            to={link.to}
+            to={linkUrl}
             className={`z-10 font-normal transition-all duration-300 ease-in-out ${
-              active ? "cursor-default text-sofia-blancoPuro" : "cursor-pointer text-[#001126]"
+              active
+                ? "cursor-default text-sofia-blancoPuro"
+                : "cursor-pointer text-[#001126]"
             }`}
           >
             {link.text}
