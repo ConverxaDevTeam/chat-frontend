@@ -43,7 +43,12 @@ const ItemSidebar = ({
 
   const active =
     currentPath === linkUrl ||
-    link.active.some(path => currentPath.includes(path));
+    link.active.some(path => {
+      if (path === '/') {
+        return currentPath === '/';
+      }
+      return currentPath === path || (path !== '/' && currentPath.startsWith(path));
+    });
   if (
     !actualRoles ||
     (roles.length > 0 && !roles.some(role => actualRoles!.includes(role)))
