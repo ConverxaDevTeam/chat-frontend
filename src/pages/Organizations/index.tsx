@@ -12,6 +12,7 @@ import { useAlertContext } from "@components/Diagrams/components/AlertContext";
 import { IOrganization } from "@interfaces/organization.interface";
 import ButtonExportAllOrganizations from "./ButtonExportAllOrganizations";
 import ChangeOrganizationTypeModal from "./ChangeOrganizationTypeModal";
+import TablePagination from "../Users/UsersSuperAdmin/components/TablePagination";
 
 type EditFormData = {
   owner_id: number;
@@ -414,34 +415,12 @@ const Organizations = () => {
                   onSetCustomPlan={handleSetCustomPlan}
                 />
 
-                {totalPages > 1 && (
-                  <div className="flex justify-center items-center py-3 px-4">
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => goToPage(currentPage - 1)}
-                        disabled={currentPage === 1}
-                        className="p-2 text-gray-600 hover:bg-gray-100 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        <img
-                          src="/mvp/chevron-left.svg"
-                          alt="Anterior"
-                          className="w-5 h-5"
-                        />
-                      </button>
-                      <button
-                        onClick={() => goToPage(currentPage + 1)}
-                        disabled={currentPage === totalPages}
-                        className="p-2 text-gray-600 hover:bg-gray-100 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        <img
-                          src="/mvp/chevron-right.svg"
-                          alt="Siguiente"
-                          className="w-5 h-5"
-                        />
-                      </button>
-                    </div>
-                  </div>
-                )}
+                <TablePagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  goToPage={goToPage}
+                  totalItems={filteredOrganizations.length}
+                />
               </>
             )}
           </>
