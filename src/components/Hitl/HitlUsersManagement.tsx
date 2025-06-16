@@ -5,6 +5,7 @@ import {
   HitlUserAssignment,
 } from "@interfaces/hitl.interface";
 import { Button } from "@components/common/Button";
+import { HitlAssignmentStats } from "./HitlAssignmentStats";
 
 interface HitlUsersManagementProps {
   hitlType: HitlType;
@@ -97,6 +98,12 @@ export const HitlUsersManagement: React.FC<HitlUsersManagementProps> = ({
 
   return (
     <div className="bg-white rounded-lg p-6">
+      {/* Estadísticas de asignaciones */}
+      <HitlAssignmentStats
+        hitlType={hitlType}
+        availableUsers={availableUsers}
+      />
+
       <div className="flex items-center justify-between mb-6">
         <div>
           <div className="flex items-center space-x-2 mb-2">
@@ -124,7 +131,8 @@ export const HitlUsersManagement: React.FC<HitlUsersManagementProps> = ({
           </div>
           <p className="text-gray-600 text-sm">
             Asigna o remueve usuarios con rol HITL para este tipo de
-            intervención
+            intervención. Un usuario puede estar asignado a múltiples tipos
+            HITL.
           </p>
         </div>
         {unassignedUsers.length > 0 && (
@@ -142,7 +150,7 @@ export const HitlUsersManagement: React.FC<HitlUsersManagementProps> = ({
       {showAddUsers && unassignedUsers.length > 0 && (
         <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
           <h3 className="text-lg font-medium text-gray-900 mb-3">
-            Seleccionar usuarios para asignar
+            Seleccionar usuarios para asignar (múltiple selección)
           </h3>
           <div className="space-y-2 mb-4">
             {unassignedUsers.map(user => (
@@ -240,7 +248,8 @@ export const HitlUsersManagement: React.FC<HitlUsersManagementProps> = ({
               </Button>
             ) : (
               <p className="text-sm text-gray-400">
-                No hay usuarios con rol HITL disponibles para asignar.
+                No hay usuarios con rol HITL disponibles para asignar en esta
+                organización.
               </p>
             )}
           </div>
@@ -292,11 +301,11 @@ export const HitlUsersManagement: React.FC<HitlUsersManagementProps> = ({
       </div>
 
       {/* Info Box */}
-      <div className="mt-6 bg-yellow-50 border border-yellow-200 rounded-md p-4">
+      <div className="mt-6 bg-blue-50 border border-blue-200 rounded-md p-4">
         <div className="flex">
           <div className="flex-shrink-0">
             <svg
-              className="h-5 w-5 text-yellow-400"
+              className="h-5 w-5 text-blue-400"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -310,18 +319,15 @@ export const HitlUsersManagement: React.FC<HitlUsersManagementProps> = ({
             </svg>
           </div>
           <div className="ml-3">
-            <h3 className="text-sm font-medium text-yellow-800">
-              Recordatorio
+            <h3 className="text-sm font-medium text-blue-800">
+              Gestión de asignaciones
             </h3>
-            <div className="mt-2 text-sm text-yellow-700">
+            <div className="text-sm text-blue-700">
               <ul className="list-disc list-inside space-y-1">
-                <li>Solo usuarios con rol HITL pueden ser asignados</li>
+                <li>Puedes asignar múltiples usuarios a este tipo HITL</li>
+                <li>Los usuarios pueden estar asignados a varios tipos HITL</li>
                 <li>
-                  Los usuarios asignados recibirán notificaciones en tiempo real
-                </li>
-                <li>
-                  Un tipo HITL debe tener al menos un usuario asignado para
-                  estar activo
+                  Los usuarios asignados recibirán notificaciones automáticas
                 </li>
               </ul>
             </div>
