@@ -1,6 +1,7 @@
 import { getInitials } from "@utils/format";
 import RoleBadge from "@components/RoleBadge";
 import { IUserApi } from ".";
+import InfoTooltip from "@components/common/InfoTooltip";
 
 interface UserCardProps {
   userData: IUserApi;
@@ -27,12 +28,18 @@ const UserCard = ({
             </p>
           </div>
 
-          <div className="flex flex-col h-full items-center justify-between flex-1">
-            <p className="text-[14px] font-poppinsRegular text-app-dark">
+          <div className="flex flex-col h-full items-center justify-between flex-1 gap-1">
+            <p className="text-[16px] 2xl:text-[16px] font-poppinsRegular text-app-dark">
               {userData.first_name ? userData.first_name : "Sin registro"}
             </p>
+            <div className="flex flex-row gap-2">
+              <p className="text-[14px] 2xl:text-[14px] font-normal text-app-dark">
+                {userData.email}
+              </p>
+            </div>
             <div className="flex flex-col items-center w-full">
-              {userData.userOrganizations?.map((organization, index) => (
+              <p className="text-[10px] 2xl:text-[12px] font-normal text-app-newGray">
+                Rol: {userData.userOrganizations?.map((organization, index) => (
                 <RoleBadge
                   key={index}
                   role={organization.role}
@@ -40,13 +47,21 @@ const UserCard = ({
                   onClick={onChangeRole}
                 />
               ))}
+              </p>  
             </div>
-            <div className="flex flex-row gap-2">
-              <p className="text-[13px] 2xl:text-[13px] font-normal text-app-newGray">
-                {userData.email} / ID: {userData.id}
+            <div className="flex flex-col items-center w-full">
+              <p className="text-[10px] 2xl:text-[12px] font-normal text-app-newGray">
+                ID: {userData.id}
               </p>
             </div>
           </div>
+          <hr className="w-full border-app-lightGray " />
+            <div className="flex flex-row w-full gap-1">
+              <p className="text-[14px] 2xl:text-[14px] font-normal text-sofia-superDark">
+                Comunicación humana 
+              </p>
+              <InfoTooltip text="Con esta opción activada, el usuario podrá tomar conversaciones cuando la IA necesite apoyo." />
+            </div>
         </div>
         <div className="flex flex-col sm:flex-row justify-center gap-2 sm:gap-4 mt-4">
           <button

@@ -12,7 +12,6 @@ import { useAppDispatch } from "@store/hooks";
 import { removeDepartment } from "@store/reducers/department";
 import TablePagination from "@pages/Users/UsersSuperAdmin/components/TablePagination";
 
-const ITEMS_PER_PAGE = 10;
 
 const Departments = () => {
   const { selectOrganizationId } = useSelector(
@@ -25,6 +24,7 @@ const Departments = () => {
   const { showConfirmation } = useAlertContext();
   const dispatch = useAppDispatch();
   const [currentPage, setCurrentPage] = useState<number>(1);
+  const [itemsPerPage, setItemsPerPage] = useState<number>(10);
 
   const getAllDepartments = async () => {
     if (!selectOrganizationId) return;
@@ -44,15 +44,20 @@ const Departments = () => {
     getAllDepartments();
   }, [selectOrganizationId]);
 
-  const totalPages = Math.ceil(departments.length / ITEMS_PER_PAGE);
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const endIndex = startIndex + ITEMS_PER_PAGE;
+  const totalPages = Math.ceil(departments.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
   const currentDepartments = departments.slice(startIndex, endIndex);
 
   const goToPage = (pageNumber: number) => {
     if (pageNumber >= 1 && pageNumber <= totalPages) {
       setCurrentPage(pageNumber);
     }
+  };
+
+  const handleChangeItemsPerPage = (value: number) => {
+    setItemsPerPage(value);
+    setCurrentPage(1);
   };
 
   const handleOpenModal = (department?: IDepartment) => {
@@ -100,7 +105,8 @@ const Departments = () => {
 
   return (
     <PageContainer
-      buttonText="+ Crear Departamento"
+      title="Departamentos"
+      buttonText="+ Crear departamento"
       onButtonClick={() => handleOpenModal()}
       loading={loading}
       appends={
@@ -160,7 +166,7 @@ const Departments = () => {
             </div>
           </div>
 
-          <div className="bg-white rounded-md border border-app-lightGray shadow-sm">
+          <div className="bg-white rounded border border-app-lightGray">
             {currentDepartments.map(department => (
               <DepartmentCard
                 key={department.id}
@@ -174,6 +180,10 @@ const Departments = () => {
             currentPage={currentPage}
             totalPages={totalPages}
             goToPage={goToPage}
+            totalItems={departments.length}
+            itemsPerPage={itemsPerPage}
+            onChangeItemsPerPage={handleChangeItemsPerPage}
+            rowsPerPageOptions={[5, 10, 20, 50]}
           />
         </div>
       </div>
