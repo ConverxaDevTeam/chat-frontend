@@ -36,7 +36,7 @@ const RoleBadge: React.FC<RoleBadgeProps> = ({
 
   return (
     <span
-      className={`text-[12px] font-poppinsMedium px-[8px] py-[3px] rounded-[4px] inline-block ${getBadgeStyle()} ${className}`}
+      className={`text-[12px] font-poppinsMedium px-[4px] py-[2px] rounded-[4px] inline-block ${getBadgeStyle()} ${className}`}
       onClick={onClick}
     >
       {role}

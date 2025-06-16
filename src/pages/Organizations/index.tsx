@@ -64,7 +64,7 @@ const OrganizationList = ({
                 </th>
               </tr>
             </thead>
-            <tbody className="relative before:content-[''] before:absolute before:-z-10 before:inset-0 before:rounded-[8px] before:border-[2px] before:border-[#DBEAF2] before:border-inherit">
+            <tbody className="relative bg-white rounded border border-app-lightGray">
               {organizations.map(organization => (
                 <OrganizationCard
                   key={organization.id}
@@ -229,11 +229,12 @@ const useHandles = (
   };
 };
 
-const ITEMS_PER_PAGE = 10;
+// Eliminamos la constante ITEMS_PER_PAGE ya que ahora será un estado
 
 const Organizations = () => {
   const { organizations, loading, getAllOrganizations } = useOrganizations();
   const [currentPage, setCurrentPage] = useState<number>(1);
+  const [itemsPerPage, setItemsPerPage] = useState<number>(10);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [isSearchOpen, setIsSearchOpen] = useState<boolean>(false);
   const { users, getUsers } = useUsers();
@@ -278,16 +279,16 @@ const Organizations = () => {
 
   useEffect(() => {
     const newTotalPages = Math.ceil(
-      filteredOrganizations.length / ITEMS_PER_PAGE
+      filteredOrganizations.length / itemsPerPage
     );
     if (currentPage > newTotalPages) {
       setCurrentPage(newTotalPages === 0 ? 1 : newTotalPages);
     }
-  }, [filteredOrganizations, currentPage]);
+  }, [filteredOrganizations, currentPage, itemsPerPage]);
 
-  const totalPages = Math.ceil(filteredOrganizations.length / ITEMS_PER_PAGE);
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const endIndex = startIndex + ITEMS_PER_PAGE;
+  const totalPages = Math.ceil(filteredOrganizations.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
   const currentOrganizations = filteredOrganizations.slice(
     startIndex,
     endIndex
@@ -297,6 +298,12 @@ const Organizations = () => {
     if (pageNumber >= 1 && pageNumber <= totalPages) {
       setCurrentPage(pageNumber);
     }
+  };
+  
+  // Función para cambiar el número de elementos por página
+  const handleChangeItemsPerPage = (value: number) => {
+    setItemsPerPage(value);
+    setCurrentPage(1); // Resetear a la primera página cuando cambia el número de items
   };
 
   const handleSetCustomPlan = (organization: IOrganization) => {
@@ -344,7 +351,7 @@ const Organizations = () => {
               setSelectedOrg(null);
               setIsModalOpen(true);
             }}
-            className="flex items-center gap-1 px-4 w-[190px] h-[41px] text-white rounded-lg leading-[24px] bg-[#001130] hover:bg-opacity-90"
+            className="flex items-center gap-1 px-4 w-[190px] h-[41px] text-white rounded leading-[24px] bg-[#001130] hover:bg-opacity-90"
           >
             <FiPlus /> Crear organización
           </button>
@@ -420,6 +427,9 @@ const Organizations = () => {
                   totalPages={totalPages}
                   goToPage={goToPage}
                   totalItems={filteredOrganizations.length}
+                  itemsPerPage={itemsPerPage}
+                  onChangeItemsPerPage={handleChangeItemsPerPage}
+                  rowsPerPageOptions={[5, 10, 20, 50]}
                 />
               </>
             )}
