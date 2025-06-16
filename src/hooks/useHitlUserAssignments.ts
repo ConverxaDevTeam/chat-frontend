@@ -45,6 +45,10 @@ export const useHitlUserAssignments = ({
         })
       );
 
+      console.log(
+        `[HITL] Usuarios HITL disponibles en organización ${organizationId}:`,
+        transformedUsers.length
+      );
       setAvailableUsers(transformedUsers);
     } catch (error) {
       console.error("Error fetching HITL users:", error);
@@ -68,6 +72,11 @@ export const useHitlUserAssignments = ({
       return false;
     }
 
+    console.log(
+      `[HITL] Asignando ${userIds.length} usuarios al tipo HITL ${hitlTypeId}:`,
+      userIds
+    );
+
     const result = await handleOperation(
       async () => {
         setIsAssigning(true);
@@ -79,6 +88,13 @@ export const useHitlUserAssignments = ({
         if (!success) {
           throw new Error("No se pudieron asignar los usuarios");
         }
+        console.log(
+          `[HITL] Usuarios asignados exitosamente al tipo HITL ${hitlTypeId}`
+        );
+
+        // Refresh available users after assignment
+        await fetchAvailableUsers();
+
         if (onSuccess) {
           onSuccess();
         }
@@ -87,7 +103,7 @@ export const useHitlUserAssignments = ({
       {
         title: "Asignando usuarios",
         successTitle: "¡Éxito!",
-        successText: `${userIds.length === 1 ? "Usuario asignado" : "Usuarios asignados"} correctamente`,
+        successText: `${userIds.length === 1 ? "Usuario asignado" : `${userIds.length} usuarios asignados`} correctamente al tipo HITL`,
         errorTitle: "Error al asignar",
       }
     );
@@ -108,12 +124,16 @@ export const useHitlUserAssignments = ({
 
     const confirmed = await showConfirmation({
       title: "Confirmar eliminación",
-      text: `¿Estás seguro de que deseas remover a ${userName} de este tipo HITL?`,
+      text: `¿Estás seguro de que deseas remover a ${userName} de este tipo HITL? El usuario podrá seguir siendo asignado a otros tipos HITL.`,
       confirmButtonText: "Sí, remover",
       cancelButtonText: "Cancelar",
     });
 
     if (!confirmed) return false;
+
+    console.log(
+      `[HITL] Removiendo usuario ${userId} (${userName}) del tipo HITL ${hitlTypeId}`
+    );
 
     const result = await handleOperation(
       async () => {
@@ -126,6 +146,13 @@ export const useHitlUserAssignments = ({
         if (!success) {
           throw new Error("No se pudo remover el usuario");
         }
+        console.log(
+          `[HITL] Usuario ${userName} removido exitosamente del tipo HITL ${hitlTypeId}`
+        );
+
+        // Refresh available users after removal
+        await fetchAvailableUsers();
+
         if (onSuccess) {
           onSuccess();
         }
@@ -134,7 +161,7 @@ export const useHitlUserAssignments = ({
       {
         title: "Removiendo usuario",
         successTitle: "¡Éxito!",
-        successText: "Usuario removido correctamente",
+        successText: `${userName} removido correctamente del tipo HITL`,
         errorTitle: "Error al remover",
       }
     );
