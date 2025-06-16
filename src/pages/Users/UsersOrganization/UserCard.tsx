@@ -7,14 +7,16 @@ interface UserCardProps {
   userData: IUserApi;
   onEdit: () => void;
   onDelete: () => void;
-  onChangeRole: () => void;
+  humanCommunication?: boolean;
+  onToggleHumanCommunication?: () => void;
 }
 
 const UserCard = ({
   userData,
   onEdit,
   onDelete,
-  onChangeRole,
+  humanCommunication = false,
+  onToggleHumanCommunication,
 }: UserCardProps) => {
   return (
     <>
@@ -43,8 +45,6 @@ const UserCard = ({
                 <RoleBadge
                   key={index}
                   role={organization.role}
-                  className="cursor-pointer hover:opacity-80 transition-opacity"
-                  onClick={onChangeRole}
                 />
               ))}
               </p>  
@@ -56,11 +56,22 @@ const UserCard = ({
             </div>
           </div>
           <hr className="w-full border-app-lightGray " />
-            <div className="flex flex-row w-full gap-1">
-              <p className="text-[14px] 2xl:text-[14px] font-normal text-sofia-superDark">
-                Comunicación humana 
-              </p>
-              <InfoTooltip text="Con esta opción activada, el usuario podrá tomar conversaciones cuando la IA necesite apoyo." />
+            <div className="flex flex-row w-full justify-between items-center">
+              <div className="flex flex-row gap-1">
+                <p className="text-[14px] 2xl:text-[14px] font-normal text-sofia-superDark">
+                  Comunicación humana 
+                </p>
+                <InfoTooltip text="Con esta opción activada, el usuario podrá tomar conversaciones cuando la IA necesite apoyo." />
+              </div>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  className="sr-only peer"
+                  checked={humanCommunication}
+                  onChange={onToggleHumanCommunication}
+                />
+                <div className="w-9 h-5 bg-gray-300 peer-checked:bg-[#001126] rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all"></div>
+              </label>
             </div>
         </div>
         <div className="flex flex-col sm:flex-row justify-center gap-2 sm:gap-4 mt-4">
