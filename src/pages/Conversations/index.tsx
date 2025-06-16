@@ -23,7 +23,7 @@ const Conversations = () => {
   );
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [itemsPerPage, setItemsPerPage] = useState<number>(10);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading] = useState<boolean>(false);
 
   const fetchConversations = async () => {
     const response = await getConversationsByOrganizationId(organizationId);
