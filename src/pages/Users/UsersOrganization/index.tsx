@@ -158,7 +158,7 @@ const UsersOrganization = () => {
         {loading ? (
           <Loading />
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-[20px] 2xl:gap-[24px]">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 2xl:grid-cols-4 gap-[16px] 2xl:gap-[16px]">
             {users.map(user => {
               return (
                 <UserCard
