@@ -1,7 +1,7 @@
 # Sistema HITL (Human In The Loop) - Caso de Uso
 
 ## Descripción General
-Sistema que permite a los OWNER de organizaciones gestionar tipos especializados de intervención humana y asignar usuarios específicos para cada tipo. Los usuarios HITL reciben notificaciones cuando se requiere su intervención.
+Sistema que permite a los OWNER de organizaciones gestionar tipos especializados de intervención humana y asignar múltiples usuarios a cada tipo. Un usuario puede estar asignado a varios tipos HITL diferentes. Los usuarios HITL reciben notificaciones cuando se requiere su intervención.
 
 ## Actores
 - **OWNER**: Gestiona tipos HITL y asigna usuarios
@@ -123,6 +123,11 @@ interface HitlNotification {
 - Descripción: 10-255 caracteres
 - Al menos un usuario debe estar asignado para activar notificaciones
 
+### Capacidades de Asignación
+- **Múltiples usuarios pueden asignarse al mismo tipo HITL** para mayor cobertura
+- **Un usuario puede estar asignado a múltiples tipos HITL diferentes** para flexibilidad
+- **Asignación y remoción en tiempo real** con actualización automática de estados
+
 ### Estados
 - **Activo**: Tipo con usuarios asignados
 - **Inactivo**: Tipo sin usuarios asignados
@@ -192,9 +197,12 @@ enum HitlStatus {
   - Error: Mensaje de error
 
 ### ✅ Gestión de Usuarios
-- Asignar/remover usuarios con rol HITL
-- Selector de usuarios disponibles
+- Asignar/remover múltiples usuarios con rol HITL
+- Interfaz simplificada con información relevante para el administrador
+- Estadísticas en tiempo real: usuarios asignados vs disponibles
+- Selector de usuarios disponibles con selección múltiple
 - Verificación automática de permisos
+- Confirmaciones para acciones de remoción
 
 ### ✅ Sistema de Permisos
 - Verificación dinámica de permisos por organización
@@ -208,10 +216,14 @@ enum HitlStatus {
 - Estado de conexión en tiempo real
 
 ### ✅ Experiencia de Usuario
+- Interfaz simplificada enfocada en acciones prácticas
+- Estadísticas relevantes: usuarios asignados y disponibles para asignar
+- Indicadores visuales de estado del tipo HITL (activo/inactivo)
 - Loading states y skeleton screens
-- Estados vacíos con CTAs
+- Estados vacíos con CTAs claros
 - Responsive design (móvil/desktop)
 - Feedback visual para todas las operaciones
+- Recordatorios informativos sobre capacidades de asignación múltiple
 
 ## Flujos Secundarios
 
