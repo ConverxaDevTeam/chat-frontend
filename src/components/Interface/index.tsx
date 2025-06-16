@@ -81,7 +81,7 @@ const Interface = () => {
               sidebarMinimized={sidebarMinimized}
               mobileResolution={mobileResolution}
             />
-            <div className="flex-1 min-h-0 mt-4 ml-4 overflow-auto">
+            <div className="flex-1 min-h-0 mt-4 ml-4 mr-4 overflow-auto">
               <Outlet />
             </div>
           </div>
