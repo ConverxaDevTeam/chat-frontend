@@ -12,12 +12,13 @@ export const toastConfig: ToastContainerProps = {
   bodyClassName: "p-4",
   toastClassName: ({
     type,
-    data,
   }: {
-    type: string;
-    data?: { subtitle?: string };
-  }) => {
-    const classes = `${baseClasses} ${data?.subtitle ? "flex-col gap-3" : ""}`;
+    type?: string;
+    defaultClassName?: string;
+    position?: string;
+    rtl?: boolean;
+  } = {}) => {
+    const classes = `${baseClasses}`;
     switch (type) {
       case "success":
         return `${classes} !bg-[#EEFDE3] !text-[#1E4620]`;
