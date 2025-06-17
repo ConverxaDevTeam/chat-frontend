@@ -25,7 +25,7 @@ export const toastConfig: ToastContainerProps = {
       case "error":
         return `${classes} !bg-[#FDEDED] !text-[#1E4620]`;
       case "info":
-        return `${classes} !bg-[#E5F6FD] !text-[#1E4620]`;
+        return `${classes} !bg-[#C5E8F9] !text-[#1E4620]`;
       default:
         return classes;
     }
