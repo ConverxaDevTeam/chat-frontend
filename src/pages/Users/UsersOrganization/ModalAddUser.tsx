@@ -104,7 +104,7 @@ const ModalAddUser = ({
           <img src="/mvp/vector-x.svg" alt="Cerrar" />
         </button>
         <h2 className="text-xl font-bold mb-4">
-          {editUser ? "Editar usuario" : "Agregar usuario"}
+          {editUser ? "Editar contraseña" : "Agregar usuario"}
         </h2>
         <hr className="border-t border-gray-300 mb-4 -mx-6" />
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -150,7 +150,7 @@ const ModalAddUser = ({
           <div className="flex justify-end gap-2">
             <button
               type="submit"
-              className="w-full p-4 mt-5 bg-[#001130] text-white rounded-[4px] text-base font-semibold transition-all leading-none"
+              className="w-full p-4 mt-5 bg-[#001130] text-white rounded-[4px] text-base font-normal transition-all leading-none"
             >
               {editUser ? "Cambiar contraseña" : "Agregar usuario"}
             </button>
