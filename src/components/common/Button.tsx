@@ -20,7 +20,7 @@ export const Button: React.FC<ButtonProps> = ({
     default:
       "flex-1 h-[35px] px-4 py-1 border text-sofia-superDark border-sofia-navyBlue rounded-[4px] disabled:opacity-50 disabled:cursor-not-allowed",
     cancel:
-      "flex-1 h-[35px] px-4 py-2 text-gray-500 border-app-newGray border-[2px] rounded-[4px] disabled:opacity-50 disabled:cursor-not-allowed",
+      "flex-1 h-[35px] px-4 py-2 text-app-newGray border rounded-[4px] disabled:opacity-50 disabled:cursor-not-allowed",
   };
 
   return (
