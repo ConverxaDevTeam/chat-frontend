@@ -17,36 +17,28 @@ export const HitlAssignmentStats: React.FC<HitlAssignmentStatsProps> = ({
   ).length;
 
   return (
-    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-      <h3 className="text-sm font-medium text-blue-900 mb-3 flex items-center">
-        <svg
-          className="w-4 h-4 mr-2"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
-          />
-        </svg>
+    <div className="bg-[#F4FAFF] border border-sofia-darkBlue rounded p-4 mb-6">
+      <h3 className="text-sm font-medium text-sofia-superDark mb-3 flex items-center">
+        <img
+          src="/mvp/chevron-left.svg"
+          alt="Volver"
+          className="w-5 h-5 mr-2"
+        />
         Gestión de usuarios - {hitlType.name}
       </h3>
 
       <div className="grid grid-cols-2 gap-4">
         <div className="text-center bg-white rounded-md p-3">
-          <div className="text-2xl font-bold text-blue-600">
+          <div className="text-2xl font-bold text-sofia-superDark">
             {assignedUsers}
           </div>
-          <div className="text-sm text-blue-700">Usuarios asignados</div>
+          <div className="text-sm text-sofia-superDark font-normal">Usuarios asignados</div>
         </div>
         <div className="text-center bg-white rounded-md p-3">
           <div className="text-2xl font-bold text-gray-600">
             {availableForAssignment}
           </div>
-          <div className="text-sm text-gray-700">Disponibles para asignar</div>
+          <div className="text-sm text-gray-700 font-normal">Disponibles para asignar</div>
         </div>
       </div>
 
@@ -90,7 +82,7 @@ export const HitlAssignmentStats: React.FC<HitlAssignmentStatsProps> = ({
                 d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"
               />
             </svg>
-            <div className="text-sm text-yellow-700">
+            <div className="text-sm font-normal text-yellow-700">
               Este tipo HITL estará <strong>inactivo</strong> hasta que asignes
               al menos un usuario.
             </div>

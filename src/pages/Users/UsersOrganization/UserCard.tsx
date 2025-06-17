@@ -59,9 +59,9 @@ const UserCard = ({
             <div className="flex flex-row w-full justify-between items-center">
               <div className="flex flex-row gap-1">
                 <p className="text-[14px] 2xl:text-[14px] font-normal text-sofia-superDark">
-                  Comunicación humana 
+                Tomar conversaciones 
                 </p>
-                <InfoTooltip text="Con esta opción activada, el usuario podrá tomar conversaciones cuando la IA necesite apoyo." />
+                <InfoTooltip text="Permite que este usuario tome el control de una conversación cuando la IA requiera ayuda." />
               </div>
               <label className="relative inline-flex items-center cursor-pointer">
                 <input
@@ -85,7 +85,7 @@ const UserCard = ({
             onClick={onEdit}
             className="w-full px-4 py-1 bg-sofia-superDark text-white rounded-[4px] text-sm font-normal hover:bg-opacity-50 transition-all"
           >
-            Editar
+            Editar contraseña
           </button>
         </div>
       </div>
