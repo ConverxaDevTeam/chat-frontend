@@ -1,4 +1,3 @@
-import Loading from "@components/Loading";
 import { useEffect, useState } from "react";
 import UserCard from "./UserCard";
 import {
@@ -14,6 +13,7 @@ import ModalChangeRole from "./ModalChangeRole";
 import ConfirmationModal from "@components/ConfirmationModal";
 import { useUserRoleManagement } from "@hooks/useUserRoleManagement";
 import { toast } from "react-toastify";
+import PageContainer from "@components/PageContainer";
 
 export interface IUserApi {
   id: number;
@@ -166,19 +166,13 @@ const UsersOrganization = () => {
         />
       )}
 
-      <div className="flex flex-1 flex-col gap-[20px] overflow-auto w-full">
-        {role === OrganizationRoleType.OWNER && (
-          <button
-            type="button"
-            onClick={() => setModalAddUser(true)}
-            className="flex justify-center items-center gap-2 w-[170px] h-[40px] text-white rounded-[4px] leading-[24px] bg-[#001130] hover:bg-opacity-90"
-          >
-            + Crear usuario
-          </button>
-        )}
-        {loading ? (
-          <Loading />
-        ) : (
+      <PageContainer
+        title="Usuarios"
+        buttonText={role === OrganizationRoleType.OWNER ? "+ Crear usuario" : undefined}
+        onButtonClick={role === OrganizationRoleType.OWNER ? () => setModalAddUser(true) : undefined}
+        loading={loading}
+      >
+        <div className="flex flex-1 flex-col gap-[20px] overflow-auto w-full">
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 2xl:grid-cols-4 gap-[16px] 2xl:gap-[16px]">
             {users.map(user => {
               return (
@@ -193,8 +187,8 @@ const UsersOrganization = () => {
               );
             })}
           </div>
-        )}
-      </div>
+        </div>
+      </PageContainer>
     </>
   );
 };
