@@ -6,7 +6,7 @@ import {
   removeUserFromHitlType,
 } from "@services/hitl.service";
 import { getUserMyOrganization } from "@services/user";
-import { useSweetAlert } from "./useSweetAlert";
+import { useAlertContext } from "@components/Diagrams/components/AlertContext";
 
 interface UseHitlUserAssignmentsProps {
   organizationId: number;
@@ -22,7 +22,7 @@ export const useHitlUserAssignments = ({
   const [isAssigning, setIsAssigning] = useState(false);
   const [isRemoving, setIsRemoving] = useState(false);
 
-  const { handleOperation, showConfirmation } = useSweetAlert();
+  const { handleOperation, showConfirmation } = useAlertContext();
 
   const fetchAvailableUsers = async () => {
     setIsLoading(true);
@@ -129,6 +129,7 @@ export const useHitlUserAssignments = ({
       cancelButtonText: "Cancelar",
     });
 
+    console.log("CONFIRMACION REMOVER USUARIO RESULTADO:", confirmed);
     if (!confirmed) return false;
 
     console.log(
