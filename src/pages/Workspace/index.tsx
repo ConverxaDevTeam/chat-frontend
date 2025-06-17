@@ -45,7 +45,7 @@ const ChatWrapper = ({ agentId }: ChatWrapperProps) => {
     <Fragment>
       {isChatVisible ? (
         <div
-          className={`relative h-full bg-gray-100 border-gray-300 shadow-lg transition-all duration-300 ${
+          className={`relative h-full bg-gray-100 border-gray-300 shadow-lg transition-all duration-300 ml-2 ${
             isChatVisible ? "w-80" : "w-0"
           } overflow-hidden`}
         >
