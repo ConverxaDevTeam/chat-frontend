@@ -16,14 +16,14 @@ interface MessagePreviewProps {
 }
 
 const MessagePreview = ({ type, text }: MessagePreviewProps) => (
-  <p className="font-poppinsRegular text-[#212121] py-[8px]">
+  <span className="font-poppinsRegular text-[#212121] py-[8px]">
     <span
       className={`font-medium ${type === MessageType.AGENT ? "text-blue-600" : "text-gray-600"}`}
     >
       {type === MessageType.AGENT ? "Agente" : "Usuario"}:
     </span>{" "}
     {text}
-  </p>
+  </span>
 );
 
 interface HitlButtonProps {
