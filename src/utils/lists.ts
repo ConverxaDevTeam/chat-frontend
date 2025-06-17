@@ -48,6 +48,13 @@ export const sidebarLinks = [
     role: [OrganizationRoleType.OWNER, OrganizationRoleType.ADMIN],
   },
   {
+    to: "/chat-users",
+    text: "Clientes",
+    active: ["/chat-users"],
+    img: "users.svg",
+    role: [OrganizationRoleType.OWNER, OrganizationRoleType.USER],
+  },
+  {
     to: "/users",
     text: "Usuarios",
     active: ["/users"],
