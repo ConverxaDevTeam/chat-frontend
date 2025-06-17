@@ -236,7 +236,7 @@ const UsersSuperAdmin = () => {
           <button
             type="button"
             onClick={() => setIsCreateModalOpen(true)}
-            className="flex items-center justify-center gap-1 px-4 w-[190px] h-[41px] text-white rounded-lg leading-[24px] bg-[#001130] hover:bg-opacity-90"
+            className="flex items-center justify-center gap-1 px-4 w-[190px] h-[41px] text-white rounded leading-[24px] bg-[#001130] hover:bg-opacity-90"
             aria-label="Crear nuevo usuario"
           >
             + Nuevo usuario
@@ -266,7 +266,7 @@ const UsersSuperAdmin = () => {
               </div>
             ) : (
               <>
-                <div className="rounded-lg overflow-hidden">
+                <div className="rounded overflow-hidden">
                   <Table>
                     <TableHeader columns={columns} />
                     <TableBody>

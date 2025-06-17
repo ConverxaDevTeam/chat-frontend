@@ -11,6 +11,7 @@ import { OrganizationRoleType } from "@utils/interfaces";
 import Modal from "@components/Modal";
 import ModalAddUser from "./ModalAddUser";
 import ModalChangeRole from "./ModalChangeRole";
+import ConfirmationModal from "@components/ConfirmationModal";
 import { useUserRoleManagement } from "@hooks/useUserRoleManagement";
 import { toast } from "react-toastify";
 
@@ -111,6 +112,10 @@ const UsersOrganization = () => {
     setModalEditUser(true);
   };
 
+  const handleToggleHumanCommunication = (user: IUserApi) => {
+    handleInitiateRoleChange(user);
+  };
+
   useEffect(() => {
     getAllUsers();
   }, []);
@@ -135,7 +140,7 @@ const UsersOrganization = () => {
       </Modal>
 
       {selectedRoleUser && (
-        <Modal isShown={isRoleModalOpen} onClose={handleCloseRoleModal}>
+        <Modal isShown={false} onClose={handleCloseRoleModal}>
           <ModalChangeRole
             close={handleCloseRoleModal}
             handleChangeRole={handleConfirmRoleChange}
@@ -143,6 +148,22 @@ const UsersOrganization = () => {
             userEmail={selectedRoleUser.email}
           />
         </Modal>
+      )}
+
+      {selectedRoleUser && (
+        <ConfirmationModal
+          isShown={isRoleModalOpen}
+          onClose={handleCloseRoleModal}
+          title="Cambiar comunicación humana"
+          text={`¿Deseas ${selectedRoleUser.userOrganizations[0]?.role === OrganizationRoleType.USER ? 'activar' : 'desactivar'} la comunicación humana para ${selectedRoleUser.email}?`}
+          onConfirm={() => handleConfirmRoleChange(
+            selectedRoleUser.userOrganizations[0]?.role === OrganizationRoleType.USER 
+              ? OrganizationRoleType.HITL 
+              : OrganizationRoleType.USER
+          )}
+          confirmText={selectedRoleUser.userOrganizations[0]?.role === OrganizationRoleType.USER ? 'Activar' : 'Desactivar'}
+          cancelText="Cancelar"
+        />
       )}
 
       <div className="flex flex-1 flex-col gap-[20px] overflow-auto w-full">
@@ -158,7 +179,7 @@ const UsersOrganization = () => {
         {loading ? (
           <Loading />
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-[20px] 2xl:gap-[24px]">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 2xl:grid-cols-4 gap-[16px] 2xl:gap-[16px]">
             {users.map(user => {
               return (
                 <UserCard
@@ -166,7 +187,8 @@ const UsersOrganization = () => {
                   userData={user}
                   onEdit={() => handleEdit(user)}
                   onDelete={() => handleDelete(user)}
-                  onChangeRole={() => handleInitiateRoleChange(user)}
+                  humanCommunication={user.userOrganizations[0]?.role === OrganizationRoleType.HITL}
+                  onToggleHumanCommunication={() => handleToggleHumanCommunication(user)}
                 />
               );
             })}
