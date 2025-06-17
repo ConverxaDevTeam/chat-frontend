@@ -3,13 +3,17 @@ import { useEffect, useState } from "react";
 import ConversationCard from "./ConversationCard";
 import { RiArrowUpDownFill } from "react-icons/ri";
 import { ConversationListItem } from "@interfaces/conversation";
-import { useAppSelector } from "@store/hooks";
+import { useAppSelector, useAppDispatch } from "@store/hooks";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import ButtonExportAllConversations from "./ButtonExportAllConversations";
+import { getMyOrganizationsAsync } from "@store/actions/auth";
+import { updateConversationCount } from "@store/reducers/auth";
+import TablePagination from "@pages/Users/UsersSuperAdmin/components/TablePagination";
 
 const Conversations = () => {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const organizationId = useAppSelector(
     state => state.auth.selectOrganizationId
   );
@@ -17,15 +21,44 @@ const Conversations = () => {
   const [conversations, setConversations] = useState<ConversationListItem[]>(
     []
   );
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [itemsPerPage, setItemsPerPage] = useState<number>(10);
+  const [isLoading] = useState<boolean>(false);
 
   const fetchConversations = async () => {
     const response = await getConversationsByOrganizationId(organizationId);
     setConversations(response);
+    
+    dispatch(updateConversationCount({
+      organizationId: organizationId,
+      count: response.length
+    }));
+    
+    await dispatch(getMyOrganizationsAsync());
   };
 
   useEffect(() => {
     fetchConversations();
   }, []);
+  
+  const totalItems = conversations.length;
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  
+  const paginatedConversations = conversations.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+  
+  const goToPage = (page: number) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+    }
+  };
+  
+  const handleChangeItemsPerPage = (value: number) => {
+    setItemsPerPage(value);
+    setCurrentPage(1); 
+  };
 
   const handleUpdateConversation = (
     updatedConversation: ConversationListItem
@@ -48,7 +81,9 @@ const Conversations = () => {
   return (
     <div className="w-full flex flex-col">
       <div className="flex gap-4 mb-5">
-        <button
+        <p className="text-[16px] font-semibold text-sofia-superDark flex items-center">Conversaciones</p>
+        <div className="flex-1 flex justify-end gap-3">
+          <button
           type="button"
           className="bg-sofia-electricGreen flex items-center justify-center rounded-[4px] w-[145px] h-[30px] p-2"
           onClick={handleViewAllChats}
@@ -58,6 +93,8 @@ const Conversations = () => {
           </p>
         </button>
         <ButtonExportAllConversations conversations={conversations} />
+        </div>
+        
       </div>
       <div className="w-full overflow-x-auto">
         <div className="w-full min-w-[900px] border-spacing-0 mb-[16px]">
@@ -118,14 +155,36 @@ const Conversations = () => {
             </div>
           </div>
           <div className="bg-white rounded-[4px] border border-app-lightGray border-inherit">
-            {conversations.map(conversation => (
-              <ConversationCard
-                key={conversation.id}
-                conversation={conversation}
-                onUpdateConversation={handleUpdateConversation}
-              />
-            ))}
+            {isLoading ? (
+              <div className="flex justify-center items-center p-4">
+                <p>Cargando conversaciones...</p>
+              </div>
+            ) : paginatedConversations.length > 0 ? (
+              paginatedConversations.map(conversation => (
+                <ConversationCard
+                  key={conversation.id}
+                  conversation={conversation}
+                  onUpdateConversation={handleUpdateConversation}
+                />
+              ))
+            ) : (
+              <div className="flex justify-center items-center p-4">
+                <p>No hay conversaciones disponibles</p>
+              </div>
+            )}
           </div>
+          
+          {totalItems > 0 && (
+            <TablePagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              goToPage={goToPage}
+              totalItems={totalItems}
+              itemsPerPage={itemsPerPage}
+              onChangeItemsPerPage={handleChangeItemsPerPage}
+              rowsPerPageOptions={[5, 10, 20, 50]}
+            />
+          )}
         </div>
       </div>
     </div>

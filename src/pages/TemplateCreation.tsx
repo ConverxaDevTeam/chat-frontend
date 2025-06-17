@@ -307,7 +307,7 @@ const TemplateTable: React.FC<{
 }> = ({ templates, handlers }) => {
   return (
     <div className="overflow-x-auto">
-      <table className="w-full bg-white rounded-[8px] shadow-sm">
+      <table className="w-full bg-white rounded shadow-sm">
         <thead className="bg-gray-50 border-b-[1px] border-[#DBEAF2]">
           <tr>
             <th className="py-3 px-6 text-left font-medium text-gray-500 text-sm">

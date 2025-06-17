@@ -11,6 +11,7 @@ interface PageContainerProps {
 }
 
 const PageContainer = ({
+  title,
   buttonText,
   onButtonClick,
   loading,
@@ -21,10 +22,13 @@ const PageContainer = ({
     <>
       <div>
         <div className="flex justify-between items-center mb-6">
+          {title && (
+            <h2 className="text-[16px] font-semibold text-sofia-superDark flex items-center">{title}</h2>
+          )}
           {buttonText && onButtonClick && (
             <button
               onClick={onButtonClick}
-              className="flex items-center gap-1 px-4 py-2 bg-[#001130] text-white rounded-[4px] hover:bg-opacity-90"
+              className="flex items-center gap-1 px-4 py-2 bg-[#001130] text-white rounded hover:bg-opacity-90"
             >
               {buttonText}
             </button>

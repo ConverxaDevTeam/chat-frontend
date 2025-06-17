@@ -215,7 +215,7 @@ const ButtonExportAllOrganizations = ({
     <button
       type="button"
       onClick={generateTablePDF}
-      className="flex items-center justify-center gap-1 px-4 w-[135px] h-[41px] text-white rounded-lg leading-[24px] bg-[#001130] hover:bg-opacity-90"
+      className="flex items-center justify-center gap-1 px-4 w-[135px] h-[41px] text-white rounded leading-[24px] bg-[#001130] hover:bg-opacity-90"
     >
       Exportar PDF
     </button>
