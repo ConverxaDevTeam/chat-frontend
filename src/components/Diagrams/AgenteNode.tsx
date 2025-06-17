@@ -8,7 +8,6 @@ import DefaultNode from "./DefaultNode";
 import { ContextMenuOption } from "./DiagramContextMenu";
 import { ActionButtons, ActionType } from "./agenteComponents/AgentInfo";
 import { useHumanCommunication } from "./hooks/useHumanCommunication";
-import InfoTooltip from "@components/common/InfoTooltip";
 
 const AgenteNode = (props: CustomTypeNodeProps<AgentData>) => {
   const { data, selected } = props;
@@ -66,10 +65,19 @@ const AgenteNode = (props: CustomTypeNodeProps<AgentData>) => {
             }
             className="w-4 h-4"
           />
-          <span className="text-[#001126] text-[14px] font-[500] leading-normal flex items-center gap-[5px]">
-            Escalar a agente humano
-            <InfoTooltip text="Permite que la IA derive la conversación a un agente humano en tiempo real." />
-          </span>
+          <div className="text-[#001126] text-[14px] font-[500] leading-normal flex items-center gap-[5px] relative">
+            <span>Escalar a agente humano</span>
+            <div className="group relative inline-block">
+              <img 
+                src="/mvp/Vector.svg" 
+                alt="Info" 
+                className="cursor-pointer"
+              />
+              <div className="absolute z-50 invisible group-hover:visible bg-[#F6F6F6] border border-[#001126] text-[#001126] text-[12px] px-2 py-1.5 rounded font-[400] whitespace-normal tracking-[0.17px] leading-[143%] text-left w-[178px] top-0 left-6">
+                Permite que la IA derive la conversación a un agente humano en tiempo real.
+              </div>
+            </div>
+          </div>
           <label className="relative inline-flex items-center cursor-pointer">
             <input
               type="checkbox"
