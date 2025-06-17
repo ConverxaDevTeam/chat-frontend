@@ -35,10 +35,14 @@ export const HitlTypesList: React.FC<HitlTypesListProps> = ({
     x: 0,
     y: 0,
     hitlTypeId: 0,
-    hitlTypeName: ""
+    hitlTypeName: "",
   });
-  
-  const handleOpenContextMenu = (e: React.MouseEvent, hitlTypeId: number, hitlTypeName: string) => {
+
+  const handleOpenContextMenu = (
+    e: React.MouseEvent,
+    hitlTypeId: number,
+    hitlTypeName: string
+  ) => {
     e.preventDefault();
     e.stopPropagation();
     setContextMenu({
@@ -46,17 +50,19 @@ export const HitlTypesList: React.FC<HitlTypesListProps> = ({
       x: e.clientX,
       y: e.clientY,
       hitlTypeId,
-      hitlTypeName
+      hitlTypeName,
     });
   };
-  
+
   const handleCloseContextMenu = () => {
     setContextMenu(prev => ({ ...prev, isOpen: false }));
   };
   const getStatusBadge = (status: HitlStatus, _count: number) => {
     const badgeStyles = {
-      [HitlStatus.ACTIVE]: "bg-green-100 text-green-800 border border-green-200",
-      [HitlStatus.INACTIVE]: "bg-yellow-100 text-yellow-800 border border-yellow-200",
+      [HitlStatus.ACTIVE]:
+        "bg-green-100 text-green-800 border border-green-200",
+      [HitlStatus.INACTIVE]:
+        "bg-yellow-100 text-yellow-800 border border-yellow-200",
       [HitlStatus.DELETED]: "bg-red-100 text-red-800 border border-red-200",
     };
 
@@ -145,12 +151,18 @@ export const HitlTypesList: React.FC<HitlTypesListProps> = ({
       {canManage && (
         <div className="flex justify-between items-center mb-6">
           <div className="flex flex-col gap-2">
-            <h2 className="text-xl font-semibold text-sofia-superDark">Tipos HITL</h2>
+            <h2 className="text-xl font-semibold text-sofia-superDark">
+              Tipos HITL
+            </h2>
             <p className="text-sofia-newGray text-sm font-normal">
               Gestiona los tipos de intervención humana especializada
             </p>
           </div>
-          <Button variant="primary" onClick={onCreate} className="!flex-none !w-[190px]">
+          <Button
+            variant="primary"
+            onClick={onCreate}
+            className="!flex-none !w-[190px]"
+          >
             Crear nuevo tipo HITL
           </Button>
         </div>
@@ -165,7 +177,9 @@ export const HitlTypesList: React.FC<HitlTypesListProps> = ({
             {canManage && (
               <button
                 className="absolute top-3 left-3 text-gray-500 hover:text-gray-700 transition-colors"
-                onClick={(e) => handleOpenContextMenu(e, hitlType.id, hitlType.name)}
+                onClick={e =>
+                  handleOpenContextMenu(e, hitlType.id, hitlType.name)
+                }
               >
                 <img
                   src="/mvp/ellipsis.svg"
@@ -176,11 +190,12 @@ export const HitlTypesList: React.FC<HitlTypesListProps> = ({
             )}
             <div className="absolute top-3 right-3 flex items-center gap-2">
               <span className="px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800 border border-blue-200">
-                {hitlType.assignedUsersCount} usuario{hitlType.assignedUsersCount !== 1 ? "s" : ""}
+                {hitlType.assignedUsersCount} usuario
+                {hitlType.assignedUsersCount !== 1 ? "s" : ""}
               </span>
               {getStatusBadge(hitlType.status, hitlType.assignedUsersCount)}
             </div>
-            
+
             <div className="flex flex-col items-center ">
               <div className="w-14 h-14 rounded-full border border-app-lightGray flex items-center justify-center mb-2">
                 <span className="text-xl font-semibold text-gray-800">
@@ -190,20 +205,29 @@ export const HitlTypesList: React.FC<HitlTypesListProps> = ({
               <h3 className="text-lg font-medium text-center">
                 {hitlType.name}
               </h3>
-              <p className="text-xs font-normal text-app-newGray text-center">ID: {hitlType.id}</p>
+              <p className="text-xs font-normal text-app-newGray text-center">
+                ID: {hitlType.id}
+              </p>
             </div>
-            
+
             <div className="flex-grow text-center mb-4">
               <p className="text-sm font-normal text-gray-700 line-clamp-2">
                 {hitlType.description}
               </p>
             </div>
-            
+
             {canManage && (
               <div className="mt-auto">
                 <div className="flex justify-center gap-2">
                   <button
-                    onClick={() => onDelete(hitlType.id, hitlType.name)}
+                    onClick={() => {
+                      console.log(
+                        "ELIMINAR HITL TYPE CLICKED:",
+                        hitlType.id,
+                        hitlType.name
+                      );
+                      onDelete(hitlType.id, hitlType.name);
+                    }}
                     className="w-full px-4 py-1 text-app-newGray border rounded text-sm font-normal"
                   >
                     Eliminar
@@ -216,11 +240,11 @@ export const HitlTypesList: React.FC<HitlTypesListProps> = ({
                   </button>
                 </div>
               </div>
-            )}  
+            )}
           </div>
         ))}
       </div>
-      
+
       {contextMenu.isOpen && (
         <ContextMenu
           x={contextMenu.x}
