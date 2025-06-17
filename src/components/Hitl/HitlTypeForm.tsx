@@ -145,14 +145,27 @@ export const HitlTypeForm: React.FC<HitlTypeFormProps> = ({
     formData.description.trim() !== "";
 
   return (
-    <div className="bg-white rounded-lg p-6">
+    <div className="bg-white rounded p-6 border border-app-lightGray">
       <div className="mb-6">
-        <h2 className="text-xl font-semibold text-gray-900 mb-2">
-          {mode === "create" ? "Crear nuevo tipo HITL" : "Editar tipo HITL"}
-        </h2>
-        <p className="text-gray-600 text-sm">
+        <div className="flex items-center space-x-2 mb-2">
+          <button
+            onClick={onCancel}
+            className="text-gray-500 hover:text-gray-700 transition-colors"
+            type="button"
+          >
+            <img
+              src="/mvp/chevron-left.svg"
+              alt="Volver"
+              className="w-5 h-5"
+            />
+          </button>
+          <h2 className="text-[18px] font-semibold text-sofia-superDark">
+            {mode === "create" ? "Crear nuevo tipo HITL" : "Editar tipo HITL"}
+          </h2>
+        </div>
+        <p className="text-sofia-superDark text-sm font-normal">
           {mode === "create"
-            ? "Define un nuevo tipo de intervención humana especializada"
+            ? "Define roles personalizados para asignar a usuarios específicos. Estos roles determinan qué tipo de conversaciones o solicitudes podrán atender, recibiendo notificaciones relacionadas."
             : "Modifica la información del tipo HITL"}
         </p>
       </div>
@@ -161,7 +174,7 @@ export const HitlTypeForm: React.FC<HitlTypeFormProps> = ({
         <div>
           <label
             htmlFor="name"
-            className="block text-sm font-medium text-gray-700 mb-2"
+            className="block text-sm font-semibold text-gray-700 mb-2"
           >
             Nombre del tipo HITL *
           </label>
@@ -171,7 +184,7 @@ export const HitlTypeForm: React.FC<HitlTypeFormProps> = ({
             value={formData.name}
             onChange={e => handleInputChange("name", e.target.value)}
             onBlur={() => handleBlur("name")}
-            className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+            className={`w-full px-3 py-2 border rounded focus:outline-none focus:ring-0.5 focus:ring-gray-400 focus:border-gray-400 ${
               getFieldError("name") ? "border-red-300" : "border-gray-300"
             }`}
             placeholder="Ej: Soporte Técnico, Escalación Comercial"
@@ -181,7 +194,7 @@ export const HitlTypeForm: React.FC<HitlTypeFormProps> = ({
           {getFieldError("name") && (
             <p className="mt-1 text-sm text-red-600">{getFieldError("name")}</p>
           )}
-          <p className="mt-1 text-xs text-gray-500">
+          <p className="mt-1 text-xs text-gray-400">
             {formData.name.length}/50 caracteres
           </p>
         </div>
@@ -189,7 +202,7 @@ export const HitlTypeForm: React.FC<HitlTypeFormProps> = ({
         <div>
           <label
             htmlFor="description"
-            className="block text-sm font-medium text-gray-700 mb-2"
+            className="block text-sm font-semibold text-gray-700 mb-2"
           >
             Descripción *
           </label>
@@ -199,7 +212,7 @@ export const HitlTypeForm: React.FC<HitlTypeFormProps> = ({
             value={formData.description}
             onChange={e => handleInputChange("description", e.target.value)}
             onBlur={() => handleBlur("description")}
-            className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none ${
+            className={`w-full px-3 py-2 border rounded focus:outline-none focus:ring-0.5 focus:ring-gray-400 focus:border-gray-400 resize-none ${
               getFieldError("description")
                 ? "border-red-300"
                 : "border-gray-300"
@@ -213,16 +226,16 @@ export const HitlTypeForm: React.FC<HitlTypeFormProps> = ({
               {getFieldError("description")}
             </p>
           )}
-          <p className="mt-1 text-xs text-gray-500">
+          <p className="mt-1 text-xs text-gray-400">
             {formData.description.length}/255 caracteres
           </p>
         </div>
 
-        <div className="bg-blue-50 border border-blue-200 rounded-md p-4">
+        <div className="bg-[#F4FAFF] border border-sofia-darkBlue rounded p-4">
           <div className="flex">
             <div className="flex-shrink-0">
               <svg
-                className="h-5 w-5 text-blue-400"
+                className="h-5 w-5 text-sofia-superDark"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -236,11 +249,11 @@ export const HitlTypeForm: React.FC<HitlTypeFormProps> = ({
               </svg>
             </div>
             <div className="ml-3">
-              <h3 className="text-sm font-medium text-blue-800">
+              <h3 className="text-sm font-medium text-sofia-superDark">
                 Información importante
               </h3>
-              <div className="mt-2 text-sm text-blue-700">
-                <ul className="list-disc list-inside space-y-1">
+              <div className="my-2 text-sm text-sofia-superDark">
+                <ul className="list-disc list-inside space-y-1 font-normal">
                   <li>El nombre debe ser único en tu organización</li>
                   <li>Una vez creado, deberás asignar usuarios con rol HITL</li>
                   <li>
@@ -252,12 +265,13 @@ export const HitlTypeForm: React.FC<HitlTypeFormProps> = ({
           </div>
         </div>
 
-        <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200">
+        <div className="flex justify-end space-x-3 pt-4 border-gray-200">
           <Button
             type="button"
             variant="cancel"
             onClick={onCancel}
             disabled={isSubmitting}
+            className="!flex-none !w-[120px]"
           >
             Cancelar
           </Button>
@@ -265,6 +279,7 @@ export const HitlTypeForm: React.FC<HitlTypeFormProps> = ({
             type="submit"
             variant="primary"
             disabled={!isFormValid || isSubmitting}
+            className="!flex-none !w-[190px]"
           >
             {isSubmitting
               ? mode === "create"
