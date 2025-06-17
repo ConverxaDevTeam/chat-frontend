@@ -13,7 +13,7 @@ import {
   updateHitlType,
   deleteHitlType,
 } from "@services/hitl.service";
-import { useSweetAlert } from "./useSweetAlert";
+import { useAlertContext } from "@components/Diagrams/components/AlertContext";
 
 interface UseHitlTypesProps {
   organizationId: number;
@@ -26,7 +26,7 @@ export const useHitlTypes = ({ organizationId }: UseHitlTypesProps) => {
   const [isUpdating, setIsUpdating] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const { handleOperation, showConfirmation } = useSweetAlert();
+  const { handleOperation, showConfirmation } = useAlertContext();
 
   const enhanceHitlType = (hitlType: HitlType): HitlTypeWithStatus => ({
     ...hitlType,
@@ -128,6 +128,7 @@ export const useHitlTypes = ({ organizationId }: UseHitlTypesProps) => {
       cancelButtonText: "Cancelar",
     });
 
+    console.log("CONFIRMACION ELIMINACION RESULTADO:", confirmed);
     if (!confirmed) return false;
 
     const result = await handleOperation(
