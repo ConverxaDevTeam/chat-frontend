@@ -2,6 +2,7 @@ import { RootState } from "@store";
 import { OrganizationRoleType } from "@utils/interfaces";
 import { useSelector } from "react-redux";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import InfoTooltip from "@components/common/InfoTooltip";
 
 interface ItemSidebarProps {
   link: {
@@ -43,7 +44,12 @@ const ItemSidebar = ({
 
   const active =
     currentPath === linkUrl ||
-    link.active.some(path => currentPath.includes(path));
+    link.active.some(path => {
+      if (path === '/') {
+        return currentPath === '/';
+      }
+      return currentPath === path || (path !== '/' && currentPath.startsWith(path));
+    });
   if (
     !actualRoles ||
     (roles.length > 0 && !roles.some(role => actualRoles!.includes(role)))
@@ -53,37 +59,21 @@ const ItemSidebar = ({
 
   return (
     <li
-      className={`relative flex h-[35px] items-center gap-[16px] ${
-        active
+      className={`relative flex h-[35px] items-center gap-[16px] ${active
           ? "bg-sofia-superDark rounded-[4px] text-sofia-blancoPuro"
           : "text-app-gray hover:bg-[#F6F6F6] rounded"
-      } ${sidebarMinimized || mobileResolution ? "w-full justify-center" : "w-full pl-[12px]"}`}
+        } ${sidebarMinimized || mobileResolution ? "w-full justify-center" : "w-full pl-[12px]"}`}
     >
       {sidebarMinimized || mobileResolution ? (
         <div className="group relative flex justify-center items-center w-full">
-          <img
-            className={`w-6 h-6 fill-current z-10 ${active ? "brightness-0 invert" : "cursor-pointer"}`}
-            src={`/mvp/${link.img}`}
-            onClick={() => {
-              navigate(linkUrl);
-            }}
-            alt={link.text}
+          <InfoTooltip
+            text={link.text}                       
+            position="right"                       
+            width="auto"                           
+            iconSrc={`/mvp/${link.img}`}           
+            onClick={() => navigate(linkUrl)}
+            active={active}                       
           />
-          <div
-            className={`
-              absolute z-50 left-full group-hover:flex hidden
-              bg-[#F6F6F6] border border-[#001126] text-[#001126] text-[12px] px-2 py-1.5 rounded
-              font-[400] whitespace-nowrap tracking-[0.17px] leading-[143%] text-left
-              shadow-md items-center pointer-events-none
-            `}
-            style={{
-              marginLeft: "10px",
-              top: "50%",
-              transform: "translateY(-50%)",
-            }}
-          >
-            {link.text}
-          </div>
         </div>
       ) : (
         <>
@@ -97,11 +87,10 @@ const ItemSidebar = ({
           />
           <Link
             to={linkUrl}
-            className={`z-10 font-normal transition-all duration-300 ease-in-out ${
-              active
+            className={`z-10 font-normal transition-all duration-300 ease-in-out ${active
                 ? "cursor-default text-sofia-blancoPuro"
                 : "cursor-pointer text-[#001126]"
-            }`}
+              }`}
           >
             {link.text}
           </Link>
