@@ -131,15 +131,21 @@ const Sidebar = ({
                   );
                 })}
           </ul>
-          <div className="mt-auto">
+          <div className="mt-auto flex-shrink-0 flex flex-col">
             {!(sidebarMinimized || mobileResolution) && (
-              <div className="mx-auto bg-[#343E4F] w-[193px] h-[141px] rounded-[4px] p-[16px] gap-[16px] flex flex-col ">
-                <p className="text-white text-[16px]">
+              <div 
+                className="mx-auto bg-[#343E4F] w-full max-w-[193px] rounded-[4px] p-[12px] gap-[8px] flex flex-col flex-shrink-0 mt-2"
+                style={{ 
+                  height: 'auto',
+                  transform: 'scale(0.95)'
+                }}
+              >
+                <p className="text-white text-[14px]">
                   ¿Necesitas ayuda? Visita nuestro centro de soporte
                 </p>
                 <a
                   href="mailto:gio@pixeldigita.com"
-                  className="flex justify-center items-center text-[12px] text-sofia-navyBlue bg-white border-sofia-navyBlue border-[1px] py-[4px] px-[8px] rounded-[4px]"
+                  className="flex justify-center items-center text-[12px] text-sofia-navyBlue bg-white border-sofia-navyBlue border-[0.5px] py-[4px] px-[8px] rounded-[4px] mt-1"
                 >
                   Ir ahora
                 </a>

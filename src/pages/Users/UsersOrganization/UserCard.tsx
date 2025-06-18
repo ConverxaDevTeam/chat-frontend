@@ -83,7 +83,7 @@ const UserCard = ({
           </button>
           <button
             onClick={onEdit}
-            className="w-full px-4 py-1 bg-sofia-superDark text-white rounded-[4px] text-sm font-normal hover:bg-opacity-50 transition-all"
+            className="w-full px-4 py-1 bg-sofia-superDark text-white rounded-[4px] text-sm font-normal hover:bg-opacity-50 transition-all whitespace-nowrap"
           >
             Editar contraseña
           </button>

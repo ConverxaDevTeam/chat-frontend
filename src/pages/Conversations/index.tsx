@@ -81,7 +81,7 @@ const Conversations = () => {
   return (
     <div className="w-full flex flex-col">
       <div className="flex gap-4 mb-5">
-        <p className="text-[16px] font-semibold text-sofia-superDark flex items-center">Conversaciones</p>
+        <p className="text-xl font-semibold text-sofia-superDark flex items-center">Conversaciones</p>
         <div className="flex-1 flex justify-end gap-3">
           <button
           type="button"
