@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { HitlTypeWithStatus, HitlStatus } from "@interfaces/hitl.interface";
 import { Button } from "@components/common/Button";
 import ContextMenu from "@components/ContextMenu";
+import PageContainer from "@components/PageContainer";
 
 interface HitlTypesListProps {
   hitlTypes: HitlTypeWithStatus[];
@@ -57,28 +58,26 @@ export const HitlTypesList: React.FC<HitlTypesListProps> = ({
   const handleCloseContextMenu = () => {
     setContextMenu(prev => ({ ...prev, isOpen: false }));
   };
-  const getStatusBadge = (status: HitlStatus, _count: number) => {
-    const badgeStyles = {
-      [HitlStatus.ACTIVE]:
-        "bg-green-100 text-green-800 border border-green-200",
-      [HitlStatus.INACTIVE]:
-        "bg-yellow-100 text-yellow-800 border border-yellow-200",
-      [HitlStatus.DELETED]: "bg-red-100 text-red-800 border border-red-200",
-    };
-
-    const statusText = {
-      [HitlStatus.ACTIVE]: "Activo",
-      [HitlStatus.INACTIVE]: "Inactivo",
-      [HitlStatus.DELETED]: "Eliminado",
-    };
-
-    return (
-      <span
-        className={`px-2 py-0.5 rounded text-xs font-medium ${badgeStyles[status]}`}
-      >
-        {statusText[status]}
-      </span>
-    );
+  const getStatusBadge = (status: HitlStatus, assignedUsersCount: number) => {
+    if (status === HitlStatus.ACTIVE && assignedUsersCount > 0) {
+      return (
+        <span className="px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800 border-[0.5px] border-green-300">
+          Activo
+        </span>
+      );
+    } else if (status === HitlStatus.ACTIVE && assignedUsersCount === 0) {
+      return (
+        <span className="px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800 border-[0.5px] border-yellow-300">
+          Sin usuarios
+        </span>
+      );
+    } else {
+      return (
+        <span className="px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800 border-[0.5px] border-red-300">
+          Inactivo
+        </span>
+      );
+    }
   };
 
   if (isLoading) {
@@ -148,93 +147,104 @@ export const HitlTypesList: React.FC<HitlTypesListProps> = ({
 
   return (
     <div className="space-y-4">
-      {canManage && (
-        <div className="flex justify-between items-center mb-6">
-          <div className="flex flex-col gap-2">
-            <h2 className="text-xl font-semibold text-sofia-superDark">
-              Tipos HITL
-            </h2>
+      <PageContainer
+        title="Tipos HITL"
+        buttonText={canManage ? "+ Crear nuevo tipo HITL" : undefined}
+        onButtonClick={canManage ? onCreate : undefined}
+      >
+        {canManage && (
+          <div className="mb-6">
             <p className="text-sofia-newGray text-sm font-normal">
               Gestiona los tipos de intervención humana especializada
             </p>
           </div>
-          <Button
-            variant="primary"
-            onClick={onCreate}
-            className="!flex-none !w-[190px]"
-          >
-            Crear nuevo tipo HITL
-          </Button>
-        </div>
-      )}
+        )}
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         {hitlTypes.map(hitlType => (
           <div
             key={hitlType.id}
-            className="bg-white rounded border border-app-lightGray p-5 relative flex flex-col h-full"
+            className="bg-white rounded border-[0.5px] border-app-lightGray p-4 relative flex flex-col h-full"
           >
-            {canManage && (
-              <button
-                className="absolute top-3 left-3 text-gray-500 hover:text-gray-700 transition-colors"
-                onClick={e =>
-                  handleOpenContextMenu(e, hitlType.id, hitlType.name)
-                }
-              >
-                <img
-                  src="/mvp/ellipsis.svg"
-                  alt="Opciones"
-                  className="w-5 h-5"
-                />
-              </button>
-            )}
             <div className="absolute top-3 right-3 flex items-center gap-2">
-              <span className="px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800 border border-blue-200">
-                {hitlType.assignedUsersCount} usuario
-                {hitlType.assignedUsersCount !== 1 ? "s" : ""}
-              </span>
               {getStatusBadge(hitlType.status, hitlType.assignedUsersCount)}
+              {canManage && (
+                <button
+                  className="text-gray-500 hover:text-gray-700 transition-colors"
+                  onClick={e =>
+                    handleOpenContextMenu(e, hitlType.id, hitlType.name)
+                  }
+                >
+                  <img
+                    src="/mvp/ellipsis.svg"
+                    alt="Opciones"
+                    className="w-4 h-4"
+                  />
+                </button>
+              )}
             </div>
 
-            <div className="flex flex-col items-center ">
-              <div className="w-14 h-14 rounded-full border border-app-lightGray flex items-center justify-center mb-2">
-                <span className="text-xl font-semibold text-gray-800">
-                  {hitlType.name.substring(0, 2).toUpperCase()}
-                </span>
+            <div className="flex flex-col items-start mb-2">
+              <div className="flex items-center w-full">
+                <h3 className="text-lg font-semibold text-sofia-superDark truncate max-w-[65%]">
+                  {hitlType.name}
+                </h3>
               </div>
-              <h3 className="text-lg font-medium text-center">
-                {hitlType.name}
-              </h3>
-              <p className="text-xs font-normal text-app-newGray text-center">
+              <p className="text-xs font-normal text-app-newGray">
                 ID: {hitlType.id}
               </p>
             </div>
 
-            <div className="flex-grow text-center mb-4">
-              <p className="text-sm font-normal text-gray-700 line-clamp-2">
+            <div className="flex-grow mb-2">
+              <p className="text-sm font-normal text-gray-700 line-clamp-2 text-left">
                 {hitlType.description}
               </p>
+              {hitlType.description && hitlType.description.length > 100 && (
+                <button 
+                  className="text-xs text-sofia-navyBlue mt-1 hover:underline" 
+                  onClick={() => onEdit(hitlType.id)}
+                >
+                  Ver más
+                </button>
+              )}
             </div>
+
+            {hitlType.assignedUsersCount > 0 && (
+              <div className="flex flex-row gap-4 items-center mb-3">
+                <p className="text-sm font-semibold text-sofia-superDark">Usuarios asignados</p>
+                <div className="flex flex-row items-center">
+                  {[...Array(Math.min(3, hitlType.assignedUsersCount))].map((_, index) => (
+                    <div 
+                      key={index} 
+                      className="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center -ml-2 first:ml-0 border-[0.5px] border-white shadow-sm"
+                      style={{ zIndex: 10 - index }}
+                    >
+                      <span className="text-xs font-medium text-gray-600">
+                        {String.fromCharCode(65 + index)}{String.fromCharCode(75 + index)}
+                      </span>
+                    </div>
+                  ))}
+                  {hitlType.assignedUsersCount > 3 && (
+                    <div className="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center -ml-2 border-[0.5px] border-white shadow-sm" style={{ zIndex: 7 }}>
+                      <span className="text-xs font-medium text-gray-600">+{hitlType.assignedUsersCount - 3}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
 
             {canManage && (
               <div className="mt-auto">
                 <div className="flex justify-center gap-2">
                   <button
-                    onClick={() => {
-                      console.log(
-                        "ELIMINAR HITL TYPE CLICKED:",
-                        hitlType.id,
-                        hitlType.name
-                      );
-                      onDelete(hitlType.id, hitlType.name);
-                    }}
-                    className="w-full px-4 py-1 text-app-newGray border rounded text-sm font-normal"
+                    onClick={() => onDelete(hitlType.id, hitlType.name)}
+                    className="w-full px-4 py-1 text-app-newGray border rounded-[4px] text-sm font-normal"
                   >
                     Eliminar
                   </button>
                   <button
                     onClick={() => onEdit(hitlType.id)}
-                    className="w-full px-4 py-1 bg-sofia-superDark text-white rounded-[4px] text-sm font-normal hover:bg-opacity-50 transition-all"
+                    className="w-full px-4 py-1 bg-sofia-superDark text-white rounded-[4px] text-sm font-normal hover:bg-opacity-50 transition-all whitespace-nowrap"
                   >
                     Editar
                   </button>
@@ -244,6 +254,7 @@ export const HitlTypesList: React.FC<HitlTypesListProps> = ({
           </div>
         ))}
       </div>
+      </PageContainer>
 
       {contextMenu.isOpen && (
         <ContextMenu
