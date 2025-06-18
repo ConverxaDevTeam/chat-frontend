@@ -1,0 +1,49 @@
+name: Auto deploy sofia-chat-frontend-v2 development in VPS
+
+on:
+  push:
+    branches:
+      - release
+    paths:
+      - ".github/workflows/**"
+      - "index.html"
+      - "package.json"
+      - "public/**"
+      - "scripts/**"
+      - "src/**"
+      - "vite.config.js"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Deploy using ssh
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.DEVELOPMENT_SSH_HOST }}
+          username: ${{ secrets.DEVELOPMENT_SSH_USERNAME }}
+          key: ${{ secrets.DEVELOPMENT_SSH_PRIVATE_KEY }}
+          port: 22
+          script: |
+            cd /root/repos/sofia-chat-frontend-v2-internal
+            git fetch origin
+            git checkout release
+            git pull origin release
+            cat <<EOF > .env
+            VITE_PUBLIC_BACKEND_URL=https://internal-back.sofiachat.com
+            VITE_PUBLIC_TOKEN_NAME=${{ secrets.VITE_PUBLIC_TOKEN_NAME }}
+            VITE_PUBLIC_TOKEN_REFRESH_NAME=${{ secrets.VITE_PUBLIC_TOKEN_REFRESH_NAME }}
+            VITE_PUBLIC_URL_FILES=https://internal-back.sofiachat.com
+            VITE_BACKEND_URL_FILES=https://internal-back.sofiachat.com
+            VITE_GOOGLE_CLIENT_ID=${{ secrets.VITE_GOOGLE_CLIENT_ID }}
+            PORT=3004
+            EOF
+            PORT=3004 docker-compose build
+            PORT=3004 docker-compose down -v
+            PORT=3004 docker-compose up -d
