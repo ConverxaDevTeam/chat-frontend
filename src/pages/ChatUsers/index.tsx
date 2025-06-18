@@ -91,17 +91,15 @@ const ChatUsers = () => {
   };
 
   return (
-    <PageContainer loading={loading}>
+    <PageContainer 
+      loading={loading}
+      title="Clientes"
+      titleClassName="mt-1"
+    >
       <div className="w-full">
-        {/* Header */}
-        <div className="mb-6">
-          <h1 className="text-2xl font-semibold text-sofia-superDark">
-            Clientes
-          </h1>
-          <p className="text-gray-600">
-            Gestiona los clientes de tu organización
-          </p>
-        </div>
+        <p className="text-sofia-superDark mb-6">
+          Gestiona los clientes de tu organización
+        </p>
         {/* Filtros */}
         <div className="mb-6 flex gap-4">
           <div className="flex-1">
@@ -110,14 +108,14 @@ const ChatUsers = () => {
               placeholder="Buscar por nombre, email o teléfono..."
               value={searchTerm}
               onChange={handleSearch}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sofia-electricGreen focus:border-transparent"
+              className="w-full px-3 py-2 border border-app-lightGray rounded focus:outline-none focus:ring-1 focus:ring-app-lightGray focus:border-transparent"
             />
           </div>
           <div className="w-48">
             <select
               value={selectedType}
               onChange={handleTypeFilter}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sofia-electricGreen focus:border-transparent"
+              className="w-full px-3 py-2 border border-app-lightGray rounded focus:outline-none focus:ring-1 focus:ring-app-lightGray focus:border-transparent"
             >
               <option value="">Todos los tipos</option>
               <option value={ChatUserType.CHAT_WEB}>Chat Web</option>
@@ -193,7 +191,7 @@ const ChatUsers = () => {
             </div>
           </div>
 
-          <div className="bg-white rounded-md border border-gray-200 shadow-sm">
+          <div className="bg-white rounded border border-app-lightGray">
             {chatUsers.length > 0 ? (
               chatUsers.map((chatUser, index) => (
                 <ChatUserCard
