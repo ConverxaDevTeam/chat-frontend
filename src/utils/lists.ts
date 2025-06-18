@@ -51,7 +51,7 @@ export const sidebarLinks = [
     to: "/chat-users",
     text: "Clientes",
     active: ["/chat-users"],
-    img: "users.svg",
+    img: "handshake.svg",
     role: [OrganizationRoleType.OWNER, OrganizationRoleType.USER],
   },
   {
