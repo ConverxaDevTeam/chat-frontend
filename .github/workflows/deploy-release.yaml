@@ -31,9 +31,23 @@ jobs:
           key: ${{ secrets.DEVELOPMENT_SSH_PRIVATE_KEY }}
           port: 22
           script: |
+            echo "=== DEBUG: Listando directorios en /root/repos ==="
+            ls -la /root/repos/
+            echo "=== DEBUG: Verificando directorio interno ==="
+            ls -la /root/repos/sofia-chat-frontend-v2-internal || echo "ERROR: Directorio no existe"
+            echo "=== DEBUG: Cambiando al directorio interno ==="
             cd /root/repos/sofia-chat-frontend-v2-internal
+            echo "=== DEBUG: PWD actual ==="
+            pwd
+            echo "=== DEBUG: Contenido del directorio ==="
+            ls -la
+            echo "=== DEBUG: Verificando git ==="
+            git status
+            echo "=== DEBUG: Git fetch ==="
             git fetch origin
+            echo "=== DEBUG: Git checkout release ==="
             git checkout release
+            echo "=== DEBUG: Git pull ==="
             git pull origin release
             cat <<EOF > .env
             VITE_PUBLIC_BACKEND_URL=https://internal-back.sofiachat.com
