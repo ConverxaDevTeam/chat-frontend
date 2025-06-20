@@ -13,7 +13,8 @@ import { toast } from "react-toastify";
 import TablePagination from "@pages/Users/UsersSuperAdmin/components/TablePagination";
 import { useDebounce } from "@hooks/useDebounce";
 
-const ITEMS_PER_PAGE = 10;
+const ITEMS_PER_PAGE_OPTIONS = [5, 10, 20, 50];
+const DEFAULT_ITEMS_PER_PAGE = 10;
 
 const ChatUsers = () => {
   const { selectOrganizationId } = useSelector(
@@ -23,6 +24,8 @@ const ChatUsers = () => {
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
+  const [totalItems, setTotalItems] = useState<number>(0);
+  const [itemsPerPage, setItemsPerPage] = useState<number>(DEFAULT_ITEMS_PER_PAGE);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [selectedType, setSelectedType] = useState<ChatUserType | "">("");
 
@@ -38,7 +41,7 @@ const ChatUsers = () => {
         ...filters,
         organizationId: selectOrganizationId,
         page: currentPage,
-        limit: ITEMS_PER_PAGE,
+        limit: itemsPerPage,
       };
 
       if (debouncedSearchTerm) filtersWithOrg.search = debouncedSearchTerm;
@@ -55,9 +58,11 @@ const ChatUsers = () => {
         );
         setChatUsers(validUsers);
         setTotalPages(response.totalPages || 1);
+        setTotalItems(response.total || validUsers.length);
       } else {
         setChatUsers([]);
         setTotalPages(1);
+        setTotalItems(0);
         toast.error("No se pudieron cargar los clientes");
       }
     } catch (error) {
@@ -72,12 +77,17 @@ const ChatUsers = () => {
 
   useEffect(() => {
     getAllChatUsers();
-  }, [selectOrganizationId, currentPage, debouncedSearchTerm, selectedType]);
+  }, [selectOrganizationId, currentPage, itemsPerPage, debouncedSearchTerm, selectedType]);
 
   const goToPage = (pageNumber: number) => {
     if (pageNumber >= 1 && pageNumber <= totalPages) {
       setCurrentPage(pageNumber);
     }
+  };
+
+  const handleChangeItemsPerPage = (value: number) => {
+    setItemsPerPage(value);
+    setCurrentPage(1); // Reset to first page when changing items per page
   };
 
   const handleSearch = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
@@ -206,11 +216,15 @@ const ChatUsers = () => {
             ) : null}
           </div>
 
-          {totalPages > 1 && (
+          {chatUsers.length > 0 && (
             <TablePagination
               currentPage={currentPage}
               totalPages={totalPages}
               goToPage={goToPage}
+              totalItems={totalItems}
+              itemsPerPage={itemsPerPage}
+              onChangeItemsPerPage={handleChangeItemsPerPage}
+              rowsPerPageOptions={ITEMS_PER_PAGE_OPTIONS}
             />
           )}
         </div>

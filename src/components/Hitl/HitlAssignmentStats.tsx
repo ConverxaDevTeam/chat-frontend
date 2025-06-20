@@ -19,11 +19,6 @@ export const HitlAssignmentStats: React.FC<HitlAssignmentStatsProps> = ({
   return (
     <div className="bg-[#F4FAFF] border border-sofia-darkBlue rounded p-4 mb-6">
       <h3 className="text-sm font-medium text-sofia-superDark mb-3 flex items-center">
-        <img
-          src="/mvp/chevron-left.svg"
-          alt="Volver"
-          className="w-5 h-5 mr-2"
-        />
         Gestión de usuarios - {hitlType.name}
       </h3>
 

@@ -75,11 +75,11 @@ const ChatUserCard = ({ chatUser }: ChatUserCardProps) => {
       </div>
 
       <div className="w-[25%] flex items-center">
-        <span className="text-sm text-sofia-superDark">{email}</span>
+        <span className="text-sm font-normal text-sofia-superDark">{email}</span>
       </div>
 
       <div className="w-[15%] flex items-center">
-        <span className="text-sm text-sofia-superDark">{phone}</span>
+        <span className="text-sm font-normal text-sofia-superDark">{phone}</span>
       </div>
 
       <div className="w-[12%] flex items-center">
@@ -91,13 +91,13 @@ const ChatUserCard = ({ chatUser }: ChatUserCardProps) => {
       </div>
 
       <div className="w-[15%] flex items-center">
-        <span className="text-sm text-sofia-superDark">
+        <span className="text-sm font-normal text-sofia-superDark">
           {createdAt ? formatDate(createdAt) : "Sin fecha"}
         </span>
       </div>
 
       <div className="w-[13%] flex items-center">
-        <span className="text-sm text-sofia-superDark">
+        <span className="text-sm font-normal text-sofia-superDark">
           {lastLogin ? formatDate(lastLogin) : "Nunca"}
         </span>
       </div>
