@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { FunctionTemplate } from "@interfaces/template.interface";
-import ConfigPanel from "@components/ConfigPanel";
 import Modal from "@components/Modal";
 import {
   useTemplateData,
@@ -58,50 +57,52 @@ const FunctionTemplateModal: React.FC<FunctionTemplateModalProps> = ({
 
   if (!isOpen) return null;
 
-  const title = `${initialData ? "Editar" : "Crear"} Template de Función`;
   const handleFormSubmit = handleSubmit(processSubmit);
-
-  // Preparar el contenido del modal
-  const modalContent = (
-    <div className="w-full">
-      <ConfigPanel
-        tabs={tabs}
-        activeTab={activeTab}
-        onTabChange={setActiveTab}
-        actions={
-          <ActionButtons
-            isFirstTab={isFirstTab}
-            isLastTab={isLastTab}
-            goToPreviousTab={goToPreviousTab}
-            goToNextTab={goToNextTab}
-            onSubmit={handleFormSubmit}
-          />
-        }
-      >
-        <div className="w-full max-w-md mx-auto">
-          <TabContent
-            activeTab={activeTab}
-            register={register}
-            control={control}
-            categoryOptions={categoryOptions}
-            applicationOptions={applicationOptions}
-          />
-        </div>
-      </ConfigPanel>
-    </div>
-  );
-
-  // Preparar el header del modal
-  const modalHeader = <div>{title}</div>;
 
   return (
     <Modal
       isShown={isOpen}
       onClose={onClose}
-      header={modalHeader}
       zindex={1000}
     >
-      {modalContent}
+      <div className="w-[1180px] h-[719px] bg-sofia-blancoPuro shadow-lg rounded">
+        <div className="flex flex-col h-full">
+          <div className="flex pt-2">
+            <div className="w-[200px] relative px-3">
+              <div className="absolute right-0 top-0 bottom-0 w-[1px] bg-[#DBEAF2]" />
+              {tabs.map(tab => (
+                <div
+                  key={tab.id}
+                  className={`py-2 px-3 mb-2 cursor-pointer rounded ${activeTab === tab.id ? 'bg-sofia-superDark font-normal text-white' : 'hover:bg-sofia-electricGreen-100'}`}
+                  onClick={() => setActiveTab(tab.id)}
+                >
+                  {tab.label}
+                </div>
+              ))}
+            </div>
+            <div className="flex-1 px-4 max-h-[500px]">
+              <div className="w-full">
+                <TabContent
+                  activeTab={activeTab}
+                  register={register}
+                  control={control}
+                  categoryOptions={categoryOptions}
+                  applicationOptions={applicationOptions}
+                />
+              </div>
+            </div>
+          </div>
+          <div className="flex justify-end gap-2 pr-[24px] pb-[24px] mt-auto">
+            <ActionButtons
+              isFirstTab={isFirstTab}
+              isLastTab={isLastTab}
+              goToPreviousTab={goToPreviousTab}
+              goToNextTab={goToNextTab}
+              onSubmit={handleFormSubmit}
+            />
+          </div>
+        </div>
+      </div>
     </Modal>
   );
 };
