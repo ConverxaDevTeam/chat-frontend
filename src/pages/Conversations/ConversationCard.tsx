@@ -156,7 +156,7 @@ const ConversationCard = ({
           {lastMessage.type === MessageType.AGENT ? "Respondido" : "Pendiente"}
         </p>
       </div>
-      <div className="hidden md:block w-[calc(100%/19*2)]">
+      <div className="hidden md:block w-[calc(100%/19*2)] pr-[16px]">
         <p className="text-sofia-superDark text-[14px]">
           {convertISOToReadable(conversation.created_at, false)}
         </p>
