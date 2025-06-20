@@ -3,6 +3,7 @@ import ItemSidebar from "./ItemSidebar";
 import UserProfile from "./UserProfile";
 import OrganizationHeaderItem from "./OrganizationHeaderItem";
 import { useDispatch, useSelector } from "react-redux";
+import InfoTooltip from "@components/common/InfoTooltip";
 import { sidebarAdminLinks, sidebarLinks } from "@utils/lists";
 import { logOutAsync } from "@store/actions/auth";
 import { OrganizationRoleType } from "@utils/interfaces";
@@ -92,7 +93,7 @@ const Sidebar = ({
             )}
           </div>
           <div
-            className="w-full border-b border-gray-200 mb-3 -ml-8 relative"
+            className="w-full border-b border-sofia-darkBlue mb-3 -ml-8 relative"
             style={{ width: "calc(100% + 3rem)" }}
           ></div>
           <ul className="flex flex-col w-full gap-[15px]">
@@ -155,28 +156,14 @@ const Sidebar = ({
               className={`mt-[18px] mb-[18px] flex h-[35px] items-center gap-[8px] ${sidebarMinimized || mobileResolution ? "w-full justify-center" : "w-full pl-[12px]"}`}
             >
               {sidebarMinimized || mobileResolution ? (
-                <div className="group relative flex justify-center items-center">
-                  <img
-                    className="w-6 h-6 fill-current cursor-pointer"
-                    src="/mvp/exit.svg"
+                <div className="flex justify-center items-center">
+                  <InfoTooltip 
+                    text="Cerrar sesión"
+                    position="right"
+                    width="90px"
+                    iconSrc="/mvp/exit.svg"
                     onClick={handleLogoutClick}
-                    alt="Cerrar sesión"
                   />
-                  <div
-                    className={`
-                      absolute z-[9999] left-full group-hover:flex hidden
-                      bg-[#F6F6F6] border border-[#001126] text-[#001126] text-[12px] px-2 py-1.5 rounded
-                      font-[400] whitespace-nowrap tracking-[0.17px] leading-[143%] text-left
-                      shadow-md items-center
-                    `}
-                    style={{
-                      marginLeft: "10px",
-                      top: "50%",
-                      transform: "translateY(-50%)",
-                    }}
-                  >
-                    Cerrar sesión
-                  </div>
                 </div>
               ) : (
                 <>

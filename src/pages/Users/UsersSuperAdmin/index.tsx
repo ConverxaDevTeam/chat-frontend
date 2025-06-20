@@ -32,7 +32,8 @@ const columns: Column[] = [
   { key: "actions", label: "Acciones" },
 ];
 
-const ITEMS_PER_PAGE = 10;
+const ITEMS_PER_PAGE_OPTIONS = [5, 10, 20, 50];
+const DEFAULT_ITEMS_PER_PAGE = 10;
 
 const UserRow = ({
   user,
@@ -164,9 +165,12 @@ const UsersSuperAdmin = () => {
   const {
     currentPage,
     totalPages,
+    totalItems,
+    itemsPerPage,
     paginatedItems: currentUsers,
     goToPage,
-  } = usePagination(filteredUsers, ITEMS_PER_PAGE);
+    handleChangeItemsPerPage,
+  } = usePagination(filteredUsers, DEFAULT_ITEMS_PER_PAGE);
 
   useEffect(() => {
     goToPage(1);
@@ -285,6 +289,10 @@ const UsersSuperAdmin = () => {
                   currentPage={currentPage}
                   totalPages={totalPages}
                   goToPage={goToPage}
+                  totalItems={totalItems}
+                  itemsPerPage={itemsPerPage}
+                  onChangeItemsPerPage={handleChangeItemsPerPage}
+                  rowsPerPageOptions={ITEMS_PER_PAGE_OPTIONS}
                 />
               </>
             )}
