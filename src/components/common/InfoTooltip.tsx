@@ -21,9 +21,17 @@ const ensureTooltipRoot = (): HTMLElement => {
     tooltipRoot = document.createElement("div");
     tooltipRoot.id = "tooltip-root";
     tooltipRoot.className = "tooltip-root";
+    tooltipRoot.style.position = "fixed";
+    tooltipRoot.style.top = "0";
+    tooltipRoot.style.left = "0";
+    tooltipRoot.style.width = "100%";
+    tooltipRoot.style.height = "100%";
+    tooltipRoot.style.pointerEvents = "none";
+    tooltipRoot.style.zIndex = "9999";
     document.body.appendChild(tooltipRoot);
   } else {
     tooltipRoot.className = "tooltip-root";
+    tooltipRoot.style.zIndex = "9999";
   }
   
   return tooltipRoot;
@@ -94,6 +102,7 @@ const InfoTooltip: React.FC<InfoTooltipProps> = ({
       position: "fixed",
       pointerEvents: "auto",
       width,
+      zIndex: 9999,
     };
     
     switch (position) {
@@ -136,7 +145,7 @@ const InfoTooltip: React.FC<InfoTooltipProps> = ({
       {isHovered && tooltipRoot && createPortal(
         <div
           className="bg-[#F6F6F6] border border-[#001126] text-[#001126] text-[12px] px-2 py-1.5 rounded
-                    font-[400] whitespace-normal tracking-[0.17px] leading-[143%] text-left"
+                    font-[400] whitespace-normal tracking-[0.17px] leading-[143%] text-left z-[9999]"
           style={getPositionStyles()}
         >
           {text}
