@@ -108,10 +108,14 @@ const renderContent = (
       )}
       {message.text && (
         <div className={`text-[14px] font-normal`} style={{ color: textColor }}>
-          {message.audio && <span className="font-normal">Transcripcion: </span>}
+          {message.audio && (
+            <span className="font-normal">Transcripcion: </span>
+          )}
           <ReactMarkdown
             components={{
-              p: ({ ...props }) => <p className="mb-2 last:mb-0 font-normal" {...props} />,
+              p: ({ ...props }) => (
+                <p className="mb-2 last:mb-0 font-normal" {...props} />
+              ),
               a: ({ ...props }) => (
                 <a className="text-blue-500 hover:underline" {...props} />
               ),
@@ -134,10 +138,7 @@ const renderContent = (
   );
 };
 
-const MessageCard = ({
-  message,
-  config = defaultConfig,
-}: MessageCardProps) => {
+const MessageCard = ({ message, config = defaultConfig }: MessageCardProps) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState("");
 
@@ -149,8 +150,7 @@ const MessageCard = ({
     const textColor = getContrastingTextColor(config.bg_assistant);
     return (
       <MessageContainer align="start">
-        <div className="flex flex-col gap-1">
-        </div>
+        <div className="flex flex-col gap-1"></div>
         <div className="flex flex-col items-start gap-1">
           <MessageHeader message={message} config={config} />
           <div

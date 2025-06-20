@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { deleteGlobalUser, getGlobalUsers } from "@services/user";
+import RoleBadge from "@components/RoleBadge";
 import Table from "@components/Card/Table";
 import TableHeader from "@components/Card/TableHeader";
 import TableBody from "@components/Card/TableBody";
@@ -31,7 +32,8 @@ const columns: Column[] = [
   { key: "actions", label: "Acciones" },
 ];
 
-const ITEMS_PER_PAGE = 10;
+const ITEMS_PER_PAGE_OPTIONS = [5, 10, 20, 50];
+const DEFAULT_ITEMS_PER_PAGE = 10;
 
 const UserRow = ({
   user,
@@ -69,7 +71,6 @@ const UserRow = ({
     .join(", ");
 
   const uniqueRoles = [...new Set(user.userOrganizations.map(org => org.role))];
-  const rolesString = uniqueRoles.join(", ");
 
   return (
     <>
@@ -100,7 +101,13 @@ const UserRow = ({
         <td className="px-4 py-2">{user.first_name || "-"}</td>
         <td className="px-4 py-2">{user.last_name || "-"}</td>
         <td className="px-4 py-2">{organizationNames || "-"}</td>
-        <td className="px-4 py-2">{rolesString}</td>
+        <td className="px-4 py-2">
+          <div className="flex flex-wrap gap-1">
+            {uniqueRoles.map((role, index) => (
+              <RoleBadge key={index} role={role} />
+            ))}
+          </div>
+        </td>
         <td className="px-4 py-2">
           <span
             className={`px-2 py-1 rounded-full text-xs ${
@@ -158,9 +165,12 @@ const UsersSuperAdmin = () => {
   const {
     currentPage,
     totalPages,
+    totalItems,
+    itemsPerPage,
     paginatedItems: currentUsers,
     goToPage,
-  } = usePagination(filteredUsers, ITEMS_PER_PAGE);
+    handleChangeItemsPerPage,
+  } = usePagination(filteredUsers, DEFAULT_ITEMS_PER_PAGE);
 
   useEffect(() => {
     goToPage(1);
@@ -230,7 +240,7 @@ const UsersSuperAdmin = () => {
           <button
             type="button"
             onClick={() => setIsCreateModalOpen(true)}
-            className="flex items-center justify-center gap-1 px-4 w-[190px] h-[41px] text-white rounded-lg leading-[24px] bg-[#001130] hover:bg-opacity-90"
+            className="flex items-center justify-center gap-1 px-4 w-[190px] h-[41px] text-white rounded leading-[24px] bg-[#001130] hover:bg-opacity-90"
             aria-label="Crear nuevo usuario"
           >
             + Nuevo usuario
@@ -260,7 +270,7 @@ const UsersSuperAdmin = () => {
               </div>
             ) : (
               <>
-                <div className="rounded-lg overflow-hidden">
+                <div className="rounded overflow-hidden">
                   <Table>
                     <TableHeader columns={columns} />
                     <TableBody>
@@ -279,6 +289,10 @@ const UsersSuperAdmin = () => {
                   currentPage={currentPage}
                   totalPages={totalPages}
                   goToPage={goToPage}
+                  totalItems={totalItems}
+                  itemsPerPage={itemsPerPage}
+                  onChangeItemsPerPage={handleChangeItemsPerPage}
+                  rowsPerPageOptions={ITEMS_PER_PAGE_OPTIONS}
                 />
               </>
             )}

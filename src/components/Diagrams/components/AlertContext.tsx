@@ -29,6 +29,7 @@ interface AlertContextType {
       successText: string;
       errorTitle: string;
       loadingTitle?: string;
+      showSuccess?: boolean;
     }
   ) => Promise<{ success: boolean; data?: T; error?: unknown }>;
   showConfirmation: (options: {

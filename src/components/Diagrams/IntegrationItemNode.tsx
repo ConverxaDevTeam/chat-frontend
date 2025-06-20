@@ -10,6 +10,7 @@ import { deleteIntegrationbyId } from "@services/integration";
 import MessengerManualIntegration from "@pages/Workspace/components/MessengerManualIntegration";
 import WhatsAppManualIntegration from "@pages/Workspace/components/WhatsAppManualIntegration";
 import { ContextMenuOption } from "./DiagramContextMenu";
+import { useCounter } from "@hooks/CounterContext";
 
 interface IntegrationItemProps extends CustomTypeNodeProps<NodeData> {
   data: NodeData & {
@@ -42,11 +43,14 @@ const getIntegrationName = (type: IntegrationType) => {
 };
 
 const useIntegrationActions = (data: NodeData) => {
+  const { increment } = useCounter();
+
   const handleDeleteIntegration = async () => {
     if (!data.id) return false;
     const response = await deleteIntegrationbyId(data.id);
     if (response) {
-      window.location.reload();
+      // Use the counter context to trigger a diagram update instead of page reload
+      increment();
       return true;
     }
     return false;
@@ -112,7 +116,7 @@ export const contextMenuOptions = ({
     choices.push({
       child: <img src="/mvp/trash.svg" alt="Remove" />,
       onClick: () => setIsRemoveModalOpen(true),
-      tooltip: "Eliminar integración",
+      tooltip: "Eliminar canal ",
     });
   }
   return choices;
@@ -161,8 +165,8 @@ const IntegrationItemNode = memo((props: IntegrationItemProps) => {
       <AddWebchat isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
       <ConfirmationModal
         isShown={isRemoveModalOpen}
-        title="Eliminar integración"
-        text="¿Estás seguro de que deseas eliminar esta integración?"
+        title="Eliminar canal"
+        text="¿Estás seguro de que deseas eliminar este canal?"
         onConfirm={async () => {
           const success = await handleDeleteIntegration();
           if (success) {

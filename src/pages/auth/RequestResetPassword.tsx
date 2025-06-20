@@ -34,10 +34,14 @@ export const RequestResetPassword = () => {
   };
 
   return (
-    <div className="flex flex-col w-full h-full bg-sofia-background">
-      <div className="flex flex-col w-[446px] bg-custom-gradient p-[12px] rounded-2xl border-[1px] border-[#B8CCE0] border-inherit m-auto">
-        <div className="bg-[#F1F5F9] rounded-lg px-[32px] pt-[53px] pb-[40px] [box-shadow:0px_4px_8px_0px_rgba(201,_217,_232,_0.8)]">
-          <img className="mx-auto mb-[48px]" src="/mvp/logo.png" alt="logo" />
+    <div className="flex flex-col w-full h-full bg-white">
+      <div className="flex flex-col w-[446px] p-[12px] rounded border border-[#B8CCE0] border-inherit m-auto">
+        <div className="bg-white px-[32px] pt-[53px] pb-[40px]">
+          <img
+            className="mx-auto mb-[48px] h-[34px]"
+            src="/mvp/logo.png"
+            alt="logo"
+          />
           <h2 className="font-semibold text-[30px] text-sofia-superDark mb-[16px] text-center">
             Restablecer contraseña
           </h2>
@@ -61,7 +65,7 @@ export const RequestResetPassword = () => {
             </InputGroup>
 
             <button
-              className="w-full rounded-[8px] py-[10px] bg-sofia-electricGreen text-sofia-superDark text-[16px] font-semibold mb-[24px] mt-4 disabled:bg-app-lightGray"
+              className="w-full rounded py-[10px] bg-sofia-electricGreen text-sofia-superDark text-[16px] font-semibold mb-[24px] mt-4 disabled:bg-app-lightGray"
               type="submit"
               disabled={isLoading}
             >

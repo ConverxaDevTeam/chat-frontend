@@ -1,126 +1,153 @@
-# Arquitectura Sofia Chat Frontend v2
+# Arquitectura del Proyecto - Sofia Chat Frontend V2
 
-## Visión General del Proyecto
+## Estructura General
 
-Sistema de chat multi-tenant con gestión de organizaciones, departamentos y agentes de IA. Frontend desarrollado en React + TypeScript con Vite, Redux Toolkit para estado global y Tailwind CSS para estilos.
+### Directorios Principales
 
-## Estructura Principal
+#### `/src/components`
+- **Responsabilidad**: Componentes reutilizables de UI
+- **Subcarpetas**:
+  - `common/`: Componentes básicos (Button, Input, Modal)
+  - `forms/`: Componentes específicos de formularios
+  - `Diagrams/`: Sistema de diagramas y nodos (workflow visual)
+  - `ChatWindow/`: Componentes del chat principal
 
-### Directorios Raíz
+#### `/src/pages`
+- **Responsabilidad**: Páginas principales de la aplicación
+- **Componentes**: Dashboard, Conversations, LogIn, SignUp, Organizations
 
-- **`/src`** - Código fuente de la aplicación
-- **`/public`** - Archivos estáticos (imágenes, iconos, manifests)
-- **`/docu`** - Documentación técnica y de arquitectura
-- **`/dist`** - Build de producción (generado)
-- **`/node_modules`** - Dependencias (generado)
+#### `/src/hooks`
+- **Responsabilidad**: Lógica reutilizable y estado compartido
+- **Patrones**: Custom hooks para casos de uso específicos
 
-## Arquitectura del Código Fuente (`/src`)
+#### `/src/services`
+- **Responsabilidad**: Comunicación con APIs externas
+- **Patrón**: Un servicio por entidad de negocio
 
-### **`/components`** - Componentes Reutilizables
-- **Responsabilidad**: UI components sin lógica de negocio
-- **Organización**: Por funcionalidad (Card, Forms, Icons, etc.)
-- **Tamaño máximo**: 30 líneas por componente
-- **Patrón**: Componentes funcionales con hooks
+#### `/src/interfaces`
+- **Responsabilidad**: Definiciones de tipos TypeScript
+- **Organización**: Por funcionalidad o entidad
 
-### **`/pages`** - Páginas y Vistas
-- **Responsabilidad**: Contenedores de alto nivel con lógica de negocio
-- **Organización**: Por funcionalidad/módulo del sistema
-- **Estructura**: Una carpeta por página con componentes específicos
-- **Conexión**: Redux para estado global, hooks para lógica local
+#### `/src/store`
+- **Responsabilidad**: Estado global de la aplicación
+- **Tecnología**: Redux Toolkit
 
-### **`/services`** - Capa de Datos
-- **Responsabilidad**: Comunicación con APIs y manejo de datos
-- **Patrón**: Un archivo por dominio de negocio
-- **Manejo de errores**: Centralizado con alertas automáticas
-- **Instancia HTTP**: Axios con interceptores de autenticación
+#### `/src/utils`
+- **Responsabilidad**: Funciones utilitarias puras
 
-### **`/store`** - Estado Global (Redux Toolkit)
-- **`/reducers`** - Slices de estado por dominio
-- **`/actions`** - Actions síncronas y asíncronas
-- **Dominios**: auth, chat, conversations, department, notifications
+## Patrones de Arquitectura
 
-### **`/hooks`** - Lógica Reutilizable
-- **Responsabilidad**: Custom hooks para casos de uso específicos
-- **Patrón**: Un hook por responsabilidad, sin anidamiento
-- **Inyección de dependencias**: Vía props, no hooks dentro de hooks
+### 1. Composición de Componentes
+- Componentes pequeños (< 500 líneas)
+- Un componente por responsabilidad
+- Programación funcional prioritaria
 
-### **`/utils`** - Utilidades y Helpers
-- **`/interfaces`** - Tipado TypeScript
-- **Funciones puras**: Sin efectos secundarios
-- **Validaciones**: Schemas y helpers de validación
+### 2. Inyección de Dependencias
+- Props para comunicación entre componentes
+- Hooks personalizados para lógica compartida
+- Context API para estado global específico
 
-### **`/config`** - Configuración
-- **URLs de API**: Centralizadas con tipado estricto
-- **Variables de entorno**: Configuración por ambiente
-- **Tokens**: Configuración de autenticación
+### 3. Casos de Uso
+- Un hook por caso de uso
+- Separación clara entre lógica de negocio y UI
+- No anidar casos de uso entre sí
 
-## Patrones Arquitectónicos
+### 4. Gestión de Estado
+- **Local**: useState, useReducer
+- **Compartido**: Context API (ej: AlertContext)
+- **Global**: Redux Store
+- **Servidor**: React Query patterns
 
-### **Flujo de Datos**
+## Flujos Principales
+
+### Sistema de Modales
+```mermaid
+graph LR
+    A[useSweetAlert] --> B[AlertContext]
+    B --> C[OperationModal]
+    B --> D[ConfirmationModal]
 ```
-UI Component → Hook (caso de uso) → Service → API → Redux Store → UI Update
+
+### Gestión de Funciones
+```mermaid
+graph LR
+    A[FunctionEditModal] --> B[FunctionForm]
+    B --> C[useFunctionActions]
+    C --> D[functionsService]
 ```
 
-### **Gestión de Estado**
-- **Local**: useState, useEffect para componentes
-- **Global**: Redux Toolkit para estado compartido
-- **Casos de uso**: Custom hooks para lógica de negocio
-
-### **Comunicación con API**
-- **Interceptores**: Manejo automático de tokens y errores
-- **Tipado**: Interfaces TypeScript para requests/responses
-- **Error handling**: Alertas centralizadas con SweetAlert2
-
-### **Enrutamiento**
-- **React Router v6**: Navegación declarativa
-- **Rutas protegidas**: HOCs para autenticación y autorización
-- **Lazy loading**: Componentes cargados bajo demanda
-
-## Tecnologías y Librerías Clave
-
-### **Core Framework**
-- React 18 + TypeScript
-- Vite (build tool y dev server)
-- React Router v6
-
-### **Estado y Datos**
-- Redux Toolkit (estado global)
-- Axios (HTTP client)
-- React Hook Form (formularios)
-
-### **UI y Estilos**
-- Tailwind CSS (utility-first)
-- React Icons
-- SweetAlert2 (modales y alertas)
-
-### **Tiempo Real**
-- Socket.io-client (WebSockets)
-- React Query para cache (en evaluación)
-
-### **Utilidades**
-- date-fns (manejo de fechas)
-- JWT Decode (tokens)
-- Yup (validación de schemas)
+### Autenticación
+```mermaid
+graph LR
+    A[AuthPages] --> B[authService]
+    B --> C[Redux Store]
+    C --> D[ProtectedAuth]
+```
 
 ## Convenciones de Código
 
-### **Nomenclatura**
-- Componentes: PascalCase
-- Hooks: camelCase con prefijo 'use'
-- Services: camelCase con sufijo 'Service'
-- Constantes: SCREAMING_SNAKE_CASE
+### Naming
+- **Enums**: En lugar de union types de strings
+- **Interfaces**: Reflejan estructura de APIs
+- **Hooks**: Prefijo `use` + descripción del caso de uso
 
-### **Imports**
-- Alias paths configurados (@components, @utils, @services, etc.)
-- Imports ordenados: externos → internos → relativos
-- Exports nombrados preferidos sobre default
+### Tipado
+- **Estricto**: Evitar `any` a toda costa
+- **Interfaces**: Para estructuras de datos
+- **Types**: Para unions y utilitarios
 
-### **Tipado**
-- Interfaces para objetos de datos
-- Enums para valores constantes (no strings literales)
-- Tipado estricto, evitar 'any' completamente
+### Estructura de Archivos
+- **Exportaciones**: Solo lo necesario
+- **Importaciones**: Específicas, no globales
+- **Organización**: Un archivo por responsabilidad
 
-### **Arquitectura de Archivos**
-- Máximo 500 líneas por archivo
-- Un caso de uso por hook
+## Reglas de Desarrollo
+
+### Flujo Lineal
+- Un flujo principal por funcionalidad
+- Casos secundarios se inyectan como props
+- Evitar anidación profunda de lógica
+
+### Manejo de Errores
+- Formateo centralizado en `useSweetAlert`
+- Tipos específicos para errores de API
+- Feedback visual consistente
+
+### Performance
+- Lazy loading para componentes grandes
+- Memoization cuando sea necesario
+- Evitar queries anidadas en ciclos
+
+## Dependencias Clave
+
+### UI Framework
+- **React 18**: Hooks, Concurrent Features
+- **TypeScript**: Tipado estricto
+- **Tailwind CSS**: Utility-first styling
+
+### Estado y Datos
+- **Redux Toolkit**: Estado global
+- **React Hook Form**: Formularios
+- **Axios**: HTTP client
+
+### Utilidades
+- **Lottie**: Animaciones
+- **React Router**: Navegación
+- **Socket.io**: WebSocket connections
+
+## Consideraciones de Arquitectura
+
+### Escalabilidad
+- Estructura modular permite crecimiento
 - Separación clara de responsabilidades
+- Patrones consistentes en todo el proyecto
+
+### Mantenibilidad
+- Documentación como reflejo del código
+- Tests unitarios para casos de uso críticos
+- Code review para mantener estándares
+
+### Performance
+- Bundle splitting por rutas
+- Optimización de re-renders
+- Caching inteligente de datos

@@ -283,10 +283,19 @@ const createInitialNodes = (
   }
 
   const integrationsList = agentState?.integrations || [];
-  const defaultIntegrations =
-    integrationsList.filter(
-      integration => integration.type === IntegrationType.CHAT_WEB
-    ).length === 0
+
+  // Verificamos si ya existe una integración WebChat con un ID válido (no -1)
+  const hasValidWebChat = integrationsList.some(
+    integration =>
+      integration.type === IntegrationType.CHAT_WEB && integration.id > 0
+  );
+
+  // Solo agregamos la integración WebChat por defecto si no existe ninguna o si solo existe con ID -1
+  const defaultIntegrations = hasValidWebChat
+    ? [...integrationsList]
+    : integrationsList.filter(
+          integration => integration.type === IntegrationType.CHAT_WEB
+        ).length === 0
       ? [{ id: -1, type: IntegrationType.CHAT_WEB }, ...integrationsList]
       : [...integrationsList];
 
@@ -385,7 +394,7 @@ const DiagramFlow = ({
         type: "default",
       }}
       style={{
-        backgroundImage: "radial-gradient(#DEDEDE 0.6px, transparent 0.8px)",
+        backgroundImage: "radial-gradient(#DEDEDE 0.6px, transparent 0.9px)",
         backgroundSize: "10px 10px",
       }}
       fitView

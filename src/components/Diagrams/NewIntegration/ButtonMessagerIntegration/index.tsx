@@ -9,6 +9,7 @@ import { useState } from "react";
 import Modal from "@components/Modal";
 import Loading from "@components/Loading";
 import { createIntegrationMessagerManual } from "@services/integration";
+import { ensureFBSDKLoaded } from "@utils/facebook-init";
 
 interface ButtonMessagerIntegrationProps {
   getDataIntegrations: () => void;
@@ -43,32 +44,49 @@ const ButtonMessagerIntegration = ({
 
   const handleConnectFacebook = async () => {
     setLoading(true);
-    FB.login(
-      response => {
-        if (response.authResponse && response.authResponse.code) {
-          setOpenModal(true);
-          const code = response.authResponse.code;
-          if (departmentId && selectOrganizationId) {
-            getPagesFacebook(departmentId, selectOrganizationId, code).then(
-              response => {
-                setPages(response);
-                setLoading(false);
-              }
-            );
+    try {
+      // Obtener el objeto FB inicializado
+      const FB = await ensureFBSDKLoaded();
+
+      // Usar el objeto FB devuelto directamente
+      FB.login(
+        response => {
+          // Respuesta recibida de la integración de Messenger
+          if (response.authResponse && response.authResponse.code) {
+            const code = response.authResponse.code;
+            setOpenModal(true);
+            if (departmentId && selectOrganizationId) {
+              getPagesFacebook(departmentId, selectOrganizationId, code)
+                .then(response => {
+                  setPages(response);
+                  setLoading(false);
+                })
+                .catch(error => {
+                  console.error("Error al obtener páginas de Facebook:", error);
+                  setLoading(false);
+                });
+            } else {
+              setLoading(false);
+            }
+          } else {
+            setLoading(false);
           }
-        }
-      },
-      {
-        config_id: "967210214990389",
-        response_type: "code",
-        override_default_response_type: true,
-        extras: {
-          setup: {},
-          featureType: "",
-          sessionInfoVersion: "3",
         },
-      }
-    );
+        {
+          config_id: import.meta.env.VITE_FB_CONFIG_ID,
+          response_type: "code",
+          override_default_response_type: true,
+          extras: {
+            setup: {},
+            featureType: "",
+            sessionInfoVersion: "3",
+          },
+        }
+      );
+    } catch (error) {
+      console.error("Error in Facebook login process:", error);
+      setLoading(false);
+    }
     setMenuIntegracion(false);
   };
 

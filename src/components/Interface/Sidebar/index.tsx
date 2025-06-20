@@ -3,6 +3,7 @@ import ItemSidebar from "./ItemSidebar";
 import UserProfile from "./UserProfile";
 import OrganizationHeaderItem from "./OrganizationHeaderItem";
 import { useDispatch, useSelector } from "react-redux";
+import InfoTooltip from "@components/common/InfoTooltip";
 import { sidebarAdminLinks, sidebarLinks } from "@utils/lists";
 import { logOutAsync } from "@store/actions/auth";
 import { OrganizationRoleType } from "@utils/interfaces";
@@ -47,24 +48,30 @@ const Sidebar = ({
 
   return (
     <div
-      className={`transition-all duration-150 ease-in-out flex flex-col ${mobileResolution ? "" : ""} pr-[0px] ${sidebarMinimized || mobileResolution ? `${mobileResolution ? "w-[80px]" : "w-[100px]"}` : "w-[280px]"}`}
+      className={`transition-all duration-150 ease-in-out flex flex-col ${mobileResolution ? "" : ""}${sidebarMinimized || mobileResolution ? `${mobileResolution ? "w-[80px]" : "w-[80px]"}` : "w-[260px]"}`}
     >
       <div
-        style={{
-          height: "100vh",
-        }}
-        className={`fixed bg-[#F8F9FA] border border-gray-200 rounded-b-[4px] ${sidebarMinimized || mobileResolution ? `w-[80px]` : "w-[260px]"}`}
+        className={`fixed top-0 bottom-0 bg-white border-r border-sofia-darkBlue rounded-b-[4px] ${sidebarMinimized || mobileResolution ? `w-[80px]` : "w-[260px]"}`}
+        style={{ top: "var(--banner-height, 0px)" }}
       >
         <div className="flex flex-col w-full h-full relative px-4">
           {!mobileResolution && (
-            <div 
+            <div
               className="absolute -right-4 top-1/2 transform -translate-y-1/2 cursor-pointer rounded-full p-1"
               onClick={() => setSidebarMinimized(!sidebarMinimized)}
             >
               {sidebarMinimized ? (
-                <img src="/mvp/double-chevron-right.svg" alt="Expandir sidebar" className="w-6 h-6" />
+                <img
+                  src="/mvp/double-chevron-right.svg"
+                  alt="Expandir sidebar"
+                  className="w-6 h-6"
+                />
               ) : (
-                <img src="/mvp/double-chevron-left.svg" alt="Minimizar sidebar" className="w-6 h-6" />
+                <img
+                  src="/mvp/double-chevron-left.svg"
+                  alt="Minimizar sidebar"
+                  className="w-6 h-6"
+                />
               )}
             </div>
           )}
@@ -85,79 +92,78 @@ const Sidebar = ({
               />
             )}
           </div>
-          <div className="w-full border-b border-gray-200 mb-3"></div>
+          <div
+            className="w-full border-b border-sofia-darkBlue mb-3 -ml-8 relative"
+            style={{ width: "calc(100% + 3rem)" }}
+          ></div>
           <ul className="flex flex-col w-full gap-[15px]">
             {!sidebarMinimized && !mobileResolution && (
-              <OrganizationHeaderItem 
-                organizationName={myOrganizations.find(org => org.organization?.id === selectOrganizationId)?.organization?.name || "Organización"}
+              <OrganizationHeaderItem
+                organizationName={
+                  myOrganizations.find(
+                    org => org.organization?.id === selectOrganizationId
+                  )?.organization?.name || "Organización"
+                }
                 sidebarMinimized={sidebarMinimized}
                 mobileResolution={mobileResolution}
               />
             )}
             {(selectOrganizationId === null && useSidebarAdmin) ||
-              (selectOrganizationId === 0 && useSidebarAdmin)
+            (selectOrganizationId === 0 && useSidebarAdmin)
               ? userSidebarAdminLinks.map((link, index) => {
-                return (
-                  <ItemSidebar
-                    key={`${link.text}-${index}`}
-                    link={link}
-                    sidebarMinimized={sidebarMinimized}
-                    mobileResolution={mobileResolution}
-                  />
-                );
-              })
+                  return (
+                    <ItemSidebar
+                      key={`${link.text}-${index}`}
+                      link={link}
+                      sidebarMinimized={sidebarMinimized}
+                      mobileResolution={mobileResolution}
+                    />
+                  );
+                })
               : sidebarLinks.map((link, index) => {
-                return (
-                  <ItemSidebar
-                    key={`${link.text}-${index}`}
-                    link={link}
-                    role={link.role || []}
-                    sidebarMinimized={sidebarMinimized}
-                    mobileResolution={mobileResolution}
-                  />
-                );
-              })}
+                  return (
+                    <ItemSidebar
+                      key={`${link.text}-${index}`}
+                      link={link}
+                      role={link.role || []}
+                      sidebarMinimized={sidebarMinimized}
+                      mobileResolution={mobileResolution}
+                    />
+                  );
+                })}
           </ul>
-          <div className="mt-auto">
+          <div className="mt-auto flex-shrink-0 flex flex-col">
             {!(sidebarMinimized || mobileResolution) && (
-              <div className="mx-auto bg-[#343E4F] w-[193px] h-[141px] rounded-[4px] p-[16px] gap-[16px] flex flex-col ">
-                <p className="text-white text-[16px]">
+              <div 
+                className="mx-auto bg-[#343E4F] w-full max-w-[193px] rounded-[4px] p-[12px] gap-[8px] flex flex-col flex-shrink-0 mt-2"
+                style={{ 
+                  height: 'auto',
+                  transform: 'scale(0.95)'
+                }}
+              >
+                <p className="text-white text-[14px]">
                   ¿Necesitas ayuda? Visita nuestro centro de soporte
                 </p>
-                <button
-                  type="button"
-                  className="text-[12px] text-sofia-navyBlue bg-white border-sofia-navyBlue border-[1px] py-[4px] px-[8px] rounded-[4px]"
+                <a
+                  href="mailto:gio@pixeldigita.com"
+                  className="flex justify-center items-center text-[12px] text-sofia-navyBlue bg-white border-sofia-navyBlue border-[0.5px] py-[4px] px-[8px] rounded-[4px] mt-1"
                 >
                   Ir ahora
-                </button>
+                </a>
               </div>
             )}
             <div
               className={`mt-[18px] mb-[18px] flex h-[35px] items-center gap-[8px] ${sidebarMinimized || mobileResolution ? "w-full justify-center" : "w-full pl-[12px]"}`}
             >
-              {(sidebarMinimized || mobileResolution) ? (
-                <div className="group relative flex justify-center items-center">
-                  <img
-                    className="w-6 h-6 fill-current cursor-pointer"
-                    src="/mvp/exit.svg"
+              {sidebarMinimized || mobileResolution ? (
+                <div className="flex justify-center items-center">
+                  <InfoTooltip 
+                    text="Cerrar sesión"
+                    position="right"
+                    width="90px"
+                    iconSrc="/mvp/exit.svg"
                     onClick={handleLogoutClick}
-                    alt="Cerrar sesión"
                   />
-                  <div
-                    className={`
-                      absolute z-[9999] left-full group-hover:flex hidden 
-                      bg-[#F6F6F6] border border-[#001126] text-[#001126] text-[12px] px-2 py-1.5 rounded
-                      font-[400] whitespace-nowrap tracking-[0.17px] leading-[143%] text-left
-                      shadow-md items-center
-                    `}
-                    style={{ 
-                      marginLeft: '10px',
-                      top: '50%',
-                      transform: 'translateY(-50%)'
-                    }}
-                  >
-                    Cerrar sesión
-                  </div>
                 </div>
               ) : (
                 <>
@@ -176,9 +182,9 @@ const Sidebar = ({
                 </>
               )}
             </div>
-            <UserProfile 
-              sidebarMinimized={sidebarMinimized} 
-              mobileResolution={mobileResolution} 
+            <UserProfile
+              sidebarMinimized={sidebarMinimized}
+              mobileResolution={mobileResolution}
             />
           </div>
         </div>

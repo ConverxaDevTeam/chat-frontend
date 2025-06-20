@@ -118,16 +118,16 @@ const OrganizationCard = ({
             >
               <img
                 src="/mvp/sliders-vertical.svg"
-                alt="Set Custom Plan"
+                alt="Cambiar tipo de organización"
                 className="w-4 h-4"
               />
-              <span>Set Custom Plan</span>
+              <span>Cambiar tipo de organización</span>
             </button>
           )}
         </ContextMenu>
       )}
 
-      <tr className="h-[60px] border-b-[1px] border-[#DBEAF2] hover:bg-gray-50">
+      <tr className="h-[60px] border-b-[1px] border-app-lightGray hover:bg-gray-50">
         <td className="py-2.5 px-6">
           <div className="flex items-center gap-3">
             <div className="flex justify-center items-center w-8 h-8 rounded-[4px] before:content-[''] before:absolute before:-z-10 before:inset-0 before:bg-custom-gradient before:rounded-[8px] before:border-[2px] before:border-[#B8CCE0] before:border-inherit before:bg-app-c2 overflow-hidden flex-shrink-0">
