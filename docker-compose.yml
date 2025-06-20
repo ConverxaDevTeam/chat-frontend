@@ -1,7 +1,7 @@
 version: "3.8"
 services:
   sofia-chat-frontend-v2:
-    container_name: sofia-chat-frontend-v2
+    container_name: sofia-chat-frontend-v2-${PORT:-3000}
     build:
       dockerfile: Dockerfile
       context: .
@@ -9,7 +9,7 @@ services:
     env_file:
       - .env
     ports:
-      - "3000:3000"
+      - "${PORT:-3000}:3000"
     networks:
       - sofia_chat_network
 

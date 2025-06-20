@@ -11,7 +11,7 @@ import {
   StatisticsDisplayType,
   TimeRange,
 } from "../../../services/analyticTypes";
-import { Button } from "@components/common/Button";
+import PageContainer from "@components/PageContainer";
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
@@ -162,21 +162,19 @@ const DashboardOrganization = () => {
 
   return (
     <div className="h-full overflow-auto" ref={containerRef}>
-      <Button
-        variant="primary"
-        onClick={handleAddCard}
-        className="w-[161px] h-[40px] flex items-center gap-1 px-4 py-2 bg-[#001130] text-white rounded-lg hover:bg-opacity-90"
+      <PageContainer
+      title="Dashboard"
+      buttonText="+ Crear tarjeta"
+      onButtonClick={handleAddCard}
       >
-        + Crear tarjeta
-      </Button>
       <ResponsiveGridLayout
         className="layout"
         layouts={layouts}
         breakpoints={BREAKPOINTS}
         cols={COLS}
         rowHeight={35}
-        margin={[10, 10]}
-        containerPadding={[10, 10]}
+        margin={[10, 10 ]}
+        containerPadding={[1, 10]}
         isResizable
         isDraggable
         useCSSTransforms
@@ -200,6 +198,7 @@ const DashboardOrganization = () => {
           </div>
         ))}
       </ResponsiveGridLayout>
+      </PageContainer>
     </div>
   );
 };

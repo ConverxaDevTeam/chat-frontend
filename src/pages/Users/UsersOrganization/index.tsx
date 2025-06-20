@@ -1,4 +1,3 @@
-import Loading from "@components/Loading";
 import { useEffect, useState } from "react";
 import UserCard from "./UserCard";
 import {
@@ -10,7 +9,11 @@ import { RootState } from "@store";
 import { OrganizationRoleType } from "@utils/interfaces";
 import Modal from "@components/Modal";
 import ModalAddUser from "./ModalAddUser";
+import ModalChangeRole from "./ModalChangeRole";
+import ConfirmationModal from "@components/ConfirmationModal";
+import { useUserRoleManagement } from "@hooks/useUserRoleManagement";
 import { toast } from "react-toastify";
+import PageContainer from "@components/PageContainer";
 
 export interface IUserApi {
   id: number;
@@ -55,6 +58,18 @@ const UsersOrganization = () => {
     }
   };
 
+  const {
+    isModalOpen: isRoleModalOpen,
+    selectedUser: selectedRoleUser,
+    handleInitiateRoleChange,
+    handleConfirmRoleChange,
+    handleCloseModal: handleCloseRoleModal,
+  } = useUserRoleManagement({
+    userRole: role!,
+    organizationId: selectOrganizationId,
+    onSuccess: getAllUsers,
+  });
+
   const handleDelete = async (user: IUserApi) => {
     if (role !== OrganizationRoleType.OWNER) {
       toast.error("No tienes permisos para realizar esta acción", {
@@ -97,6 +112,10 @@ const UsersOrganization = () => {
     setModalEditUser(true);
   };
 
+  const handleToggleHumanCommunication = (user: IUserApi) => {
+    handleInitiateRoleChange(user);
+  };
+
   useEffect(() => {
     getAllUsers();
   }, []);
@@ -120,20 +139,41 @@ const UsersOrganization = () => {
         />
       </Modal>
 
-      <div className="flex flex-1 flex-col gap-[20px] overflow-auto w-full">
-        {role === OrganizationRoleType.OWNER && (
-          <button
-            type="button"
-            onClick={() => setModalAddUser(true)}
-            className="flex justify-center items-center gap-2 w-[170px] h-[40px] text-white rounded-lg leading-[24px] bg-[#001130] hover:bg-opacity-90"
-          >
-            + Agregar usuario
-          </button>
-        )}
-        {loading ? (
-          <Loading />
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-[20px] 2xl:gap-[24px]">
+      {selectedRoleUser && (
+        <Modal isShown={false} onClose={handleCloseRoleModal}>
+          <ModalChangeRole
+            close={handleCloseRoleModal}
+            handleChangeRole={handleConfirmRoleChange}
+            currentRole={selectedRoleUser.userOrganizations[0]?.role}
+            userEmail={selectedRoleUser.email}
+          />
+        </Modal>
+      )}
+
+      {selectedRoleUser && (
+        <ConfirmationModal
+          isShown={isRoleModalOpen}
+          onClose={handleCloseRoleModal}
+          title="Cambiar comunicación humana"
+          text={`¿Deseas ${selectedRoleUser.userOrganizations[0]?.role === OrganizationRoleType.USER ? 'activar' : 'desactivar'} la comunicación humana para ${selectedRoleUser.email}?`}
+          onConfirm={() => handleConfirmRoleChange(
+            selectedRoleUser.userOrganizations[0]?.role === OrganizationRoleType.USER 
+              ? OrganizationRoleType.HITL 
+              : OrganizationRoleType.USER
+          )}
+          confirmText={selectedRoleUser.userOrganizations[0]?.role === OrganizationRoleType.USER ? 'Activar' : 'Desactivar'}
+          cancelText="Cancelar"
+        />
+      )}
+
+      <PageContainer
+        title="Usuarios"
+        buttonText={role === OrganizationRoleType.OWNER ? "+ Crear usuario" : undefined}
+        onButtonClick={role === OrganizationRoleType.OWNER ? () => setModalAddUser(true) : undefined}
+        loading={loading}
+      >
+        <div className="flex flex-1 flex-col gap-[20px] overflow-auto w-full">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 2xl:grid-cols-4 gap-[16px] 2xl:gap-[16px]">
             {users.map(user => {
               return (
                 <UserCard
@@ -141,12 +181,14 @@ const UsersOrganization = () => {
                   userData={user}
                   onEdit={() => handleEdit(user)}
                   onDelete={() => handleDelete(user)}
+                  humanCommunication={user.userOrganizations[0]?.role === OrganizationRoleType.HITL}
+                  onToggleHumanCommunication={() => handleToggleHumanCommunication(user)}
                 />
               );
             })}
           </div>
-        )}
-      </div>
+        </div>
+      </PageContainer>
     </>
   );
 };

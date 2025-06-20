@@ -7,12 +7,8 @@ import { axiosInstance } from "@store/actions/auth";
 import { apiUrls } from "@config/config";
 import { getMyOrganizationsAsync } from "@store/actions/auth";
 import { OrganizationType } from "@interfaces/organization.interface";
-
-enum SetupStep {
-  ORGANIZATION = "organization",
-  DEPARTMENT = "department",
-  COMPLETE = "complete",
-}
+import EditButton from "@pages/Workspace/components/EditButton";
+import DeleteButton from "@pages/Workspace/components/DeleteButton";
 
 interface OrganizationFormData {
   name: string;
@@ -20,16 +16,7 @@ interface OrganizationFormData {
   logo: File | null;
 }
 
-interface DepartmentFormData {
-  name: string;
-  description: string;
-}
-
 const InitialSetup = () => {
-  const [currentStep, setCurrentStep] = useState<SetupStep>(
-    SetupStep.ORGANIZATION
-  );
-  const [organizationId, setOrganizationId] = useState<number | null>(null);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -37,11 +24,6 @@ const InitialSetup = () => {
     name: "",
     description: "",
     logo: null,
-  });
-
-  const [deptFormData, setDeptFormData] = useState<DepartmentFormData>({
-    name: "",
-    description: "",
   });
 
   const dispatch = useDispatch<AppDispatch>();
@@ -74,13 +56,6 @@ const InitialSetup = () => {
   ) => {
     const { name, value } = e.target;
     setOrgFormData(prev => ({ ...prev, [name]: value }));
-  };
-
-  const handleDeptInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = e.target;
-    setDeptFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -127,9 +102,8 @@ const InitialSetup = () => {
 
       if (response.data.ok) {
         alertConfirm("Organización creada exitosamente");
-        setOrganizationId(response.data.organization.id);
-        setCurrentStep(SetupStep.DEPARTMENT);
-        dispatch(getMyOrganizationsAsync());
+        await dispatch(getMyOrganizationsAsync());
+        window.location.href = "/departments";
       } else {
         alertError(response.data.message || "Error al crear la organización");
       }
@@ -140,175 +114,109 @@ const InitialSetup = () => {
     }
   };
 
-  const createDepartment = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-
-    try {
-      const response = await axiosInstance.post(apiUrls.departments.base(), {
-        name: deptFormData.name,
-        description: deptFormData.description,
-        organizacion_id: organizationId,
-      });
-
-      if (response.data.ok) {
-        alertConfirm("Departamento creado exitosamente");
-        setCurrentStep(SetupStep.COMPLETE);
-      } else {
-        alertError(response.data.message || "Error al crear el departamento");
-      }
-    } catch (error) {
-      alertError("Error al crear el departamento");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const renderOrganizationForm = () => (
-    <form onSubmit={createOrganization} className="space-y-4">
-      <h2 className="text-2xl font-semibold text-sofia-superDark mb-6">
+    <form onSubmit={createOrganization} className="space-y-5">
+      <h2 className="text-xl font-semibold text-sofia-superDark ">
         Crea tu organización
       </h2>
-
+      <hr
+        className="border-t border-sofia-darkBlue mb-4 -mx-6"
+        style={{ width: "calc(100% + 3rem)" }}
+      />
       <div className="space-y-2">
-        <label className="block text-sm font-medium text-gray-700">
-          Nombre de la organización
+        <label className="block text-sm font-semibold leading-4 text-gray-700">
+          Imagen para tu organización
         </label>
-        <input
-          type="text"
-          name="name"
-          value={orgFormData.name}
-          onChange={handleOrgInputChange}
-          className="w-full rounded-lg py-2 px-3 border border-gray-300 focus:ring-sofia-electricGreen focus:border-sofia-electricGreen"
-          required
-        />
-      </div>
-
-      <div className="space-y-2">
-        <label className="block text-sm font-medium text-gray-700">
-          Descripción
-        </label>
-        <textarea
-          name="description"
-          value={orgFormData.description}
-          onChange={handleOrgInputChange}
-          className="w-full rounded-lg py-2 px-3 border border-gray-300 focus:ring-sofia-electricGreen focus:border-sofia-electricGreen"
-          rows={3}
-          required
-        />
-      </div>
-
-      <div className="space-y-2">
-        <label className="block text-sm font-medium text-gray-700">Logo</label>
-        <div className="flex items-center space-x-4">
+        <div className="relative h-16 w-16 mb-2">
+          <img
+            src={previewImage || "/mvp/avatar.svg"}
+            alt="avatar"
+            className="h-full w-full object-cover rounded-full"
+          />
+          <div className="absolute -bottom-2 left-10 flex z-10">
+            <button
+              type="button"
+              onClick={() => document.getElementById("avatar-upload")?.click()}
+              className="rounded-lg flex items-center justify-center"
+              style={{ width: 28, height: 28 }}
+            >
+              <EditButton />
+            </button>
+            <button
+              type="button"
+              onClick={() => setPreviewImage(null)}
+              className="rounded-lg flex items-center justify-center"
+              style={{ width: 28, height: 28 }}
+            >
+              <DeleteButton />
+            </button>
+          </div>
           <input
             type="file"
             accept="image/*"
             onChange={handleFileChange}
-            className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-sofia-electricGreen file:text-sofia-superDark hover:file:bg-green-400"
+            className="hidden"
+            id="avatar-upload"
           />
-          {previewImage && (
-            <div className="h-16 w-16 rounded-md overflow-hidden border border-gray-300">
-              <img
-                src={previewImage}
-                alt="Preview"
-                className="h-full w-full object-cover"
-              />
-            </div>
-          )}
         </div>
+        <span className="text-[12px] font-normal text-app-newGray mt-3">
+          Formatos admitidos: png, jpg, jpeg.
+        </span>
       </div>
 
-      <button
-        type="submit"
-        disabled={loading}
-        className="w-full py-2 px-4 bg-sofia-electricGreen text-sofia-superDark font-medium rounded-md hover:bg-green-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sofia-electricGreen disabled:bg-gray-300"
-      >
-        {loading ? "Creando..." : "Crear organización"}
-      </button>
-    </form>
-  );
-
-  const renderDepartmentForm = () => (
-    <form onSubmit={createDepartment} className="space-y-4">
-      <h2 className="text-2xl font-semibold text-sofia-superDark mb-6">
-        Crea tu departamento
-      </h2>
-
       <div className="space-y-2">
-        <label className="block text-sm font-medium text-gray-700">
-          Nombre del departamento
+        <label className="block text-sm font-semibold text-gray-700">
+          Nombre
         </label>
         <input
           type="text"
           name="name"
-          value={deptFormData.name}
-          onChange={handleDeptInputChange}
-          className="w-full rounded-lg py-2 px-3 border border-gray-300 focus:ring-sofia-electricGreen focus:border-sofia-electricGreen"
+          placeholder="Nombre de la organización"
+          value={orgFormData.name}
+          onChange={handleOrgInputChange}
+          className="bg-[#FCFCFC] w-full rounded-[4px] py-3 px-3 border border-sofia-darkBlue text-[14px] font-normal"
           required
         />
       </div>
 
       <div className="space-y-2">
-        <label className="block text-sm font-medium text-gray-700">
+        <label className="block text-sm font-semibold text-gray-700">
           Descripción
         </label>
         <textarea
           name="description"
-          value={deptFormData.description}
-          onChange={handleDeptInputChange}
-          className="w-full rounded-lg py-2 px-3 border border-gray-300 focus:ring-sofia-electricGreen focus:border-sofia-electricGreen"
+          placeholder="Descripción de la organización"
+          value={orgFormData.description}
+          onChange={handleOrgInputChange}
+          className="bg-[#FCFCFC] w-full rounded-[4px] py-3 px-3 border border-sofia-darkBlue text-[14px] font-normal"
           rows={3}
           required
         />
       </div>
 
-      <button
-        type="submit"
-        disabled={loading}
-        className="w-full py-2 px-4 bg-sofia-electricGreen text-sofia-superDark font-medium rounded-md hover:bg-green-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sofia-electricGreen disabled:bg-gray-300"
-      >
-        {loading ? "Creando..." : "Crear departamento"}
-      </button>
-    </form>
-  );
-
-  const renderCompletionMessage = () => (
-    <div className="text-center space-y-6">
-      <h2 className="text-2xl font-semibold text-sofia-superDark">
-        ¡Configuración completada!
-      </h2>
-
-      <div className="p-6 bg-white rounded-lg shadow-md">
-        <p className="text-lg mb-4">
-          Tu cuenta ha sido configurada correctamente.
-        </p>
-        <p className="mb-4">Tienes disponibles:</p>
-        <ul className="list-disc list-inside mb-6 text-left">
-          <li className="mb-2">50 mensajes</li>
-          <li className="mb-2">15 días para utilizarlos</li>
-        </ul>
-        <p className="mb-6">
-          Si necesitas más mensajes o extender tu período de uso, contáctanos.
-        </p>
-
+      <div className="flex flex-row gap-3 mt-2">
         <button
-          onClick={() => (window.location.href = "/dashboard")}
-          className="w-full py-2 px-4 bg-sofia-electricGreen text-sofia-superDark font-medium rounded-md hover:bg-green-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sofia-electricGreen"
+          type="button"
+          onClick={() => (window.location.href = "/")}
+          className="w-1/2 py-3 px-4 border border-sofia-superDark text-sofia-superDark text-[14px] font-medium rounded-[4px] bg-white"
         >
-          Contactar
+          Volver al login
+        </button>
+        <button
+          type="submit"
+          className="w-1/2 py-3 px-4 bg-sofia-electricGreen text-sofia-superDark text-[14px] font-semibold rounded-[4px]"
+        >
+          {loading ? "Creando..." : "Crear organización"}
         </button>
       </div>
-    </div>
+    </form>
   );
 
   return (
     <div className="flex flex-col min-h-screen bg-sofia-background">
       <div className="flex-grow flex items-center justify-center p-6">
-        <div className="w-full max-w-md bg-white rounded-lg shadow-lg p-8">
-          {currentStep === SetupStep.ORGANIZATION && renderOrganizationForm()}
-          {currentStep === SetupStep.DEPARTMENT && renderDepartmentForm()}
-          {currentStep === SetupStep.COMPLETE && renderCompletionMessage()}
+        <div className="w-full max-w-md bg-white rounded-[4px] border border-app-lightGray p-[24px]">
+          {renderOrganizationForm()}
         </div>
       </div>
 

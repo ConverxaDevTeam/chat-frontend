@@ -45,7 +45,7 @@ const ChatWrapper = ({ agentId }: ChatWrapperProps) => {
     <Fragment>
       {isChatVisible ? (
         <div
-          className={`relative h-full bg-gray-100 border-gray-300 shadow-lg transition-all duration-300 ${
+          className={`relative h-full bg-gray-100 border-gray-300 shadow-lg transition-all duration-300 ml-2 ${
             isChatVisible ? "w-80" : "w-0"
           } overflow-hidden`}
         >
@@ -56,7 +56,7 @@ const ChatWrapper = ({ agentId }: ChatWrapperProps) => {
           onClick={toggleChat}
           className="absolute w-[56px] h-[40px] top-19 right-5 flex items-center justify-center border border-sofia-navyBlue bg-sofia-superDark rounded-lg shadow-lg focus:outline-none transition-transform"
         >
-          <img src="/mvp/messages-square-white.svg" alt="Chat-icon"/>
+          <img src="/mvp/messages-square-white.svg" alt="Chat-icon" />
         </button>
       )}
     </Fragment>

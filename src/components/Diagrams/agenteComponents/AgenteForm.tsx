@@ -7,6 +7,7 @@ import { agentService } from "@services/agent";
 import { useAlertContext } from "@components/Diagrams/components/AlertContext";
 import InfoTooltip from "@components/common/InfoTooltip";
 import { Button } from "@components/common/Button";
+import { useCounter } from "@hooks/CounterContext";
 
 const EXAMPLES_INSTRUCTIONS = {
   example1:
@@ -24,6 +25,12 @@ const EXAMPLES_SUMMARIES = {
     "Asistente de ventas: Guía en el proceso de compra y explica características técnicas de forma sencilla.",
   example3:
     "Asistente de soporte técnico: Diagnostica problemas y proporciona soluciones paso a paso.",
+};
+
+const EXAMPLES_TITLES = {
+  example1: "Atención al cliente",
+  example2: "Ventas",
+  example3: "Soporte técnico",
 };
 
 interface AgentFormValues {
@@ -49,6 +56,7 @@ export const AgenteForm = ({
 }: AgenteFormProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const { handleOperation } = useAlertContext();
+  const { increment } = useCounter();
 
   const {
     register,
@@ -94,6 +102,8 @@ export const AgenteForm = ({
         }
       );
 
+      // Actualizar el diagrama usando el contador
+      increment();
       onSuccess?.();
     } catch (error) {
       console.error("Error updating agent:", error);
@@ -142,10 +152,10 @@ export const AgenteForm = ({
             <div className="group relative">
               <button
                 type="button"
-                className="w-[84px] h-[24px] px-[12px] text-sofia-superDark font-medium text-[12px] border-sofia-superDark border-[1px] rounded-[4px] hover:bg-gray-100 transition-colors"
+                className="w-auto h-[24px] px-[12px] text-sofia-superDark font-medium text-[12px] border-sofia-superDark border-[1px] rounded-[4px] hover:bg-gray-100 transition-colors"
                 onClick={() => examples("example1")}
               >
-                Ejemplo 1
+                {EXAMPLES_TITLES.example1}
               </button>
               <div className="absolute z-10 left-0 bottom-full mb-2 hidden group-hover:block bg-[#F6F6F6] border border-[#001126] text-[#001126] text-[12px] px-2 py-1.5 rounded whitespace-normal w-[180px]">
                 {EXAMPLES_SUMMARIES.example1}
@@ -154,10 +164,10 @@ export const AgenteForm = ({
             <div className="group relative">
               <button
                 type="button"
-                className="w-[84px] h-[24px] px-[12px] text-sofia-superDark font-medium text-[12px] border-sofia-superDark border-[1px] rounded-[4px] hover:bg-gray-100 transition-colors"
+                className="w-auto h-[24px] px-[12px] text-sofia-superDark font-medium text-[12px] border-sofia-superDark border-[1px] rounded-[4px] hover:bg-gray-100 transition-colors"
                 onClick={() => examples("example2")}
               >
-                Ejemplo 2
+                {EXAMPLES_TITLES.example2}
               </button>
               <div className="absolute z-10 left-0 bottom-full mb-2 hidden group-hover:block bg-[#F6F6F6] border border-[#001126] text-[#001126] text-[12px] px-2 py-1.5 rounded whitespace-normal w-[180px]">
                 {EXAMPLES_SUMMARIES.example2}
@@ -166,10 +176,10 @@ export const AgenteForm = ({
             <div className="group relative">
               <button
                 type="button"
-                className="w-[84px] h-[24px] px-[12px] text-sofia-superDark font-medium text-[12px] border-sofia-superDark border-[1px] rounded-[4px] hover:bg-gray-100 transition-colors"
+                className="w-auto h-[24px] px-[12px] text-sofia-superDark font-medium text-[12px] border-sofia-superDark border-[1px] rounded-[4px] hover:bg-gray-100 transition-colors"
                 onClick={() => examples("example3")}
               >
-                Ejemplo 3
+                {EXAMPLES_TITLES.example3}
               </button>
               <div className="absolute z-10 left-0 bottom-full mb-2 hidden group-hover:block bg-[#F6F6F6] border border-[#001126] text-[#001126] text-[12px] px-2 py-1.5 rounded whitespace-normal w-[180px]">
                 {EXAMPLES_SUMMARIES.example3}

@@ -5,6 +5,7 @@ interface InputGroupProps {
   children: React.ReactNode;
   errors?: FieldError | Merge<FieldError, (FieldError | undefined)[]>;
   tooltip?: React.ReactNode;
+  description?: React.ReactNode;
 }
 
 export const InputGroup = ({
@@ -12,6 +13,7 @@ export const InputGroup = ({
   children,
   errors,
   tooltip,
+  description,
 }: InputGroupProps) => {
   // Aseguramos que los errores sean un array de FieldError
   const errorMessages = Array.isArray(errors)
@@ -21,11 +23,14 @@ export const InputGroup = ({
       : [];
 
   return (
-    <div className="flex flex-col items-start gap-4 self-stretch">
-      <div className="flex items-center gap-2 group-re">
-        <label className="text-sofia-superDark text-[16px] font-[600] leading-[16px]">
+    <div className="flex flex-col items-start gap-3 self-stretch">
+      <div className="flex items-start gap-2 group-re">
+        <label className="text-sofia-superDark text-[16px] font-normal leading-[16px]">
           {label}
         </label>
+        {description && (
+          <p className="text-sofia-navyBlue text-[12px]">{description}</p>
+        )}
         {tooltip}
       </div>
       {children}

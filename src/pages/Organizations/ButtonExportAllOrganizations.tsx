@@ -154,12 +154,18 @@ const ButtonExportAllOrganizations = ({
                   body: tableBody,
                 },
                 layout: {
-                  hLineWidth: function (i: number, node: any) {
+                  hLineWidth: function (
+                    i: number,
+                    node: { table: { body: unknown[] } }
+                  ) {
                     return i === 0 || i === 1 || i === node.table.body.length
                       ? 1
                       : 0.5;
                   },
-                  vLineWidth: function (i: number, node: any) {
+                  vLineWidth: function (
+                    i: number,
+                    node: { table: { widths: unknown[] } }
+                  ) {
                     return i === 0 || i === node.table.widths.length ? 1 : 0.5;
                   },
                   hLineColor: function (i: number) {
@@ -209,7 +215,7 @@ const ButtonExportAllOrganizations = ({
     <button
       type="button"
       onClick={generateTablePDF}
-      className="flex items-center justify-center gap-1 px-4 w-[135px] h-[41px] text-white rounded-lg leading-[24px] bg-[#001130] hover:bg-opacity-90"
+      className="flex items-center justify-center gap-1 px-4 w-[135px] h-[41px] text-white rounded leading-[24px] bg-[#001130] hover:bg-opacity-90"
     >
       Exportar PDF
     </button>

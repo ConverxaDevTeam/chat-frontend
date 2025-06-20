@@ -67,7 +67,15 @@ export const TestResponseModal = ({
 
   if (response.status >= 400) {
     if (isPlainObject(response.data) && Object.keys(response.data).length > 0) {
-      const errorData = response.data as any;
+      interface ErrorData {
+        error?: {
+          message?: string;
+          complete?: string;
+        };
+        message?: string;
+        complete?: string;
+      }
+      const errorData = response.data as ErrorData;
       displayData = {
         message:
           errorData.error?.message || errorData.message || "Error desconocido",
