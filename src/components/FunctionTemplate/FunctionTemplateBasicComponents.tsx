@@ -76,14 +76,14 @@ export const TemplateNameField: React.FC<TemplateNameFieldProps> = ({
 }) => (
   <InputGroup label="Nombre" errors={error} tooltip={tooltip}>
     {helpText && (
-      <p className="text-gray-700 text-[12px] font-[500] leading-[16px] -mt-2 mb-2">
+      <p className="text-gray-600 text-[11px] font-[400] leading-[14px] mb-1">
         {helpText}
       </p>
     )}
     <Input
       {...register("name", { required: "El nombre es requerido" })}
       placeholder="Nombre de la plantilla"
-      className="w-full"
+      className="w-full max-w-full text-sm"
     />
   </InputGroup>
 );
@@ -93,7 +93,7 @@ export const TemplateDescriptionField: React.FC<
 > = ({ register, error, tooltip, helpText }) => (
   <InputGroup label="Descripción" errors={error} tooltip={tooltip}>
     {helpText && (
-      <p className="text-gray-700 text-[12px] font-[500] leading-[16px] -mt-2 mb-2">
+      <p className="text-gray-600 text-[11px] font-[400] leading-[14px] mb-1">
         {helpText}
       </p>
     )}
@@ -102,8 +102,8 @@ export const TemplateDescriptionField: React.FC<
         required: "La descripción es requerida",
       })}
       placeholder="Descripción de la plantilla"
-      className="w-full"
-      rows={3}
+      className="w-full max-w-full text-sm"
+      rows={2}
     />
   </InputGroup>
 );
@@ -129,7 +129,7 @@ export const TemplateSelectField: React.FC<TemplateSelectFieldProps> = ({
   return (
     <InputGroup label={label} errors={error} tooltip={tooltip}>
       {helpText && (
-        <p className="text-gray-700 text-[12px] font-[500] leading-[16px] -mt-2 mb-2">
+        <p className="text-gray-600 text-[11px] font-[400] leading-[14px] mb-1">
           {helpText}
         </p>
       )}
@@ -139,6 +139,7 @@ export const TemplateSelectField: React.FC<TemplateSelectFieldProps> = ({
         options={options}
         placeholder={placeholder}
         onFocus={handleFocus}
+        className="max-w-full text-sm"
       />
     </InputGroup>
   );
@@ -228,14 +229,29 @@ export const ActionButtons: React.FC<ActionButtonsProps> = ({
   goToNextTab,
   onSubmit,
 }) => (
-  <div className="flex gap-[10px]">
-    {!isFirstTab && <Button onClick={goToPreviousTab}>Anterior</Button>}
+  <div className="flex gap-2">
+    {!isFirstTab && (
+      <Button 
+        onClick={goToPreviousTab} 
+        className="text-sm py-1 px-3 h-8"
+      >
+        Anterior
+      </Button>
+    )}
     {!isLastTab ? (
-      <Button variant="primary" onClick={goToNextTab}>
+      <Button 
+        variant="primary" 
+        onClick={goToNextTab}
+        className="text-sm py-1 px-3 h-8"
+      >
         Siguiente
       </Button>
     ) : (
-      <Button variant="primary" onClick={onSubmit}>
+      <Button 
+        variant="primary" 
+        onClick={onSubmit}
+        className="text-sm py-1 px-3 h-8"
+      >
         Guardar
       </Button>
     )}
