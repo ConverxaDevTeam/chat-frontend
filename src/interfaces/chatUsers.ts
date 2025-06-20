@@ -32,6 +32,7 @@ export interface IChatUsersResponse {
   total: number;
   page: number;
   totalPages: number;
+  totalItems?: number;
 }
 
 export interface IChatUsersFilters {

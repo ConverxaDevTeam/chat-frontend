@@ -44,65 +44,67 @@ export const ConfigContent: React.FC<ConfigContentProps> = ({
   register,
   control,
 }) => (
-  <div className="space-y-6 py-4">
-    <h3 className="text-lg font-medium text-gray-700 mb-2">
+  <div className="space-y-4 py-2 text-left">
+    <h3 className="text-base font-medium text-gray-700 mb-1">
       Configuración del endpoint
     </h3>
-    <TemplateUrlField
-      register={register}
-      tooltip={
-        <InfoTooltip
-          text="Dirección web completa del servicio al que se conectará la función. Debe incluir http:// o https:// al inicio."
-          width="220px"
-        />
-      }
-      helpText="Introduce la URL completa del endpoint que utilizará esta función, para parametros en la url agregar :<nombre del parametro>. Para dominio dinamico escribir :Dominio/ en lugar del dominio"
-    />
-    <TemplateSelectField
-      control={control}
-      name="method"
-      label="Método HTTP"
-      options={[
-        { value: "GET", label: "GET" },
-        { value: "POST", label: "POST" },
-        { value: "PUT", label: "PUT" },
-        { value: "DELETE", label: "DELETE" },
-      ]}
-      placeholder="Seleccionar método"
-      tooltip={
-        <InfoTooltip
-          text="GET: Para obtener datos. POST: Para enviar datos. PUT: Para actualizar recursos. DELETE: Para eliminar recursos."
-          width="220px"
-        />
-      }
+    <div className="flex flex-col space-y-3 max-w-[600px]">
+      <TemplateUrlField
+        register={register}
+        tooltip={
+          <InfoTooltip
+            text="URL completa del endpoint que utilizará esta función"
+            width="220px"
+          />
+        }
+        helpText="Introduce la URL completa del endpoint que utilizará esta función, para parametros en la url agregar :<nombre del parametro>. Para dominio dinamico escribir :Dominio/ en lugar del dominio"
+      />
+        <TemplateSelectField
+          control={control}
+          name="method"
+          label="Método HTTP"
+          options={[
+            { value: "GET", label: "GET" },
+            { value: "POST", label: "POST" },
+            { value: "PUT", label: "PUT" },
+            { value: "DELETE", label: "DELETE" },
+          ]}
+          placeholder="Seleccionar método"
+          tooltip={
+            <InfoTooltip
+              text="GET: Para obtener datos. POST: Para enviar datos. PUT: Para actualizar recursos. DELETE: Para eliminar recursos."
+              width="220px"
+            />
+          }
       helpText="Selecciona cómo la función se comunicará con la URL. Usa GET para leer datos y POST para enviarlos"
-    />
-    <TemplateSelectField
-      control={control}
-      name="bodyType"
-      label="Tipo de Body"
-      options={[
-        { value: "JSON", label: "JSON" },
-        { value: "FORM_DATA", label: "Form Data" },
-      ]}
-      placeholder="Seleccionar tipo de body"
-      tooltip={
-        <InfoTooltip
-          text="JSON: Para enviar datos estructurados en formato JSON. Form Data: Para enviar datos como un formulario, útil para archivos."
-          width="220px"
         />
-      }
-    />
-    <TemplateTagsField
-      register={register}
-      tooltip={
-        <InfoTooltip
-          text="Etiquetas para categorizar y facilitar la búsqueda de esta función"
-          width="220px"
+        <TemplateSelectField
+          control={control}
+          name="bodyType"
+          label="Tipo de Body"
+          options={[
+            { value: "JSON", label: "JSON" },
+            { value: "FORM_DATA", label: "Form Data" },
+          ]}
+          placeholder="Seleccionar tipo de body"
+          tooltip={
+            <InfoTooltip
+              text="JSON: Para enviar datos estructurados en formato JSON. Form Data: Para enviar datos como un formulario, útil para archivos."
+              width="220px"
+            />
+          }
         />
-      }
-      helpText="Añade etiquetas separadas por comas para facilitar la búsqueda"
-    />
+      <TemplateTagsField
+        register={register}
+        tooltip={
+          <InfoTooltip
+            text="Etiquetas para categorizar y facilitar la búsqueda de esta función"
+            width="220px"
+          />
+        }
+        helpText="Añade etiquetas separadas por comas para facilitar la búsqueda"
+      />
+    </div>
   </div>
 );
 
@@ -164,70 +166,72 @@ export const BasicInfoContent: React.FC<BasicInfoContentProps> = ({
   };
 
   return (
-    <div className="space-y-6 py-4 w-[450px]">
-      <h3 className="text-lg font-medium text-gray-700 mb-2">
+    <div className="space-y-3 py-2 text-left">
+      <h3 className="text-base font-medium text-gray-700 mb-1">
         Datos principales
       </h3>
-      <TemplateNameField
-        register={register}
-        tooltip={<InfoTooltip text="Nombre identificativo de la función" />}
-        helpText="Introduce un nombre descriptivo para identificar esta función"
-      />
-      <TemplateDescriptionField
-        register={register}
-        tooltip={
-          <InfoTooltip text="Descripción detallada de la función y su propósito" />
-        }
-        helpText="Describe el propósito y funcionamiento de esta función"
-      />
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="flex flex-col gap-4">
-          <div className="flex items-center gap-2">
-            <h3 className="text-base font-semibold">Categoría</h3>
-            <button
-              type="button"
-              className="text-primary-500 hover:text-primary-600"
-              onClick={() => setIsCategoryModalOpen(true)}
-            >
-              <img
-                src="/mvp/plus.svg"
-                alt="Agregar categoría"
-                className="w-5 h-5"
-              />
-            </button>
+      <div className="flex flex-col space-y-3 max-w-[600px]">
+        <TemplateNameField
+          register={register}
+          tooltip={<InfoTooltip text="Nombre identificativo de la función" />}
+          helpText="Introduce un nombre descriptivo para identificar esta función"
+        />
+        <TemplateDescriptionField
+          register={register}
+          tooltip={
+            <InfoTooltip text="Descripción detallada de la función y su propósito" />
+          }
+          helpText="Describe el propósito y funcionamiento de esta función"
+        />
+        <div className="grid grid-cols-2 gap-3">
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center gap-1">
+              <h3 className="text-sm font-medium">Categoría</h3>
+              <button
+                type="button"
+                className="text-primary-500 hover:text-primary-600 p-0"
+                onClick={() => setIsCategoryModalOpen(true)}
+              >
+                <img
+                  src="/mvp/plus.svg"
+                  alt="Agregar categoría"
+                  className="w-4 h-4"
+                />
+              </button>
+            </div>
+            <TemplateSelectField
+              control={control}
+              name="categoryId"
+              label=""
+              options={categoryOptions}
+              placeholder="Selecciona una categoría"
+              onMenuOpen={loadCategories}
+            />
           </div>
-          <TemplateSelectField
-            control={control}
-            name="categoryId"
-            label=""
-            options={categoryOptions}
-            placeholder="Selecciona una categoría"
-            onMenuOpen={loadCategories}
-          />
-        </div>
-        <div className="flex flex-col gap-4">
-          <div className="flex items-center gap-2">
-            <h3 className="text-base font-semibold">Aplicación</h3>
-            <button
-              type="button"
-              className="text-primary-500 hover:text-primary-600"
-              onClick={() => setIsApplicationModalOpen(true)}
-            >
-              <img
-                src="/mvp/plus.svg"
-                alt="Agregar aplicación"
-                className="w-5 h-5"
-              />
-            </button>
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center gap-1">
+              <h3 className="text-sm font-medium">Aplicación</h3>
+              <button
+                type="button"
+                className="text-primary-500 hover:text-primary-600 p-0"
+                onClick={() => setIsApplicationModalOpen(true)}
+              >
+                <img
+                  src="/mvp/plus.svg"
+                  alt="Agregar aplicación"
+                  className="w-4 h-4"
+                />
+              </button>
+            </div>
+            <TemplateSelectField
+              control={control}
+              name="applicationId"
+              label=""
+              options={applicationOptions}
+              placeholder="Selecciona una aplicación"
+              onMenuOpen={loadApplications}
+            />
           </div>
-          <TemplateSelectField
-            control={control}
-            name="applicationId"
-            label=""
-            options={applicationOptions}
-            placeholder="Selecciona una aplicación"
-            onMenuOpen={loadApplications}
-          />
         </div>
       </div>
 
