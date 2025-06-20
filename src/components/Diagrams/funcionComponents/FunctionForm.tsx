@@ -219,6 +219,17 @@ export const FunctionForm = (props: FunctionFormProps) => {
       placeholder: "Nombre de la función",
       validation: { required: "El nombre es obligatorio" },
       type: "input",
+      tooltip: (
+        <InfoTooltip
+          text="Dale un nombre descriptivo a esta función. Ejemplo: ConsultarEstadoPedido o CrearTicketSoporte."
+          width="220px"
+        />
+      ),
+      helpText: (
+        <p className="text-gray-700 text-[12px] font-[500] leading-[16px] -mt-2">
+          Nombre único que identifique la función
+        </p>
+      ),
     },
     {
       name: "description",
@@ -227,12 +238,15 @@ export const FunctionForm = (props: FunctionFormProps) => {
       validation: { required: "La descripción es obligatoria" },
       type: "textarea",
       rows: 3,
+      tooltip: (
+        <InfoTooltip
+          text="Describe brevemente el propósito de esta función para que otros usuarios puedan entender su uso. Ejemplo: 'Consulta el estado de un pedido según el número de orden.'"
+          width="220px"
+        />
+      ),
       helpText: (
         <p className="text-gray-700 text-[12px] font-[500] leading-[16px] -mt-2">
-          ¿Tienes duda de cómo comenzar? Visita nuestro{" "}
-          <a target="_blank" rel="noopener noreferrer" className="underline">
-            knowledge base
-          </a>
+          ¿Qué hace esta función?
         </p>
       ),
     },
@@ -244,9 +258,14 @@ export const FunctionForm = (props: FunctionFormProps) => {
       type: "input",
       tooltip: (
         <InfoTooltip
-          text="Dirección web completa del servicio al que se conectará el agente. Debe incluir http:// o https:// al inicio."
+          text="Ingresa la URL completa del endpoint de tu API. Asegúrate de que sea accesible públicamente y acepte las solicitudes desde tu agente. Ejemplo: https://api.misitio.com/orden/estado"
           width="220px"
         />
+      ),
+      helpText: (
+        <p className="text-gray-700 text-[12px] font-[500] leading-[16px] -mt-2">
+          URL del endpoint que deseas conectar
+        </p>
       ),
     },
     {
@@ -258,13 +277,13 @@ export const FunctionForm = (props: FunctionFormProps) => {
       options: HTTP_METHODS,
       helpText: (
         <p className="text-gray-700 text-[12px] font-[500] leading-[16px] -mt-2">
-          Selecciona cómo el agente se comunicará con la URL. Usa GET para leer
-          datos y POST para enviarlos
+          Selecciona el método HTTP a utilizar (GET: para leer datos, POST: para
+          enviar información.)
         </p>
       ),
       tooltip: (
         <InfoTooltip
-          text="GET: Para obtener datos. POST: Para enviar datos. PUT: Para actualizar recursos. DELETE: Para eliminar recursos."
+          text="Indica cómo el agente debe comunicarse con el endpoint."
           width="220px"
         />
       ),
@@ -281,9 +300,14 @@ export const FunctionForm = (props: FunctionFormProps) => {
       ],
       tooltip: (
         <InfoTooltip
-          text="JSON: Para enviar datos estructurados en formato JSON. Form Data: Para enviar datos como un formulario, útil para archivos."
+          text="Selecciona el formato en que se enviará el cuerpo de la solicitud. JSON: estructura de datos estándar. Form: datos codificados como formulario."
           width="220px"
         />
+      ),
+      helpText: (
+        <p className="text-gray-700 text-[12px] font-[500] leading-[16px] -mt-2">
+          Formato de los datos enviados al endpoint
+        </p>
       ),
     },
   ] as const satisfies Array<{

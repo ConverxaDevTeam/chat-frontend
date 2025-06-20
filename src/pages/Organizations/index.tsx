@@ -11,7 +11,8 @@ import { FiPlus, FiSearch, FiX } from "react-icons/fi";
 import { useAlertContext } from "@components/Diagrams/components/AlertContext";
 import { IOrganization } from "@interfaces/organization.interface";
 import ButtonExportAllOrganizations from "./ButtonExportAllOrganizations";
-import SetCustomPlanModal from "./SetCustomPlanModal";
+import ChangeOrganizationTypeModal from "./ChangeOrganizationTypeModal";
+import TablePagination from "../Users/UsersSuperAdmin/components/TablePagination";
 
 type EditFormData = {
   owner_id: number;
@@ -63,7 +64,7 @@ const OrganizationList = ({
                 </th>
               </tr>
             </thead>
-            <tbody className="relative before:content-[''] before:absolute before:-z-10 before:inset-0 before:rounded-[8px] before:border-[2px] before:border-[#DBEAF2] before:border-inherit">
+            <tbody className="relative bg-white rounded border border-app-lightGray">
               {organizations.map(organization => (
                 <OrganizationCard
                   key={organization.id}
@@ -228,11 +229,12 @@ const useHandles = (
   };
 };
 
-const ITEMS_PER_PAGE = 10;
+// Eliminamos la constante ITEMS_PER_PAGE ya que ahora será un estado
 
 const Organizations = () => {
   const { organizations, loading, getAllOrganizations } = useOrganizations();
   const [currentPage, setCurrentPage] = useState<number>(1);
+  const [itemsPerPage, setItemsPerPage] = useState<number>(10);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [isSearchOpen, setIsSearchOpen] = useState<boolean>(false);
   const { users, getUsers } = useUsers();
@@ -277,16 +279,16 @@ const Organizations = () => {
 
   useEffect(() => {
     const newTotalPages = Math.ceil(
-      filteredOrganizations.length / ITEMS_PER_PAGE
+      filteredOrganizations.length / itemsPerPage
     );
     if (currentPage > newTotalPages) {
       setCurrentPage(newTotalPages === 0 ? 1 : newTotalPages);
     }
-  }, [filteredOrganizations, currentPage]);
+  }, [filteredOrganizations, currentPage, itemsPerPage]);
 
-  const totalPages = Math.ceil(filteredOrganizations.length / ITEMS_PER_PAGE);
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const endIndex = startIndex + ITEMS_PER_PAGE;
+  const totalPages = Math.ceil(filteredOrganizations.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
   const currentOrganizations = filteredOrganizations.slice(
     startIndex,
     endIndex
@@ -296,6 +298,12 @@ const Organizations = () => {
     if (pageNumber >= 1 && pageNumber <= totalPages) {
       setCurrentPage(pageNumber);
     }
+  };
+  
+  // Función para cambiar el número de elementos por página
+  const handleChangeItemsPerPage = (value: number) => {
+    setItemsPerPage(value);
+    setCurrentPage(1); // Resetear a la primera página cuando cambia el número de items
   };
 
   const handleSetCustomPlan = (organization: IOrganization) => {
@@ -324,7 +332,7 @@ const Organizations = () => {
             setSelectedPlanOrg(null);
           }}
         >
-          <SetCustomPlanModal
+          <ChangeOrganizationTypeModal
             organization={selectedPlanOrg}
             onClose={() => {
               setIsCustomPlanModalOpen(false);
@@ -343,7 +351,7 @@ const Organizations = () => {
               setSelectedOrg(null);
               setIsModalOpen(true);
             }}
-            className="flex items-center gap-1 px-4 w-[190px] h-[41px] text-white rounded-lg leading-[24px] bg-[#001130] hover:bg-opacity-90"
+            className="flex items-center gap-1 px-4 w-[190px] h-[41px] text-white rounded leading-[24px] bg-[#001130] hover:bg-opacity-90"
           >
             <FiPlus /> Crear organización
           </button>
@@ -414,34 +422,15 @@ const Organizations = () => {
                   onSetCustomPlan={handleSetCustomPlan}
                 />
 
-                {totalPages > 1 && (
-                  <div className="flex justify-center items-center py-3 px-4">
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => goToPage(currentPage - 1)}
-                        disabled={currentPage === 1}
-                        className="p-2 text-gray-600 hover:bg-gray-100 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        <img
-                          src="/mvp/chevron-left.svg"
-                          alt="Anterior"
-                          className="w-5 h-5"
-                        />
-                      </button>
-                      <button
-                        onClick={() => goToPage(currentPage + 1)}
-                        disabled={currentPage === totalPages}
-                        className="p-2 text-gray-600 hover:bg-gray-100 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        <img
-                          src="/mvp/chevron-right.svg"
-                          alt="Siguiente"
-                          className="w-5 h-5"
-                        />
-                      </button>
-                    </div>
-                  </div>
-                )}
+                <TablePagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  goToPage={goToPage}
+                  totalItems={filteredOrganizations.length}
+                  itemsPerPage={itemsPerPage}
+                  onChangeItemsPerPage={handleChangeItemsPerPage}
+                  rowsPerPageOptions={[5, 10, 20, 50]}
+                />
               </>
             )}
           </>

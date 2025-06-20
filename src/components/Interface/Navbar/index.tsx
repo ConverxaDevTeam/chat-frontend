@@ -7,6 +7,7 @@ import {
   markAllNotificationsAsRead,
 } from "@services/notifications.service";
 import { Fragment, useState, useRef, useEffect } from "react";
+import PlanNavInfo from "./PlanNavInfo";
 import {
   Notification,
   NotificationType,
@@ -16,6 +17,9 @@ import {
   setNotificationCount,
   decrementNotificationCount,
 } from "@/store/reducers/notifications";
+import { toast } from "react-toastify";
+import { getHitlTypes } from "@services/hitl.service";
+import { assignConversationToHitl } from "@services/conversations";
 
 interface NavbarProps {
   windowWidth: number;
@@ -126,16 +130,148 @@ const NotificationItem = ({
   onClose: () => void;
 }) => {
   const dispatch = useDispatch();
+  const { selectOrganizationId, myOrganizations } = useSelector(
+    (state: RootState) => state.auth
+  );
+
   const handleMarkNotificationAsRead = async (notificationId: number) => {
     await markNotificationAsRead(notificationId);
   };
 
+  const isHitlNotification = (title: string): boolean => {
+    return /^\[(.+?)\]/.test(title);
+  };
+
+  const extractHitlTypeFromMessage = (message: string): string | null => {
+    const match = message.match(/^\[([^\]]+)\]/);
+    return match ? match[1].trim() : null;
+  };
+
+  const verifyHitlTypeExists = async (
+    hitlTypeName: string,
+    organizationId: number
+  ): Promise<boolean> => {
+    try {
+      const hitlTypes = await getHitlTypes(organizationId);
+      return hitlTypes.some(
+        type => type.name.toLowerCase() === hitlTypeName.toLowerCase()
+      );
+    } catch (error) {
+      console.error("Error verificando tipos HITL:", error);
+      return false;
+    }
+  };
+
+  const extractConversationIdFromLink = (link: string): number | null => {
+    const match = link.match(/\/conversation\/detail\/(\d+)/);
+    return match ? parseInt(match[1], 10) : null;
+  };
+
+  const handleHitlAutoAssignment = async (
+    conversationId: number,
+    hitlTypeName: string
+  ) => {
+    try {
+      await assignConversationToHitl(conversationId);
+      toast.success(
+        `Conversación asignada automáticamente para tipo HITL: ${hitlTypeName}`,
+        {
+          position: "top-right",
+          autoClose: 4000,
+        }
+      );
+    } catch (error: unknown) {
+      const apiError = error as {
+        response?: { data?: { message?: string } };
+        message?: string;
+      };
+      const errorMessage =
+        apiError?.response?.data?.message || apiError?.message;
+
+      if (
+        errorMessage?.toLowerCase().includes("ya asignado") ||
+        errorMessage?.toLowerCase().includes("already assigned")
+      ) {
+        toast.info(`Esta conversación ya fue asignada a otro agente`, {
+          position: "top-right",
+          autoClose: 3000,
+        });
+      } else {
+        toast.error("Error al asignar conversación", {
+          position: "top-right",
+          autoClose: 3000,
+        });
+      }
+    }
+  };
+
   const handleClick = async () => {
+    const currentUserRole = myOrganizations.find(
+      org => org.organization?.id === selectOrganizationId
+    )?.role;
+
+    // Verificar si es notificación HITL
+    if (
+      isHitlNotification(notification.title || "") &&
+      currentUserRole === "hitl"
+    ) {
+      const hitlTypeName = extractHitlTypeFromMessage(notification.title || "");
+      const conversationId = notification.link
+        ? extractConversationIdFromLink(notification.link)
+        : null;
+
+      if (hitlTypeName && conversationId && selectOrganizationId) {
+        const typeExists = await verifyHitlTypeExists(
+          hitlTypeName,
+          selectOrganizationId
+        );
+
+        if (typeExists) {
+          toast.warning(
+            <div className="cursor-pointer">
+              <div className="font-medium text-sm">
+                Notificación HITL: {hitlTypeName}
+              </div>
+              <div className="text-xs text-gray-600 mt-1">
+                {notification.title}
+              </div>
+              <div className="text-xs text-blue-600 mt-2 font-medium">
+                Click para asignar automáticamente
+              </div>
+            </div>,
+            {
+              position: "top-right",
+              autoClose: 8000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              onClick: () => {
+                handleHitlAutoAssignment(conversationId, hitlTypeName);
+              },
+            }
+          );
+        } else {
+          if (notification.link) {
+            window.location.href = notification.link;
+          }
+        }
+      }
+
+      onClose();
+      return;
+    }
+
+    // Flujo normal para notificaciones no-HITL
     if (!notification.isRead && notification.type === NotificationType.USER) {
       await handleMarkNotificationAsRead(notification.id);
       dispatch(decrementNotificationCount());
     }
-    if (notification.link) window.location.href = notification.link;
+
+    if (notification.link) {
+      window.location.href = notification.link;
+    }
+
     onClose();
   };
 
@@ -255,7 +391,7 @@ const NotificationsMenu = ({
       {(contextMenu || contextMenuState) && (
         <div
           ref={menuRef}
-          className="fixed right-4 top-[60px] w-[400px] bg-white shadow-lg rounded-lg border border-gray-200 p-4 z-10"
+          className="fixed right-4 top-[60px] w-[400px] bg-white shadow-lg rounded border border-sofia-darkBlue p-4 z-10"
         >
           <NotificationsHeader
             activeTab={activeTab}
@@ -301,8 +437,11 @@ const UserActions = ({
     <div
       className={`flex gap-[8px] items-center ${mobileResolution ? "self-end" : ""}`}
     >
+      <p className="text-sofia-superDark font-normal text-[14px] whitespace-nowrap mr-5">
+        <span className="font-bold">Plan actual:</span> <PlanNavInfo />
+      </p>
       <p
-        className={`text-sofia-superDark font-normal text-[14px] ${
+        className={`text-sofia-superDark font-normal text-[14px] whitespace-nowrap ${
           mobileResolution ? "" : "mr-3"
         }`}
       >
@@ -310,7 +449,7 @@ const UserActions = ({
       </p>
       <div
         className={`
-          bg-[#F1F5F9] rounded-[8px] shadow-[1px_1px_2px_0px_#B8CCE0,-1px_-1px_2px_0px_#FFFFFF,1px_1px_2px_0px_#B8CCE0_inset,-1px_-1px_2px_0px_#FFFFFF_inset] relative flex justify-between items-center gap-2 p-3 cursor-pointer h-[36px] ${
+          relative flex justify-between items-center gap-2 p-3 cursor-pointer h-[36px] ${
             mobileResolution ? "w-full" : "w-auto"
           }`}
       >
@@ -324,7 +463,9 @@ const UserActions = ({
 };
 
 const Navbar = ({ mobileResolution }: NavbarProps) => {
-  const { user, selectOrganizationId, myOrganizations } = useSelector((state: RootState) => state.auth);
+  const { user, selectOrganizationId, myOrganizations } = useSelector(
+    (state: RootState) => state.auth
+  );
   const location = useLocation();
 
   const pathSegments = location.pathname
@@ -332,7 +473,9 @@ const Navbar = ({ mobileResolution }: NavbarProps) => {
     .filter(Boolean)
     .filter(segment => segment !== "dashboard");
 
-  const currentOrganization = myOrganizations.find(org => org.organization?.id === selectOrganizationId)?.organization?.name || "Organización";
+  const currentOrganization =
+    myOrganizations.find(org => org.organization?.id === selectOrganizationId)
+      ?.organization?.name || "Organización";
 
   let accumulatedPath = "";
   const breadcrumbItems = [
@@ -351,15 +494,8 @@ const Navbar = ({ mobileResolution }: NavbarProps) => {
   } | null>(null);
 
   return (
-    <div
-      className={`w-full ${mobileResolution ? "mt-[10px]" : "mt-[20px]"} h-auto`}
-    >
-      <div
-        style={{
-          width: "100%",
-        }}
-        className={`flex flex-col gap-4 lg:gap-0 lg:flex-row justify-between items-start lg:items-center`}
-      >
+    <div className="w-full h-auto bg-white border-b border-sofia-darkBlue py-[17px]">
+      <div className="flex flex-col gap-4 lg:gap-0 lg:flex-row justify-between items-start lg:items-center w-full px-6">
         <div className="flex flex-col md:flex-col lg:flex-row items-start lg:items-center gap-4 w-full">
           <div
             className={`${mobileResolution ? "" : "block"} order-1 lg:order-none`}
@@ -368,8 +504,7 @@ const Navbar = ({ mobileResolution }: NavbarProps) => {
           </div>
           <div
             className={`flex gap-[24px] items-center w-full md:w-auto order-1 lg:order-none`}
-          >
-          </div>
+          ></div>
         </div>
         <div
           className={`flex gap-[8px] items-center ${mobileResolution ? "ml-auto " : ""}`}

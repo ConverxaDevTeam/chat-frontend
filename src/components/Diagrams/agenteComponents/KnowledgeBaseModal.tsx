@@ -13,6 +13,7 @@ import Modal from "@components/Modal";
 import { useRef } from "react";
 import { Button } from "@components/common/Button";
 import InfoTooltip from "@components/common/InfoTooltip";
+import { useCounter } from "@hooks/CounterContext";
 
 interface KnowledgeBaseModalProps {
   isShown: boolean;
@@ -102,6 +103,7 @@ const UploadForm = ({
 }) => {
   const [isDragging, setIsDragging] = useState(false);
   const { handleOperation } = useAlertContext();
+  const { increment } = useCounter();
   const dropRef = useRef<HTMLDivElement>(null);
 
   const acceptedFileTypes = ALLOWED_FILE_EXTENSIONS.map(ext => `.${ext}`).join(
@@ -236,6 +238,8 @@ const UploadForm = ({
         }
 
         if (hasSuccess) {
+          // Actualizar el diagrama usando el contador
+          increment();
           onSuccess();
           onClose();
         }
@@ -296,6 +300,7 @@ const KnowledgeBaseModal = ({
   const itemsPerPage = 10;
   const totalPages = Math.ceil(files.length / itemsPerPage);
   const { handleOperation } = useAlertContext();
+  const { increment } = useCounter();
 
   const fetchFiles = async () => {
     setIsLoading(true);
@@ -335,7 +340,10 @@ const KnowledgeBaseModal = ({
       }
     );
 
-    if (!result.success) {
+    if (result.success) {
+      // Actualizar el diagrama usando el contador
+      increment();
+    } else {
       console.error("Error al eliminar archivo:", result.error);
     }
   };
@@ -364,17 +372,6 @@ const KnowledgeBaseModal = ({
             ) : (
               <>
                 <div className="grid grid-cols-1 gap-2 mb-4">
-                  <div className="w-full text-[16px] text-sofia-superDark bg-[#FFF9D9] px-4 py-3 rounded-[4px]">
-                    <p className="flex items-center gap-2">
-                      <img
-                        src="/mvp/triangle-alert-black.svg"
-                        alt="Alerta"
-                        className="inline-block w-5 h-5"
-                      />
-                      Los archivos que no se utilicen en una conversación se
-                      eliminarán automáticamente después de 7 días.
-                    </p>
-                  </div>
                   <p className="text-sofia-superDark text-[16px] font-bold flex items-center gap-2">
                     Base de conocimientos
                     <InfoTooltip

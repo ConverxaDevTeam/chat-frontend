@@ -11,7 +11,6 @@ export const sidebarLinks = [
     text: "Dashboard",
     active: ["/", "/dashboard"],
     img: "house.svg",
-    imgWhite: "house-white.svg",
     role: [
       OrganizationRoleType.OWNER,
       OrganizationRoleType.ADMIN,
@@ -23,7 +22,6 @@ export const sidebarLinks = [
     text: "Espacios de trabajo",
     active: ["/workspace"],
     img: "workflow.svg",
-    imgWhite: "workflow-white.svg",
     role: [
       OrganizationRoleType.OWNER,
       OrganizationRoleType.ADMIN,
@@ -35,11 +33,11 @@ export const sidebarLinks = [
     text: "Conversaciones",
     active: ["/conversations"],
     img: "chat-dots.svg",
-    imgWhite: "chat-dots-white.svg",
     role: [
       OrganizationRoleType.OWNER,
       OrganizationRoleType.ADMIN,
       OrganizationRoleType.USER,
+      OrganizationRoleType.HITL,
     ],
   },
   {
@@ -47,16 +45,30 @@ export const sidebarLinks = [
     text: "Departamentos",
     active: ["/departments"],
     img: "hotel.svg",
-    imgWhite: "hotel-white.svg",
     role: [OrganizationRoleType.OWNER, OrganizationRoleType.ADMIN],
+  },
+  {
+    to: "/chat-users",
+    text: "Clientes",
+    active: ["/chat-users"],
+    img: "handshake.svg",
+    role: [OrganizationRoleType.OWNER, OrganizationRoleType.USER],
   },
   {
     to: "/users",
     text: "Usuarios",
     active: ["/users"],
     img: "users.svg",
-    imgWhite: "users-white.svg",
     role: [OrganizationRoleType.OWNER],
+  },
+  {
+    to: (orgId: number) => `/organizations/${orgId}/hitl-types`,
+    text: "Sistema HITL",
+    active: ["/hitl-types"],
+    img: "headset.svg",
+    imgWhite: "headset-white.svg",
+    role: [OrganizationRoleType.OWNER],
+    isDynamic: true,
   },
 ];
 
@@ -66,14 +78,12 @@ export const sidebarAdminLinks = [
     text: "Dashboard",
     active: ["/", "/dashboard"],
     img: "house.svg",
-    imgWhite: "house-white.svg",
   },
   {
     to: "/templateCreation",
     text: "Function Templates",
     active: ["/templateCreation"],
     img: "file-code.svg",
-    imgWhite: "layout-template-white.svg",
     role: [OrganizationRoleType.ADMIN],
   },
   {
@@ -81,7 +91,6 @@ export const sidebarAdminLinks = [
     text: "Usuarios",
     active: ["/users"],
     img: "house.svg",
-    imgWhite: "house-white.svg",
   },
   {
     to: "/organizations",
@@ -89,7 +98,6 @@ export const sidebarAdminLinks = [
     active: ["/organizations"],
     roles: [OrganizationRoleType.ING_PREVENTA],
     img: "house.svg",
-    imgWhite: "house-white.svg",
   },
 ];
 
@@ -224,6 +232,19 @@ export const themeColors: themeColor[] = [
     button_color: "#2ECC71",
     button_text: "#FFFFFF",
     text_date: "#A3C9A3",
+  },
+  {
+    id: 9,
+    name: "sofia_blue",
+    bg_color: "#DBEAF2",
+    text_title: "#000000",
+    bg_chat: "#F5F5F5",
+    text_color: "#000000",
+    bg_assistant: "#FFF",
+    bg_user: "#343E4F",
+    button_color: "#15ECDA",
+    button_text: "#15ECDA",
+    text_date: "#969696",
   },
 ];
 

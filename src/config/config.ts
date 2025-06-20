@@ -22,6 +22,8 @@ export const apiUrls = {
   deleteRole: (id: number) => `/api/user/role/${id}`,
   deleteUserFromOrganization: (organizationId: number, userId: number) =>
     `/api/user/organization/${organizationId}/user/${userId}`,
+  changeUserRole: (organizationId: number, userId: number) =>
+    `/api/user/organization/${organizationId}/users/${userId}/role`,
   //organizations
   getOrganizations: () => `/api/organization`,
   createOrganization: () => `/api/organization`,
@@ -203,6 +205,23 @@ export const apiUrls = {
       `/api/plan/${organizationId}/set-custom`,
     updateDetails: (organizationId: number) =>
       `/api/plan/${organizationId}/details`,
+    changeType: (organizationId: number) =>
+      `/api/plan/${organizationId}/change-type`,
+  },
+  // HITL System
+  hitl: {
+    types: (organizationId: number) =>
+      `/api/organizations/${organizationId}/hitl-types`,
+    typeById: (organizationId: number, hitlTypeId: number) =>
+      `/api/organizations/${organizationId}/hitl-types/${hitlTypeId}`,
+    typeUsers: (organizationId: number, hitlTypeId: number) =>
+      `/api/organizations/${organizationId}/hitl-types/${hitlTypeId}/users`,
+    removeUserFromType: (
+      organizationId: number,
+      hitlTypeId: number,
+      userId: number
+    ) =>
+      `/api/organizations/${organizationId}/hitl-types/${hitlTypeId}/users/${userId}`,
   },
 } as const;
 

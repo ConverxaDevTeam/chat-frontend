@@ -162,12 +162,12 @@ const InputSection = ({
           onChange={imageUpload.handleImageSelect}
           className="hidden"
         />
+        <img src="/mvp/smile.svg" alt="sofia" className="w-[20px] h-[20px]" />
         <img
-          src="/mvp/smile.svg"
+          src="/mvp/paperclip.svg"
           alt="sofia"
           className="w-[20px] h-[20px]"
         />
-        <img src="/mvp/paperclip.svg" alt="sofia" className="w-[20px] h-[20px]" />
       </label>
       {emojiPicker.showEmojiPicker && (
         <div className="absolute bottom-full left-0 mb-2 w-full">
@@ -251,12 +251,12 @@ export const MessageForm = ({
   return (
     <div
       className="h-[73px] px-3 py-3.5 flex items-center bg-transparent min-w-0 rounded-b-lg"
-      style={{ backgroundColor: 'transparent' }}
+      style={{ backgroundColor: "transparent" }}
     >
       <form
         onSubmit={handleSubmit(handleFormSubmit)}
         className="flex items-center gap-[8px] w-full min-w-0 rounded-b-lg bg-transparent"
-        style={{ backgroundColor: 'transparent' }}
+        style={{ backgroundColor: "transparent" }}
       >
         {!showHitl || conversation?.user?.id === user?.id ? (
           <button
@@ -266,8 +266,7 @@ export const MessageForm = ({
               emojiPicker.setShowEmojiPicker(!emojiPicker.showEmojiPicker)
             }
             className="hover:bg-gray-100 rounded-full transition-colors shrink-0"
-          >
-          </button>
+          ></button>
         ) : null}
         {showHitl && conversation?.user?.id !== user?.id ? (
           <HitlSection

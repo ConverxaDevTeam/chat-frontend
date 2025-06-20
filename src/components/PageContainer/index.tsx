@@ -8,23 +8,29 @@ interface PageContainerProps {
   loading?: boolean;
   children: ReactNode;
   appends?: ReactNode;
+  titleClassName?: string;
 }
 
 const PageContainer = ({
+  title,
   buttonText,
   onButtonClick,
   loading,
   children,
   appends,
+  titleClassName,
 }: PageContainerProps) => {
   return (
     <>
       <div>
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex justify-between items-center mb-4">
+          {title && (
+            <h2 className={`text-xl font-semibold text-sofia-superDark flex items-center ${titleClassName || ''}`}>{title}</h2>
+          )}
           {buttonText && onButtonClick && (
             <button
               onClick={onButtonClick}
-              className="flex items-center gap-1 px-4 py-2 bg-[#001130] text-white rounded-lg hover:bg-opacity-90"
+              className="flex items-center gap-1 px-4 py-2 bg-[#001130] text-white rounded hover:bg-opacity-90"
             >
               {buttonText}
             </button>
