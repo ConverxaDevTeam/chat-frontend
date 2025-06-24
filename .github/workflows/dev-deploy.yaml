@@ -1,9 +1,9 @@
-name: Auto deploy sofia-chat-frontend-v2 development in VPS
+name: Auto deploy converxa-chat-frontend development in VPS (DISABLED)
 
 on:
   push:
     branches:
-      - develop  # Cambiamos de "main" a "develop"
+      - dev-disabled # Branch disabled - does not exist
     paths:
       - ".github/workflows/**"
       - "index.html"
@@ -22,20 +22,20 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          ref: develop  # Aseguramos que se haga checkout de la rama "develop"
+          ref: dev-disabled # Disabled branch
 
       - name: Deploy using ssh
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.DEV_SSH_HOST }}  # Asegúrate de que este secret esté configurado
-          username: ${{ secrets.DEV_SSH_USERNAME }}  # Asegúrate de que este secret esté configurado
-          key: ${{ secrets.DEV_SSH_PRIVATE_KEY }}  # Asegúrate de que este secret esté configurado
+          host: ${{ secrets.DEV_SSH_HOST }} # Asegúrate de que este secret esté configurado
+          username: ${{ secrets.DEV_SSH_USERNAME }} # Asegúrate de que este secret esté configurado
+          key: ${{ secrets.DEV_SSH_PRIVATE_KEY }} # Asegúrate de que este secret esté configurado
           port: 22
           script: |
-            cd /root/repos/sofia-chat-frontend-v2
+            cd /root/repos/converxa-chat-frontend
             git fetch origin
-            git checkout develop  # Cambiamos a la rama "develop"
-            git pull origin develop  # Pull de la rama "develop"
+            git checkout dev-disabled  # Disabled branch
+            git pull origin dev-disabled  # Disabled branch
             cat <<EOF > .env
             VITE_PUBLIC_BACKEND_URL=${{ secrets.VITE_PUBLIC_BACKEND_URL_DEV }}  # Cambia a la URL de desarrollo
             VITE_PUBLIC_TOKEN_NAME=${{ secrets.VITE_PUBLIC_TOKEN_NAME_DEV }}

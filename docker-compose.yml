@@ -1,7 +1,7 @@
 version: "3.8"
 services:
-  sofia-chat-frontend-v2:
-    container_name: sofia-chat-frontend-v2-${PORT:-3000}
+  converxa-chat-frontend:
+    container_name: converxa-chat-frontend-${PORT:-3000}
     build:
       dockerfile: Dockerfile
       context: .
@@ -11,7 +11,7 @@ services:
     ports:
       - "${PORT:-3000}:3000"
     networks:
-      - sofia_chat_network
+      - converxa_chat_network
 
 networks:
-  sofia_chat_network:
+  converxa_chat_network:

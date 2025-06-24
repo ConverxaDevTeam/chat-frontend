@@ -1,4 +1,4 @@
-name: Auto deploy sofia-chat-frontend-v2 development in VPS
+name: Auto deploy converxa-chat-frontend internal in VPS
 
 on:
   push:
@@ -26,38 +26,30 @@ jobs:
       - name: Deploy using ssh
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.DEVELOPMENT_SSH_HOST }}
-          username: ${{ secrets.DEVELOPMENT_SSH_USERNAME }}
-          key: ${{ secrets.DEVELOPMENT_SSH_PRIVATE_KEY }}
+          host: 137.184.44.230
+          username: root
+          key: ${{ secrets.PROD_SSH_PRIVATE_KEY }}
           port: 22
           script: |
-            echo "=== DEBUG: Listando directorios en /root/repos ==="
-            ls -la /root/repos/
-            echo "=== DEBUG: Verificando directorio interno ==="
-            ls -la /root/repos/sofia-chat-frontend-v2-internal || echo "ERROR: Directorio no existe"
-            echo "=== DEBUG: Cambiando al directorio interno ==="
-            cd /root/repos/sofia-chat-frontend-v2-internal
-            echo "=== DEBUG: PWD actual ==="
-            pwd
-            echo "=== DEBUG: Contenido del directorio ==="
-            ls -la
-            echo "=== DEBUG: Verificando git ==="
-            git status
-            echo "=== DEBUG: Git fetch ==="
+            cd /root/repos/converxa-chat-frontend
             git fetch origin
-            echo "=== DEBUG: Git checkout release ==="
             git checkout release
-            echo "=== DEBUG: Git pull ==="
             git pull origin release
+            npm ci
             cat <<EOF > .env
-            VITE_PUBLIC_BACKEND_URL=https://internal-back.sofiachat.com
-            VITE_PUBLIC_TOKEN_NAME=${{ secrets.VITE_PUBLIC_TOKEN_NAME }}
-            VITE_PUBLIC_TOKEN_REFRESH_NAME=${{ secrets.VITE_PUBLIC_TOKEN_REFRESH_NAME }}
-            VITE_PUBLIC_URL_FILES=https://internal-back.sofiachat.com
-            VITE_BACKEND_URL_FILES=https://internal-back.sofiachat.com
+            VITE_API_URL=https://internal-back.converxa.com
+            VITE_ENVIRONMENT=staging
+            VITE_WSS_URL=wss://internal-back.converxa.com
+            VITE_FILES_URL=https://internal-back.converxa.com/files
+            VITE_PUBLIC_BACKEND_URL=https://internal-back.converxa.com
+            VITE_PUBLIC_TOKEN_NAME=token
+            VITE_PUBLIC_TOKEN_REFRESH_NAME=refreshToken
+            VITE_PUBLIC_URL_FILES=https://internal-back.converxa.com/files
+            VITE_BACKEND_URL_FILES=https://internal-back.converxa.com/files
             VITE_GOOGLE_CLIENT_ID=${{ secrets.VITE_GOOGLE_CLIENT_ID }}
-            PORT=3004
+            VITE_FB_APP_ID=${{ secrets.VITE_FB_APP_ID }}
+            VITE_FB_CONFIG_ID=${{ secrets.VITE_FB_CONFIG_ID }}
             EOF
-            PORT=3004 docker-compose build
-            PORT=3004 docker-compose down -v
-            PORT=3004 docker-compose up -d
+            npm run build -- --mode staging
+            rm -rf /var/www/frontend/internal/*
+            cp -r dist/* /var/www/frontend/internal/
