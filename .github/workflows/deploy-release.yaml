@@ -37,15 +37,15 @@ jobs:
             git pull origin release
             npm ci
             cat <<EOF > .env
-            VITE_API_URL=https://internal-back.converxa.com
+            VITE_API_URL=https://internal-back.converxa.net
             VITE_ENVIRONMENT=staging
-            VITE_WSS_URL=wss://internal-back.converxa.com
-            VITE_FILES_URL=https://internal-back.converxa.com/files
-            VITE_PUBLIC_BACKEND_URL=https://internal-back.converxa.com
+            VITE_WSS_URL=wss://internal-back.converxa.net
+            VITE_FILES_URL=https://internal-back.converxa.net/files
+            VITE_PUBLIC_BACKEND_URL=https://internal-back.converxa.net
             VITE_PUBLIC_TOKEN_NAME=token
             VITE_PUBLIC_TOKEN_REFRESH_NAME=refreshToken
-            VITE_PUBLIC_URL_FILES=https://internal-back.converxa.com/files
-            VITE_BACKEND_URL_FILES=https://internal-back.converxa.com/files
+            VITE_PUBLIC_URL_FILES=https://internal-back.converxa.net
+            VITE_BACKEND_URL_FILES=https://internal-back.converxa.net
             VITE_GOOGLE_CLIENT_ID=${{ secrets.VITE_GOOGLE_CLIENT_ID }}
             VITE_FB_APP_ID=${{ secrets.VITE_FB_APP_ID }}
             VITE_FB_CONFIG_ID=${{ secrets.VITE_FB_CONFIG_ID }}
