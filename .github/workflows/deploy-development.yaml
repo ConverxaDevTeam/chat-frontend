@@ -35,15 +35,15 @@ jobs:
             git pull origin main
             npm ci
             cat <<EOF > .env
-            VITE_API_URL=https://back.converxa.net
+            VITE_API_URL=https://back-chat.converxa.net
             VITE_ENVIRONMENT=production
-            VITE_WSS_URL=wss://back.converxa.net
-            VITE_FILES_URL=https://back.converxa.net
-            VITE_PUBLIC_BACKEND_URL=https://back.converxa.net
+            VITE_WSS_URL=wss://back-chat.converxa.net
+            VITE_FILES_URL=https://back-chat.converxa.net
+            VITE_PUBLIC_BACKEND_URL=https://back-chat.converxa.net
             VITE_PUBLIC_TOKEN_NAME=token
             VITE_PUBLIC_TOKEN_REFRESH_NAME=refreshToken
-            VITE_PUBLIC_URL_FILES=https://back.converxa.net
-            VITE_BACKEND_URL_FILES=https://back.converxa.net
+            VITE_PUBLIC_URL_FILES=https://back-chat.converxa.net
+            VITE_BACKEND_URL_FILES=https://back-chat.converxa.net
             VITE_GOOGLE_CLIENT_ID=${{ secrets.VITE_GOOGLE_CLIENT_ID }}
             VITE_FB_APP_ID=${{ secrets.VITE_FB_APP_ID }}
             VITE_FB_CONFIG_ID=${{ secrets.VITE_FB_CONFIG_ID }}
