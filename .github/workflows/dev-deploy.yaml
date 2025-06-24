@@ -1,0 +1,52 @@
+name: Auto deploy sofia-chat-frontend-v2 development in VPS
+
+on:
+  push:
+    branches:
+      - develop  # Cambiamos de "main" a "develop"
+    paths:
+      - ".github/workflows/**"
+      - "index.html"
+      - "package.json"
+      - "public/**"
+      - "scripts/**"
+      - "src/**"
+      - "vite.config.js"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: develop  # Aseguramos que se haga checkout de la rama "develop"
+
+      - name: Deploy using ssh
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.DEV_SSH_HOST }}  # Asegúrate de que este secret esté configurado
+          username: ${{ secrets.DEV_SSH_USERNAME }}  # Asegúrate de que este secret esté configurado
+          key: ${{ secrets.DEV_SSH_PRIVATE_KEY }}  # Asegúrate de que este secret esté configurado
+          port: 22
+          script: |
+            cd /root/repos/sofia-chat-frontend-v2
+            git fetch origin
+            git checkout develop  # Cambiamos a la rama "develop"
+            git pull origin develop  # Pull de la rama "develop"
+            cat <<EOF > .env
+            VITE_PUBLIC_BACKEND_URL=${{ secrets.VITE_PUBLIC_BACKEND_URL_DEV }}  # Cambia a la URL de desarrollo
+            VITE_PUBLIC_TOKEN_NAME=${{ secrets.VITE_PUBLIC_TOKEN_NAME_DEV }}
+            VITE_PUBLIC_TOKEN_REFRESH_NAME=${{ secrets.VITE_PUBLIC_TOKEN_REFRESH_NAME_DEV }}
+            VITE_PUBLIC_URL_FILES=${{ secrets.VITE_PUBLIC_URL_FILES_DEV }}  # Cambia a la URL de desarrollo
+            VITE_GOOGLE_CLIENT_ID=${{ secrets.VITE_GOOGLE_CLIENT_ID_DEV }}
+            VITE_FB_APP_ID=${{ secrets.VITE_FB_APP_ID_DEV }}
+            VITE_FB_CONFIG_ID=${{ secrets.VITE_FB_CONFIG_ID_DEV }}
+            NODE_OPTIONS="--max-old-space-size=1536"
+            EOF
+            export NODE_OPTIONS="--max-old-space-size=1536"
+            docker-compose build  # Usa un archivo de compose específico para desarrollo
+            docker-compose down -v
+            docker-compose up -d
