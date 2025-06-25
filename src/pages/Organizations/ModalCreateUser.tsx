@@ -335,13 +335,17 @@ const useUsers = (organization: IOrganization | null | undefined) => {
     ));
 
     if (
-      organization?.owner &&
+      organization?.owner?.user &&
       !users.find(u => u.id === organization.owner?.user.id)
     ) {
       options.unshift(
-        <option key="current-owner" value={organization.owner.user.id} disabled>
-          {organization.owner.user.first_name}{" "}
-          {organization.owner.user.last_name}
+        <option
+          key="current-owner"
+          value={organization.owner.user?.id}
+          disabled
+        >
+          {organization.owner.user?.first_name}{" "}
+          {organization.owner.user?.last_name}
         </option>
       );
     }

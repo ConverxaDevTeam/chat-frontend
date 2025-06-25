@@ -205,11 +205,12 @@ const useHandles = (
 
     if (
       selectedOrg?.owner &&
+      selectedOrg.owner.user &&
       !users.find(u => u.id === selectedOrg.owner?.user.id)
     ) {
       options.unshift(
-        <option key="current-owner" value={selectedOrg.owner.user.id} disabled>
-          {selectedOrg.owner.user.email}
+        <option key="current-owner" value={selectedOrg.owner.user?.id} disabled>
+          {selectedOrg.owner.user?.email}
         </option>
       );
     }
@@ -299,7 +300,7 @@ const Organizations = () => {
       setCurrentPage(pageNumber);
     }
   };
-  
+
   // Función para cambiar el número de elementos por página
   const handleChangeItemsPerPage = (value: number) => {
     setItemsPerPage(value);
