@@ -79,7 +79,7 @@ const Sidebar = ({
             {sidebarMinimized || mobileResolution ? (
               <img
                 className="select-none h-[24px] mt-[10px] cursor-pointer"
-                src="/logo.svg"
+                src="/icon.svg"
                 onClick={() => setSidebarMinimized(false)}
                 alt="Logo"
               />
