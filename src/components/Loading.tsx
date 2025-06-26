@@ -14,7 +14,7 @@ const Loading = () => {
         renderer: "svg",
         loop: true,
         autoplay: true,
-        path: "/animations/Loading_sofia.json",
+        path: "/animations/Loading_converxa.json",
         rendererSettings: {
           preserveAspectRatio: "xMidYMid slice",
         },
