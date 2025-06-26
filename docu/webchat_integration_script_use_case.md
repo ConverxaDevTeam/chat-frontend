@@ -1,7 +1,7 @@
 # Caso de Uso: Script de Integración de WebChat
 
 ## Descripción
-Generación y gestión del script de integración que permite a las organizaciones embeber el WebChat de Sofia en sus sitios web.
+Generación y gestión del script de integración que permite a las organizaciones embeber el WebChat de Converxa en sus sitios web.
 
 ## Componentes Involucrados
 
@@ -22,7 +22,7 @@ Generación y gestión del script de integración que permite a las organizacion
 ```mermaid
 flowchart TD
     A[Usuario accede a EditCors] --> B[useScriptManager genera script]
-    B --> C[Script: urlFiles/sofia-chat/CI{integrationId}.js]
+    B --> C[Script: urlFiles/converxa/CI{integrationId}.js]
     C --> D[Usuario copia script]
     D --> E[Usuario pega script en etiqueta head de su sitio]
     E --> F[Validación CORS contra dominios registrados]
@@ -33,13 +33,13 @@ flowchart TD
 
 ### Formato del Script
 ```
-<script src="{VITE_PUBLIC_URL_FILES}/sofia-chat/CI{integrationId}.js"></script>
+<script src="{VITE_PUBLIC_URL_FILES}/converxa/CI{integrationId}.js"></script>
 ```
 
 ### Variables de Entorno Requeridas
 - **`VITE_PUBLIC_URL_FILES`**: URL base para archivos estáticos
 - **Ejemplo desarrollo**: `http://localhost:3001`
-- **Ejemplo producción**: `https://files.sofia.com`
+- **Ejemplo producción**: `https://files.converxa.net`
 
 ## Componentes de UI
 

@@ -97,7 +97,7 @@ const ButtonExportConversation = ({
                 style: "subheader",
               },
               {
-                text: "Resumen generado por: Sofia Chat",
+                text: "Resumen generado por: Converxa",
                 style: "footer",
                 absolutePosition: { x: 20, y: 750 }, // Ajusta la posición (y para moverlo verticalmente)
               },

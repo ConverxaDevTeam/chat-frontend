@@ -11,7 +11,7 @@ const MessageSofia = ({ menssage, config }: MessageSofiaProps) => {
   return (
     <div className="flex gap-[10px]">
       <div className="bg-white w-[40px] h-[40px] relative rounded-full flex justify-center items-center">
-        <img src="/img/sofia.svg" alt="sofia" />
+        <img src="/img/sofia.svg" alt="converxa" />
         <div className="bg-green-500 w-[18px] h-[18px] absolute border-[4px] border-sofiaCall-white rounded-full -bottom-[5px] -right-[5px]"></div>
       </div>
       <div className="flex flex-1 flex-col gap-[4px] items-start">

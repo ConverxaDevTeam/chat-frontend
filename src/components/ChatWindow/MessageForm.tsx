@@ -162,10 +162,14 @@ const InputSection = ({
           onChange={imageUpload.handleImageSelect}
           className="hidden"
         />
-        <img src="/mvp/smile.svg" alt="sofia" className="w-[20px] h-[20px]" />
+        <img
+          src="/mvp/smile.svg"
+          alt="converxa"
+          className="w-[20px] h-[20px]"
+        />
         <img
           src="/mvp/paperclip.svg"
-          alt="sofia"
+          alt="converxa"
           className="w-[20px] h-[20px]"
         />
       </label>
@@ -205,7 +209,7 @@ const HitlSection = ({
       isAssigned={!!conversation?.user}
       currentUserHasConversation={conversation?.user?.id === user?.id}
     >
-      <img src="/mvp/headset.svg" alt="sofia" className="w-6 h-6" />
+      <img src="/mvp/headset.svg" alt="converxa" className="w-6 h-6" />
       <span>
         {conversation?.user ? (
           <span>Reasignar conversación</span>
@@ -295,7 +299,7 @@ export const MessageForm = ({
             >
               <img
                 src="/mvp/send-horizontal.svg"
-                alt="sofia"
+                alt="converxa"
                 className="w-6 h-6"
               />
             </SendMessageButton>

@@ -110,7 +110,7 @@ const ButtonExportAllUsers = ({ users }: ButtonExportAllUsersProps) => {
                   margin: [20, 20, 0, 0],
                 },
                 {
-                  text: "SOFIA CHAT",
+                  text: "Converxa",
                   alignment: "right",
                   margin: [0, 20, 20, 0],
                   fontSize: 10,
@@ -129,7 +129,7 @@ const ButtonExportAllUsers = ({ users }: ButtonExportAllUsersProps) => {
                         color: "#666",
                       },
                       {
-                        text: "Resumen generado por: Sofia Chat",
+                        text: "Resumen generado por: Converxa",
                         fontSize: 8,
                         color: "#666",
                         margin: [0, 2, 0, 0],

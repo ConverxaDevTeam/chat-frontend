@@ -146,7 +146,7 @@ const ButtonExportAllConversations = ({
           },
           footer: function (currentPage: number, pageCount: number) {
             return {
-              text: `Página ${currentPage} de ${pageCount} - Generado por Sofia Chat`,
+              text: `Página ${currentPage} de ${pageCount} - Generado por Converxa`,
               alignment: "center",
               style: "footer",
             };

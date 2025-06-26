@@ -154,7 +154,7 @@ const useDomainManager = (
 };
 
 const useScriptManager = (integrationId: number) => {
-  const generatedScript = `<script src="${urlFiles}/sofia-chat/CI${integrationId}.js"></script>`;
+  const generatedScript = `<script src="${urlFiles}/converxa-chat/CI${integrationId}.js"></script>`;
 
   const handleCopy = () => {
     navigator.clipboard

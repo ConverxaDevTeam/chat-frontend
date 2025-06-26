@@ -1,6 +1,6 @@
 # Diagramas de Gestión de Planes de Organización
 
-Este documento describe la arquitectura y flujos relacionados con la gestión de planes de organización en Sofia Chat Frontend.
+Este documento describe la arquitectura y flujos relacionados con la gestión de planes de organización en Converxa Frontend.
 
 ## Estructura de Datos de Planes
 
@@ -13,7 +13,7 @@ classDiagram
         FREE
         CUSTOM
     }
-    
+
     class IOrganization {
         +id number
         +logo string
@@ -29,27 +29,27 @@ classDiagram
         +limitInfo PlanLimitInfo
         +owner OrganizationOwner
     }
-    
+
     class PlanLimitInfo {
         +hasReachedLimit boolean
         +limit number
         +current number
         +daysRemaining number
     }
-    
+
     class OrganizationOwner {
         +id number
         +role OrganizationRoleType
         +user User
     }
-    
+
     class User {
         +id number
         +first_name string
         +last_name string
         +email string
     }
-    
+
     IOrganization --> OrganizationType: type
     IOrganization --> PlanLimitInfo: limitInfo
     IOrganization --> OrganizationOwner: owner
@@ -62,14 +62,14 @@ classDiagram
 flowchart TD
     A[Usuario SuperAdmin] -->|Selecciona organización| B[OrganizationCard]
     B -->|Clic en Set Custom Plan| C[SetCustomPlanModal]
-    
+
     C -->|Si plan no es custom| D[Confirmación de cambio]
     D -->|Confirmar| E[setOrganizationPlanToCustom]
     E -->|PATCH /api/plan/:id/set-custom| F[Backend API]
     F -->|Actualiza tipo de plan| F
     F -->|Respuesta exitosa| E
     E -->|Actualiza UI| G[Configurar detalles]
-    
+
     C -->|Si plan ya es custom| G
     G -->|Ingresa límite de conversaciones| H[updateCustomPlanDetails]
     H -->|PATCH /api/plan/:id/details| F
@@ -101,12 +101,12 @@ classDiagram
         +setOrganizationPlanToCustom(organizationId) Promise
         +updateCustomPlanDetails(organizationId, details) Promise
     }
-    
+
     class PlanStatusBanner {
         -handleRequestCustomPlan() Promise
         +render() JSX
     }
-    
+
     class SetCustomPlanModal {
         -organization IOrganization
         -onClose Function
@@ -118,7 +118,7 @@ classDiagram
         -handleSavePlanDetails() Promise
         +render() JSX
     }
-    
+
     class OrganizationCard {
         -organization IOrganization
         -onEdit Function
@@ -126,17 +126,17 @@ classDiagram
         -onSetCustomPlan Function
         +render() JSX
     }
-    
+
     class Organizations {
         -organizations IOrganization[]
         -handleSetCustomPlan(organization) void
         +render() JSX
     }
-    
+
     class Interface {
         +render() JSX
     }
-    
+
     PlanService <-- PlanStatusBanner: Usa
     PlanService <-- SetCustomPlanModal: Usa
     Organizations --> OrganizationCard: Renderiza
@@ -152,15 +152,15 @@ stateDiagram-v2
     Free --> SolicitandoCustom
     SolicitandoCustom --> Free
     SolicitandoCustom --> Custom
-    
+
     Free --> Custom
     Custom --> Custom
-    
+
     Free --> MVP
     Free --> Production
     MVP --> Production
     Production --> MVP
-    
+
     Custom --> Free
     Custom --> MVP
     Custom --> Production

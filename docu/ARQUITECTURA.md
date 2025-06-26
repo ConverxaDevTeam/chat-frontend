@@ -1,4 +1,4 @@
-# Arquitectura del Proyecto - Sofia Chat Frontend V2
+# Arquitectura del Proyecto - Converxa Frontend V2
 
 ## Estructura General
 
