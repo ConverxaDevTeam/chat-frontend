@@ -39,7 +39,7 @@ export const RequestResetPassword = () => {
         <div className="bg-white px-[32px] pt-[53px] pb-[40px]">
           <img
             className="mx-auto mb-[48px] h-[34px]"
-            src="/mvp/logo.svg"
+            src="/logos/logo.svg"
             alt="logo"
           />
           <h2 className="font-semibold text-[30px] text-sofia-superDark mb-[16px] text-center">
