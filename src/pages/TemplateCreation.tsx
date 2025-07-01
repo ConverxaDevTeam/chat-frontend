@@ -187,7 +187,7 @@ const TemplateContextMenu: React.FC<{
 }> = ({ show, position, onClose, onEdit, onDelete }) => {
   if (!show) return null;
   return (
-    <ContextMenu x={position.x} y={position.y} onClose={onClose}>
+    <ContextMenu position={position} onClose={onClose}>
       <button
         onClick={onEdit}
         className="flex items-center gap-2 w-full text-left"
