@@ -39,6 +39,8 @@ export enum StatisticsDisplayType {
   BAR = "BAR",
   AREA = "AREA",
   METRIC = "METRIC",
+  METRIC_AVG = "METRIC_AVG",
+  METRIC_ACUM = "METRIC_ACUM",
 }
 
 export enum TimeRange {
@@ -117,7 +119,8 @@ export const analyticOptions: AnalyticOption[] = [
 ];
 
 export const displayTypeOptions = [
-  { id: StatisticsDisplayType.METRIC, label: "Metrica" },
+  { id: StatisticsDisplayType.METRIC_AVG, label: "Métrica avg" },
+  { id: StatisticsDisplayType.METRIC_ACUM, label: "Métrica acum" },
   { id: StatisticsDisplayType.AREA, label: "Area" },
   { id: StatisticsDisplayType.BAR, label: "Barras" },
   { id: StatisticsDisplayType.PIE, label: "Pastel" },

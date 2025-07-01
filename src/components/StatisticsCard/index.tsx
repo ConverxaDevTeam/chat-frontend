@@ -55,9 +55,15 @@ interface MetricsViewProps {
   };
   showLegend?: boolean;
   metricsRef: React.RefObject<HTMLDivElement>;
+  displayType?: StatisticsDisplayType;
 }
 
-const MetricsView = ({ data, showLegend, metricsRef }: MetricsViewProps) => (
+const MetricsView = ({
+  data,
+  showLegend,
+  metricsRef,
+  displayType,
+}: MetricsViewProps) => (
   <div className="flex flex-col items-center justify-center h-[calc(100%-2rem)] w-full">
     <div
       ref={metricsRef}
@@ -81,6 +87,16 @@ const MetricsView = ({ data, showLegend, metricsRef }: MetricsViewProps) => (
             </div>
             <div className="flex items-center gap-2">
               <span className="text-2xl font-bold">{serie.value}</span>
+              {displayType === StatisticsDisplayType.METRIC_AVG && (
+                <span className="text-xs bg-gray-100 px-2 py-1 rounded-full text-gray-600 font-medium">
+                  avg
+                </span>
+              )}
+              {displayType === StatisticsDisplayType.METRIC_ACUM && (
+                <span className="text-xs bg-gray-100 px-2 py-1 rounded-full text-gray-600 font-medium">
+                  acum
+                </span>
+              )}
             </div>
             {data.trend && (
               <span
@@ -121,7 +137,22 @@ interface ChartViewProps {
 }
 
 const ChartView = ({ data, displayType, showLegend }: ChartViewProps) => {
-  if (!data.chartData) return null;
+  // Validación defensiva
+  if (!data || !data.chartData) {
+    return (
+      <div className="h-full w-full flex items-center justify-center">
+        <span className="text-gray-500">No hay datos para mostrar</span>
+      </div>
+    );
+  }
+
+  if (!data.chartData.datasets || !Array.isArray(data.chartData.datasets)) {
+    return (
+      <div className="h-full w-full flex items-center justify-center">
+        <span className="text-gray-500">Error en la estructura de datos</span>
+      </div>
+    );
+  }
 
   const chartSeries = data.series.map(s => ({ color: s.color || "#000000" }));
 
@@ -151,7 +182,11 @@ const ChartView = ({ data, displayType, showLegend }: ChartViewProps) => {
         />
       );
     default:
-      return null;
+      return (
+        <div className="h-full w-full flex items-center justify-center">
+          <span className="text-gray-500">Tipo de gráfica no soportado</span>
+        </div>
+      );
   }
 };
 
@@ -237,11 +272,15 @@ const CardContent: React.FC<{
   metricsRef: React.RefObject<HTMLDivElement>;
 }> = ({ displayType, data, showLegend, metricsRef }) => (
   <div className="flex-1 flex justify-center items-center min-h-0">
-    {displayType === StatisticsDisplayType.METRIC && data ? (
+    {(displayType === StatisticsDisplayType.METRIC ||
+      displayType === StatisticsDisplayType.METRIC_AVG ||
+      displayType === StatisticsDisplayType.METRIC_ACUM) &&
+    data ? (
       <MetricsView
         data={data}
         showLegend={showLegend}
         metricsRef={metricsRef}
+        displayType={displayType}
       />
     ) : data?.chartData ? (
       <ChartView
