@@ -98,15 +98,23 @@ const MetricsView = ({
                 </span>
               )}
             </div>
-            {data.trend && (
-              <span
-                className={`text-sm ${
-                  data.trend.isPositive ? "text-green-500" : "text-red-500"
+            {(data.trend || serie.trend) && (
+              <div
+                className={`text-sm flex items-center gap-1 ${
+                  (serie.trend || data.trend)?.isPositive
+                    ? "text-green-500"
+                    : "text-red-500"
                 }`}
+                title={`Tendencia basada en ${displayType === StatisticsDisplayType.METRIC_AVG ? "promedio diario" : "comparación período"}`}
               >
-                {data.trend.isPositive ? "+" : ""}
-                {data.trend.value}%
-              </span>
+                <span className="text-xs">
+                  {(serie.trend || data.trend)?.isPositive ? "↗" : "↘"}
+                </span>
+                <span>
+                  {(serie.trend || data.trend)?.isPositive ? "+" : ""}
+                  {(serie.trend || data.trend)?.value}%
+                </span>
+              </div>
             )}
           </div>
         ))
