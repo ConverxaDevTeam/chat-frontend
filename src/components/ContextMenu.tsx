@@ -2,8 +2,7 @@ import React, { useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
 
 interface ContextMenuProps {
-  x: number;
-  y: number;
+  position: { x: number; y: number };
   onClose: () => void;
   children: React.ReactNode;
   parentId?: string;
@@ -82,52 +81,153 @@ const useOutsideClick = (
   }, [menuId, onClose, parentId]);
 };
 
+// Función pura para calcular posición de menú
+const calculateMenuPosition = (
+  targetPosition: { x: number; y: number },
+  menuSize: { width: number; height: number },
+  parentRect: DOMRect | null,
+  viewport: { width: number; height: number }
+) => {
+  const PADDING = 8;
+  const THRESHOLD = viewport.height * 0.75;
+
+  let position = { x: targetPosition.x, y: targetPosition.y };
+
+  if (parentRect) {
+    // PASO 1: Determinar mejor posición HORIZONTAL
+    const horizontalOptions = [
+      { x: parentRect.right, name: "right" }, // Derecha del parent
+      { x: parentRect.left - menuSize.width, name: "left" }, // Izquierda del parent
+      { x: parentRect.left, name: "center" }, // Centrado
+    ];
+
+    let bestHorizontalX = targetPosition.x;
+    for (const option of horizontalOptions) {
+      const fitsHorizontally =
+        option.x >= PADDING &&
+        option.x + menuSize.width <= viewport.width - PADDING;
+
+      if (fitsHorizontally) {
+        bestHorizontalX = option.x;
+
+        break;
+      }
+    }
+
+    // PASO 2: Determinar mejor posición VERTICAL
+    const verticalOptions = [
+      { y: parentRect.top, name: "same-level" }, // Mismo nivel del parent
+      { y: parentRect.top - menuSize.height, name: "above" }, // Arriba del parent
+      { y: parentRect.bottom, name: "below" }, // Abajo del parent
+    ];
+
+    let bestVerticalY = targetPosition.y;
+    for (const option of verticalOptions) {
+      const fitsVertically =
+        option.y >= PADDING &&
+        option.y + menuSize.height <= viewport.height - PADDING;
+
+      if (fitsVertically) {
+        bestVerticalY = option.y;
+
+        break;
+      }
+    }
+
+    position = { x: bestHorizontalX, y: bestVerticalY };
+  } else {
+    // Menú principal - usar threshold para Y
+    if (position.y > THRESHOLD) {
+      position.y = position.y - menuSize.height;
+    }
+  }
+
+  // Constrain final position to viewport (solo si realmente no cabe)
+  position.x = Math.max(
+    PADDING,
+    Math.min(position.x, viewport.width - menuSize.width - PADDING)
+  );
+  position.y = Math.max(
+    PADDING,
+    Math.min(position.y, viewport.height - menuSize.height - PADDING)
+  );
+
+  return position;
+};
+
 // Hook para ajustar la posición del menú
 const useMenuPosition = (
   menuRef: React.RefObject<HTMLDivElement>,
-  x: number,
-  y: number,
+  position: { x: number; y: number },
   parentId?: string
 ) => {
   useEffect(() => {
     if (!menuRef.current) return;
 
     const menu = menuRef.current;
-    const rect = menu.getBoundingClientRect();
-    const windowWidth = window.innerWidth;
-    const windowHeight = window.innerHeight;
-    const threshold = windowHeight * 0.75; // 3/4 de la pantalla
+    const viewport = {
+      width: window.innerWidth,
+      height: window.innerHeight,
+    };
 
-    let adjustedX = x;
-    let adjustedY = y;
+    // Primero, remover restricciones para obtener el tamaño natural
+    menu.style.maxWidth = "";
+    menu.style.maxHeight = "";
+    menu.style.overflowX = "";
+    menu.style.overflowY = "";
 
+    // Forzar reflow para obtener dimensiones naturales
+    menu.offsetHeight;
+
+    const naturalRect = menu.getBoundingClientRect();
+
+    // Solo aplicar limitaciones si el contenido natural es demasiado grande
+    const maxWidth = viewport.width * 0.8;
+    const maxHeight = viewport.height * 0.8;
+
+    if (naturalRect.width > maxWidth) {
+      menu.style.maxWidth = `${maxWidth}px`;
+      menu.style.overflowX = "auto";
+    }
+
+    if (naturalRect.height > maxHeight) {
+      menu.style.maxHeight = `${maxHeight}px`;
+      menu.style.overflowY = "auto";
+    }
+
+    // Forzar reflow después de aplicar restricciones si es necesario
+    menu.offsetHeight;
+
+    const menuRect = menu.getBoundingClientRect();
+
+    let parentRect: DOMRect | null = null;
     if (parentId) {
-      const parentMenu = document.querySelector(`[data-menu-id="${parentId}"]`);
-      if (parentMenu) {
-        const parentRect = parentMenu.getBoundingClientRect();
-        adjustedX = parentRect.right;
-        adjustedY =
-          parentRect.top > threshold
-            ? parentRect.top - rect.height
-            : parentRect.top;
+      const allMenus = document.querySelectorAll("[data-menu-id]");
+
+      // ESTRATEGIA ALTERNATIVA: Si hay parentId pero no encontramos el elemento,
+      // usar el primer menú que no sea este (el más reciente antes de este)
+      let parentElement = document.querySelector(
+        `[data-menu-id="${parentId}"]`
+      );
+
+      if (!parentElement && allMenus.length > 1) {
+        // Tomar el menú anterior (debería ser el parent)
+        parentElement = allMenus[allMenus.length - 2] as HTMLElement;
       }
-    } else {
-      adjustedY = y > threshold ? y - rect.height : y;
+
+      parentRect = parentElement?.getBoundingClientRect() || null;
     }
 
-    // Ajuste horizontal
-    if (adjustedX + rect.width > windowWidth) {
-      adjustedX = parentId
-        ? adjustedX - rect.width - rect.width
-        : windowWidth - rect.width;
-    }
+    const finalPosition = calculateMenuPosition(
+      position,
+      { width: menuRect.width, height: menuRect.height },
+      parentRect,
+      viewport
+    );
 
-    // Asegurar que no se salga de la pantalla
-    adjustedY = Math.max(0, Math.min(windowHeight - rect.height, adjustedY));
-
-    menu.style.left = `${adjustedX}px`;
-    menu.style.top = `${adjustedY}px`;
-  }, [x, y, parentId]);
+    menu.style.left = `${finalPosition.x}px`;
+    menu.style.top = `${finalPosition.y}px`;
+  }, [position.x, position.y, parentId]);
 };
 
 // Componente para el divisor
@@ -181,8 +281,7 @@ const handleMenuItemClick = (child: React.ReactNode, menuId: string) => {
 };
 
 const ContextMenu: React.FC<ContextMenuProps> = ({
-  x,
-  y,
+  position,
   onClose,
   children,
   parentId,
@@ -191,11 +290,13 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
   bodyClassname,
 }) => {
   const menuRef = useRef<HTMLDivElement>(null);
-  const menuId = useRef(`menu-${Math.random()}`).current;
+  const menuId = useRef(
+    `menu-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+  ).current;
 
   useMenuClosing(menuId, parentId, onClose);
   useOutsideClick(menuId, parentId, onClose);
-  useMenuPosition(menuRef, x, y, parentId);
+  useMenuPosition(menuRef, position, parentId);
 
   // Prevenir que los eventos se propaguen fuera del menú
   const preventPropagation = (e: React.MouseEvent | React.TouchEvent) => {
@@ -208,8 +309,8 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
       data-menu-id={menuId}
       className="fixed flex flex-col p-[12px] gap-[10px] items-start rounded-lg border-2 border-sofia-darkBlue bg-sofia-blancoPuro whitespace-nowrap"
       style={{
-        left: x,
-        top: y,
+        left: position.x,
+        top: position.y,
         zIndex: 998,
       }}
       onClick={preventPropagation}
@@ -217,6 +318,7 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
       onTouchStart={preventPropagation}
       onTouchMove={preventPropagation}
       onTouchEnd={preventPropagation}
+      data-menu-parent-id={parentId || ""}
     >
       {header && (
         <div
