@@ -33,6 +33,10 @@ interface MetricData {
     value: number;
     color?: string;
     icon?: string;
+    trend?: {
+      value: number;
+      isPositive: boolean;
+    };
   }>;
 }
 
@@ -40,59 +44,90 @@ export type AnalyticResult = {
   chartData?: ChartData;
 } & MetricData;
 
-const calculateTrend = (entries: StatisticEntry[]): MetricData["trend"] => {
-  // Agrupar por tipo
-  const entriesByType = entries.reduce(
-    (acc, entry) => {
-      acc[entry.type] = acc[entry.type] || [];
-      acc[entry.type].push(entry);
-      return acc;
-    },
-    {} as Record<string, StatisticEntry[]>
-  );
+const calculateTrendForType = (
+  entries: StatisticEntry[],
+  displayType: StatisticsDisplayType,
+  analyticType: AnalyticType
+): { value: number; isPositive: boolean } | undefined => {
+  const typeEntries = entries.filter(entry => entry.type === analyticType);
 
-  // Filtrar solo los tipos con suficientes datos
-  const validEntries = Object.values(entriesByType)
-    .filter(typeEntries => typeEntries.length >= 2)
-    .flat();
+  if (typeEntries.length < 2) return undefined;
 
-  if (validEntries.length === 0) return undefined;
-
-  const sorted = [...validEntries].sort(
+  // Ordenar por fecha
+  const sorted = [...typeEntries].sort(
     (a, b) => a.created_at.getTime() - b.created_at.getTime()
   );
 
-  // Convertir fechas a números (días desde el inicio)
+  // Preparar datos según el tipo de display
+  let points: Array<{ x: number; y: number }>;
   const startTime = sorted[0].created_at.getTime();
-  const points = sorted.map(entry => ({
-    x: (entry.created_at.getTime() - startTime) / (1000 * 60 * 60 * 24),
-    y: entry.value,
-  }));
 
-  // Calcular medias
-  const n = points.length;
-  const meanX = points.reduce((sum, p) => sum + p.x, 0) / n;
-  const meanY = points.reduce((sum, p) => sum + p.y, 0) / n;
+  if (displayType === StatisticsDisplayType.METRIC_AVG) {
+    // Para promedio, agrupar por día y calcular promedio diario
+    const dailyGroups = sorted.reduce(
+      (acc, entry) => {
+        const dayKey = entry.created_at.toISOString().split("T")[0];
+        acc[dayKey] = acc[dayKey] || [];
+        acc[dayKey].push(entry);
+        return acc;
+      },
+      {} as Record<string, StatisticEntry[]>
+    );
 
-  // Calcular pendiente (m) de la línea de regresión
-  const numerator = points.reduce(
-    (sum, p) => sum + (p.x - meanX) * (p.y - meanY),
-    0
-  );
-  const denominator = points.reduce(
-    (sum, p) => sum + Math.pow(p.x - meanX, 2),
-    0
-  );
-  const slope = numerator / denominator;
+    points = Object.entries(dailyGroups).map(([dateStr, dayEntries]) => {
+      const date = new Date(dateStr);
+      const daysSinceStart =
+        (date.getTime() - startTime) / (1000 * 60 * 60 * 24);
+      const avgValue =
+        dayEntries.reduce((sum, entry) => sum + entry.value, 0) /
+        dayEntries.length;
+      return { x: daysSinceStart, y: avgValue };
+    });
+  } else {
+    // Para suma/acumulado, usar valores directos
+    points = sorted.map(entry => ({
+      x: (entry.created_at.getTime() - startTime) / (1000 * 60 * 60 * 24),
+      y: entry.value,
+    }));
+  }
 
-  // Calcular el porcentaje de cambio total
-  const firstValue = sorted[0].value;
-  const predictedChange = ((slope * (n - 1)) / firstValue) * 100;
+  if (points.length < 2) return undefined;
+
+  // Calcular porcentaje de cambio entre primer y último punto
+  const firstValue = points[0].y;
+  const lastValue = points[points.length - 1].y;
+
+  if (firstValue === 0) {
+    // Si empezamos en 0, mostrar como crecimiento absoluto
+    return {
+      value: Math.abs(Math.round(lastValue)),
+      isPositive: lastValue >= 0,
+    };
+  }
+
+  const percentageChange =
+    ((lastValue - firstValue) / Math.abs(firstValue)) * 100;
 
   return {
-    value: Math.abs(Math.round(predictedChange)),
-    isPositive: slope >= 0,
+    value: Math.round(Math.abs(percentageChange)),
+    isPositive: percentageChange >= 0,
   };
+};
+
+const calculateTrend = (
+  entries: StatisticEntry[],
+  displayType: StatisticsDisplayType,
+  requestedTypes: AnalyticType[]
+): MetricData["trend"] => {
+  if (entries.length === 0) return undefined;
+
+  // Para una sola métrica, calcular tendencia global
+  if (requestedTypes.length === 1) {
+    return calculateTrendForType(entries, displayType, requestedTypes[0]);
+  }
+
+  // Para múltiples métricas, no calcular tendencia global
+  return undefined;
 };
 
 const getDefaultMetadata = (type: AnalyticType) => {
@@ -143,6 +178,7 @@ const getMetricData = (
         value: 0,
         color: metadata.color,
         icon: metadata.icon,
+        trend: undefined,
       };
     }
 
@@ -158,11 +194,19 @@ const getMetricData = (
       value = typeEntries.reduce((acc, entry) => acc + entry.value, 0);
     }
 
+    // Calcular tendencia individual para esta métrica
+    const individualTrend = calculateTrendForType(
+      sortedEntries,
+      displayType,
+      type
+    );
+
     return {
       label: String(firstEntry.label || firstEntry.type),
       value: value,
       color: firstEntry.color,
       icon: firstEntry.icon,
+      trend: individualTrend,
     };
   });
 
@@ -170,7 +214,7 @@ const getMetricData = (
 
   return {
     value: totalValue,
-    trend: calculateTrend(sortedEntries),
+    trend: calculateTrend(sortedEntries, displayType, requestedTypes),
     series: series,
   };
 };
