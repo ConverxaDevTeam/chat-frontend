@@ -47,6 +47,10 @@ interface MetricsViewProps {
       value: number;
       color?: string;
       icon?: string;
+      trend?: {
+        value: number;
+        isPositive: boolean;
+      };
     }>;
     trend?: {
       value: number;
@@ -138,6 +142,10 @@ interface ChartViewProps {
       value: number;
       color?: string;
       icon?: string;
+      trend?: {
+        value: number;
+        isPositive: boolean;
+      };
     }>;
   };
   displayType: StatisticsDisplayType;

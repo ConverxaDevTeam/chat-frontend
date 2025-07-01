@@ -97,13 +97,14 @@ GET /api/analytics?organizationId=X&analyticTypes[]=USERS_WITHOUT_MESSAGES&start
 - **PIE**: Proporción respecto a otros tipos de usuarios
 
 ### Cálculo de Tendencias
-- **Solo para métricas individuales**: No se calcula tendencia para tarjetas con múltiples tipos
+- **Tendencias individuales**: Cada métrica en la tarjeta tiene su propia tendencia
 - **METRIC/METRIC_ACUM**: Comparación directa entre primer y último valor del período
 - **METRIC_AVG**: Comparación entre promedio del primer día vs último día
+- **Múltiples métricas**: Cada serie muestra su tendencia individual por separado
 - **Casos especiales**: 
   - Valor inicial 0: Muestra crecimiento absoluto
-  - Datos insuficientes (<2 puntos): No muestra tendencia
-- **Formato**: Porcentaje con flecha direccional (↗/↘)
+  - Datos insuficientes (<2 puntos): No muestra tendencia para esa métrica
+- **Formato**: Porcentaje con flecha direccional (↗/↘) bajo cada valor individual
 
 ### Rangos Temporales
 - Últimos 7 días: Datos diarios
@@ -132,10 +133,21 @@ GET /api/analytics?organizationId=X&analyticTypes[]=USERS_WITHOUT_MESSAGES&start
 ## Mejoras Implementadas
 
 ### Tendencias Mejoradas
-- **Problema anterior**: Regresión lineal incorrecta mezclando diferentes métricas
-- **Solución actual**: Comparación directa primer vs último valor por métrica individual
+- **Problema anterior**: Regresión lineal incorrecta, sin tendencias en tarjetas múltiples
+- **Solución actual**: Tendencias individuales por métrica con comparación directa
 - **Beneficios**:
-  - Cálculo correcto para METRIC_AVG (promedio diario)
-  - No mezcla diferentes tipos de analytics
-  - Manejo robusto de casos edge (división por cero)
-  - Interfaz más clara con tooltips explicativos
+  - **Tarjetas múltiples**: Cada métrica muestra su propia tendencia
+  - **Cálculo correcto**: METRIC_AVG usa promedio diario real
+  - **Precisión mejorada**: No mezcla diferentes tipos de analytics
+  - **Casos edge**: Manejo robusto (división por cero, datos insuficientes)
+  - **UX mejorada**: Tooltips explicativos y flechas direccionales
+  - **Información completa**: Ya no se pierden tendencias en tarjetas con 4+ métricas
+
+### Ejemplo de Uso
+```
+Tarjeta con 4 métricas:
+├── TOTAL_USERS: 180 ↗ +80%
+├── NEW_USERS: 20 ↘ 60%  
+├── USERS_WITHOUT_MESSAGES: 12 ↗ +12
+└── RECURRING_USERS: 25 ↗ +0%
+```
