@@ -98,8 +98,7 @@ const NodeContent: React.FC<NodeContentProps> = ({
         ) : (
           <DiagramContextMenuV2
             options={contextMenuOptions}
-            x={menuPosition?.x ?? 0}
-            y={menuPosition?.y ?? 0}
+            position={{ x: menuPosition?.x ?? 0, y: menuPosition?.y ?? 0 }}
             onClose={handleCloseContextMenu}
           />
         )}
