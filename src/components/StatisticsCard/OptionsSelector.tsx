@@ -49,12 +49,7 @@ const DataOptionsModal = ({
   };
 
   return (
-    <ContextMenu
-      x={position.x}
-      y={position.y}
-      onClose={onClose}
-      parentId={parentId}
-    >
+    <ContextMenu position={position} onClose={onClose} parentId={parentId}>
       {dataOptions.map(option => (
         <button
           key={option.id}
@@ -102,8 +97,7 @@ const StatisticsTypeModal = ({
 
   return (
     <ContextMenu
-      x={position.x}
-      y={position.y}
+      position={position}
       onClose={onClose}
       parentId={parentId}
       bodyClassname="w-full"
@@ -211,7 +205,7 @@ const OptionsMenu = ({
   onShowLegendChange,
   onDeleteCard,
 }: OptionsMenuProps) => (
-  <ContextMenu x={x} y={y} onClose={onClose} bodyClassname="w-full">
+  <ContextMenu position={{ x, y }} onClose={onClose} bodyClassname="w-full">
     <MenuButton onClick={onDataOptionClick} iconUrl="mvp/list.svg">
       Datos a mostrar
     </MenuButton>
