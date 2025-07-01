@@ -9,6 +9,7 @@ export enum AnalyticType {
   HITL_MESSAGES = "HITL_MESSAGES",
   FUNCTION_CALLS = "FUNCTION_CALLS",
   RECURRING_USERS = "RECURRING_USERS",
+  USERS_WITHOUT_MESSAGES = "USERS_WITHOUT_MESSAGES",
   SESSIONS = "SESSIONS",
   IA_MESSAGES_PER_SESSION = "IA_MESSAGES_PER_SESSION",
   HITL_MESSAGES_PER_SESSION = "HITL_MESSAGES_PER_SESSION",
@@ -18,7 +19,7 @@ export enum AnalyticType {
 
 export enum AnalyticDescription {
   TOTAL_USERS = "Usuarios que enviaron mensajes por día",
-  NEW_USERS = "Usuarios creados por día",
+  NEW_USERS = "Usuarios creados por día con mensajes",
   MESSAGES_BY_WHATSAPP = "Mensajes enviados por WhatsApp por día",
   MESSAGES_BY_FACEBOOK = "Mensajes enviados por Facebook por día",
   MESSAGES_BY_WEB = "Mensajes enviados por Web por día",
@@ -26,7 +27,8 @@ export enum AnalyticDescription {
   IA_MESSAGES = "Mensajes enviados por la IA por día",
   HITL_MESSAGES = "Mensajes enviados por agentes humanos por día",
   FUNCTION_CALLS = "Llamadas a funciones realizadas por día",
-  RECURRING_USERS = "Usuarios con sesiones antes del período y con mensajes por día",
+  RECURRING_USERS = "Usuarios con mensajes por día que no son nuevos",
+  USERS_WITHOUT_MESSAGES = "Usuarios sin mensajes por día",
   SESSIONS = "Sesiones de chat creadas por día",
   IA_MESSAGES_PER_SESSION = "Promedio de mensajes de IA por sesión por día",
   HITL_MESSAGES_PER_SESSION = "Promedio de mensajes de agentes humanos por sesión por día",
@@ -39,6 +41,8 @@ export enum StatisticsDisplayType {
   BAR = "BAR",
   AREA = "AREA",
   METRIC = "METRIC",
+  METRIC_AVG = "METRIC_AVG",
+  METRIC_ACUM = "METRIC_ACUM",
 }
 
 export enum TimeRange {
@@ -65,6 +69,10 @@ export const analyticOptions: AnalyticOption[] = [
   {
     id: AnalyticType.RECURRING_USERS,
     label: "Usuarios recurrentes",
+  },
+  {
+    id: AnalyticType.USERS_WITHOUT_MESSAGES,
+    label: "Usuarios sin mensajes",
   },
   {
     id: AnalyticType.SESSIONS,
@@ -117,7 +125,8 @@ export const analyticOptions: AnalyticOption[] = [
 ];
 
 export const displayTypeOptions = [
-  { id: StatisticsDisplayType.METRIC, label: "Metrica" },
+  { id: StatisticsDisplayType.METRIC_AVG, label: "Métrica avg" },
+  { id: StatisticsDisplayType.METRIC_ACUM, label: "Métrica acum" },
   { id: StatisticsDisplayType.AREA, label: "Area" },
   { id: StatisticsDisplayType.BAR, label: "Barras" },
   { id: StatisticsDisplayType.PIE, label: "Pastel" },
