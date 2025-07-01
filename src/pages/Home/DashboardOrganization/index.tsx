@@ -39,7 +39,7 @@ const getBreakpoint = (width: number) => {
 const DEFAULT_CARD = {
   title: "Nueva tarjeta",
   analyticTypes: [AnalyticType.TOTAL_USERS],
-  displayType: StatisticsDisplayType.METRIC,
+  displayType: StatisticsDisplayType.METRIC_ACUM,
   timeRange: TimeRange.LAST_7_DAYS,
   showLegend: true,
   layout: {
@@ -163,41 +163,41 @@ const DashboardOrganization = () => {
   return (
     <div className="h-full overflow-auto" ref={containerRef}>
       <PageContainer
-      title="Dashboard"
-      buttonText="+ Crear tarjeta"
-      onButtonClick={handleAddCard}
+        title="Dashboard"
+        buttonText="+ Crear tarjeta"
+        onButtonClick={handleAddCard}
       >
-      <ResponsiveGridLayout
-        className="layout"
-        layouts={layouts}
-        breakpoints={BREAKPOINTS}
-        cols={COLS}
-        rowHeight={35}
-        margin={[10, 10 ]}
-        containerPadding={[1, 10]}
-        isResizable
-        isDraggable
-        useCSSTransforms
-        onDragStop={handleItemChange}
-        onResizeStop={handleItemChange}
-        onBreakpointChange={setCurrentBreakpoint}
-      >
-        {state.map(card => (
-          <div key={card.id}>
-            <StatisticsCard
-              id={card.id}
-              title={card.title}
-              analyticTypes={card.analyticTypes}
-              displayType={card.displayType}
-              timeRange={card.timeRange}
-              className="h-full"
-              showLegend={card.showLegend}
-              onUpdateCard={updates => updateCardService(card.id, updates)}
-              onDeleteCard={removeCard}
-            />
-          </div>
-        ))}
-      </ResponsiveGridLayout>
+        <ResponsiveGridLayout
+          className="layout"
+          layouts={layouts}
+          breakpoints={BREAKPOINTS}
+          cols={COLS}
+          rowHeight={35}
+          margin={[10, 10]}
+          containerPadding={[1, 10]}
+          isResizable
+          isDraggable
+          useCSSTransforms
+          onDragStop={handleItemChange}
+          onResizeStop={handleItemChange}
+          onBreakpointChange={setCurrentBreakpoint}
+        >
+          {state.map(card => (
+            <div key={card.id}>
+              <StatisticsCard
+                id={card.id}
+                title={card.title}
+                analyticTypes={card.analyticTypes}
+                displayType={card.displayType}
+                timeRange={card.timeRange}
+                className="h-full"
+                showLegend={card.showLegend}
+                onUpdateCard={updates => updateCardService(card.id, updates)}
+                onDeleteCard={removeCard}
+              />
+            </div>
+          ))}
+        </ResponsiveGridLayout>
       </PageContainer>
     </div>
   );
