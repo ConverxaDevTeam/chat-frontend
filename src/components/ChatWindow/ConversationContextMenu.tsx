@@ -3,8 +3,7 @@ import { exportConversation } from "@services/conversations";
 import ContextMenu from "../ContextMenu";
 
 interface ConversationContextMenuProps {
-  x: number;
-  y: number;
+  position: { x: number; y: number };
   onClose: () => void;
   conversation: ConversationDetailResponse;
   organizationId: number;
@@ -12,15 +11,14 @@ interface ConversationContextMenuProps {
 }
 
 export const ConversationContextMenu = ({
-  x,
-  y,
+  position,
   onClose,
   conversation,
   organizationId,
   onDelete,
 }: ConversationContextMenuProps) => {
   return (
-    <ContextMenu x={x} y={y} onClose={onClose}>
+    <ContextMenu position={position} onClose={onClose}>
       <button
         className="w-full text-left flex items-center gap-2"
         onClick={() => {

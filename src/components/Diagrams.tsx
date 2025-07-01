@@ -340,7 +340,10 @@ const DiagramContextMenu = ({
   if (!contextMenu) return null;
 
   return (
-    <ContextMenu x={contextMenu.x} y={contextMenu.y} onClose={onClose}>
+    <ContextMenu
+      position={{ x: contextMenu.x, y: contextMenu.y }}
+      onClose={onClose}
+    >
       <button
         onClick={() => onCreateFunction(contextMenu)}
         className="w-full text-left px-4 py-2 hover:bg-gray-100 rounded"

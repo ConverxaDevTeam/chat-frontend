@@ -266,8 +266,7 @@ const ConversationDetail = () => {
       <div className="w-full h-full grid grid-cols-[minmax(0,1fr)] md:grid-cols-[345px,minmax(0,1fr)] xl:grid-cols-[345px,minmax(0,1fr)]">
         {showContextMenu.show && conversation && (
           <ConversationContextMenu
-            x={showContextMenu.x}
-            y={showContextMenu.y}
+            position={{ x: showContextMenu.x, y: showContextMenu.y }}
             onClose={() => setShowContextMenu({ show: false, x: 0, y: 0 })}
             conversation={conversation}
             organizationId={selectOrganizationId || 0}
