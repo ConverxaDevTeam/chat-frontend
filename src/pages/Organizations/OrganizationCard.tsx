@@ -72,11 +72,7 @@ const OrganizationCard = ({
       </Modal>
 
       {showContextMenu && (
-        <ContextMenu
-          x={menuPosition.x}
-          y={menuPosition.y}
-          onClose={handleCloseMenu}
-        >
+        <ContextMenu position={menuPosition} onClose={handleCloseMenu}>
           <button
             onClick={onEdit}
             className="flex items-center gap-2 w-full text-left"
