@@ -94,17 +94,6 @@ const calculateMenuPosition = (
   let position = { x: targetPosition.x, y: targetPosition.y };
 
   if (parentRect) {
-    console.log("DEBUG: Parent positioning", {
-      parentRect: {
-        left: parentRect.left,
-        right: parentRect.right,
-        width: parentRect.width,
-        height: parentRect.height,
-      },
-      menuSize,
-      viewport,
-    });
-
     // PASO 1: Determinar mejor posición HORIZONTAL
     const horizontalOptions = [
       { x: parentRect.right, name: "right" }, // Derecha del parent
@@ -118,16 +107,9 @@ const calculateMenuPosition = (
         option.x >= PADDING &&
         option.x + menuSize.width <= viewport.width - PADDING;
 
-      console.log(`DEBUG: Horizontal option ${option.name}:`, {
-        x: option.x,
-        fitsHorizontally,
-      });
-
       if (fitsHorizontally) {
         bestHorizontalX = option.x;
-        console.log(
-          `DEBUG: Selected horizontal position: ${option.name} (${option.x})`
-        );
+
         break;
       }
     }
@@ -145,22 +127,14 @@ const calculateMenuPosition = (
         option.y >= PADDING &&
         option.y + menuSize.height <= viewport.height - PADDING;
 
-      console.log(`DEBUG: Vertical option ${option.name}:`, {
-        y: option.y,
-        fitsVertically,
-      });
-
       if (fitsVertically) {
         bestVerticalY = option.y;
-        console.log(
-          `DEBUG: Selected vertical position: ${option.name} (${option.y})`
-        );
+
         break;
       }
     }
 
     position = { x: bestHorizontalX, y: bestVerticalY };
-    console.log("DEBUG: Final independent positioning:", position);
   } else {
     // Menú principal - usar threshold para Y
     if (position.y > THRESHOLD) {
@@ -191,40 +165,44 @@ const useMenuPosition = (
     if (!menuRef.current) return;
 
     const menu = menuRef.current;
-
-    // Aplicar limitaciones de tamaño antes de calcular posición
     const viewport = {
       width: window.innerWidth,
       height: window.innerHeight,
     };
 
+    // Primero, remover restricciones para obtener el tamaño natural
+    menu.style.maxWidth = "";
+    menu.style.maxHeight = "";
+    menu.style.overflowX = "";
+    menu.style.overflowY = "";
+
+    // Forzar reflow para obtener dimensiones naturales
+    menu.offsetHeight;
+
+    const naturalRect = menu.getBoundingClientRect();
+
+    // Solo aplicar limitaciones si el contenido natural es demasiado grande
     const maxWidth = viewport.width * 0.8;
     const maxHeight = viewport.height * 0.8;
 
-    menu.style.maxWidth = `${maxWidth}px`;
-    menu.style.maxHeight = `${maxHeight}px`;
-    menu.style.overflowX = "auto";
-    menu.style.overflowY = "auto";
+    if (naturalRect.width > maxWidth) {
+      menu.style.maxWidth = `${maxWidth}px`;
+      menu.style.overflowX = "auto";
+    }
 
-    // Forzar reflow para obtener dimensiones actualizadas
+    if (naturalRect.height > maxHeight) {
+      menu.style.maxHeight = `${maxHeight}px`;
+      menu.style.overflowY = "auto";
+    }
+
+    // Forzar reflow después de aplicar restricciones si es necesario
     menu.offsetHeight;
 
     const menuRect = menu.getBoundingClientRect();
 
-    console.log("DEBUG: useMenuPosition called", {
-      position,
-      parentId,
-      menuRect,
-    });
-
     let parentRect: DOMRect | null = null;
     if (parentId) {
-      console.log("DEBUG: Looking for parent with ID:", parentId);
       const allMenus = document.querySelectorAll("[data-menu-id]");
-      console.log(
-        "DEBUG: All menus in DOM:",
-        Array.from(allMenus).map(el => el.getAttribute("data-menu-id"))
-      );
 
       // ESTRATEGIA ALTERNATIVA: Si hay parentId pero no encontramos el elemento,
       // usar el primer menú que no sea este (el más reciente antes de este)
@@ -235,12 +213,9 @@ const useMenuPosition = (
       if (!parentElement && allMenus.length > 1) {
         // Tomar el menú anterior (debería ser el parent)
         parentElement = allMenus[allMenus.length - 2] as HTMLElement;
-        console.log("DEBUG: Using fallback parent strategy:", parentElement);
       }
 
-      console.log("DEBUG: Parent element found:", parentElement);
       parentRect = parentElement?.getBoundingClientRect() || null;
-      console.log("DEBUG: Parent rect:", parentRect);
     }
 
     const finalPosition = calculateMenuPosition(
@@ -249,8 +224,6 @@ const useMenuPosition = (
       parentRect,
       viewport
     );
-
-    console.log("DEBUG: Final position", finalPosition);
 
     menu.style.left = `${finalPosition.x}px`;
     menu.style.top = `${finalPosition.y}px`;
