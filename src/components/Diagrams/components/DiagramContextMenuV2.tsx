@@ -4,19 +4,17 @@ import { ContextMenuOption } from "../DiagramContextMenu";
 
 interface DiagramContextMenuV2Props {
   options: ContextMenuOption[];
-  x: number;
-  y: number;
+  position: { x: number; y: number };
   onClose: () => void;
 }
 
 export const DiagramContextMenuV2: React.FC<DiagramContextMenuV2Props> = ({
   options,
-  x,
-  y,
+  position,
   onClose,
 }) => {
   return (
-    <ContextMenu x={x} y={y} onClose={onClose}>
+    <ContextMenu position={position} onClose={onClose}>
       {options.map((option, index) => (
         <button
           key={index}
