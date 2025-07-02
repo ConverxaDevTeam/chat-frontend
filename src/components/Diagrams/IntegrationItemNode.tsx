@@ -22,7 +22,7 @@ const getIntegrationIcon = (type: IntegrationType) => {
   const iconMap: Record<IntegrationType, string> = {
     [IntegrationType.CHAT_WEB]: "/mvp/icon-web-yellow.svg",
     [IntegrationType.WHATSAPP]: "/mvp/whatsapp.svg",
-    [IntegrationType.WHATSAP_MANUAL]: "/mvp/whatsapp.svg",
+    [IntegrationType.WHATSAPP_MANUAL]: "/mvp/whatsapp.svg",
     [IntegrationType.MESSENGER]: "/mvp/messenger.svg",
     [IntegrationType.MESSENGER_MANUAL]: "/mvp/messenger.svg",
     [IntegrationType.SLACK]: "/mvp/slack.svg",
@@ -34,7 +34,7 @@ const getIntegrationName = (type: IntegrationType) => {
   const nameMap: Record<IntegrationType, string> = {
     [IntegrationType.CHAT_WEB]: "Chat Web",
     [IntegrationType.WHATSAPP]: "WhatsApp",
-    [IntegrationType.WHATSAP_MANUAL]: "WhatsApp",
+    [IntegrationType.WHATSAPP_MANUAL]: "WhatsApp",
     [IntegrationType.MESSENGER]: "Messenger",
     [IntegrationType.MESSENGER_MANUAL]: "Messenger",
     [IntegrationType.SLACK]: "Slack",
@@ -93,7 +93,7 @@ export const contextMenuOptions = ({
       tooltip: "Configurar Messenger",
     });
   }
-  if (itemType === IntegrationType.WHATSAP_MANUAL) {
+  if (itemType === IntegrationType.WHATSAPP_MANUAL) {
     choices.push({
       child: <img src="/mvp/settings.svg" alt="whatsapp" className="w-4 h-4" />,
       onClick: () => setWhatsAppManualModalOpen(true),
@@ -111,7 +111,7 @@ export const contextMenuOptions = ({
     itemType === IntegrationType.WHATSAPP ||
     itemType === IntegrationType.SLACK ||
     itemType === IntegrationType.MESSENGER_MANUAL ||
-    itemType === IntegrationType.WHATSAP_MANUAL
+    itemType === IntegrationType.WHATSAPP_MANUAL
   ) {
     choices.push({
       child: <img src="/mvp/trash.svg" alt="Remove" />,
