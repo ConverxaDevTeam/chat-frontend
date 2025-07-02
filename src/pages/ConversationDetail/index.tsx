@@ -1,10 +1,12 @@
 import { useForm } from "react-hook-form";
+import { useDebounce } from "@hooks/useDebounce";
 import { MessageForm } from "@components/ChatWindow/MessageForm";
 import { ConversationsList } from "@components/ChatWindow/ConversationsList";
 import {
   getConversationByOrganizationIdAndById,
   sendMessage,
   deleteConversation,
+  getChatUsersByOrganizationId,
 } from "@services/conversations";
 import { RootState } from "@store";
 import { useEffect, useRef, useState } from "react";
@@ -14,35 +16,94 @@ import MessageCard from "../../components/ChatWindow/MessageCard";
 import {
   ConversationDetailResponse,
   FormInputs,
+  chatUserToConversationListItem,
 } from "@interfaces/conversation";
-import { getConversationsByOrganizationId } from "@store/actions/conversations";
 import { useAppSelector } from "@store/hooks";
 import { ConversationListItem } from "@interfaces/conversation";
 import { ConversationContextMenu } from "@components/ChatWindow/ConversationContextMenu";
 import { alertError } from "@utils/alerts";
 import { ChatHeader } from "@components/ChatWindow/ChatHeader";
+import { IntegrationType } from "@interfaces/integrations";
 // import { UserInfoPanel } from "@components/ChatWindow/UserInfoPanel";
 
 // Hooks
-const useConversationList = (
+// Hook para obtener lista de chat users (clientes) usando el nuevo endpoint
+// CAMBIO: Reemplaza getConversationsByOrganizationId por getChatUsersByOrganizationId
+// para obtener usuarios únicos con su conversación más reciente en lugar de todas las conversaciones
+const useChatUsersForSidebar = (
   organizationId: number | null,
-  id: string | undefined
+  id: string | undefined,
+  searchQuery: string,
+  searchFilter: "Usuario" | "ID",
+  activeTab: IntegrationType | "Todas"
 ) => {
+  const debouncedSearchQuery = useDebounce(searchQuery, 500);
   const [conversationsList, setConversationsList] = useState<
     ConversationListItem[]
   >([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchConversations = async () => {
-      if (organizationId) {
-        const data = await getConversationsByOrganizationId(organizationId);
-        setConversationsList(data);
+    const fetchChatUsers = async () => {
+      if (!organizationId) {
+        setIsLoading(false);
+        return;
+      }
+
+      try {
+        setIsLoading(true);
+        setError(null);
+
+        // Construir filtros para el backend
+        const filters: {
+          searchValue?: string;
+          searchType?: "name" | "id";
+          integrationType?: IntegrationType;
+        } = {};
+
+        if (debouncedSearchQuery) {
+          filters.searchValue = debouncedSearchQuery;
+          if (searchFilter === "Usuario") {
+            filters.searchType = "name";
+          } else if (searchFilter === "ID") {
+            filters.searchType = "id";
+          }
+        }
+
+        if (activeTab !== "Todas") {
+          filters.integrationType = activeTab;
+        }
+
+        const response = await getChatUsersByOrganizationId(
+          organizationId,
+          filters
+        );
+
+        if (response.ok) {
+          // Convertir chat users a conversation list items para mantener compatibilidad
+          // con el componente ConversationsList existente
+          const convertedList = response.chat_users.map(chatUser =>
+            chatUserToConversationListItem(chatUser)
+          );
+          setConversationsList(convertedList);
+        } else {
+          setError(response.message || "Error al cargar los usuarios");
+          setConversationsList([]);
+        }
+      } catch (err) {
+        setError("Error inesperado al cargar los usuarios");
+        setConversationsList([]);
+        console.error("Error fetching chat users:", err);
+      } finally {
+        setIsLoading(false);
       }
     };
-    fetchConversations();
-  }, [organizationId, id]);
 
-  return { conversationsList };
+    fetchChatUsers();
+  }, [organizationId, id, debouncedSearchQuery, searchFilter, activeTab]);
+
+  return { conversationsList, isLoading, error };
 };
 
 const useConversationDetail = (
@@ -219,7 +280,23 @@ const ConversationDetail = () => {
   );
   const [showDrawer, setShowDrawer] = useState(false);
 
-  const { conversationsList } = useConversationList(organizationId, id);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchFilter, setSearchFilter] = useState<"Usuario" | "ID">("Usuario");
+  const [activeTab, setActiveTab] = useState<IntegrationType | "Todas">(
+    "Todas"
+  );
+
+  const {
+    conversationsList,
+    isLoading: isLoadingChatUsers,
+    error: chatUsersError,
+  } = useChatUsersForSidebar(
+    organizationId,
+    id,
+    searchQuery,
+    searchFilter,
+    activeTab
+  );
   const { conversation, messagesEndRef, getConversationDetailById } =
     useConversationDetail(id, selectOrganizationId);
   const { register, handleSubmit, isSubmitting, onSubmit } = useMessageForm(
@@ -254,14 +331,38 @@ const ConversationDetail = () => {
           showDrawer ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        <ConversationsList
-          conversations={conversationsList}
-          onSelectConversation={userId => {
-            handleSelectConversation(userId);
-            setShowDrawer(false);
-          }}
-          selectedId={Number(id)}
-        />
+        {isLoadingChatUsers ? (
+          <div className="flex items-center justify-center h-full">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-sofia-darkBlue mx-auto mb-2"></div>
+              <p className="text-sm text-app-newGray">Cargando usuarios...</p>
+            </div>
+          </div>
+        ) : chatUsersError ? (
+          <div className="flex items-center justify-center h-full">
+            <div className="text-center p-4">
+              <p className="text-sm text-red-600 mb-2">
+                Error al cargar usuarios
+              </p>
+              <p className="text-xs text-app-newGray">{chatUsersError}</p>
+            </div>
+          </div>
+        ) : (
+          <ConversationsList
+            conversations={conversationsList}
+            onSelectConversation={userId => {
+              handleSelectConversation(userId);
+              setShowDrawer(false);
+            }}
+            selectedId={Number(id)}
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+            searchFilter={searchFilter}
+            setSearchFilter={setSearchFilter}
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
+          />
+        )}
       </div>
       <div className="w-full h-full grid grid-cols-[minmax(0,1fr)] md:grid-cols-[345px,minmax(0,1fr)] xl:grid-cols-[345px,minmax(0,1fr)]">
         {showContextMenu.show && conversation && (
@@ -275,11 +376,35 @@ const ConversationDetail = () => {
         )}
         {/* Left Column - Conversations List */}
         <div className="hidden md:block h-full w-full overflow-hidden">
-          <ConversationsList
-            conversations={conversationsList}
-            onSelectConversation={handleSelectConversation}
-            selectedId={Number(id)}
-          />
+          {isLoadingChatUsers ? (
+            <div className="w-[345px] h-full bg-sofia-blancoPuro border border-app-lightGray rounded-l-lg flex items-center justify-center">
+              <div className="text-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-sofia-darkBlue mx-auto mb-2"></div>
+                <p className="text-sm text-app-newGray">Cargando usuarios...</p>
+              </div>
+            </div>
+          ) : chatUsersError ? (
+            <div className="w-[345px] h-full bg-sofia-blancoPuro border border-app-lightGray rounded-l-lg flex items-center justify-center">
+              <div className="text-center p-4">
+                <p className="text-sm text-red-600 mb-2">
+                  Error al cargar usuarios
+                </p>
+                <p className="text-xs text-app-newGray">{chatUsersError}</p>
+              </div>
+            </div>
+          ) : (
+            <ConversationsList
+              conversations={conversationsList}
+              onSelectConversation={handleSelectConversation}
+              selectedId={Number(id)}
+              searchQuery={searchQuery}
+              setSearchQuery={setSearchQuery}
+              searchFilter={searchFilter}
+              setSearchFilter={setSearchFilter}
+              activeTab={activeTab}
+              setActiveTab={setActiveTab}
+            />
+          )}
         </div>
 
         {/* Middle Column - Chat */}
