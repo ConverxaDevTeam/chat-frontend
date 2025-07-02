@@ -102,11 +102,7 @@ const UserFilter: React.FC<UserFilterProps> = ({
           />
         </button>
         {menuPosition && (
-          <ContextMenu
-            x={menuPosition.x}
-            y={menuPosition.y}
-            onClose={handleCloseMenu}
-          >
+          <ContextMenu position={menuPosition} onClose={handleCloseMenu}>
             <button
               onClick={() => handleRoleSelect("")}
               className="w-full flex items-start text-sm text-gray-700"
