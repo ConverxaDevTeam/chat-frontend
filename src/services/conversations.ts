@@ -3,6 +3,8 @@ import {
   ConversationDetailResponse,
   ConversationFilters,
   ConversationListResponse,
+  ChatUserFilters,
+  ChatUserListResponse,
 } from "@interfaces/conversation";
 import { axiosInstance } from "@store/actions/auth";
 import { alertError } from "@utils/alerts";
@@ -19,6 +21,79 @@ const buildQueryParams = (filters: ConversationFilters): string => {
   });
 
   return params.toString();
+};
+
+const buildChatUserQueryParams = (filters: ChatUserFilters): string => {
+  const params = new URLSearchParams();
+
+  Object.entries(filters).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== "") {
+      params.append(key, String(value));
+    }
+  });
+
+  return params.toString();
+};
+
+export const getChatUsersByOrganizationId = async (
+  organizationId: number,
+  filters?: ChatUserFilters
+): Promise<ChatUserListResponse> => {
+  try {
+    let url = apiUrls.getChatUsersByOrganizationId(organizationId);
+
+    if (filters) {
+      const queryParams = buildChatUserQueryParams(filters);
+      if (queryParams) {
+        url += `?${queryParams}`;
+      }
+    }
+
+    const response = await axiosInstance.get<ChatUserListResponse>(url);
+
+    if (response.data.ok) {
+      return response.data;
+    } else {
+      alertError(response.data.message || "Error al obtener chat users");
+      return {
+        ok: false,
+        chat_users: [],
+        pagination: {
+          currentPage: 1,
+          totalPages: 0,
+          totalItems: 0,
+          itemsPerPage: 20,
+          hasNextPage: false,
+          hasPreviousPage: false,
+        },
+      };
+    }
+  } catch (error) {
+    let message = "Error inesperado";
+    if (axios.isAxiosError(error)) {
+      if (error.response) {
+        message =
+          error.response.data?.message || "Error inesperado del servidor";
+      } else if (error.request) {
+        message = "No se pudo conectar con el servidor";
+      } else {
+        message = error.message;
+      }
+    }
+    alertError(message);
+    return {
+      ok: false,
+      chat_users: [],
+      pagination: {
+        currentPage: 1,
+        totalPages: 0,
+        totalItems: 0,
+        itemsPerPage: 20,
+        hasNextPage: false,
+        hasPreviousPage: false,
+      },
+    };
+  }
 };
 
 export const getConversationsByOrganizationId = async (
