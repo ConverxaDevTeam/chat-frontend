@@ -51,12 +51,40 @@ export interface ConversationListItem {
   need_human: boolean;
   type: IntegrationType;
   department: string;
+  // Nuevos campos opcionales del backend
+  user_name?: string;
+  user_email?: string;
+  user_phone?: string;
+  integration_type?: IntegrationType;
 }
 
 export interface ConversationListResponse {
   ok: boolean;
   message?: string;
   conversations: ConversationListItem[];
+  pagination?: {
+    currentPage: number;
+    totalPages: number;
+    totalItems: number;
+    itemsPerPage: number;
+    hasNextPage: boolean;
+    hasPreviousPage: boolean;
+  };
+  appliedFilters?: ConversationFilters;
+}
+
+export interface ConversationFilters {
+  search?: string;
+  department?: string;
+  integrationType?: IntegrationType;
+  status?: "ia" | "pendiente" | "asignado";
+  dateFrom?: string;
+  dateTo?: string;
+  type?: string;
+  sortBy?: "created_at" | "type" | "need_human" | "department";
+  sortOrder?: "ASC" | "DESC";
+  page?: number;
+  limit?: number;
 }
 
 export const getConversationStatus = (
@@ -85,4 +113,16 @@ export interface ConversationDetailResponse {
     secret: string;
     identifier: string;
   } | null;
+}
+
+export enum SortableFields {
+  CREATED_AT = "created_at",
+  TYPE = "type",
+  NEED_HUMAN = "need_human",
+  DEPARTMENT = "department",
+}
+
+export enum SortOrder {
+  ASC = "ASC",
+  DESC = "DESC",
 }
