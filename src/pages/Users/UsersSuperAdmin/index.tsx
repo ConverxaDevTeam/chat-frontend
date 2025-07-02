@@ -75,11 +75,7 @@ const UserRow = ({
   return (
     <>
       {showContextMenu && (
-        <ContextMenu
-          x={menuPosition.x}
-          y={menuPosition.y}
-          onClose={handleCloseMenu}
-        >
+        <ContextMenu position={menuPosition} onClose={handleCloseMenu}>
           <button
             onClick={() => onEdit(user.id)}
             className="flex items-center gap-2 w-full text-left"

@@ -30,6 +30,10 @@ const ANALYTIC_METADATA: Record<
     label: "Usuarios Recurrentes",
     color: "#0FBFB0",
   },
+  [AnalyticType.USERS_WITHOUT_MESSAGES]: {
+    label: "Usuarios sin Mensajes",
+    color: "#FF6B6B",
+  },
   [AnalyticType.SESSIONS]: {
     label: "Sesiones",
     color: "#6F15EC",
