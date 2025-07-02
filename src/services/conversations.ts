@@ -1,22 +1,58 @@
 import { apiUrls } from "@config/config";
-import { ConversationDetailResponse } from "@interfaces/conversation";
+import {
+  ConversationDetailResponse,
+  ConversationFilters,
+  ConversationListResponse,
+} from "@interfaces/conversation";
 import { axiosInstance } from "@store/actions/auth";
 import { alertError } from "@utils/alerts";
 import axios from "axios";
 import { exportToCSV, exportToExcel, exportToPDF } from "./export.service";
 
+const buildQueryParams = (filters: ConversationFilters): string => {
+  const params = new URLSearchParams();
+
+  Object.entries(filters).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== "") {
+      params.append(key, String(value));
+    }
+  });
+
+  return params.toString();
+};
+
 export const getConversationsByOrganizationId = async (
-  organizationId: number
-) => {
+  organizationId: number,
+  filters?: ConversationFilters
+): Promise<ConversationListResponse> => {
   try {
-    const response = await axiosInstance.get(
-      apiUrls.getConversationsByOrganizationId(organizationId)
-    );
+    let url = apiUrls.getConversationsByOrganizationId(organizationId);
+
+    if (filters) {
+      const queryParams = buildQueryParams(filters);
+      if (queryParams) {
+        url += `?${queryParams}`;
+      }
+    }
+
+    const response = await axiosInstance.get<ConversationListResponse>(url);
+
     if (response.data.ok) {
-      return response.data.conversations;
+      return response.data;
     } else {
-      alertError(response.data.message);
-      return [];
+      alertError(response.data.message || "Error al obtener conversaciones");
+      return {
+        ok: false,
+        conversations: [],
+        pagination: {
+          currentPage: 1,
+          totalPages: 0,
+          totalItems: 0,
+          itemsPerPage: 20,
+          hasNextPage: false,
+          hasPreviousPage: false,
+        },
+      };
     }
   } catch (error) {
     let message = "Error inesperado";
@@ -31,7 +67,18 @@ export const getConversationsByOrganizationId = async (
       }
     }
     alertError(message);
-    return [];
+    return {
+      ok: false,
+      conversations: [],
+      pagination: {
+        currentPage: 1,
+        totalPages: 0,
+        totalItems: 0,
+        itemsPerPage: 20,
+        hasNextPage: false,
+        hasPreviousPage: false,
+      },
+    };
   }
 };
 
