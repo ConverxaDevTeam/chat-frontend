@@ -42,7 +42,7 @@ export interface ConversationListItem {
   created_at: string;
   user_id: number | null;
   secret: string;
-  avatar: null; // TODO: add avatar
+  avatar: string | null; // TODO: add avatar
   unread_messages: number;
   message_id: number;
   message_text: string;
@@ -126,3 +126,89 @@ export enum SortOrder {
   ASC = "ASC",
   DESC = "DESC",
 }
+
+// Chat Users Interfaces
+export interface ChatUserListItem {
+  chat_user_id: string;
+  user_name: string | null;
+  user_email: string | null;
+  user_phone: string | null;
+  avatar: string | null;
+  secret: string;
+  identifier: string;
+  last_conversation: {
+    conversation_id: number;
+    last_message_text: string;
+    last_message_created_at: string;
+    last_message_type: MessageType;
+    unread_messages: number;
+    need_human: boolean;
+    assigned_user_id: number | null;
+    integration_type: IntegrationType;
+    department: string;
+    last_activity: string;
+    status: "ia" | "pendiente" | "asignado";
+  };
+}
+
+export interface ChatUserListResponse {
+  ok: boolean;
+  message?: string;
+  chat_users: ChatUserListItem[];
+  pagination?: {
+    currentPage: number;
+    totalPages: number;
+    totalItems: number;
+    itemsPerPage: number;
+    hasNextPage: boolean;
+    hasPreviousPage: boolean;
+  };
+  appliedFilters?: ChatUserFilters;
+}
+
+export interface ChatUserFilters {
+  searchValue?: string;
+  searchType?: "name" | "id"; // Nuevo campo para especificar tipo de búsqueda
+  department?: string;
+  integrationType?: IntegrationType;
+  status?: "ia" | "pendiente" | "asignado";
+  needHuman?: boolean;
+  assignedToMe?: boolean;
+  hasUnreadMessages?: boolean;
+  dateFrom?: string;
+  dateTo?: string;
+  sortBy?:
+    | "last_activity"
+    | "user_name"
+    | "unread_messages"
+    | "need_human"
+    | "created_at";
+  sortOrder?: "ASC" | "DESC";
+  page?: number;
+  limit?: number;
+}
+
+// Helper function to convert ChatUserListItem to ConversationListItem for backward compatibility
+export const chatUserToConversationListItem = (
+  chatUser: ChatUserListItem
+): ConversationListItem => {
+  return {
+    id: chatUser.last_conversation.conversation_id,
+    created_at: chatUser.last_conversation.last_activity,
+    user_id: chatUser.last_conversation.assigned_user_id,
+    secret: chatUser.secret,
+    avatar: chatUser.avatar,
+    unread_messages: chatUser.last_conversation.unread_messages,
+    message_id: 0, // No longer relevant
+    message_text: chatUser.last_conversation.last_message_text,
+    message_type: chatUser.last_conversation.last_message_type,
+    message_created_at: chatUser.last_conversation.last_message_created_at,
+    need_human: chatUser.last_conversation.need_human,
+    type: chatUser.last_conversation.integration_type,
+    department: chatUser.last_conversation.department,
+    user_name: chatUser.user_name || undefined,
+    user_email: chatUser.user_email || undefined,
+    user_phone: chatUser.user_phone || undefined,
+    integration_type: chatUser.last_conversation.integration_type,
+  };
+};
