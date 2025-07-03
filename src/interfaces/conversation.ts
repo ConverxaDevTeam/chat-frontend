@@ -145,6 +145,7 @@ export interface ConversationDetailResponse {
   } | null;
   user?: Record<string, unknown> | null;
   created_at?: string;
+  isLastConversation?: boolean;
 }
 
 export enum SortableFields {

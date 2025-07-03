@@ -15,6 +15,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import MessageCard from "../../components/ChatWindow/MessageCard";
 import {
   ConversationDetailResponse,
+  ConversationResponseMessage,
   FormInputs,
   chatUserToConversationListItem,
 } from "@interfaces/conversation";
@@ -25,6 +26,7 @@ import { alertError } from "@utils/alerts";
 import { ChatHeader } from "@components/ChatWindow/ChatHeader";
 import { IntegrationType } from "@interfaces/integrations";
 import ConversationHistoryModal from "@components/ChatWindow/ConversationHistoryModal";
+import { ConversationWarningBanner } from "@components/ChatWindow/ConversationWarningBanner";
 // import { UserInfoPanel } from "@components/ChatWindow/UserInfoPanel";
 
 // Hooks
@@ -86,14 +88,6 @@ const useChatUsersForSidebar = (
           // con el componente ConversationsList existente
           const convertedList = response.chat_users.map(chatUser => {
             const converted = chatUserToConversationListItem(chatUser);
-            console.log("Chat user conversion:", {
-              chatUserId: chatUser.chat_user_id,
-              conversationId: chatUser.last_conversation.conversation_id,
-              convertedId: converted.id,
-              userName: chatUser.user_name,
-              secret: chatUser.secret,
-              lastConversation: chatUser.last_conversation,
-            });
             return converted;
           });
           setConversationsList(convertedList);
@@ -104,7 +98,6 @@ const useChatUsersForSidebar = (
       } catch (err) {
         setError("Error inesperado al cargar los usuarios");
         setConversationsList([]);
-        console.error("Error fetching chat users:", err);
       } finally {
         setIsLoading(false);
       }
@@ -129,23 +122,16 @@ const useConversationDetail = (
 
   const getConversationDetailById = async () => {
     try {
-      console.log("Loading conversation detail:", { id, selectOrganizationId });
       if (!id || !selectOrganizationId) {
-        console.warn("Missing required data:", { id, selectOrganizationId });
         return;
       }
-      console.log(
-        "Calling API:",
-        `/api/conversation/${selectOrganizationId}/${Number(id)}`
-      );
       const response = await getConversationByOrganizationIdAndById(
         selectOrganizationId,
         Number(id)
       );
-      console.log("Conversation loaded successfully:", response);
       setConversation(response);
     } catch (error) {
-      console.error("Error loading conversation:", error);
+      // Error handled by service
     }
   };
 
@@ -158,7 +144,6 @@ const useConversationDetail = (
   }, [conversation?.messages?.length]);
 
   useEffect(() => {
-    console.log("useEffect triggered - id changed to:", id);
     getConversationDetailById();
   }, [id]);
 
@@ -168,18 +153,30 @@ const useConversationDetail = (
       conversation &&
       lastMessage.conversation.id === conversation.id
     ) {
-      const normalizedLastMessage = {
-        ...lastMessage,
-        images: lastMessage.images || null, // Asegurar que images sea null si es undefined
+      const normalizedLastMessage: ConversationResponseMessage = {
+        id: lastMessage.id,
+        created_at: lastMessage.created_at,
+        text: lastMessage.text,
+        audio: lastMessage.audio,
+        images: lastMessage.images || null,
+        time: Date.now(),
+        type: lastMessage.type,
+        conversation: {
+          id: lastMessage.conversation.id,
+          created_at: "",
+          updated_at: "",
+          deleted_at: null,
+          user_deleted: false,
+          type: "",
+          config: {},
+          need_human: false,
+        },
       };
       setConversation(prev => {
         if (!prev) return null;
         return {
           ...prev,
-          messages: [
-            ...prev.messages,
-            { ...normalizedLastMessage, time: Date.now() },
-          ],
+          messages: [...prev.messages, normalizedLastMessage],
         };
       });
     }
@@ -224,7 +221,7 @@ const useMessageForm = (
         await getConversationDetailById();
       }
     } catch (error) {
-      console.error("Error al enviar mensaje:", error);
+      // Error handled by service
     }
   };
 
@@ -348,21 +345,9 @@ const ConversationDetail = () => {
     useMessageSearch(conversation);
 
   const handleSelectConversation = (conversationId: number) => {
-    console.log("Attempting to navigate to conversation ID:", conversationId);
     if (conversationId === 0 || !conversationId) {
-      console.warn(
-        "Cannot navigate to conversation with invalid ID:",
-        conversationId
-      );
-      console.warn(
-        "This likely means the backend is returning conversation_id as 0 or null"
-      );
       return;
     }
-    console.log(
-      "Navigation successful to:",
-      `/conversation/detail/${conversationId}`
-    );
     navigate(`/conversation/detail/${conversationId}`);
   };
 
@@ -498,6 +483,11 @@ const ConversationDetail = () => {
             onConversationsClick={() => setShowDrawer(true)}
           />
 
+          {/* Warning Banner */}
+          <ConversationWarningBanner
+            isLastConversation={conversation?.isLastConversation}
+          />
+
           {/* Chat Content */}
           <div className="flex-1 overflow-y-auto">
             <div className="flex flex-col gap-4 p-4">
@@ -545,7 +535,13 @@ const ConversationDetail = () => {
               <MessageForm
                 form={{ register, handleSubmit, isSubmitting }}
                 onSubmit={onSubmit}
-                conversation={conversation}
+                conversation={{
+                  id: conversation.id,
+                  user: conversation.user
+                    ? { id: conversation.user.id as number }
+                    : undefined,
+                  messages: conversation.messages,
+                }}
                 user={{ id: user?.id ?? -1 }}
                 onUpdateConversation={getConversationDetailById}
               />
