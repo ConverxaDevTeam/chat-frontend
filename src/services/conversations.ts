@@ -3,6 +3,7 @@ import {
   ConversationDetailResponse,
   ConversationFilters,
   ConversationListResponse,
+  ConversationListItem,
   ChatUserFilters,
   ChatUserListResponse,
 } from "@interfaces/conversation";
@@ -445,5 +446,63 @@ export const getConversationHistory = async (
       ok: false,
       conversations: [],
     };
+  }
+};
+
+// Función para obtener TODAS las conversaciones con filtros aplicados (para export)
+export const getAllConversationsForExport = async (
+  organizationId: number,
+  filters?: ConversationFilters
+): Promise<ConversationListItem[]> => {
+  try {
+    // Primero intentamos obtener todas con el límite máximo permitido
+    const filtersWithHighLimit = {
+      ...filters,
+      limit: 100, // Límite máximo permitido por el backend
+      page: 1,
+    };
+
+    const response = await getConversationsByOrganizationId(
+      organizationId,
+      filtersWithHighLimit
+    );
+
+    if (response.ok) {
+      // Si obtenemos todas las conversaciones en una sola llamada
+      if (response.conversations.length === response.pagination?.totalItems) {
+        return response.conversations;
+      }
+
+      // Si hay más conversaciones, hacemos múltiples llamadas
+      const totalPages = response.pagination?.totalPages || 1;
+      const allConversations: ConversationListItem[] = [
+        ...response.conversations,
+      ];
+
+      // Hacer llamadas para las páginas restantes con límite de 100
+      for (let page = 2; page <= totalPages; page++) {
+        const pageFilters = {
+          ...filters,
+          page,
+          limit: 100, // Usar el límite máximo permitido
+        };
+
+        const pageResponse = await getConversationsByOrganizationId(
+          organizationId,
+          pageFilters
+        );
+
+        if (pageResponse.ok) {
+          allConversations.push(...pageResponse.conversations);
+        }
+      }
+
+      return allConversations;
+    } else {
+      return [];
+    }
+  } catch (error) {
+    console.error("Error al obtener todas las conversaciones:", error);
+    return [];
   }
 };

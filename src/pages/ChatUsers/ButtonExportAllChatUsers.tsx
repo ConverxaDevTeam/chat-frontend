@@ -1,17 +1,15 @@
-import { MessageType, ConversationFilters } from "@interfaces/conversation";
-import { IntegrationType } from "@interfaces/integrations";
 import {
-  getConversationByOrganizationIdAndById,
-  getAllConversationsForExport,
-} from "@services/conversations";
+  IChatUsersFilters,
+  IChatUser,
+  ChatUserType,
+} from "@interfaces/chatUsers";
+import { getAllChatUsersForExport } from "@services/chatUsers";
 import { RootState } from "@store";
 import { convertISOToReadable, getPdfMonthDayYear } from "@utils/format";
 import { alertConfirm, alertError, alertInfo } from "@utils/alerts";
 import pdfMake from "pdfmake/build/pdfmake";
 import { useSelector } from "react-redux";
 import { useState } from "react";
-import { exportToCSV, exportToExcel } from "@services/export.service";
-import * as XLSX from "xlsx";
 
 const pdfMakeFonts = {
   Roboto: {
@@ -27,22 +25,42 @@ const pdfMakeFonts = {
 
 pdfMake.fonts = pdfMakeFonts;
 
-interface ButtonExportAllConversationsProps {
-  appliedFilters?: ConversationFilters;
+interface ButtonExportAllChatUsersProps {
+  appliedFilters?: IChatUsersFilters;
 }
 
-const ButtonExportAllConversations = ({
+const ButtonExportAllChatUsers = ({
   appliedFilters,
-}: ButtonExportAllConversationsProps) => {
+}: ButtonExportAllChatUsersProps) => {
   const { selectOrganizationId } = useSelector(
     (state: RootState) => state.auth
   );
 
   const [isExporting, setIsExporting] = useState(false);
-  const [showDropdown, setShowDropdown] = useState(false);
 
-  async function handleExport(format: "pdf" | "csv" | "excel") {
-    setShowDropdown(false);
+  const getChannelName = (type?: ChatUserType): string => {
+    switch (type) {
+      case ChatUserType.MESSENGER:
+        return "Messenger";
+      case ChatUserType.WHATSAPP:
+        return "WhatsApp";
+      case ChatUserType.SLACK:
+        return "Slack";
+      case ChatUserType.CHAT_WEB:
+        return "Chat Web";
+      default:
+        return "No especificado";
+    }
+  };
+
+  const getConversationStatus = (chatUser: IChatUser): string => {
+    if (chatUser.lastConversation?.assigned_user_id) return "Asignado";
+    if (!chatUser.lastConversation?.need_human) return "IA";
+    return "Pendiente";
+  };
+
+  async function generatePDF(e: React.MouseEvent) {
+    e.stopPropagation();
 
     if (!selectOrganizationId) {
       alertError("No se ha seleccionado una organización");
@@ -52,23 +70,24 @@ const ButtonExportAllConversations = ({
     setIsExporting(true);
 
     try {
-      // Obtener todas las conversaciones que cumplen con los filtros
-      alertInfo("Obteniendo todas las conversaciones...");
-      const allConversations = await getAllConversationsForExport(
-        selectOrganizationId,
-        appliedFilters
-      );
+      // Obtener todos los chat users que cumplen con los filtros
+      alertInfo("Obteniendo todos los clientes...");
+      const filtersWithOrg = {
+        ...appliedFilters,
+        organizationId: selectOrganizationId,
+      };
+      const allChatUsers = await getAllChatUsersForExport(filtersWithOrg);
 
-      if (allConversations.length === 0) {
-        alertInfo("No hay conversaciones disponibles para exportar");
+      if (allChatUsers.length === 0) {
+        alertInfo("No hay clientes disponibles para exportar");
         setIsExporting(false);
         return;
       }
 
       alertInfo(
-        `Preparando la exportación de ${allConversations.length} conversaciones...`
+        `Preparando la exportación de ${allChatUsers.length} clientes...`
       );
-      const imageUrl = "/logo.svg";
+      const imageUrl = "/logo.png";
 
       const response = await fetch(imageUrl);
       const blob = await response.blob();
@@ -103,7 +122,7 @@ const ButtonExportAllConversations = ({
               margin: [0, 0, 0, 20],
             },
             {
-              text: `Reporte de todas las conversaciones`,
+              text: `Reporte de todos los clientes`,
               style: "header",
               alignment: "center",
               margin: [0, 0, 0, 10],
@@ -115,7 +134,7 @@ const ButtonExportAllConversations = ({
               margin: [0, 0, 0, 20],
             },
             {
-              text: `Total de conversaciones: ${allConversations.length}`,
+              text: `Total de clientes: ${allChatUsers.length}`,
               style: "subheader",
               margin: [0, 0, 0, 30],
             },
@@ -156,69 +175,29 @@ const ButtonExportAllConversations = ({
               fontSize: 14,
               bold: true,
             },
-            conversationHeader: {
+            clientHeader: {
               fontSize: 16,
               bold: true,
               color: "#343E4F",
               margin: [0, 15, 0, 0],
             },
-            message: {
+            clientInfo: {
               fontSize: 12,
               margin: [10, 0, 0, 0],
             },
           },
           footer: function (currentPage: number, pageCount: number) {
             return {
-              text: `Página ${currentPage} de ${pageCount} - Generado por Converxa`,
+              text: `Página ${currentPage} de ${pageCount} - Generado por Sofia Chat`,
               alignment: "center",
               style: "footer",
             };
           },
         };
 
-        const conversationPromises = allConversations.map(conv =>
-          getConversationByOrganizationIdAndById(
-            selectOrganizationId,
-            conv.id
-          ).catch(error => {
-            console.error(
-              `Error al obtener detalles de conversación ${conv.id}:`,
-              error
-            );
-            return null;
-          })
-        );
-
-        const conversationDetails = await Promise.all(conversationPromises);
-
-        conversationDetails.forEach((conversationDetail, index) => {
-          const conversation = allConversations[index];
-
-          if (!conversationDetail) {
-            docDefinition.content.push({
-              text: `Error al cargar la conversación ID: ${conversation.id}`,
-              margin: [0, 0, 0, 10],
-            });
-            return;
-          }
-
-          const messages = conversationDetail?.messages || [];
-          let channel = "";
-
-          switch (conversation.type) {
-            case IntegrationType.MESSENGER:
-              channel = "Messenger";
-              break;
-            case IntegrationType.WHATSAPP:
-              channel = "WhatsApp";
-              break;
-            case IntegrationType.SLACK:
-              channel = "Slack";
-              break;
-            default:
-              channel = "Web";
-              break;
-          }
+        allChatUsers.forEach((chatUser, index) => {
+          const standardInfo = chatUser.standardInfo;
+          const lastConversation = chatUser.lastConversation;
 
           if (docDefinition.content.length > 4 || index > 0) {
             docDefinition.content.push({
@@ -238,69 +217,120 @@ const ButtonExportAllConversations = ({
           }
 
           docDefinition.content.push({
-            text: `Conversación ID: ${conversation.id}`,
-            style: "conversationHeader",
+            text: `Cliente ID: ${standardInfo?.id || "N/A"}`,
+            style: "clientHeader",
           });
 
           docDefinition.content.push({
             text: [
-              { text: "Iniciado: ", bold: true },
+              { text: "Nombre: ", bold: true },
               {
-                text: `${convertISOToReadable(conversation.created_at, false)}\n`,
+                text: `${standardInfo?.name || "No especificado"}\n`,
+                bold: false,
+              },
+              { text: "Email: ", bold: true },
+              {
+                text: `${standardInfo?.email || "No especificado"}\n`,
+                bold: false,
+              },
+              { text: "Teléfono: ", bold: true },
+              {
+                text: `${standardInfo?.phone || "No especificado"}\n`,
                 bold: false,
               },
               { text: "Canal: ", bold: true },
-              { text: `${channel}\n`, bold: false },
-              { text: "Departamento: ", bold: true },
+              { text: `${getChannelName(standardInfo?.type)}\n`, bold: false },
+              { text: "Registro: ", bold: true },
               {
-                text: `${conversation.department || "No especificado"}\n`,
+                text: `${
+                  standardInfo?.created_at
+                    ? convertISOToReadable(standardInfo.created_at, false)
+                    : "No especificado"
+                }\n`,
                 bold: false,
               },
-              { text: "Mensajes: ", bold: true },
-              { text: `${messages.length}`, bold: false },
+              { text: "Último login: ", bold: true },
+              {
+                text: `${
+                  standardInfo?.last_login
+                    ? convertISOToReadable(standardInfo.last_login, false)
+                    : "No especificado"
+                }\n`,
+                bold: false,
+              },
             ],
             margin: [0, 0, 0, 10],
           });
 
-          if (messages.length > 0) {
+          if (lastConversation) {
             docDefinition.content.push({
-              text: "Mensajes:",
+              text: "Última conversación:",
               style: "subheader",
               margin: [0, 5, 0, 5],
             });
 
-            for (const message of messages) {
-              const messageText = message.text?.trim() || "";
-              const hasImage =
-                (message.images && message.images.length > 0) ||
-                messageText.includes("<img") ||
-                messageText.includes("data:image");
-              const displayText =
-                messageText || (hasImage ? "[Imagen adjunta]" : "");
-
-              docDefinition.content.push({
-                columns: [
-                  {
-                    width: "auto",
-                    text:
-                      message.type === MessageType.USER
-                        ? "Usuario: "
-                        : "Asistente: ",
-                    bold: true,
-                  },
-                  {
-                    width: "*",
-                    text: displayText || "[Contenido no disponible]",
-                    style: "message",
-                  },
-                ],
-                margin: [0, 0, 0, 5],
-              });
-            }
+            docDefinition.content.push({
+              text: [
+                { text: "Estado: ", bold: true },
+                { text: `${getConversationStatus(chatUser)}\n`, bold: false },
+                { text: "Mensajes no leídos: ", bold: true },
+                {
+                  text: `${lastConversation.unread_messages || 0}\n`,
+                  bold: false,
+                },
+                { text: "Departamento: ", bold: true },
+                {
+                  text: `${lastConversation.department || "No especificado"}\n`,
+                  bold: false,
+                },
+                { text: "Última actividad: ", bold: true },
+                {
+                  text: `${
+                    lastConversation.last_activity
+                      ? convertISOToReadable(
+                          lastConversation.last_activity,
+                          false
+                        )
+                      : "No especificado"
+                  }\n`,
+                  bold: false,
+                },
+                { text: "Último mensaje: ", bold: true },
+                {
+                  text: `${lastConversation.last_message_text || "No disponible"}`,
+                  bold: false,
+                },
+              ],
+              style: "clientInfo",
+              margin: [0, 0, 0, 5],
+            });
           } else {
             docDefinition.content.push({
-              text: "No hay mensajes disponibles",
+              text: "Sin conversaciones registradas",
               italics: true,
+              style: "clientInfo",
+            });
+          }
+
+          // Agregar datos personalizados si existen
+          if (
+            chatUser.customData &&
+            Object.keys(chatUser.customData).length > 0
+          ) {
+            docDefinition.content.push({
+              text: "Datos personalizados:",
+              style: "subheader",
+              margin: [0, 5, 0, 5],
+            });
+
+            const customDataText = Object.entries(chatUser.customData)
+              .map(([key, value]) => `${key}: ${value}`)
+              .join("\n");
+
+            docDefinition.content.push({
+              text: customDataText,
+              style: "clientInfo",
+              margin: [0, 0, 0, 5],
             });
           }
         });
@@ -308,14 +338,14 @@ const ButtonExportAllConversations = ({
         pdfMake
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           .createPdf(docDefinition as any)
-          .download(`reporte-todas-conversaciones-${getPdfMonthDayYear()}.pdf`);
+          .download(`reporte-todos-clientes-${getPdfMonthDayYear()}.pdf`);
 
         alertConfirm("Exportación completada con éxito");
         setIsExporting(false);
       };
     } catch (error) {
-      console.error("Error al exportar las conversaciones:", error);
-      alertError("Error al exportar las conversaciones");
+      console.error("Error al exportar los clientes:", error);
+      alertError("Error al exportar los clientes");
       setIsExporting(false);
     }
   }
@@ -328,10 +358,10 @@ const ButtonExportAllConversations = ({
       disabled={isExporting}
     >
       <p className="text-[14px] font-medium text-white">
-        {isExporting ? "Exportando..." : "Exportar todos los chats"}
+        {isExporting ? "Exportando..." : "Exportar todos los clientes"}
       </p>
     </button>
   );
 };
 
-export default ButtonExportAllConversations;
+export default ButtonExportAllChatUsers;
