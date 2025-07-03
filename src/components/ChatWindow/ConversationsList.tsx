@@ -205,25 +205,24 @@ const SearchBox = ({
           >
             ID
           </button>
-          {searchFilter === "ID" &&
-            (searchQuery || searchFilter !== "Usuario") && (
-              <button
-                onClick={() => {
-                  setSearchQuery("");
-                  setSearchFilter("Usuario");
-                }}
-                className="absolute -top-1 -right-1 w-5 h-5 bg-sofia-darkBlue rounded-full flex items-center justify-center hover:bg-opacity-80 transition-colors"
-              >
-                <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-                  <path
-                    d="M7.5 2.5L2.5 7.5M2.5 2.5L7.5 7.5"
-                    stroke="#001130"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                  />
-                </svg>
-              </button>
-            )}
+          {searchFilter === "ID" && searchQuery && (
+            <button
+              onClick={() => {
+                setSearchQuery("");
+                setSearchFilter("Usuario");
+              }}
+              className="absolute -top-1 -right-1 w-5 h-5 bg-sofia-darkBlue rounded-full flex items-center justify-center hover:bg-opacity-80 transition-colors"
+            >
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                <path
+                  d="M7.5 2.5L2.5 7.5M2.5 2.5L7.5 7.5"
+                  stroke="#001130"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                />
+              </svg>
+            </button>
+          )}
         </div>
       </div>
     </div>

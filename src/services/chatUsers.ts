@@ -6,7 +6,8 @@ import {
 import { axiosInstance } from "@store/actions/auth";
 
 export const getChatUsers = async (
-  filters: IChatUsersFilters = {}
+  filters: IChatUsersFilters = {},
+  includeMessages: boolean = false
 ): Promise<IChatUsersResponse> => {
   try {
     const params = new URLSearchParams();
@@ -25,6 +26,7 @@ export const getChatUsers = async (
     if (filters.dateTo) params.append("dateTo", filters.dateTo);
     if (filters.sortBy) params.append("sortBy", filters.sortBy);
     if (filters.sortOrder) params.append("sortOrder", filters.sortOrder);
+    if (includeMessages) params.append("includeMessages", "true");
 
     const response = await axiosInstance.get(
       `/api/chat-user/all/info?${params.toString()}`
@@ -65,7 +67,8 @@ export const getChatUsers = async (
 
 // Función para obtener TODOS los chat users con filtros aplicados (para export)
 export const getAllChatUsersForExport = async (
-  filters: IChatUsersFilters = {}
+  filters: IChatUsersFilters = {},
+  includeMessages: boolean = false
 ): Promise<IChatUser[]> => {
   try {
     // Primero intentamos obtener todos con el límite máximo permitido
@@ -75,7 +78,7 @@ export const getAllChatUsersForExport = async (
       page: 1,
     };
 
-    const response = await getChatUsers(filtersWithHighLimit);
+    const response = await getChatUsers(filtersWithHighLimit, includeMessages);
 
     if (response.ok) {
       // Si obtenemos todos los usuarios en una sola llamada
@@ -95,7 +98,7 @@ export const getAllChatUsersForExport = async (
           limit: 100, // Usar el límite máximo permitido
         };
 
-        const pageResponse = await getChatUsers(pageFilters);
+        const pageResponse = await getChatUsers(pageFilters, includeMessages);
 
         if (pageResponse.ok) {
           allUsers.push(...pageResponse.users);
