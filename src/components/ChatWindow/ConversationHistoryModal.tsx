@@ -3,13 +3,15 @@ import { getConversationHistory } from "@services/conversations";
 import { useNavigate } from "react-router-dom";
 import Modal from "../Modal";
 
-interface ConversationHistoryItem {
+interface ConversationHistory {
   id: number;
   created_at: string;
-  message_text: string;
-  message_created_at: string;
-  message_type: string;
-  department: string;
+  messages: Array<{
+    id: number;
+    text: string;
+    created_at: string;
+    is_from_user: boolean;
+  }>;
 }
 
 interface ConversationHistoryModalProps {
@@ -27,34 +29,53 @@ const ConversationHistoryModal: React.FC<ConversationHistoryModalProps> = ({
   chatUserSecret,
   userName,
 }) => {
-  const [conversations, setConversations] = useState<ConversationHistoryItem[]>(
-    []
-  );
+  const [conversations, setConversations] = useState<ConversationHistory[]>([]);
   const [loading, setLoading] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
     if (isOpen && chatUserSecret) {
-      fetchHistory();
+      setPage(1);
+      setConversations([]);
+      setHasMore(true);
+      fetchHistory(1, false);
     }
   }, [isOpen, chatUserSecret, organizationId]);
 
-  const fetchHistory = async () => {
-    setLoading(true);
+  const fetchHistory = async (pageNum = 1, append = false) => {
+    if (pageNum === 1) {
+      setLoading(true);
+    } else {
+      setLoadingMore(true);
+    }
     setError(null);
+
     try {
       console.log("Fetching history for:", {
         organizationId,
         chatUserSecret,
+        page: pageNum,
       });
+
       const response = await getConversationHistory(
         organizationId,
         chatUserSecret
       );
+
       console.log("History response:", response);
+
       if (response.ok) {
-        setConversations(response.conversations);
+        if (append) {
+          setConversations(prev => [...prev, ...response.conversations]);
+        } else {
+          setConversations(response.conversations);
+        }
+        // Asumiendo que si hay menos de 10 elementos, no hay más páginas
+        setHasMore(response.conversations.length === 10);
         console.log("Conversations set:", response.conversations);
       } else {
         setError("No se pudo cargar el historial");
@@ -64,6 +85,7 @@ const ConversationHistoryModal: React.FC<ConversationHistoryModalProps> = ({
       setError("Error al cargar el historial");
     } finally {
       setLoading(false);
+      setLoadingMore(false);
     }
   };
 
@@ -80,18 +102,41 @@ const ConversationHistoryModal: React.FC<ConversationHistoryModalProps> = ({
     }
   };
 
-  const getConversationPreview = (conversation: ConversationHistoryItem) => {
-    if (!conversation.message_text) return "Sin mensajes";
+  const getConversationPreview = (conversation: ConversationHistory) => {
+    if (!conversation.messages || conversation.messages.length === 0)
+      return "Sin mensajes";
+
+    const lastMessage = conversation.messages[conversation.messages.length - 1];
+    const messageText = lastMessage.text;
 
     // Truncar como en la imagen
-    return conversation.message_text.length > 60
-      ? conversation.message_text.substring(0, 60) + "..."
-      : conversation.message_text;
+    return messageText.length > 60
+      ? messageText.substring(0, 60) + "..."
+      : messageText;
   };
 
   const handleConversationClick = (conversationId: number) => {
     navigate(`/conversation/detail/${conversationId}`);
     onClose();
+  };
+
+  const loadMore = () => {
+    if (hasMore && !loadingMore) {
+      const nextPage = page + 1;
+      setPage(nextPage);
+      fetchHistory(nextPage, true);
+    }
+  };
+
+  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
+    if (
+      scrollHeight - scrollTop <= clientHeight + 5 &&
+      hasMore &&
+      !loadingMore
+    ) {
+      loadMore();
+    }
   };
 
   return (
@@ -120,17 +165,17 @@ const ConversationHistoryModal: React.FC<ConversationHistoryModalProps> = ({
       footer={
         <button
           onClick={onClose}
-          className="w-full py-2 px-4 bg-sofia-electricGreen text-sofia-superDark rounded-[4px] hover:bg-opacity-90 transition-colors satoshi-medium"
+          className="w-full py-2 px-4 bg-sofia-superDark text-white rounded-[4px] hover:bg-sofia-darkLight transition-colors satoshi-medium"
         >
           Cerrar
         </button>
       }
     >
-      <div className="w-full max-w-md">
+      <div className="w-full min-w-[800px]">
         {loading && (
           <div className="flex items-center justify-center py-8">
             <div className="text-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-sofia-electricGreen mx-auto mb-4"></div>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-sofia-superDark mx-auto mb-4"></div>
               <p className="text-gray-600 satoshi-regular">
                 Cargando historial...
               </p>
@@ -147,8 +192,8 @@ const ConversationHistoryModal: React.FC<ConversationHistoryModalProps> = ({
             />
             <p className="text-gray-600 satoshi-regular mb-4">{error}</p>
             <button
-              onClick={fetchHistory}
-              className="px-4 py-2 bg-sofia-electricGreen text-sofia-superDark rounded-[4px] hover:bg-opacity-90 transition-colors satoshi-medium"
+              onClick={() => fetchHistory(1, false)}
+              className="px-4 py-2 bg-sofia-superDark text-white rounded-[4px] hover:bg-sofia-darkLight transition-colors satoshi-medium"
             >
               Reintentar
             </button>
@@ -169,26 +214,46 @@ const ConversationHistoryModal: React.FC<ConversationHistoryModalProps> = ({
         )}
 
         {!loading && !error && conversations.length > 0 && (
-          <div className="space-y-4">
-            {conversations.map(conversation => (
+          <div
+            className="space-y-4 max-h-96 overflow-y-auto"
+            onScroll={handleScroll}
+          >
+            {conversations.map((conversation, index) => (
               <div
-                key={conversation.id}
-                className="border border-gray-200 rounded-[4px] p-4 hover:bg-gray-50 cursor-pointer transition-colors"
+                key={`${conversation.id}-${index}`}
+                className="border border-gray-200 rounded-[4px] p-6 hover:bg-gray-50 cursor-pointer transition-colors min-w-[750px]"
                 onClick={() => handleConversationClick(conversation.id)}
               >
-                <div className="flex justify-between items-start mb-2">
-                  <span className="text-sm satoshi-medium text-sofia-superDark">
+                <div className="flex justify-between items-start mb-3">
+                  <span className="text-base satoshi-medium text-sofia-superDark">
                     {formatConversationDate(conversation.created_at)}
                   </span>
-                  <span className="text-xs text-gray-500 satoshi-regular">
-                    {conversation.department}
+                  <span className="text-sm text-gray-500 satoshi-regular">
+                    Conversación
                   </span>
                 </div>
-                <p className="text-sm text-gray-600 leading-relaxed satoshi-regular">
+                <p className="text-base text-gray-600 leading-relaxed satoshi-regular">
                   {getConversationPreview(conversation)}
                 </p>
               </div>
             ))}
+
+            {loadingMore && (
+              <div className="flex items-center justify-center py-4">
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-sofia-superDark"></div>
+                <span className="ml-2 text-sm text-gray-600 satoshi-regular">
+                  Cargando más...
+                </span>
+              </div>
+            )}
+
+            {!hasMore && conversations.length > 0 && (
+              <div className="text-center py-4">
+                <span className="text-xs text-gray-500 satoshi-regular">
+                  No hay más conversaciones
+                </span>
+              </div>
+            )}
           </div>
         )}
       </div>
