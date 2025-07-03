@@ -55,18 +55,10 @@ const ConversationHistoryModal: React.FC<ConversationHistoryModalProps> = ({
     setError(null);
 
     try {
-      console.log("Fetching history for:", {
-        organizationId,
-        chatUserSecret,
-        page: pageNum,
-      });
-
       const response = await getConversationHistory(
         organizationId,
         chatUserSecret
       );
-
-      console.log("History response:", response);
 
       if (response.ok) {
         if (append) {
@@ -76,12 +68,10 @@ const ConversationHistoryModal: React.FC<ConversationHistoryModalProps> = ({
         }
         // Asumiendo que si hay menos de 10 elementos, no hay más páginas
         setHasMore(response.conversations.length === 10);
-        console.log("Conversations set:", response.conversations);
       } else {
         setError("No se pudo cargar el historial");
       }
     } catch (err) {
-      console.error("Error fetching history:", err);
       setError("Error al cargar el historial");
     } finally {
       setLoading(false);
