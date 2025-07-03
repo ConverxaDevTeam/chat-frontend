@@ -10,8 +10,6 @@ import { alertConfirm, alertError, alertInfo } from "@utils/alerts";
 import pdfMake from "pdfmake/build/pdfmake";
 import { useSelector } from "react-redux";
 import { useState } from "react";
-import { exportToCSV, exportToExcel } from "@services/export.service";
-import * as XLSX from "xlsx";
 
 const pdfMakeFonts = {
   Roboto: {
@@ -39,10 +37,9 @@ const ButtonExportAllConversations = ({
   );
 
   const [isExporting, setIsExporting] = useState(false);
-  const [showDropdown, setShowDropdown] = useState(false);
 
-  async function handleExport(format: "pdf" | "csv" | "excel") {
-    setShowDropdown(false);
+  async function generatePDF(e: React.MouseEvent) {
+    e.stopPropagation();
 
     if (!selectOrganizationId) {
       alertError("No se ha seleccionado una organización");

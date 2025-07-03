@@ -21,6 +21,16 @@ export interface IChatUserCustomData {
   [key: string]: string | number | boolean;
 }
 
+export interface IChatUserMessage {
+  id: number;
+  text: string;
+  created_at: string;
+  type: string;
+  images?: string[] | null;
+  audio?: string | null;
+  time?: number;
+}
+
 export interface ILastConversation {
   conversation_id: number;
   last_message_text: string;
@@ -33,6 +43,7 @@ export interface ILastConversation {
   department: string;
   last_activity: string;
   status: "ia" | "pendiente" | "asignado";
+  messages?: IChatUserMessage[];
 }
 
 export interface IChatUser {
