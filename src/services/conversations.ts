@@ -188,25 +188,11 @@ export const getConversationByOrganizationIdAndById = async (
       organizationId,
       conversationId
     );
-    console.log("Service: Fetching conversation from:", url);
-    console.log("Service: Parameters:", { organizationId, conversationId });
-    console.log("Service: Timestamp:", Date.now());
 
     const response = await axiosInstance.get<ConversationDetailResponse>(url);
-    console.log("Service: Response status:", response.status);
-    console.log("Service: Response data:", response.data);
-    console.log("Service: Response data type:", typeof response.data);
-    console.log(
-      "🔍 DEBUG: Para debuggear ejecuta en consola: debugConversationResponse(" +
-        organizationId +
-        ", " +
-        conversationId +
-        ")"
-    );
 
     // Verificar si response.data existe y es un objeto válido
     if (!response.data || typeof response.data !== "object") {
-      console.error("Service: Invalid response data:", response.data);
       alertError("Respuesta inválida del servidor");
       return null;
     }
@@ -217,44 +203,21 @@ export const getConversationByOrganizationIdAndById = async (
     // Verificar estructuras comunes de respuesta del backend
     const dynamicData = response.data as unknown as DynamicResponse;
     if (dynamicData.data && typeof dynamicData.data === "object") {
-      console.log("Service: Found wrapped data structure");
       conversationData = dynamicData.data;
     } else if (
       dynamicData.conversation &&
       typeof dynamicData.conversation === "object"
     ) {
-      console.log("Service: Found wrapped conversation structure");
       conversationData = dynamicData.conversation;
     }
 
-    console.log("Service: Final conversation data:", conversationData);
-    console.log("Service: Conversation data type:", typeof conversationData);
-    console.log(
-      "Service: Conversation data keys:",
-      Object.keys(conversationData || {})
-    );
-
     // Verificar si conversationData es válido
     if (!conversationData || typeof conversationData !== "object") {
-      console.error("Service: Invalid conversation data:", conversationData);
       alertError("Datos de conversación inválidos");
       return null;
     }
 
-    console.log("Service: Response data structure:", {
-      hasMessages: "messages" in conversationData,
-      messagesType: typeof conversationData.messages,
-      messagesValue: conversationData.messages,
-      dataKeys: Object.keys(conversationData),
-    });
-
     if (response.status === 200) {
-      console.log(
-        "Service: Messages count:",
-        conversationData.messages?.length || 0
-      );
-      console.log("Service: About to return conversation data");
-
       // Verificación robusta para messages
       let messages: ConversationDetailResponse["messages"] = [];
       const dynamicConversation =
@@ -267,12 +230,8 @@ export const getConversationByOrganizationIdAndById = async (
         messages =
           dynamicConversation.messages as ConversationDetailResponse["messages"];
       } else {
-        console.warn(
-          "Service: Messages not found or not an array, using empty array"
-        );
         messages = [];
       }
-      console.log("Service: Messages array:", messages);
 
       const result = {
         ...conversationData,
@@ -281,23 +240,14 @@ export const getConversationByOrganizationIdAndById = async (
             new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
         ),
       } as ConversationDetailResponse;
-      console.log("Service: Returning result:", result);
       return result;
     } else {
-      console.error("Service: Non-200 status:", response.status, response.data);
       alertError(String(response.data));
-      console.log("Service: Returning null due to non-200 status");
       return null;
     }
   } catch (error) {
-    console.error("Service: Error fetching conversation:", error);
     let message = "Error inesperado";
     if (axios.isAxiosError(error)) {
-      console.error("Service: Axios error details:", {
-        status: error.response?.status,
-        data: error.response?.data,
-        message: error.message,
-      });
       if (error.response) {
         message =
           error.response.data?.message || "Error inesperado del servidor";
@@ -308,7 +258,6 @@ export const getConversationByOrganizationIdAndById = async (
       }
     }
     alertError(message);
-    console.log("Service: Returning null due to error");
     return null;
   }
 };
@@ -424,46 +373,26 @@ export const getConversationHistory = async (
 ): Promise<ConversationHistoryResponse> => {
   try {
     const url = `${apiUrls.getConversationsByOrganizationId(organizationId)}?secret=${secret}`;
-    console.log("Service: Fetching conversation history from:", url);
-    console.log("Service: Parameters:", { organizationId, secret });
 
     const response = await axiosInstance.get<ConversationHistoryResponse>(url);
-    console.log("Service: Full response:", response);
-    console.log("Service: Response status:", response.status);
-    console.log("Service: Response data:", response.data);
 
     // Verificar si la respuesta tiene la estructura esperada
     if (response.data && typeof response.data === "object") {
-      console.log("Service: Response data keys:", Object.keys(response.data));
-
       // Verificar si está envuelta en otra estructura
       if (response.data.ok !== undefined) {
-        console.log("Service: Found 'ok' property:", response.data.ok);
         if (response.data.ok) {
-          console.log(
-            "Service: Conversations array:",
-            response.data.conversations
-          );
           if (
             response.data.conversations &&
             Array.isArray(response.data.conversations)
           ) {
-            console.log(
-              "Service: Number of conversations:",
-              response.data.conversations.length
-            );
-            response.data.conversations.forEach((conv, index) => {
-              console.log(`Service: Conversation ${index}:`, {
-                id: conv.id,
-                created_at: conv.created_at,
-                messagesCount: conv.messages?.length || 0,
-                firstMessage: conv.messages?.[0],
-              });
-            });
+            return response.data;
+          } else {
+            return {
+              ok: false,
+              conversations: [],
+            };
           }
-          return response.data;
         } else {
-          console.error("Service: API returned ok: false");
           alertError("Error al cargar el historial de conversaciones");
           return {
             ok: false,
@@ -472,11 +401,7 @@ export const getConversationHistory = async (
         }
       } else {
         // Tal vez la respuesta es directamente el array o está en otra estructura
-        console.log(
-          "Service: No 'ok' property found, checking for direct array or other structures"
-        );
         if (Array.isArray(response.data)) {
-          console.log("Service: Response is direct array, wrapping it");
           return {
             ok: true,
             conversations: response.data,
@@ -485,16 +410,11 @@ export const getConversationHistory = async (
           response.data.conversations &&
           Array.isArray(response.data.conversations)
         ) {
-          console.log("Service: Found conversations array without ok property");
           return {
             ok: true,
             conversations: response.data.conversations,
           };
         } else {
-          console.error(
-            "Service: Unexpected response structure:",
-            response.data
-          );
           alertError("Formato de respuesta inesperado");
           return {
             ok: false,
@@ -503,7 +423,6 @@ export const getConversationHistory = async (
         }
       }
     } else {
-      console.error("Service: Invalid response data:", response.data);
       alertError("Respuesta inválida del servidor");
       return {
         ok: false,
@@ -511,14 +430,8 @@ export const getConversationHistory = async (
       };
     }
   } catch (error) {
-    console.error("Service: Error in getConversationHistory:", error);
     let message = "Error inesperado al cargar el historial";
     if (axios.isAxiosError(error)) {
-      console.error("Service: Axios error details:", {
-        status: error.response?.status,
-        data: error.response?.data,
-        message: error.message,
-      });
       if (error.response) {
         message = error.response.data?.message || "Error del servidor";
       } else if (error.request) {
