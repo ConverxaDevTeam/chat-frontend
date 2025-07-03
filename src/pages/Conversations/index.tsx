@@ -23,6 +23,7 @@ const Conversations = () => {
     conversations,
     pagination,
     filters,
+    appliedFilters,
     isLoading,
     isFilteringLoading,
     updateFilter,
@@ -81,7 +82,7 @@ const Conversations = () => {
               Ver todos los chats
             </p>
           </button>
-          <ButtonExportAllConversations conversations={conversations} />
+          <ButtonExportAllConversations appliedFilters={appliedFilters} />
         </div>
       </div>
 

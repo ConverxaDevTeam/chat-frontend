@@ -1,4 +1,8 @@
-import { IChatUsersResponse, IChatUsersFilters } from "@interfaces/chatUsers";
+import {
+  IChatUsersResponse,
+  IChatUsersFilters,
+  IChatUser,
+} from "@interfaces/chatUsers";
 import { axiosInstance } from "@store/actions/auth";
 
 export const getChatUsers = async (
@@ -13,6 +17,14 @@ export const getChatUsers = async (
       params.append("organizationId", filters.organizationId.toString());
     if (filters.search) params.append("search", filters.search);
     if (filters.type) params.append("type", filters.type);
+    if (filters.needHuman !== undefined)
+      params.append("needHuman", filters.needHuman.toString());
+    if (filters.hasUnreadMessages !== undefined)
+      params.append("hasUnreadMessages", filters.hasUnreadMessages.toString());
+    if (filters.dateFrom) params.append("dateFrom", filters.dateFrom);
+    if (filters.dateTo) params.append("dateTo", filters.dateTo);
+    if (filters.sortBy) params.append("sortBy", filters.sortBy);
+    if (filters.sortOrder) params.append("sortOrder", filters.sortOrder);
 
     const response = await axiosInstance.get(
       `/api/chat-user/all/info?${params.toString()}`
@@ -48,5 +60,54 @@ export const getChatUsers = async (
       page: 1,
       totalPages: 1,
     };
+  }
+};
+
+// Función para obtener TODOS los chat users con filtros aplicados (para export)
+export const getAllChatUsersForExport = async (
+  filters: IChatUsersFilters = {}
+): Promise<IChatUser[]> => {
+  try {
+    // Primero intentamos obtener todos con el límite máximo permitido
+    const filtersWithHighLimit = {
+      ...filters,
+      limit: 100, // Límite máximo permitido por el backend
+      page: 1,
+    };
+
+    const response = await getChatUsers(filtersWithHighLimit);
+
+    if (response.ok) {
+      // Si obtenemos todos los usuarios en una sola llamada
+      if (response.users.length === response.total) {
+        return response.users;
+      }
+
+      // Si hay más usuarios, hacemos múltiples llamadas
+      const totalPages = response.totalPages || 1;
+      const allUsers: IChatUser[] = [...response.users];
+
+      // Hacer llamadas para las páginas restantes con límite de 100
+      for (let page = 2; page <= totalPages; page++) {
+        const pageFilters = {
+          ...filters,
+          page,
+          limit: 100, // Usar el límite máximo permitido
+        };
+
+        const pageResponse = await getChatUsers(pageFilters);
+
+        if (pageResponse.ok) {
+          allUsers.push(...pageResponse.users);
+        }
+      }
+
+      return allUsers;
+    } else {
+      return [];
+    }
+  } catch (error) {
+    console.error("Error al obtener todos los chat users:", error);
+    return [];
   }
 };
