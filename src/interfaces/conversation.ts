@@ -104,6 +104,27 @@ export interface ConversationResponseMessage {
   images: string[] | null;
   time: number;
   type: MessageType;
+  conversation?: {
+    id: number;
+    created_at: string;
+    updated_at: string;
+    deleted_at: string | null;
+    user_deleted: boolean;
+    type: string;
+    config: Record<string, unknown>;
+    need_human: boolean;
+  };
+  chatSession?: {
+    id: number;
+    created_at: string;
+    updated_at: string;
+    deleted_at: string | null;
+    status: string;
+    lastInteractionAt: string;
+    closedAt: string | null;
+    metadata: Record<string, unknown> | null;
+    conversationId: number;
+  };
 }
 
 export interface ConversationDetailResponse {
@@ -111,8 +132,19 @@ export interface ConversationDetailResponse {
   messages: ConversationResponseMessage[];
   chat_user: {
     secret: string;
-    identifier: string;
+    phone: string | null;
+    web: string | null;
+    name: string | null;
+    last_login: string | null;
+    address: string | null;
+    avatar: string | null;
+    email: string | null;
+    browser: string | null;
+    operating_system: string | null;
+    ip: string | null;
   } | null;
+  user?: Record<string, unknown> | null;
+  created_at?: string;
 }
 
 export enum SortableFields {
@@ -192,8 +224,14 @@ export interface ChatUserFilters {
 export const chatUserToConversationListItem = (
   chatUser: ChatUserListItem
 ): ConversationListItem => {
+  // Use chat_user_id as unique identifier when conversation_id is 0 or missing
+  const uniqueId =
+    chatUser.last_conversation.conversation_id ||
+    parseInt(chatUser.chat_user_id) ||
+    Math.random() * 1000000;
+
   return {
-    id: chatUser.last_conversation.conversation_id,
+    id: uniqueId,
     created_at: chatUser.last_conversation.last_activity,
     user_id: chatUser.last_conversation.assigned_user_id,
     secret: chatUser.secret,

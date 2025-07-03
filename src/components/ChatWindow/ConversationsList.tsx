@@ -284,9 +284,9 @@ export const ConversationsList = ({
 
       <div className="flex-1 overflow-y-auto">
         <div className="flex flex-col">
-          {filteredConversations.map(conversation => (
+          {filteredConversations.map((conversation, index) => (
             <ConversationCard
-              key={conversation.id}
+              key={`${conversation.secret}-${index}`}
               conversation={conversation}
               isSelected={
                 userId
