@@ -8,6 +8,7 @@ interface ConversationContextMenuProps {
   conversation: ConversationDetailResponse;
   organizationId: number;
   onDelete: () => void;
+  onShowHistory: () => void;
 }
 
 export const ConversationContextMenu = ({
@@ -16,9 +17,20 @@ export const ConversationContextMenu = ({
   conversation,
   organizationId,
   onDelete,
+  onShowHistory,
 }: ConversationContextMenuProps) => {
   return (
     <ContextMenu position={position} onClose={onClose}>
+      <button
+        className="w-full text-left flex items-center gap-2"
+        onClick={() => {
+          onShowHistory();
+          onClose();
+        }}
+      >
+        <img src="/mvp/messages-square.svg" alt="" className="w-4 h-4" />
+        Ver historial
+      </button>
       <button
         className="w-full text-left flex items-center gap-2"
         onClick={() => {
