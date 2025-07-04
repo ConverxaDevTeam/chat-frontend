@@ -15,6 +15,7 @@ import { exportToCSV, exportToExcel, exportToPDF } from "./export.service";
 interface ConversationHistory {
   id: number;
   created_at: string;
+  message_text: string;
   messages: Array<{
     id: number;
     text: string;
