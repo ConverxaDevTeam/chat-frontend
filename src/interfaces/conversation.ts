@@ -131,6 +131,7 @@ export interface ConversationDetailResponse {
   id: number;
   messages: ConversationResponseMessage[];
   chat_user: {
+    id: number;
     secret: string;
     phone: string | null;
     web: string | null;
