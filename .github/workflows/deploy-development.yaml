@@ -40,6 +40,8 @@ jobs:
             VITE_PUBLIC_URL_FILES=https://back.sofiachat.com
             VITE_BACKEND_URL_FILES=https://back.sofiachat.com
             VITE_GOOGLE_CLIENT_ID=${{ secrets.VITE_GOOGLE_CLIENT_ID }}
+            VITE_FB_CONFIG_ID=1058554123005287
+            VITE_FB_APP_ID=1219212166345748
             EOF
             docker-compose build
             docker-compose down -v
