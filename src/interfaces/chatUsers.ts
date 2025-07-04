@@ -21,9 +21,35 @@ export interface IChatUserCustomData {
   [key: string]: string | number | boolean;
 }
 
+export interface IChatUserMessage {
+  id: number;
+  text: string;
+  created_at: string;
+  type: string;
+  images?: string[] | null;
+  audio?: string | null;
+  time?: number;
+}
+
+export interface ILastConversation {
+  conversation_id: number;
+  last_message_text: string;
+  last_message_created_at: string;
+  last_message_type: string;
+  unread_messages: number;
+  need_human: boolean;
+  assigned_user_id: number | null;
+  integration_type: string;
+  department: string;
+  last_activity: string;
+  status: "ia" | "pendiente" | "asignado";
+  messages?: IChatUserMessage[];
+}
+
 export interface IChatUser {
   standardInfo?: IChatUserStandardInfo;
   customData?: IChatUserCustomData;
+  lastConversation?: ILastConversation;
 }
 
 export interface IChatUsersResponse {
@@ -35,10 +61,25 @@ export interface IChatUsersResponse {
   totalItems?: number;
 }
 
+export type SortBy =
+  | "name"
+  | "email"
+  | "phone"
+  | "last_login"
+  | "created_at"
+  | "last_activity";
+export type SortOrder = "ASC" | "DESC";
+
 export interface IChatUsersFilters {
   page?: number;
   limit?: number;
   organizationId?: number;
   search?: string;
   type?: ChatUserType;
+  needHuman?: boolean;
+  hasUnreadMessages?: boolean;
+  dateFrom?: string;
+  dateTo?: string;
+  sortBy?: SortBy;
+  sortOrder?: SortOrder;
 }

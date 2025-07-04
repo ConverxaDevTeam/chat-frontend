@@ -4,6 +4,7 @@ import { useState } from "react";
 interface ChatHeaderProps {
   avatar: string | null;
   secret: string;
+  userName?: string | null;
   searchTerm: string;
   onSearchChange: (value: string) => void;
   onMenuClick: (e: React.MouseEvent) => void;
@@ -13,6 +14,7 @@ interface ChatHeaderProps {
 export const ChatHeader = ({
   avatar,
   secret,
+  userName,
   searchTerm,
   onSearchChange,
   onMenuClick,
@@ -40,7 +42,7 @@ export const ChatHeader = ({
         <Avatar avatar={avatar} secret={secret} className="flex-none" />
         <div className="max-w-[calc(50%-3rem)] flex flex-col items-start">
           <h3 className="self-stretch text-sofia-superDark text-xl font-semibold truncate">
-            Usuario
+            {userName || "Usuario"}
           </h3>
           <span className="text-sofia-superDark text-xs font-medium">
             En línea
@@ -57,7 +59,7 @@ export const ChatHeader = ({
           <div
             className={`
             transition-all duration-300 ease-in-out
-            ${isSearchVisible ? "w-[210px] opacity-100" : "w-0 opacity-0"} 
+            ${isSearchVisible ? "w-[210px] opacity-100" : "w-0 opacity-0"}
             lg:block lg:w-[210px] lg:opacity-100
           `}
           >
