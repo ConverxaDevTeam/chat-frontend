@@ -6,6 +6,7 @@ import Modal from "../Modal";
 interface ConversationHistory {
   id: number;
   created_at: string;
+  message_text: string;
   messages: Array<{
     id: number;
     text: string;
@@ -93,11 +94,8 @@ const ConversationHistoryModal: React.FC<ConversationHistoryModalProps> = ({
   };
 
   const getConversationPreview = (conversation: ConversationHistory) => {
-    if (!conversation.messages || conversation.messages.length === 0)
-      return "Sin mensajes";
-
-    const lastMessage = conversation.messages[conversation.messages.length - 1];
-    const messageText = lastMessage.text;
+    // Usar message_text directamente de la conversación
+    const messageText = conversation.message_text || "Sin mensajes";
 
     // Truncar como en la imagen
     return messageText.length > 60
