@@ -76,7 +76,7 @@ const ButtonExportAllChatUsers = ({
         ...appliedFilters,
         organizationId: selectOrganizationId,
       };
-      const allChatUsers = await getAllChatUsersForExport(filtersWithOrg);
+      const allChatUsers = await getAllChatUsersForExport(filtersWithOrg, true);
 
       if (allChatUsers.length === 0) {
         alertInfo("No hay clientes disponibles para exportar");
@@ -333,6 +333,48 @@ const ButtonExportAllChatUsers = ({
               margin: [0, 0, 0, 5],
             });
           }
+
+          // Agregar mensajes de la conversación si existen
+          if (
+            lastConversation?.messages &&
+            lastConversation.messages.length > 0
+          ) {
+            docDefinition.content.push({
+              text: "Mensajes de la conversación:",
+              style: "subheader",
+              margin: [0, 10, 0, 5],
+            });
+
+            lastConversation.messages.forEach(message => {
+              const messageText = message.text?.trim() || "";
+              const hasImage =
+                (message.images && message.images.length > 0) ||
+                messageText.includes("<img") ||
+                messageText.includes("data:image");
+              const displayText =
+                messageText ||
+                (hasImage ? "[Imagen adjunta]" : "[Sin contenido]");
+
+              docDefinition.content.push({
+                text: [
+                  {
+                    text: `${convertISOToReadable(message.created_at, false)} - `,
+                    fontSize: 10,
+                    color: "#666",
+                  },
+                  {
+                    text: message.type === "user" ? "Usuario: " : "Asistente: ",
+                    bold: true,
+                  },
+                  {
+                    text: displayText,
+                    bold: false,
+                  },
+                ],
+                margin: [10, 0, 0, 3],
+              });
+            });
+          }
         });
 
         pdfMake
@@ -358,7 +400,7 @@ const ButtonExportAllChatUsers = ({
       disabled={isExporting}
     >
       <p className="text-[14px] font-medium text-white">
-        {isExporting ? "Exportando..." : "Exportar todos los clientes"}
+        {isExporting ? "Exportando..." : "Exportar clientes"}
       </p>
     </button>
   );

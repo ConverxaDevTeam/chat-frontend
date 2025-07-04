@@ -27,6 +27,7 @@ import { ChatHeader } from "@components/ChatWindow/ChatHeader";
 import { IntegrationType } from "@interfaces/integrations";
 import ConversationHistoryModal from "@components/ChatWindow/ConversationHistoryModal";
 import { ConversationWarningBanner } from "@components/ChatWindow/ConversationWarningBanner";
+import EditUserDataModal from "@components/ChatWindow/EditUserDataModal";
 // import { UserInfoPanel } from "@components/ChatWindow/UserInfoPanel";
 
 // Hooks
@@ -239,6 +240,7 @@ const useContextMenu = (
     y: number;
   }>({ show: false, x: 0, y: 0 });
   const [showHistoryModal, setShowHistoryModal] = useState(false);
+  const [showEditUserModal, setShowEditUserModal] = useState(false);
 
   const handleDeleteConversation = async () => {
     if (!conversation) return;
@@ -263,6 +265,10 @@ const useContextMenu = (
     setShowHistoryModal(true);
   };
 
+  const handleEditUserData = () => {
+    setShowEditUserModal(true);
+  };
+
   return {
     showContextMenu,
     setShowContextMenu,
@@ -270,6 +276,9 @@ const useContextMenu = (
     showHistoryModal,
     setShowHistoryModal,
     handleShowHistory,
+    showEditUserModal,
+    setShowEditUserModal,
+    handleEditUserData,
   };
 };
 
@@ -340,9 +349,17 @@ const ConversationDetail = () => {
     showHistoryModal,
     setShowHistoryModal,
     handleShowHistory,
+    showEditUserModal,
+    setShowEditUserModal,
+    handleEditUserData,
   } = useContextMenu(conversation, conversationsList);
   const { searchTerm, setSearchTerm, filteredMessages } =
     useMessageSearch(conversation);
+
+  const handleUserUpdated = () => {
+    // Refrescar los datos de la conversación después de actualizar el usuario
+    getConversationDetailById();
+  };
 
   const handleSelectConversation = (conversationId: number) => {
     if (conversationId === 0 || !conversationId) {
@@ -411,18 +428,10 @@ const ConversationDetail = () => {
             organizationId={selectOrganizationId || 0}
             onDelete={handleDeleteConversation}
             onShowHistory={handleShowHistory}
+            onEditUserData={handleEditUserData}
           />
         )}
 
-        {conversation && (
-          <ConversationHistoryModal
-            isOpen={showHistoryModal}
-            onClose={() => setShowHistoryModal(false)}
-            organizationId={selectOrganizationId || 0}
-            chatUserSecret={conversation.chat_user?.secret || ""}
-            userName={conversation.chat_user?.name || "Usuario"}
-          />
-        )}
         {/* Left Column - Conversations List */}
         <div className="hidden md:block h-full w-full overflow-hidden">
           {isLoadingChatUsers ? (
@@ -470,6 +479,7 @@ const ConversationDetail = () => {
           <ChatHeader
             avatar={null}
             secret={conversation?.chat_user?.secret ?? ""}
+            userName={conversation?.chat_user?.name}
             searchTerm={searchTerm}
             onSearchChange={setSearchTerm}
             onMenuClick={e => {
@@ -549,6 +559,26 @@ const ConversationDetail = () => {
           </div>
         </div>
       </div>
+
+      {/* Modales */}
+      {showHistoryModal && conversation && (
+        <ConversationHistoryModal
+          isOpen={showHistoryModal}
+          onClose={() => setShowHistoryModal(false)}
+          chatUserSecret={conversation.chat_user?.secret || ""}
+          organizationId={selectOrganizationId || 0}
+          userName={conversation.chat_user?.name || "Usuario"}
+        />
+      )}
+
+      {showEditUserModal && conversation?.chat_user && (
+        <EditUserDataModal
+          isOpen={showEditUserModal}
+          onClose={() => setShowEditUserModal(false)}
+          userId={conversation.chat_user.id}
+          onUserUpdated={handleUserUpdated}
+        />
+      )}
     </div>
   );
 };

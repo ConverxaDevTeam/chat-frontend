@@ -204,6 +204,9 @@ const ChatUsers = () => {
           {/* Primera fila de filtros */}
           <div className="flex gap-4">
             <div className="flex-1">
+              <label className="block text-sm font-medium text-sofia-superDark mb-2">
+                Buscar cliente
+              </label>
               <input
                 type="text"
                 placeholder="Buscar por nombre, email o teléfono..."
@@ -213,6 +216,9 @@ const ChatUsers = () => {
               />
             </div>
             <div className="w-48">
+              <label className="block text-sm font-medium text-sofia-superDark mb-2">
+                Tipo de cliente
+              </label>
               <select
                 value={selectedType}
                 onChange={handleTypeFilter}
@@ -230,6 +236,9 @@ const ChatUsers = () => {
           {/* Segunda fila de filtros */}
           <div className="flex gap-4">
             <div className="w-48">
+              <label className="block text-sm font-medium text-sofia-superDark mb-2">
+                Necesita asistencia
+              </label>
               <select
                 value={needHuman === undefined ? "" : needHuman.toString()}
                 onChange={handleNeedHumanFilter}
@@ -241,6 +250,9 @@ const ChatUsers = () => {
               </select>
             </div>
             <div className="w-48">
+              <label className="block text-sm font-medium text-sofia-superDark mb-2">
+                Mensajes no leídos
+              </label>
               <select
                 value={
                   hasUnreadMessages === undefined
@@ -256,6 +268,9 @@ const ChatUsers = () => {
               </select>
             </div>
             <div className="w-40">
+              <label className="block text-sm font-medium text-sofia-superDark mb-2">
+                Fecha desde
+              </label>
               <input
                 type="date"
                 value={dateFrom}
@@ -265,6 +280,9 @@ const ChatUsers = () => {
               />
             </div>
             <div className="w-40">
+              <label className="block text-sm font-medium text-sofia-superDark mb-2">
+                Fecha hasta
+              </label>
               <input
                 type="date"
                 value={dateTo}
@@ -273,12 +291,14 @@ const ChatUsers = () => {
                 className="w-full px-3 py-2 border border-app-lightGray rounded focus:outline-none focus:ring-1 focus:ring-app-lightGray focus:border-transparent"
               />
             </div>
-            <button
-              onClick={clearFilters}
-              className="px-4 py-2 text-sm text-sofia-superDark hover:text-red-600 transition-colors"
-            >
-              Limpiar filtros
-            </button>
+            <div className="flex items-end">
+              <button
+                onClick={clearFilters}
+                className="px-4 py-2 text-sm text-sofia-superDark hover:text-red-600 transition-colors"
+              >
+                Limpiar filtros
+              </button>
+            </div>
           </div>
         </div>
 
