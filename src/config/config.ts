@@ -104,6 +104,8 @@ export const apiUrls = {
   //conversations
   getConversationsByOrganizationId: (organizationId: number) =>
     `/api/conversation/organization/${organizationId}`,
+  getChatUsersByOrganizationId: (organizationId: number) =>
+    `/api/chat-user/organization/${organizationId}`,
   getIntegrations: (departmentId: number) =>
     `/api/integration/all/${departmentId}`,
   getConversationByOrganizationIdAndById: (
