@@ -10,59 +10,126 @@ interface AreaChartProps {
 }
 
 export const AreaChart = ({ data, series, showLegend }: AreaChartProps) => {
-  return (
-    <div className="h-full w-full flex items-center justify-center">
-      <div className="h-[90%] w-[90%]">
-        <Line
-          data={{
-            ...data,
-            datasets: data.datasets.map((dataset, index) => {
-              const ctx = document.createElement("canvas").getContext("2d");
-              if (!ctx) return dataset;
+  try {
+    // Validación defensiva
+    if (
+      !data ||
+      !data.datasets ||
+      !Array.isArray(data.datasets) ||
+      data.datasets.length === 0
+    ) {
+      return (
+        <div className="h-full w-full flex items-center justify-center">
+          <span className="text-gray-500">No hay datos para mostrar</span>
+        </div>
+      );
+    }
 
-              const gradient = createChartGradient(ctx, series[index].color);
+    if (!series || !Array.isArray(series)) {
+      return (
+        <div className="h-full w-full flex items-center justify-center">
+          <span className="text-gray-500">
+            Error en la configuración de series
+          </span>
+        </div>
+      );
+    }
 
-              return {
-                ...dataset,
-                fill: true,
-                tension: 0.4,
-                borderWidth: 1,
-                borderColor: series[index].color,
-                backgroundColor: gradient,
-              };
-            }),
-          }}
-          options={{
-            ...baseChartOptions,
-            maintainAspectRatio: false,
-            responsive: true,
-            plugins: {
-              legend: {
-                display: showLegend,
-                position: "top",
-                align: "center",
-                labels: {
-                  font: {
-                    family: "'Quicksand', sans-serif",
-                    size: 10,
+    const processedDatasets = data.datasets.map((dataset, index) => {
+      try {
+        if (!dataset || typeof dataset !== "object") {
+          return {
+            label: `Dataset ${index}`,
+            data: [],
+            borderColor: "#ccc",
+            backgroundColor: "#ccc",
+            fill: true,
+            tension: 0.4,
+            borderWidth: 1,
+          };
+        }
+
+        const ctx = document.createElement("canvas").getContext("2d");
+        if (!ctx)
+          return {
+            ...dataset,
+            fill: true,
+            tension: 0.4,
+            borderWidth: 1,
+            borderColor: "#ccc",
+            backgroundColor: "#ccc",
+          };
+
+        const seriesColor = series[index]?.color || "#ccc";
+        const gradient = createChartGradient(ctx, seriesColor);
+
+        return {
+          ...dataset,
+          fill: true,
+          tension: 0.4,
+          borderWidth: 1,
+          borderColor: seriesColor,
+          backgroundColor: gradient,
+        };
+      } catch (datasetError) {
+        return {
+          label: `Dataset ${index}`,
+          data: [],
+          borderColor: "#ccc",
+          backgroundColor: "#ccc",
+          fill: true,
+          tension: 0.4,
+          borderWidth: 1,
+        };
+      }
+    });
+
+    return (
+      <div className="h-full w-full flex items-center justify-center">
+        <div className="h-[90%] w-[90%]">
+          <Line
+            data={{
+              ...data,
+              datasets: processedDatasets,
+            }}
+            options={{
+              ...baseChartOptions,
+              maintainAspectRatio: false,
+              responsive: true,
+              plugins: {
+                legend: {
+                  display: showLegend,
+                  position: "top",
+                  align: "center",
+                  labels: {
+                    font: {
+                      family: "'Quicksand', sans-serif",
+                      size: 10,
+                    },
+                    color: "#001126",
+                    padding: 8,
+                    usePointStyle: true,
+                    pointStyle: "circle",
+                    boxWidth: 6,
+                    boxHeight: 6,
                   },
-                  color: "#001126",
-                  padding: 8,
-                  usePointStyle: true,
-                  pointStyle: "circle",
-                  boxWidth: 6,
-                  boxHeight: 6,
                 },
               },
-            },
-            layout: {
-              padding: {
-                top: showLegend ? 10 : 0,
+              layout: {
+                padding: {
+                  top: showLegend ? 10 : 0,
+                },
               },
-            },
-          }}
-        />
+            }}
+          />
+        </div>
       </div>
-    </div>
-  );
+    );
+  } catch (error) {
+    return (
+      <div className="h-full w-full flex items-center justify-center">
+        <span className="text-gray-500">Error al renderizar gráfico</span>
+      </div>
+    );
+  }
 };

@@ -44,7 +44,7 @@ const OrganizationHeaderItem = ({
           />
           <div
             className={`
-              absolute z-[9999] left-full group-hover:flex hidden 
+              absolute z-[9999] left-full group-hover:flex hidden
               bg-[#F6F6F6] border-[0.5px] border-[#001126] text-[#001126] text-[12px] px-2 py-1.5 rounded
               font-[400] whitespace-nowrap tracking-[0.17px] leading-[143%] text-left
               shadow-md items-center pointer-events-none
@@ -81,11 +81,7 @@ const OrganizationHeaderItem = ({
           />
         </button>
         {showContextMenu && (
-          <ContextMenu
-            x={menuPosition.x}
-            y={menuPosition.y}
-            onClose={handleCloseMenu}
-          >
+          <ContextMenu position={menuPosition} onClose={handleCloseMenu}>
             <button
               onClick={navigateToUsers}
               className="flex items-center gap-2 w-full text-left"
