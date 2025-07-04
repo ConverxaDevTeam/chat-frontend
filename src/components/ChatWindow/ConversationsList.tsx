@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useForm } from "react-hook-form";
 import { IoChevronBack, IoChevronForward } from "react-icons/io5";
 import { ConversationCard } from "./ConversationCard";
 import { useParams } from "react-router-dom";
@@ -68,7 +67,7 @@ const TabsCarousel = ({
     [IntegrationType.CHAT_WEB]: "Chat Web",
     [IntegrationType.SLACK]: "Slack",
     [IntegrationType.MESSENGER_MANUAL]: "Messenger",
-    [IntegrationType.WHATSAP_MANUAL]: "WhatsApp",
+    [IntegrationType.WHATSAPP_MANUAL]: "WhatsApp",
   };
 
   return (
@@ -109,10 +108,137 @@ const TabsCarousel = ({
   );
 };
 
+interface SearchBoxProps {
+  searchQuery: string;
+  setSearchQuery: (query: string) => void;
+  searchFilter: "Usuario" | "ID";
+  setSearchFilter: (filter: "Usuario" | "ID") => void;
+}
+
+const SearchBox = ({
+  searchQuery,
+  setSearchQuery,
+  searchFilter,
+  setSearchFilter,
+}: SearchBoxProps) => {
+  return (
+    <div className="flex flex-col gap-3">
+      <div className="relative flex items-center bg-white rounded-md border border-gray-200 h-[37px]">
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={e => setSearchQuery(e.target.value)}
+          className="flex-1 h-full px-4 bg-transparent text-gray-500 text-sm placeholder:text-gray-400 focus:outline-none"
+          placeholder="Búsqueda"
+        />
+        <button className="px-3 py-1.5 mx-2 bg-[#00D4FF] text-black text-sm font-medium rounded hover:bg-[#00C4EF] transition-colors">
+          Buscar
+        </button>
+        {(searchQuery || searchFilter !== "Usuario") && (
+          <button
+            onClick={() => {
+              setSearchQuery("");
+              setSearchFilter("Usuario");
+            }}
+            className="p-1.5 mr-2 text-gray-400 hover:text-gray-600"
+          >
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <path
+                d="M10.5 3.5L3.5 10.5M3.5 3.5L10.5 10.5"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+              />
+            </svg>
+          </button>
+        )}
+      </div>
+
+      <div className="flex gap-3">
+        <div className="relative flex-1">
+          <button
+            type="button"
+            onClick={() => {
+              setSearchFilter("Usuario");
+              setSearchQuery("");
+            }}
+            className={`w-full px-3 py-2 text-sm font-medium transition-colors rounded ${
+              searchFilter === "Usuario"
+                ? "bg-[#B8D4E3] text-black"
+                : "bg-white text-gray-500 hover:bg-gray-50 border border-gray-200"
+            }`}
+          >
+            Usuario
+          </button>
+          {searchFilter === "Usuario" &&
+            (searchQuery || searchFilter !== "Usuario") && (
+              <button
+                onClick={() => {
+                  setSearchQuery("");
+                  setSearchFilter("Usuario");
+                }}
+                className="absolute -top-1 -right-1 w-5 h-5 bg-sofia-darkBlue rounded-full flex items-center justify-center hover:bg-opacity-80 transition-colors"
+              >
+                <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                  <path
+                    d="M7.5 2.5L2.5 7.5M2.5 2.5L7.5 7.5"
+                    stroke="#001130"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                  />
+                </svg>
+              </button>
+            )}
+        </div>
+        <div className="relative flex-1">
+          <button
+            type="button"
+            onClick={() => {
+              setSearchFilter("ID");
+              setSearchQuery("");
+            }}
+            className={`w-full px-3 py-2 text-sm font-medium transition-colors rounded ${
+              searchFilter === "ID"
+                ? "bg-[#B8D4E3] text-black"
+                : "bg-white text-gray-500 hover:bg-gray-50 border border-gray-200"
+            }`}
+          >
+            ID
+          </button>
+          {searchFilter === "ID" && searchQuery && (
+            <button
+              onClick={() => {
+                setSearchQuery("");
+                setSearchFilter("Usuario");
+              }}
+              className="absolute -top-1 -right-1 w-5 h-5 bg-sofia-darkBlue rounded-full flex items-center justify-center hover:bg-opacity-80 transition-colors"
+            >
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                <path
+                  d="M7.5 2.5L2.5 7.5M2.5 2.5L7.5 7.5"
+                  stroke="#001130"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                />
+              </svg>
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 interface ConversationsListProps {
   conversations?: ConversationListItem[];
   onSelectConversation?: (id: number) => void;
   selectedId?: number;
+  searchQuery: string;
+  setSearchQuery: (query: string) => void;
+  searchFilter: "Usuario" | "ID";
+  setSearchFilter: (filter: "Usuario" | "ID") => void;
+  activeTab: IntegrationType | "Todas";
+  setActiveTab: (tab: IntegrationType | "Todas") => void;
 }
 
 const tabBaseStyles =
@@ -125,47 +251,28 @@ export const ConversationsList = ({
   conversations = [],
   onSelectConversation,
   selectedId,
+  searchQuery,
+  setSearchQuery,
+  searchFilter,
+  setSearchFilter,
+  activeTab,
+  setActiveTab,
 }: ConversationsListProps) => {
   const { userId } = useParams();
-  const [activeTab, setActiveTab] = useState<IntegrationType | "Todas">(
-    "Todas"
-  );
-  const [searchQuery, setSearchQuery] = useState("");
   const [startIndex, setStartIndex] = useState(0);
 
-  const filteredConversations = conversations.filter(conv => {
-    const matchesTab = activeTab === "Todas" || conv.type === activeTab;
-    const searchTerm = searchQuery.toLowerCase();
-    const matchesSearch =
-      !searchQuery ||
-      conv.secret?.toLowerCase().includes(searchTerm) ||
-      conv.id?.toString().includes(searchTerm);
-    return matchesTab && matchesSearch;
-  });
+  // Ya no necesitamos filtrar aquí, los filtros se aplican en el backend
+  const filteredConversations = conversations;
 
   return (
     <div className="w-[345px] h-full bg-sofia-blancoPuro border border-app-lightGray rounded-l-lg flex flex-col">
-      <div className="flex flex-col gap-6 py-[24px] px-[16px] flex-none">
-        <div className="relative flex h-[37px] items-center">
-          <input
-            type="text"
-            {...useForm().register("search", {
-              onChange: e => {
-                const timer = setTimeout(() => {
-                  setSearchQuery(e.target.value);
-                }, 300);
-                return () => clearTimeout(timer);
-              },
-            })}
-            className="w-full h-full px-4 rounded-lg border border-sofia-darkBlue bg-[#FCFCFC] focus:ring-none  flex items-center text-xs font-medium placeholder:text-app-newGray"
-            placeholder="Búsqueda por ID o nombre"
-          />
-          <img
-            src="/mvp/magnifying-glass.svg"
-            alt="Buscar"
-            className="hidden lg:block absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none"
-          />
-        </div>
+      <div className="flex flex-col gap-4 py-[24px] px-[16px] flex-none">
+        <SearchBox
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          searchFilter={searchFilter}
+          setSearchFilter={setSearchFilter}
+        />
         <TabsCarousel
           activeTab={activeTab}
           setActiveTab={setActiveTab}
@@ -176,9 +283,9 @@ export const ConversationsList = ({
 
       <div className="flex-1 overflow-y-auto">
         <div className="flex flex-col">
-          {filteredConversations.map(conversation => (
+          {filteredConversations.map((conversation, index) => (
             <ConversationCard
-              key={conversation.id}
+              key={`${conversation.secret}-${index}`}
               conversation={conversation}
               isSelected={
                 userId
