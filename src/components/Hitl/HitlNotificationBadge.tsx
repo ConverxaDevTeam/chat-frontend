@@ -28,7 +28,7 @@ export const HitlNotificationBadge: React.FC<HitlNotificationBadgeProps> = ({
     index: number
   ) => {
     markAsRead(index);
-    navigate(`/conversation/detail/${notification.conversationId}`);
+    navigate(`/conversations/detail/${notification.conversationId}`);
     setShowDropdown(false);
   };
 
