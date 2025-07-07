@@ -56,7 +56,7 @@ const Conversations = () => {
 
   const handleViewAllChats = () => {
     if (conversations.length > 0) {
-      navigate(`/conversation/detail/${conversations[0].id}`);
+      navigate(`/conversations/detail/${conversations[0].id}`);
     } else {
       toast.info("No hay conversaciones disponibles");
     }

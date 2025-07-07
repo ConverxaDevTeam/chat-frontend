@@ -107,11 +107,11 @@ const App = (): JSX.Element => {
               element={<HitlPage />}
             />
             <Route
-              path="conversation/detail/:id"
+              path="conversations/detail/:id"
               element={<ConversationDetail />}
             />
             <Route
-              path="conversation/detail/:id/user/:userId"
+              path="conversations/detail/:id/user/:userId"
               element={<ConversationDetail />}
             />
           </Route>
