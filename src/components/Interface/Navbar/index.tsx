@@ -485,7 +485,7 @@ const Navbar = ({ mobileResolution }: NavbarProps) => {
   let accumulatedPath = "";
   const breadcrumbItems = [
     { path: "/dashboard", label: currentOrganization },
-    ...pathSegments.map((segment, index) => {
+    ...pathSegments.map(segment => {
       accumulatedPath += `/${segment}`;
 
       // Hacer que "detail" después de "conversations" no sea clickeable
