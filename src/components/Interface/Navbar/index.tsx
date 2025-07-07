@@ -30,14 +30,17 @@ interface NavbarProps {
 interface BreadcrumbItem {
   path: string;
   label: string;
+  isClickable?: boolean;
 }
 
 const breadcrumbMap: { [key: string]: string } = {
   "/dashboard": "Dashboard",
   "/workspace": "Espacios de Trabajo",
   "/conversations": "Conversaciones",
+  "/conversations/detail": "Detalle",
   "/departments": "Departamentos",
   "/users": "Usuarios",
+  "/chat-users": "Clientes",
 };
 
 const Breadcrumb = ({
@@ -52,6 +55,8 @@ const Breadcrumb = ({
           {index > 0 && " / "}
           {index === breadcrumbItems.length - 1 ? (
             <span className="font-bold">{item.label}</span>
+          ) : (item as any).isClickable === false ? (
+            <span className="text-gray-500">{item.label}</span>
           ) : (
             <Link to={item.path} className="text-black-500 hover:underline">
               {item.label}
@@ -480,11 +485,16 @@ const Navbar = ({ mobileResolution }: NavbarProps) => {
   let accumulatedPath = "";
   const breadcrumbItems = [
     { path: "/dashboard", label: currentOrganization },
-    ...pathSegments.map(segment => {
+    ...pathSegments.map((segment, index) => {
       accumulatedPath += `/${segment}`;
+
+      // Hacer que "detail" después de "conversations" no sea clickeable
+      const isConversationsDetail = accumulatedPath === "/conversations/detail";
+
       return {
         path: accumulatedPath,
         label: breadcrumbMap[accumulatedPath] || decodeURIComponent(segment),
+        isClickable: !isConversationsDetail,
       };
     }),
   ];

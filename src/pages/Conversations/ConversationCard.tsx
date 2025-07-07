@@ -128,7 +128,7 @@ const ConversationCard = ({
     : { type: MessageType.USER, text: "Sin mensajes" };
 
   const handleRowClick = () => {
-    navigate(`/conversation/detail/${conversation.id}`);
+    navigate(`/conversations/detail/${conversation.id}`);
   };
 
   return (

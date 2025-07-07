@@ -252,10 +252,10 @@ const useContextMenu = (
       let nextConversationId = conversationsList[0]?.id;
       if (!nextConversationId) return navigate("/conversations");
       if (nextConversationId !== conversation.id)
-        return navigate(`/conversation/detail/${nextConversationId}`);
+        return navigate(`/conversations/detail/${nextConversationId}`);
       nextConversationId = conversationsList[1]?.id;
       if (!nextConversationId) return navigate("/conversations");
-      navigate(`/conversation/detail/${nextConversationId}`);
+      navigate(`/conversations/detail/${nextConversationId}`);
     } catch (error) {
       alertError("Error al eliminar la conversación");
     }
@@ -365,7 +365,7 @@ const ConversationDetail = () => {
     if (conversationId === 0 || !conversationId) {
       return;
     }
-    navigate(`/conversation/detail/${conversationId}`);
+    navigate(`/conversations/detail/${conversationId}`);
   };
 
   if (!conversation) {
