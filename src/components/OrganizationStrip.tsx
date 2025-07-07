@@ -221,7 +221,7 @@ export const OrganizationStrip: React.FC<OrganizationStripProps> = () => {
                 transform: "translateY(0)",
               }}
             >
-              Agregar organización
+              Crear organización
             </div>
           </div>
         )}
