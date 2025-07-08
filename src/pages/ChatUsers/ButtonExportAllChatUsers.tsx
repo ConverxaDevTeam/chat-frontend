@@ -9,12 +9,12 @@ import { convertISOToReadable, getPdfMonthDayYear } from "@utils/format";
 import { alertConfirm, alertError, alertInfo } from "@utils/alerts";
 import pdfMake from "pdfmake/build/pdfmake";
 import { useSelector } from "react-redux";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 
 const pdfMakeFonts = {
   Roboto: {
     normal:
-      "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Regular.ttf",
+      "https://cdnjs.cloudfare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Regular.ttf",
     bold: "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Medium.ttf",
     italics:
       "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Italic.ttf",
@@ -37,6 +37,24 @@ const ButtonExportAllChatUsers = ({
   );
 
   const [isExporting, setIsExporting] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setShowDropdown(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const getChannelName = (type?: ChatUserType): string => {
     switch (type) {
@@ -59,15 +77,115 @@ const ButtonExportAllChatUsers = ({
     return "Pendiente";
   };
 
-  async function generatePDF(e: React.MouseEvent) {
-    e.stopPropagation();
-
+  const generateCSV = async () => {
     if (!selectOrganizationId) {
       alertError("No se ha seleccionado una organización");
       return;
     }
 
     setIsExporting(true);
+    setShowDropdown(false);
+
+    try {
+      // Obtener todos los chat users que cumplen con los filtros
+      alertInfo("Obteniendo todos los clientes...");
+      const filtersWithOrg = {
+        ...appliedFilters,
+        organizationId: selectOrganizationId,
+      };
+      const allChatUsers = await getAllChatUsersForExport(filtersWithOrg, true);
+
+      if (allChatUsers.length === 0) {
+        alertInfo("No hay clientes disponibles para exportar");
+        setIsExporting(false);
+        return;
+      }
+
+      alertInfo(
+        `Preparando la exportación de ${allChatUsers.length} clientes...`
+      );
+
+      // Crear CSV
+      const headers = [
+        "ID",
+        "Nombre",
+        "Email",
+        "Teléfono",
+        "Canal",
+        "Fecha de registro",
+        "Último login",
+        "Estado conversación",
+        "Mensajes no leídos",
+        "Departamento",
+        "Última actividad",
+        "Último mensaje",
+      ];
+
+      const rows = allChatUsers.map(chatUser => {
+        const standardInfo = chatUser.standardInfo;
+        const lastConversation = chatUser.lastConversation;
+
+        return [
+          standardInfo?.id || "",
+          standardInfo?.name || "No especificado",
+          standardInfo?.email || "No especificado",
+          standardInfo?.phone || "No especificado",
+          getChannelName(standardInfo?.type),
+          standardInfo?.created_at
+            ? convertISOToReadable(standardInfo.created_at, false)
+            : "No especificado",
+          standardInfo?.last_login
+            ? convertISOToReadable(standardInfo.last_login, false)
+            : "No especificado",
+          getConversationStatus(chatUser),
+          lastConversation?.unread_messages || 0,
+          lastConversation?.department || "No especificado",
+          lastConversation?.last_activity
+            ? convertISOToReadable(lastConversation.last_activity, false)
+            : "No especificado",
+          lastConversation?.last_message_text || "No disponible",
+        ];
+      });
+
+      // Convertir a CSV
+      const csvContent = [
+        headers.join(","),
+        ...rows.map(row =>
+          row.map(field => `"${String(field).replace(/"/g, '""')}"`).join(",")
+        ),
+      ].join("\n");
+
+      // Descargar archivo
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute(
+        "download",
+        `reporte-todos-clientes-${getPdfMonthDayYear()}.csv`
+      );
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+
+      alertConfirm("Exportación CSV completada con éxito");
+    } catch (error) {
+      console.error("Error al exportar los clientes:", error);
+      alertError("Error al exportar los clientes");
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  async function generatePDF() {
+    if (!selectOrganizationId) {
+      alertError("No se ha seleccionado una organización");
+      return;
+    }
+
+    setIsExporting(true);
+    setShowDropdown(false);
 
     try {
       // Obtener todos los chat users que cumplen con los filtros
@@ -393,16 +511,78 @@ const ButtonExportAllChatUsers = ({
   }
 
   return (
-    <button
-      type="button"
-      className="bg-sofia-superDark flex items-center justify-center rounded-[4px] w-[165px] h-[30px] p-2"
-      onClick={generatePDF}
-      disabled={isExporting}
-    >
-      <p className="text-[14px] font-medium text-white">
-        {isExporting ? "Exportando..." : "Exportar clientes"}
-      </p>
-    </button>
+    <div className="relative" ref={dropdownRef}>
+      <button
+        type="button"
+        className="bg-sofia-superDark flex items-center justify-center rounded-[4px] w-[165px] h-[30px] p-2"
+        onClick={() => setShowDropdown(!showDropdown)}
+        disabled={isExporting}
+      >
+        <p className="text-[14px] font-medium text-white">
+          {isExporting ? "Exportando..." : "Exportar clientes"}
+        </p>
+        <svg
+          className={`ml-2 h-4 w-4 text-white transition-transform ${
+            showDropdown ? "rotate-180" : ""
+          }`}
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M19 9l-7 7-7-7"
+          />
+        </svg>
+      </button>
+
+      {showDropdown && !isExporting && (
+        <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-gray-200 z-10">
+          <div className="py-1">
+            <button
+              onClick={generatePDF}
+              className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+            >
+              <svg
+                className="mr-3 h-4 w-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                />
+              </svg>
+              Exportar como PDF
+            </button>
+            <button
+              onClick={generateCSV}
+              className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+            >
+              <svg
+                className="mr-3 h-4 w-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                />
+              </svg>
+              Exportar como CSV
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
 

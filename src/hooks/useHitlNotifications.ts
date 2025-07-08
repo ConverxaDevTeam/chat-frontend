@@ -43,7 +43,7 @@ export const useHitlNotifications = ({
         {
           onClick: () => {
             // Navigate to conversation when toast is clicked
-            window.location.href = `/conversation/detail/${notification.conversationId}`;
+            window.location.href = `/conversations/detail/${notification.conversationId}`;
           },
           autoClose: 8000,
           closeOnClick: true,
