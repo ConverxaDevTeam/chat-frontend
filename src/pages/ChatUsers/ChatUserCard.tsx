@@ -91,7 +91,7 @@ const ChatUserCard = ({ chatUser }: ChatUserCardProps) => {
 
   const handleRowClick = () => {
     if (lastConversation?.conversation_id) {
-      navigate(`/conversation/detail/${lastConversation.conversation_id}`);
+      navigate(`/conversations/detail/${lastConversation.conversation_id}`);
     }
   };
 

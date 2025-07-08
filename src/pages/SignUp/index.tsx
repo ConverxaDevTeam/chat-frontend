@@ -4,16 +4,18 @@ import { AppDispatch, RootState } from "@store/index";
 import { Navigate, Link } from "react-router-dom";
 import GoogleLoginButton from "@components/GoogleLoginButton";
 import { signUpAsync } from "@store/actions/auth";
+import { useForm, SubmitHandler } from "react-hook-form";
+import { Input } from "@components/forms/input";
+
+interface SignUpFormValues {
+  email: string;
+  password: string;
+  confirmPassword: string;
+  first_name: string;
+  last_name: string;
+}
 
 const SignUp = () => {
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-    confirmPassword: "",
-    first_name: "",
-    last_name: "",
-  });
-
   const dispatch = useDispatch<AppDispatch>();
   const { authenticated, loading } = useSelector(
     (state: RootState) => state.auth
@@ -22,15 +24,17 @@ const SignUp = () => {
   const [error, setError] = useState<string | null>(null);
   const [active, setActive] = useState<boolean>(false);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    watch,
+  } = useForm<SignUpFormValues>();
+
+  const password = watch("password");
+
+  const onSubmit: SubmitHandler<SignUpFormValues> = formData => {
     setError(null);
-
-    if (formData.password !== formData.confirmPassword) {
-      setError("Las contraseñas no coinciden");
-      return;
-    }
-
     setActive(true);
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -38,10 +42,6 @@ const SignUp = () => {
     dispatch(
       signUpAsync({ data: dataToSubmit, setActive, setError, dispatch })
     );
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   if (authenticated && !loading) {
@@ -59,7 +59,7 @@ const SignUp = () => {
         <h2 className="font-semibold text-[30px] text-sofia-superDark mb-[16px] text-center">
           Crear cuenta
         </h2>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <div className="flex flex-col">
             <label
               className="text-[14px] font-medium text-[#414651] mb-[6px]"
@@ -67,16 +67,20 @@ const SignUp = () => {
             >
               Nombre
             </label>
-            <input
-              className="bg-[#FCFCFC] rounded-[4px] mb-[16px] py-[10px] px-[14px] border text-[#717680] text-[14px] font-normal"
+            <Input
               type="text"
-              id="first_name"
               placeholder="Ingresa tu nombre"
-              onChange={handleChange}
-              value={formData.first_name}
-              name="first_name"
-              required
+              register={register("first_name", {
+                required: "El nombre es obligatorio",
+              })}
+              error={errors.first_name?.message}
+              className="bg-[#FCFCFC] rounded-[4px] mb-[16px] py-[10px] px-[14px] border text-[#717680] text-[14px] font-normal h-auto"
             />
+            {errors.first_name && (
+              <p className="text-red-500 text-sm -mt-3 mb-3">
+                {errors.first_name.message}
+              </p>
+            )}
 
             <label
               className="text-[14px] font-medium text-[#414651] mb-[6px]"
@@ -84,16 +88,20 @@ const SignUp = () => {
             >
               Apellido
             </label>
-            <input
-              className="bg-[#FCFCFC] rounded-[4px] mb-[16px] py-[10px] px-[14px] border text-[#717680] text-[14px] font-normal"
+            <Input
               type="text"
-              id="last_name"
               placeholder="Ingresa tu apellido"
-              onChange={handleChange}
-              value={formData.last_name}
-              name="last_name"
-              required
+              register={register("last_name", {
+                required: "El apellido es obligatorio",
+              })}
+              error={errors.last_name?.message}
+              className="bg-[#FCFCFC] rounded-[4px] mb-[16px] py-[10px] px-[14px] border text-[#717680] text-[14px] font-normal h-auto"
             />
+            {errors.last_name && (
+              <p className="text-red-500 text-sm -mt-3 mb-3">
+                {errors.last_name.message}
+              </p>
+            )}
 
             <label
               className="text-[14px] font-medium text-[#414651] mb-[6px]"
@@ -101,16 +109,24 @@ const SignUp = () => {
             >
               Email
             </label>
-            <input
-              className="bg-[#FCFCFC] rounded-[4px] mb-[16px] py-[10px] px-[14px] border text-[#717680] text-[14px] font-normal"
+            <Input
               type="email"
-              id="email"
               placeholder="Ingresa tu correo"
-              onChange={handleChange}
-              value={formData.email}
-              name="email"
-              required
+              register={register("email", {
+                required: "El email es obligatorio",
+                pattern: {
+                  value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                  message: "Ingresa un email válido",
+                },
+              })}
+              error={errors.email?.message}
+              className="bg-[#FCFCFC] rounded-[4px] mb-[16px] py-[10px] px-[14px] border text-[#717680] text-[14px] font-normal h-auto"
             />
+            {errors.email && (
+              <p className="text-red-500 text-sm -mt-3 mb-3">
+                {errors.email.message}
+              </p>
+            )}
 
             <label
               className="text-[14px] font-medium text-[#414651] mb-[6px]"
@@ -118,17 +134,24 @@ const SignUp = () => {
             >
               Contraseña
             </label>
-            <input
-              className="bg-[#FCFCFC] rounded-[4px] mb-[16px] py-[10px] px-[14px] border text-[#717680] text-[14px] font-normal"
+            <Input
               type="password"
-              id="password"
               placeholder="Contraseña (mínimo 8 caracteres)"
-              onChange={handleChange}
-              value={formData.password}
-              name="password"
-              required
-              minLength={8}
+              register={register("password", {
+                required: "La contraseña es obligatoria",
+                minLength: {
+                  value: 8,
+                  message: "La contraseña debe tener al menos 8 caracteres",
+                },
+              })}
+              error={errors.password?.message}
+              className="bg-[#FCFCFC] rounded-[4px] mb-[16px] py-[10px] px-[14px] border text-[#717680] text-[14px] font-normal h-auto"
             />
+            {errors.password && (
+              <p className="text-red-500 text-sm -mt-3 mb-3">
+                {errors.password.message}
+              </p>
+            )}
 
             <label
               className="text-[14px] font-medium text-[#414651] mb-[6px]"
@@ -136,17 +159,22 @@ const SignUp = () => {
             >
               Confirmar contraseña
             </label>
-            <input
-              className="bg-[#FCFCFC] rounded-[4px] mb-[16px] py-[10px] px-[14px] border text-[#717680] text-[14px] font-normal"
+            <Input
               type="password"
-              id="confirmPassword"
               placeholder="Confirma tu contraseña"
-              onChange={handleChange}
-              value={formData.confirmPassword}
-              name="confirmPassword"
-              required
-              minLength={8}
+              register={register("confirmPassword", {
+                required: "Confirma tu contraseña",
+                validate: value =>
+                  value === password || "Las contraseñas no coinciden",
+              })}
+              error={errors.confirmPassword?.message}
+              className="bg-[#FCFCFC] rounded-[4px] mb-[16px] py-[10px] px-[14px] border text-[#717680] text-[14px] font-normal h-auto"
             />
+            {errors.confirmPassword && (
+              <p className="text-red-500 text-sm -mt-3 mb-3">
+                {errors.confirmPassword.message}
+              </p>
+            )}
           </div>
 
           <button

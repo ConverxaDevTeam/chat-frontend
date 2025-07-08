@@ -104,7 +104,7 @@ const ConversationHistoryModal: React.FC<ConversationHistoryModalProps> = ({
   };
 
   const handleConversationClick = (conversationId: number) => {
-    navigate(`/conversation/detail/${conversationId}`);
+    navigate(`/conversations/detail/${conversationId}`);
     onClose();
   };
 
