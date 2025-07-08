@@ -128,7 +128,7 @@ const ConversationCard = ({
     : { type: MessageType.USER, text: "Sin mensajes" };
 
   const handleRowClick = () => {
-    navigate(`/conversation/detail/${conversation.id}`);
+    navigate(`/conversations/detail/${conversation.id}`);
   };
 
   return (
@@ -144,7 +144,11 @@ const ConversationCard = ({
             {(conversation.user_email || conversation.user_phone) && (
               <span
                 className="ml-1 text-blue-500 cursor-help"
-                title="Ver información adicional"
+                title={
+                  conversation.need_human && conversation.user_id === null
+                    ? "Necesita HITL"
+                    : "Ver información adicional"
+                }
               >
                 ⓘ
               </span>
@@ -230,7 +234,11 @@ const ConversationCard = ({
             {(conversation.user_email || conversation.user_phone) && (
               <span
                 className="ml-1 text-blue-500 cursor-help text-[11px]"
-                title="Ver información adicional"
+                title={
+                  conversation.need_human && conversation.user_id === null
+                    ? "Necesita HITL"
+                    : "Ver información adicional"
+                }
               >
                 ⓘ
               </span>
@@ -301,7 +309,11 @@ const ConversationCard = ({
             {(conversation.user_email || conversation.user_phone) && (
               <span
                 className="ml-1 text-blue-500 cursor-help text-[10px]"
-                title="Ver info"
+                title={
+                  conversation.need_human && conversation.user_id === null
+                    ? "Necesita HITL"
+                    : "Ver info"
+                }
               >
                 ⓘ
               </span>

@@ -18,7 +18,7 @@ const renderMessageRecivedNotification = (
 ) => {
   toast.warning(
     <div
-      onClick={() => navigate(`/conversation/detail/${conversationId}`)}
+      onClick={() => navigate(`/conversations/detail/${conversationId}`)}
       className="cursor-pointer"
     >
       {message}
