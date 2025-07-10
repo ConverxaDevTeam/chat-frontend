@@ -1,10 +1,10 @@
-# Guías UI/UX - Sofia Chat Frontend
+# Guías UI/UX - Converxa Chat Frontend
 
 ## Principios de Diseño
 
 ### Consistencia Visual
 - Tipografía: Poppins para textos, Quicksand para títulos
-- Colores: Sofia design tokens (sofia-superDark, sofia-electricGreen, etc.)
+- Colores: Converxa design tokens (sofia-superDark, sofia-electricGreen, etc.)
 - Espaciado: Múltiplos de 4px (8px, 16px, 24px, 32px)
 - Bordes: 4px radius por defecto
 

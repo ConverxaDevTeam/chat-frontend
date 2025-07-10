@@ -1,4 +1,4 @@
-name: Auto deploy sofia-chat-frontend-v2 development in VPS
+name: Auto deploy converxa-frontend-v2 development in VPS
 
 on:
   push:
@@ -31,18 +31,23 @@ jobs:
           key: ${{ secrets.DEVELOPMENT_SSH_PRIVATE_KEY }}
           port: 22
           script: |
-            cd /root/repos/sofia-chat-frontend-v2
+            cd /root/repos/converxa-chat-frontend
             git pull origin main
+            npm ci
             cat <<EOF > .env
-            VITE_PUBLIC_BACKEND_URL=https://back.sofiachat.com
-            VITE_PUBLIC_TOKEN_NAME=${{ secrets.VITE_PUBLIC_TOKEN_NAME }}
-            VITE_PUBLIC_TOKEN_REFRESH_NAME=${{ secrets.VITE_PUBLIC_TOKEN_REFRESH_NAME }}
-            VITE_PUBLIC_URL_FILES=https://back.sofiachat.com
-            VITE_BACKEND_URL_FILES=https://back.sofiachat.com
+            VITE_API_URL=https://back-chat.converxa.net
+            VITE_ENVIRONMENT=production
+            VITE_WSS_URL=wss://back-chat.converxa.net
+            VITE_FILES_URL=https://back-chat.converxa.net
+            VITE_PUBLIC_BACKEND_URL=https://back-chat.converxa.net
+            VITE_PUBLIC_TOKEN_NAME=token
+            VITE_PUBLIC_TOKEN_REFRESH_NAME=refreshToken
+            VITE_PUBLIC_URL_FILES=https://back-chat.converxa.net
+            VITE_BACKEND_URL_FILES=https://back-chat.converxa.net
             VITE_GOOGLE_CLIENT_ID=${{ secrets.VITE_GOOGLE_CLIENT_ID }}
-            VITE_FB_CONFIG_ID=617129767332521
-            VITE_FB_APP_ID=1219212166345748
+            VITE_FB_APP_ID=${{ secrets.VITE_FB_APP_ID }}
+            VITE_FB_CONFIG_ID=${{ secrets.VITE_FB_CONFIG_ID }}
             EOF
-            docker-compose build
-            docker-compose down -v
-            docker-compose up -d
+            npm run build -- --mode production
+            rm -rf /var/www/frontend/prod/*
+            cp -r dist/* /var/www/frontend/prod/
