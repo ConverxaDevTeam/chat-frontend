@@ -1,6 +1,9 @@
-import { ConversationListItem, MessageType } from "@interfaces/conversation";
+import { MessageType, ConversationFilters } from "@interfaces/conversation";
 import { IntegrationType } from "@interfaces/integrations";
-import { getConversationByOrganizationIdAndById } from "@services/conversations";
+import {
+  getConversationByOrganizationIdAndById,
+  getAllConversationsForExport,
+} from "@services/conversations";
 import { RootState } from "@store";
 import { convertISOToReadable, getPdfMonthDayYear } from "@utils/format";
 import { alertConfirm, alertError, alertInfo } from "@utils/alerts";
@@ -23,11 +26,11 @@ const pdfMakeFonts = {
 pdfMake.fonts = pdfMakeFonts;
 
 interface ButtonExportAllConversationsProps {
-  conversations: ConversationListItem[];
+  appliedFilters?: ConversationFilters;
 }
 
 const ButtonExportAllConversations = ({
-  conversations,
+  appliedFilters,
 }: ButtonExportAllConversationsProps) => {
   const { selectOrganizationId } = useSelector(
     (state: RootState) => state.auth
@@ -38,15 +41,30 @@ const ButtonExportAllConversations = ({
   async function generatePDF(e: React.MouseEvent) {
     e.stopPropagation();
 
-    if (conversations.length === 0) {
-      alertInfo("No hay conversaciones disponibles para exportar");
+    if (!selectOrganizationId) {
+      alertError("No se ha seleccionado una organización");
       return;
     }
 
-    alertInfo("Preparando la exportación de todos los chats...");
-    setIsExporting(true); // Deshabilitar el botón mientras se exporta
+    setIsExporting(true);
 
     try {
+      // Obtener todas las conversaciones que cumplen con los filtros
+      alertInfo("Obteniendo todas las conversaciones...");
+      const allConversations = await getAllConversationsForExport(
+        selectOrganizationId,
+        appliedFilters
+      );
+
+      if (allConversations.length === 0) {
+        alertInfo("No hay conversaciones disponibles para exportar");
+        setIsExporting(false);
+        return;
+      }
+
+      alertInfo(
+        `Preparando la exportación de ${allConversations.length} conversaciones...`
+      );
       const imageUrl = "/logo.svg";
 
       const response = await fetch(imageUrl);
@@ -56,18 +74,20 @@ const ButtonExportAllConversations = ({
       reader.readAsDataURL(blob);
 
       reader.onloadend = async function () {
-        if (!selectOrganizationId) return;
-
         const base64data = reader.result as string;
         interface DocDefinition {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           content: any[];
           styles?: {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             [key: string]: any;
           };
           defaultStyle?: {
             fontSize?: number;
           };
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           background?: any;
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           footer?: any;
         }
 
@@ -92,7 +112,7 @@ const ButtonExportAllConversations = ({
               margin: [0, 0, 0, 20],
             },
             {
-              text: `Total de conversaciones: ${conversations.length}`,
+              text: `Total de conversaciones: ${allConversations.length}`,
               style: "subheader",
               margin: [0, 0, 0, 30],
             },
@@ -153,7 +173,7 @@ const ButtonExportAllConversations = ({
           },
         };
 
-        const conversationPromises = conversations.map(conv =>
+        const conversationPromises = allConversations.map(conv =>
           getConversationByOrganizationIdAndById(
             selectOrganizationId,
             conv.id
@@ -169,7 +189,7 @@ const ButtonExportAllConversations = ({
         const conversationDetails = await Promise.all(conversationPromises);
 
         conversationDetails.forEach((conversationDetail, index) => {
-          const conversation = conversations[index];
+          const conversation = allConversations[index];
 
           if (!conversationDetail) {
             docDefinition.content.push({
@@ -283,6 +303,7 @@ const ButtonExportAllConversations = ({
         });
 
         pdfMake
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           .createPdf(docDefinition as any)
           .download(`reporte-todas-conversaciones-${getPdfMonthDayYear()}.pdf`);
 

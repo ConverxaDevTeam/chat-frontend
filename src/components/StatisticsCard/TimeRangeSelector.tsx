@@ -97,11 +97,7 @@ export const TimeRangeSelector = ({
       )}
 
       {menuPosition && (
-        <ContextMenu
-          x={menuPosition.x}
-          y={menuPosition.y}
-          onClose={onMenuClose}
-        >
+        <ContextMenu position={menuPosition} onClose={onMenuClose}>
           {timeRangeOptions.map(option => (
             <button
               key={option.id}
