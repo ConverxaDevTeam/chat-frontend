@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { StepComponentProps } from "../types";
 import EditButton from "@pages/Workspace/components/EditButton";
 import DeleteButton from "@pages/Workspace/components/DeleteButton";
+import StepContainer from "../components/StepContainer";
 
 const OrganizationStep: React.FC<StepComponentProps> = ({
   data,
@@ -35,21 +36,10 @@ const OrganizationStep: React.FC<StepComponentProps> = ({
   };
 
   return (
-    <div className="w-full">
-      {/* Header */}
-      <div className="mb-6">
-        <h1 className="text-2xl font-medium text-sofia-superDark leading-5 mb-1">
-          Crea tu organización
-        </h1>
-        <p className="text-xs font-normal text-[#343E4F]">
-          Identifica tu empresa y define el propósito general de tu asistente.
-        </p>
-      </div>
-
-      {/* Divider line */}
-      <hr className="border-t border-gray-200 mb-8" />
-
-      {/* Form */}
+    <StepContainer
+      title="Crea tu organización"
+      subtitle="Identifica tu empresa y define el propósito general de tu asistente."
+    >
       <div className="space-y-6">
         {/* Image Upload */}
         <div>
@@ -121,7 +111,7 @@ const OrganizationStep: React.FC<StepComponentProps> = ({
           />
         </div>
       </div>
-    </div>
+    </StepContainer>
   );
 };
 
