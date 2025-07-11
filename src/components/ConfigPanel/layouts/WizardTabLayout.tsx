@@ -33,7 +33,7 @@ const WizardTabLayout: FC<WizardTabLayoutProps> = ({
       <>
         <div className="flex flex-1">
           <div className="w-[80px] sm:w-[280px] bg-sofia-blancoPuro border-r border-sofia-darkBlue flex flex-col">
-            <div className="p-6 sm:p-6 p-2">
+            <div className="sm:p-6 p-2">
               <img
                 src="/img/logo-sofia-horizontal.svg"
                 alt="SOF.IA"
@@ -114,7 +114,7 @@ const WizardTabLayout: FC<WizardTabLayoutProps> = ({
             </div>
           </div>
           <div className="flex-1 flex flex-col">
-            <div className="flex-1 p-8 overflow-y-auto">{children}</div>
+            <div className="p-8 overflow-y-auto">{children}</div>
             {actions && (
               <div className="flex justify-end gap-3 p-6 border-t border-sofia-darkBlue">
                 {actions}

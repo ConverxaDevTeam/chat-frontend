@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, Fragment } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@store/index";
@@ -328,14 +328,14 @@ const InitialSetupWizard: React.FC<InitialSetupWizardProps> = ({
           actions={<ActionButtons />}
           layout="wizard"
         >
-          <div>
+          <Fragment>
             {error && (
               <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded text-red-700">
                 {error}
               </div>
             )}
             {renderStepContent()}
-          </div>
+          </Fragment>
         </ConfigPanel>
       </div>
     </RawModal>
