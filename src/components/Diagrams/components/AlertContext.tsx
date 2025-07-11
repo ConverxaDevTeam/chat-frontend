@@ -65,6 +65,7 @@ export const AlertProvider: React.FC<{ children: React.ReactNode }> = ({
         cancelText={sweetAlert.modalOptions?.cancelButtonText || "Cancelar"}
         onConfirm={sweetAlert.handleConfirm}
         onClose={sweetAlert.handleCancel}
+        zIndex={1100}
       />
     </AlertContext.Provider>
   );
