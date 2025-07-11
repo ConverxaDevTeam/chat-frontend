@@ -5,9 +5,10 @@ import { googleLoginAsync } from "@store/actions/auth";
 
 interface GoogleLoginButtonProps {
   setError: (error: string) => void;
+  onSuccess?: () => void;
 }
 
-const GoogleLoginButton = ({ setError }: GoogleLoginButtonProps) => {
+const GoogleLoginButton = ({ setError, onSuccess }: GoogleLoginButtonProps) => {
   const dispatch = useDispatch<AppDispatch>();
 
   const login = useGoogleLogin({
@@ -17,6 +18,7 @@ const GoogleLoginButton = ({ setError }: GoogleLoginButtonProps) => {
           accessToken: tokenResponse.access_token,
           setError,
           dispatch,
+          onSuccess,
         })
       );
     },

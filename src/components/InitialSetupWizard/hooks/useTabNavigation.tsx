@@ -4,7 +4,7 @@ import { SetupStepId, SetupTab } from "../types";
 export const useTabNavigation = (initialTab: SetupStepId) => {
   const [activeTab, setActiveTab] = useState<SetupStepId>(initialTab);
 
-  const tabs: SetupTab[] = [
+  const baseTabsDefinition: Omit<SetupTab, "status">[] = [
     {
       id: "organization",
       label: "Crear organización",
@@ -38,6 +38,8 @@ export const useTabNavigation = (initialTab: SetupStepId) => {
       label: "Finalizar",
     },
   ];
+
+  const tabs: SetupTab[] = baseTabsDefinition;
 
   const currentStepIndex = tabs.findIndex(tab => tab.id === activeTab);
   const isFirstTab = currentStepIndex === 0;
