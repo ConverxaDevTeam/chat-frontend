@@ -6,6 +6,7 @@ import GoogleLoginButton from "@components/GoogleLoginButton";
 import { signUpAsync } from "@store/actions/auth";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { Input } from "@components/forms/input";
+import { usePostLoginRedirect } from "@hooks/usePostLoginRedirect";
 
 interface SignUpFormValues {
   email: string;
@@ -23,6 +24,7 @@ const SignUp = () => {
 
   const [error, setError] = useState<string | null>(null);
   const [active, setActive] = useState<boolean>(false);
+  const { handlePostLoginRedirect } = usePostLoginRedirect();
 
   const {
     register,
@@ -40,7 +42,13 @@ const SignUp = () => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { confirmPassword: _, ...dataToSubmit } = formData;
     dispatch(
-      signUpAsync({ data: dataToSubmit, setActive, setError, dispatch })
+      signUpAsync({
+        data: dataToSubmit,
+        setActive,
+        setError,
+        dispatch,
+        onSuccess: handlePostLoginRedirect,
+      })
     );
   };
 
@@ -191,7 +199,10 @@ const SignUp = () => {
             <div className="w-[45%] h-[1px] bg-gray-300"></div>
           </div>
 
-          <GoogleLoginButton setError={setError} />
+          <GoogleLoginButton
+            setError={setError}
+            onSuccess={handlePostLoginRedirect}
+          />
 
           {error && (
             <p className="text-red-600 text-sm text-center max-h-5 px-2 mb-2">

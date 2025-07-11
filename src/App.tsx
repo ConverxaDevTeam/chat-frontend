@@ -7,7 +7,7 @@ import Conversations from "@pages/Conversations";
 import Dashboard from "@pages/Home";
 import LogIn from "@pages/LogIn";
 import SignUp from "@pages/SignUp";
-// import InitialSetup from "@pages/InitialSetup"; // Removed - using new wizard
+import WizardPage from "@pages/InitialSetup/WizardPage";
 import Organizations from "@pages/Organizations";
 import Users from "@pages/Users";
 import Workspace from "@pages/Workspace";
@@ -27,7 +27,6 @@ import { OrganizationRoleType } from "@utils/interfaces";
 import { RequestResetPassword } from "@pages/auth/RequestResetPassword";
 import { ChangePassword } from "@pages/auth/ChangePassword";
 import { AlertProvider } from "@components/Diagrams/components/AlertContext";
-import InitialSetupCheck from "@components/InitialSetupCheck";
 
 const App = (): JSX.Element => {
   const dispatch = useDispatch<AppDispatch>();
@@ -54,9 +53,9 @@ const App = (): JSX.Element => {
           <Route
             path="/initial-setup"
             element={
-              <InitialSetupCheck>
-                <div />
-              </InitialSetupCheck>
+              <ProtectedAuth>
+                <WizardPage />
+              </ProtectedAuth>
             }
           />
           <Route
@@ -67,22 +66,8 @@ const App = (): JSX.Element => {
               </ProtectedAuth>
             }
           >
-            <Route
-              index
-              element={
-                <InitialSetupCheck>
-                  <Dashboard />
-                </InitialSetupCheck>
-              }
-            />
-            <Route
-              path="dashboard"
-              element={
-                <InitialSetupCheck>
-                  <Dashboard />
-                </InitialSetupCheck>
-              }
-            />
+            <Route index element={<Dashboard />} />
+            <Route path="dashboard" element={<Dashboard />} />
             <Route path="users" element={<Users />} />
             <Route
               path="organizations"

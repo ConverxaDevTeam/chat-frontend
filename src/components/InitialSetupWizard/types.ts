@@ -54,7 +54,10 @@ export type SetupStepId =
   | "integration"
   | "final";
 
+export type TabStatus = "completed" | "current" | "pending";
+
 export interface SetupTab {
   id: SetupStepId;
   label: string;
+  status?: TabStatus;
 }
