@@ -210,6 +210,7 @@ export const signUpAsync = createAsyncThunk(
       setActive,
       setError,
       dispatch,
+      onSuccess,
     }: {
       data: {
         email: string;
@@ -221,6 +222,7 @@ export const signUpAsync = createAsyncThunk(
       setActive: (boolean: boolean) => void;
       setError: (error: string) => void;
       dispatch: ReturnType<typeof useAppDispatch>;
+      onSuccess?: () => void;
     },
     { rejectWithValue }
   ) => {
@@ -236,6 +238,9 @@ export const signUpAsync = createAsyncThunk(
         dispatch(connectSocketAsync({ dispatch }));
         dispatch(getUserAsync());
         dispatch(getMyOrganizationsAsync());
+        if (onSuccess) {
+          onSuccess();
+        }
         return {};
       } else {
         setError(response.data.message);
@@ -268,10 +273,12 @@ export const googleLoginAsync = createAsyncThunk(
       accessToken,
       setError,
       dispatch,
+      onSuccess,
     }: {
       accessToken: string;
       setError: (error: string) => void;
       dispatch: ReturnType<typeof useAppDispatch>;
+      onSuccess?: () => void;
     },
     { rejectWithValue }
   ) => {
@@ -290,6 +297,9 @@ export const googleLoginAsync = createAsyncThunk(
         alertConfirm("Sesión iniciada correctamente");
         dispatch(getUserAsync());
         dispatch(getMyOrganizationsAsync());
+        if (onSuccess) {
+          onSuccess();
+        }
         return {};
       } else {
         setError(response.data.message);
@@ -321,6 +331,7 @@ export const logInAsync = createAsyncThunk(
       setActive,
       setError,
       dispatch,
+      onSuccess,
     }: {
       data: {
         email: string;
@@ -329,6 +340,7 @@ export const logInAsync = createAsyncThunk(
       setActive: (boolean: boolean) => void;
       setError: (error: string) => void;
       dispatch: ReturnType<typeof useAppDispatch>;
+      onSuccess?: () => void;
     },
     { rejectWithValue }
   ) => {
@@ -345,6 +357,9 @@ export const logInAsync = createAsyncThunk(
         alertConfirm("Sesión iniciada correctamente");
         dispatch(getUserAsync());
         dispatch(getMyOrganizationsAsync());
+        if (onSuccess) {
+          onSuccess();
+        }
         return {};
       } else {
         setError(response.data.message);

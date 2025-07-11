@@ -107,18 +107,28 @@ export const useSetupWizard = () => {
     );
 
     if (response.data.ok && response.data.organization) {
-      setOrganizationId(response.data.organization.id);
+      const orgId = response.data.organization.id;
+      console.log("🔍 Organization created:", {
+        orgId,
+        response: response.data,
+      });
+
+      setOrganizationId(orgId);
       toast.success("Organización creada exitosamente");
 
       // Save wizard state to localStorage
-      localStorage.setItem(
-        "wizardState",
-        JSON.stringify({
-          organizationId: response.data.organization.id,
-          currentStep: "department",
-          lastUpdated: new Date().toISOString(),
-        })
-      );
+      const wizardState = {
+        organizationId: orgId,
+        currentStep: "department",
+        lastUpdated: new Date().toISOString(),
+      };
+
+      console.log("🔍 Saving to localStorage:", wizardState);
+      localStorage.setItem("wizardState", JSON.stringify(wizardState));
+
+      // Verify it was saved
+      const saved = localStorage.getItem("wizardState");
+      console.log("🔍 Verified saved state:", saved);
 
       return true;
     }
