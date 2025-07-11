@@ -49,8 +49,9 @@ const InitialSetupWizard: React.FC<InitialSetupWizardProps> = ({
       description: "",
     },
     agent: {
-      // Agent is created automatically with department
       id: undefined,
+      name: "",
+      instruction: "",
     },
     knowledge: {
       files: [],
@@ -191,18 +192,30 @@ const InitialSetupWizard: React.FC<InitialSetupWizardProps> = ({
         } else {
           goToNextTab();
           // Update saved state with current step
-          localStorage.setItem(
-            "wizardState",
-            JSON.stringify({
-              ...savedState,
+          // Get current state from localStorage to preserve any updates
+          const currentSavedState = localStorage.getItem("wizardState");
+          const currentParsedState = currentSavedState
+            ? JSON.parse(currentSavedState)
+            : {};
+
+          console.log("🔍 Before updating localStorage:", {
+            currentParsedState,
+            hookValues: {
               organizationId,
               departmentId,
               agentId,
               integrationId,
-              currentStep: tabs[currentStepIndex + 1].id,
-              lastUpdated: new Date().toISOString(),
-            })
-          );
+            },
+          });
+
+          const newState = {
+            ...currentParsedState,
+            currentStep: tabs[currentStepIndex + 1].id,
+            lastUpdated: new Date().toISOString(),
+          };
+
+          localStorage.setItem("wizardState", JSON.stringify(newState));
+          console.log("🔍 After updating localStorage:", newState);
         }
       }
     } catch (error) {
@@ -266,7 +279,7 @@ const InitialSetupWizard: React.FC<InitialSetupWizardProps> = ({
   const ActionButtons = () => (
     <div className="flex gap-3">
       {currentStepIndex === 0 ? (
-        <Button onClick={handleCancel} variant="cancel">
+        <Button onClick={handleCancel} variant="cancel" type="button">
           Cancelar
         </Button>
       ) : (
@@ -274,18 +287,29 @@ const InitialSetupWizard: React.FC<InitialSetupWizardProps> = ({
           onClick={goToPreviousTab}
           variant="default"
           disabled={isLoading}
+          type="button"
         >
           Anterior
         </Button>
       )}
 
       {activeTab === "knowledge" && (
-        <Button onClick={handleSkip} variant="default" disabled={isLoading}>
+        <Button
+          onClick={handleSkip}
+          variant="default"
+          disabled={isLoading}
+          type="button"
+        >
           Omitir este paso
         </Button>
       )}
 
-      <Button onClick={handleNext} variant="primary" disabled={isLoading}>
+      <Button
+        onClick={handleNext}
+        variant="primary"
+        disabled={isLoading}
+        type="button"
+      >
         {isLoading ? "Procesando..." : isLastTab ? "Finalizar" : "Siguiente"}
       </Button>
     </div>
@@ -295,7 +319,7 @@ const InitialSetupWizard: React.FC<InitialSetupWizardProps> = ({
 
   return (
     <RawModal isShown={isOpen} onClose={onClose}>
-      <div className="w-[1180px] max-w-[90vw]">
+      <div className="w-[1180px] max-w-[95vw] sm:max-w-[90vw]">
         <ConfigPanel
           tabs={tabsWithStatus}
           activeTab={activeTab}
