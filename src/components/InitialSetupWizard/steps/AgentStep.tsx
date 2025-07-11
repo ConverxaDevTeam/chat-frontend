@@ -7,6 +7,7 @@ import { TextArea } from "@components/forms/textArea";
 import InfoTooltip from "@components/common/InfoTooltip";
 import { agentService } from "@services/agent";
 import { Agent } from "@interfaces/agents";
+import StepContainer from "../components/StepContainer";
 
 const EXAMPLES_INSTRUCTIONS = {
   example1:
@@ -120,180 +121,161 @@ const AgentStep: React.FC<StepComponentProps> = ({
   };
 
   return (
-    <div className="w-full h-full flex flex-col">
-      {/* Header */}
-      <div className="mb-6 flex-shrink-0">
-        <h1 className="text-2xl font-medium text-sofia-superDark leading-5 mb-1">
-          Configura tu agente
-        </h1>
-        <p className="text-xs font-normal text-[#343E4F]">
-          Personaliza el asistente con IA que hablará en nombre de tu empresa.
-        </p>
-      </div>
+    <StepContainer
+      title="Configura tu agente"
+      subtitle="Personaliza el asistente con IA que hablará en nombre de tu empresa."
+    >
+      <div className="space-y-6">
+        {/* Agent Name */}
+        <InputGroup
+          label="Escribe el nombre del agente"
+          errors={errors.name}
+          tooltip={
+            <InfoTooltip text="Escribe un nombre descriptivo para identificar a tu agente" />
+          }
+        >
+          <Input
+            placeholder="Nombre del agente"
+            register={register("name", {
+              required: "El nombre es obligatorio",
+            })}
+            error={errors.name?.message}
+          />
+        </InputGroup>
 
-      {/* Divider line */}
-      <hr className="border-t border-gray-200 mb-8 flex-shrink-0" />
-
-      {/* Scrollable Content */}
-      <div className="flex-1 overflow-y-auto pr-2">
-        <div className="space-y-6">
-          {/* Agent Name */}
-          <InputGroup
-            label="Escribe el nombre del agente"
-            errors={errors.name}
-            tooltip={
-              <InfoTooltip text="Escribe un nombre descriptivo para identificar a tu agente" />
-            }
-          >
-            <Input
-              placeholder="Nombre del agente"
-              register={register("name", {
-                required: "El nombre es obligatorio",
-              })}
-              error={errors.name?.message}
-            />
-          </InputGroup>
-
-          {/* Agent Instruction */}
-          <InputGroup label="Instrucción" errors={errors.instruction}>
-            <p className="text-gray-700 text-[12px] font-[500] leading-[16px] -mt-2">
-              ¿Tienes duda de cómo comenzar? Visita nuestro{" "}
-              <a
-                target="_blank"
-                rel="noopener noreferrer"
-                className="underline"
+        {/* Agent Instruction */}
+        <InputGroup label="Instrucción" errors={errors.instruction}>
+          <p className="text-gray-700 text-[12px] font-[500] leading-[16px] -mt-2">
+            ¿Tienes duda de cómo comenzar? Visita nuestro{" "}
+            <a target="_blank" rel="noopener noreferrer" className="underline">
+              knowledge base
+            </a>
+          </p>
+          <TextArea
+            placeholder="Descripción del agente"
+            register={register("instruction", {
+              required: "La descripción es obligatoria",
+            })}
+            error={errors.instruction?.message}
+            rows={8}
+          />
+          <div className="flex gap-[16px] justify-start">
+            <div className="group relative">
+              <button
+                type="button"
+                className="w-auto h-[24px] px-[12px] text-sofia-superDark font-medium text-[12px] border-sofia-superDark border-[1px] rounded-[4px] hover:bg-gray-100 transition-colors"
+                onClick={() => setExample("example1")}
               >
-                knowledge base
-              </a>
-            </p>
-            <TextArea
-              placeholder="Descripción del agente"
-              register={register("instruction", {
-                required: "La descripción es obligatoria",
-              })}
-              error={errors.instruction?.message}
-              rows={8}
-            />
-            <div className="flex gap-[16px] justify-start">
-              <div className="group relative">
-                <button
-                  type="button"
-                  className="w-auto h-[24px] px-[12px] text-sofia-superDark font-medium text-[12px] border-sofia-superDark border-[1px] rounded-[4px] hover:bg-gray-100 transition-colors"
-                  onClick={() => setExample("example1")}
-                >
-                  {EXAMPLES_TITLES.example1}
-                </button>
-                <div className="absolute z-10 left-0 bottom-full mb-2 hidden group-hover:block bg-[#F6F6F6] border border-[#001126] text-[#001126] text-[12px] px-2 py-1.5 rounded whitespace-normal w-[180px]">
-                  {EXAMPLES_SUMMARIES.example1}
-                </div>
-              </div>
-              <div className="group relative">
-                <button
-                  type="button"
-                  className="w-auto h-[24px] px-[12px] text-sofia-superDark font-medium text-[12px] border-sofia-superDark border-[1px] rounded-[4px] hover:bg-gray-100 transition-colors"
-                  onClick={() => setExample("example2")}
-                >
-                  {EXAMPLES_TITLES.example2}
-                </button>
-                <div className="absolute z-10 left-0 bottom-full mb-2 hidden group-hover:block bg-[#F6F6F6] border border-[#001126] text-[#001126] text-[12px] px-2 py-1.5 rounded whitespace-normal w-[180px]">
-                  {EXAMPLES_SUMMARIES.example2}
-                </div>
-              </div>
-              <div className="group relative">
-                <button
-                  type="button"
-                  className="w-auto h-[24px] px-[12px] text-sofia-superDark font-medium text-[12px] border-sofia-superDark border-[1px] rounded-[4px] hover:bg-gray-100 transition-colors"
-                  onClick={() => setExample("example3")}
-                >
-                  {EXAMPLES_TITLES.example3}
-                </button>
-                <div className="absolute z-10 left-0 bottom-full mb-2 hidden group-hover:block bg-[#F6F6F6] border border-[#001126] text-[#001126] text-[12px] px-2 py-1.5 rounded whitespace-normal w-[180px]">
-                  {EXAMPLES_SUMMARIES.example3}
-                </div>
+                {EXAMPLES_TITLES.example1}
+              </button>
+              <div className="absolute z-10 left-0 bottom-full mb-2 hidden group-hover:block bg-[#F6F6F6] border border-[#001126] text-[#001126] text-[12px] px-2 py-1.5 rounded whitespace-normal w-[180px]">
+                {EXAMPLES_SUMMARIES.example1}
               </div>
             </div>
-          </InputGroup>
-
-          {/* Agent features */}
-          <div>
-            <p className="text-sm font-semibold text-gray-700 mb-3">
-              Características del agente:
-            </p>
-            <div className="grid grid-cols-2 gap-3">
-              {[
-                {
-                  icon: "🤖",
-                  title: "Procesamiento inteligente",
-                  description:
-                    "Utiliza IA avanzada para entender y responder consultas",
-                },
-                {
-                  icon: "⚡",
-                  title: "Respuestas rápidas",
-                  description:
-                    "Proporciona información inmediata a los usuarios",
-                },
-                {
-                  icon: "📚",
-                  title: "Aprendizaje continuo",
-                  description:
-                    "Mejora con cada interacción y nueva información",
-                },
-                {
-                  icon: "🔧",
-                  title: "Personalizable",
-                  description:
-                    "Puedes configurar sus respuestas y comportamiento",
-                },
-              ].map(feature => (
-                <div
-                  key={feature.title}
-                  className="flex items-start space-x-3 p-4 bg-white border border-gray-200 rounded-lg"
-                >
-                  <span className="text-2xl">{feature.icon}</span>
-                  <div>
-                    <p className="font-medium text-sm text-gray-900">
-                      {feature.title}
-                    </p>
-                    <p className="text-xs text-gray-500 mt-1">
-                      {feature.description}
-                    </p>
-                  </div>
-                </div>
-              ))}
+            <div className="group relative">
+              <button
+                type="button"
+                className="w-auto h-[24px] px-[12px] text-sofia-superDark font-medium text-[12px] border-sofia-superDark border-[1px] rounded-[4px] hover:bg-gray-100 transition-colors"
+                onClick={() => setExample("example2")}
+              >
+                {EXAMPLES_TITLES.example2}
+              </button>
+              <div className="absolute z-10 left-0 bottom-full mb-2 hidden group-hover:block bg-[#F6F6F6] border border-[#001126] text-[#001126] text-[12px] px-2 py-1.5 rounded whitespace-normal w-[180px]">
+                {EXAMPLES_SUMMARIES.example2}
+              </div>
+            </div>
+            <div className="group relative">
+              <button
+                type="button"
+                className="w-auto h-[24px] px-[12px] text-sofia-superDark font-medium text-[12px] border-sofia-superDark border-[1px] rounded-[4px] hover:bg-gray-100 transition-colors"
+                onClick={() => setExample("example3")}
+              >
+                {EXAMPLES_TITLES.example3}
+              </button>
+              <div className="absolute z-10 left-0 bottom-full mb-2 hidden group-hover:block bg-[#F6F6F6] border border-[#001126] text-[#001126] text-[12px] px-2 py-1.5 rounded whitespace-normal w-[180px]">
+                {EXAMPLES_SUMMARIES.example3}
+              </div>
             </div>
           </div>
+        </InputGroup>
 
-          <div className="space-y-3">
-            <p className="text-sm font-semibold text-gray-700">
-              Próximos pasos para tu agente:
-            </p>
-            <ul className="space-y-2">
-              <li className="flex items-start">
-                <span className="text-sofia-electricGreen mr-2">•</span>
-                <span className="text-sm text-gray-600">
-                  Agrega información a la base de conocimiento en el siguiente
-                  paso
-                </span>
-              </li>
-              <li className="flex items-start">
-                <span className="text-sofia-electricGreen mr-2">•</span>
-                <span className="text-sm text-gray-600">
-                  Personaliza las respuestas y el comportamiento después de la
-                  configuración inicial
-                </span>
-              </li>
-              <li className="flex items-start">
-                <span className="text-sofia-electricGreen mr-2">•</span>
-                <span className="text-sm text-gray-600">
-                  Configura funciones adicionales para expandir las capacidades
-                </span>
-              </li>
-            </ul>
+        {/* Agent features */}
+        <div>
+          <p className="text-sm font-semibold text-gray-700 mb-3">
+            Características del agente:
+          </p>
+          <div className="grid grid-cols-2 gap-3">
+            {[
+              {
+                icon: "🤖",
+                title: "Procesamiento inteligente",
+                description:
+                  "Utiliza IA avanzada para entender y responder consultas",
+              },
+              {
+                icon: "⚡",
+                title: "Respuestas rápidas",
+                description: "Proporciona información inmediata a los usuarios",
+              },
+              {
+                icon: "📚",
+                title: "Aprendizaje continuo",
+                description: "Mejora con cada interacción y nueva información",
+              },
+              {
+                icon: "🔧",
+                title: "Personalizable",
+                description:
+                  "Puedes configurar sus respuestas y comportamiento",
+              },
+            ].map(feature => (
+              <div
+                key={feature.title}
+                className="flex items-start space-x-3 p-4 bg-white border border-gray-200 rounded-lg"
+              >
+                <span className="text-2xl">{feature.icon}</span>
+                <div>
+                  <p className="font-medium text-sm text-gray-900">
+                    {feature.title}
+                  </p>
+                  <p className="text-xs text-gray-500 mt-1">
+                    {feature.description}
+                  </p>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
+
+        <div className="space-y-3">
+          <p className="text-sm font-semibold text-gray-700">
+            Próximos pasos para tu agente:
+          </p>
+          <ul className="space-y-2">
+            <li className="flex items-start">
+              <span className="text-sofia-electricGreen mr-2">•</span>
+              <span className="text-sm text-gray-600">
+                Agrega información a la base de conocimiento en el siguiente
+                paso
+              </span>
+            </li>
+            <li className="flex items-start">
+              <span className="text-sofia-electricGreen mr-2">•</span>
+              <span className="text-sm text-gray-600">
+                Personaliza las respuestas y el comportamiento después de la
+                configuración inicial
+              </span>
+            </li>
+            <li className="flex items-start">
+              <span className="text-sofia-electricGreen mr-2">•</span>
+              <span className="text-sm text-gray-600">
+                Configura funciones adicionales para expandir las capacidades
+              </span>
+            </li>
+          </ul>
+        </div>
       </div>
-    </div>
+    </StepContainer>
   );
 };
 
