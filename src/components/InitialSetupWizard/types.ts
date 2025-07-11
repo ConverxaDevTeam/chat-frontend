@@ -9,8 +9,9 @@ export interface SetupFormData {
     description: string;
   };
   agent: {
-    // Agent is created automatically with department
     id?: number;
+    name: string;
+    instruction: string;
   };
   knowledge: {
     files: File[];

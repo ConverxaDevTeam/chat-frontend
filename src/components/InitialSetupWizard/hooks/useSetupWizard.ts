@@ -9,6 +9,8 @@ import { OrganizationType } from "@interfaces/organization.interface";
 import { createDepartment, getWorkspaceData } from "@services/department";
 import { createKnowledgeBase } from "@services/knowledgeBase.service";
 import { updateIntegrationWebChat } from "@services/integration";
+import { editOrganization } from "@services/organizations";
+import { agentService } from "@services/agent";
 
 export const useSetupWizard = () => {
   const { user } = useSelector((state: RootState) => state.auth);
@@ -43,14 +45,13 @@ export const useSetupWizard = () => {
     try {
       switch (step) {
         case "organization":
-          return await createOrganizationStep(formData.organization);
+          return await processOrganizationStep(formData.organization);
 
         case "department":
           return await createDepartmentStep(formData.department);
 
         case "agent":
-          // Agent is created automatically with department, just return true
-          return true;
+          return await updateAgentStep(formData.agent);
 
         case "knowledge":
           return await createKnowledgeStep(formData.knowledge);
@@ -79,18 +80,30 @@ export const useSetupWizard = () => {
     }
   };
 
+  const processOrganizationStep = async (
+    data: SetupFormData["organization"]
+  ) => {
+    // If organizationId exists, update instead of create
+    if (organizationId) {
+      return await updateOrganizationStep(data);
+    }
+    return await createOrganizationStep(data);
+  };
+
   const createOrganizationStep = async (
     data: SetupFormData["organization"]
   ) => {
+    if (!user?.email) {
+      throw new Error("Email del usuario requerido");
+    }
+
+    // Use existing organization service but we need to get the ID
+    // Since the service only returns boolean, we need to make a direct call
     const formData = new FormData();
     formData.append("name", data.name);
     formData.append("description", data.description);
     formData.append("type", OrganizationType.FREE);
-
-    // Add user email
-    if (user?.email) {
-      formData.append("email", user.email);
-    }
+    formData.append("email", user.email);
 
     if (data.logo) {
       formData.append("logo", data.logo);
@@ -108,11 +121,10 @@ export const useSetupWizard = () => {
 
     if (response.data.ok && response.data.organization) {
       const orgId = response.data.organization.id;
-      console.log("🔍 Organization created:", {
+      console.log("🔍 Organization created successfully:", {
         orgId,
         response: response.data,
       });
-
       setOrganizationId(orgId);
       toast.success("Organización creada exitosamente");
 
@@ -123,17 +135,42 @@ export const useSetupWizard = () => {
         lastUpdated: new Date().toISOString(),
       };
 
-      console.log("🔍 Saving to localStorage:", wizardState);
+      console.log("🔍 Saving wizard state:", wizardState);
       localStorage.setItem("wizardState", JSON.stringify(wizardState));
 
       // Verify it was saved
-      const saved = localStorage.getItem("wizardState");
-      console.log("🔍 Verified saved state:", saved);
+      const savedState = localStorage.getItem("wizardState");
+      console.log("🔍 Verified saved state:", savedState);
 
       return true;
     }
 
     throw new Error(response.data.message || "Error al crear la organización");
+  };
+
+  const updateOrganizationStep = async (
+    data: SetupFormData["organization"]
+  ) => {
+    if (!organizationId || !user?.id) {
+      throw new Error("ID de organización y usuario requeridos");
+    }
+
+    const editData = {
+      owner_id: user.id,
+      name: data.name,
+      description: data.description,
+      logo: data.logo,
+    };
+
+    try {
+      console.log("🔍 Updating organization:", { organizationId, editData });
+      await editOrganization(organizationId, editData);
+      toast.success("Organización actualizada exitosamente");
+      return true;
+    } catch (error: any) {
+      console.error("🔍 Error updating organization:", error);
+      throw new Error(error.message || "Error al actualizar la organización");
+    }
   };
 
   const createDepartmentStep = async (data: SetupFormData["department"]) => {
@@ -179,7 +216,27 @@ export const useSetupWizard = () => {
     throw new Error("Error al crear el departamento");
   };
 
-  // Agent is created automatically with department, no need for this function
+  const updateAgentStep = async (data: SetupFormData["agent"]) => {
+    if (!agentId) {
+      throw new Error("No se ha creado el agente");
+    }
+
+    try {
+      const agentData = {
+        name: data.name,
+        config: {
+          instruccion: data.instruction,
+        },
+      };
+
+      await agentService.update(agentId, agentData);
+      toast.success("Agente actualizado exitosamente");
+      return true;
+    } catch (error: any) {
+      console.error("Error updating agent:", error);
+      throw new Error(error.message || "Error al actualizar el agente");
+    }
+  };
 
   const createKnowledgeStep = async (data: SetupFormData["knowledge"]) => {
     if (!agentId) {
