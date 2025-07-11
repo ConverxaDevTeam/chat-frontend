@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@store/index";
 import { getMyOrganizationsAsync, logOutAsync } from "@store/actions/auth";
-import WizardConfigPanel from "@components/ConfigPanel/WizardConfigPanel";
+import ConfigPanel from "@components/ConfigPanel";
 import { Button } from "@components/common/Button";
 import RawModal from "@components/RawModal";
 import { useAlertContext } from "@components/Diagrams/components/AlertContext";
@@ -26,11 +26,13 @@ import { SetupFormData, SetupStepId } from "./types";
 interface InitialSetupWizardProps {
   isOpen: boolean;
   onClose: () => void;
+  onComplete?: () => void;
 }
 
 const InitialSetupWizard: React.FC<InitialSetupWizardProps> = ({
   isOpen,
   onClose,
+  onComplete,
 }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
@@ -109,6 +111,56 @@ const InitialSetupWizard: React.FC<InitialSetupWizardProps> = ({
     currentStepIndex,
   } = useTabNavigation(getInitialStep());
 
+  // Track completed steps
+  const completedSteps = useMemo(() => {
+    const completed: SetupStepId[] = [];
+
+    // Add logic to determine which steps are completed
+    if (organizationId) completed.push("organization");
+    if (departmentId) completed.push("department");
+    if (agentId) completed.push("agent");
+
+    // Knowledge is optional, so we consider it completed if we've moved past it
+    const currentIndex = [
+      "organization",
+      "department",
+      "agent",
+      "knowledge",
+      "chat",
+      "interface",
+      "integration",
+      "final",
+    ].indexOf(activeTab);
+    if (currentIndex > 3) completed.push("knowledge");
+
+    // Add other completed steps based on form data and progress
+    if (formData.chatConfig.title && currentIndex > 4) completed.push("chat");
+    if (formData.interface.primaryColor && currentIndex > 5)
+      completed.push("interface");
+    if (integrationId && currentIndex > 6) completed.push("integration");
+
+    return completed;
+  }, [
+    organizationId,
+    departmentId,
+    agentId,
+    integrationId,
+    formData,
+    activeTab,
+  ]);
+
+  // Update tabs with completion status
+  const tabsWithStatus = useMemo(() => {
+    return tabs.map(tab => ({
+      ...tab,
+      status: completedSteps.includes(tab.id)
+        ? ("completed" as const)
+        : tab.id === activeTab
+          ? ("current" as const)
+          : ("pending" as const),
+    }));
+  }, [tabs, completedSteps, activeTab]);
+
   const { showConfirmation } = useAlertContext();
 
   const updateFormData = (
@@ -130,7 +182,11 @@ const InitialSetupWizard: React.FC<InitialSetupWizardProps> = ({
           clearWizardState();
           // Refresh organizations and redirect
           await dispatch(getMyOrganizationsAsync());
-          navigate("/dashboard");
+          if (onComplete) {
+            onComplete();
+          } else {
+            navigate("/dashboard");
+          }
           onClose();
         } else {
           goToNextTab();
@@ -139,6 +195,10 @@ const InitialSetupWizard: React.FC<InitialSetupWizardProps> = ({
             "wizardState",
             JSON.stringify({
               ...savedState,
+              organizationId,
+              departmentId,
+              agentId,
+              integrationId,
               currentStep: tabs[currentStepIndex + 1].id,
               lastUpdated: new Date().toISOString(),
             })
@@ -236,12 +296,13 @@ const InitialSetupWizard: React.FC<InitialSetupWizardProps> = ({
   return (
     <RawModal isShown={isOpen} onClose={onClose}>
       <div className="w-[1180px] max-w-[90vw]">
-        <WizardConfigPanel
-          tabs={tabs}
+        <ConfigPanel
+          tabs={tabsWithStatus}
           activeTab={activeTab}
           onTabChange={tab => setActiveTab(tab as SetupStepId)}
           isLoading={isLoading}
           actions={<ActionButtons />}
+          layout="wizard"
         >
           <div>
             {error && (
@@ -251,7 +312,7 @@ const InitialSetupWizard: React.FC<InitialSetupWizardProps> = ({
             )}
             {renderStepContent()}
           </div>
-        </WizardConfigPanel>
+        </ConfigPanel>
       </div>
     </RawModal>
   );
