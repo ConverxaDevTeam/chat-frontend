@@ -7,7 +7,7 @@ import Conversations from "@pages/Conversations";
 import Dashboard from "@pages/Home";
 import LogIn from "@pages/LogIn";
 import SignUp from "@pages/SignUp";
-import InitialSetup from "@pages/InitialSetup";
+// import InitialSetup from "@pages/InitialSetup"; // Removed - using new wizard
 import Organizations from "@pages/Organizations";
 import Users from "@pages/Users";
 import Workspace from "@pages/Workspace";
@@ -51,7 +51,14 @@ const App = (): JSX.Element => {
           <Route path="/sign-up" element={<SignUp />} />
           <Route path="/reset-password" element={<RequestResetPassword />} />
           <Route path="/reset-password/change" element={<ChangePassword />} />
-          <Route path="/initial-setup" element={<InitialSetup />} />
+          <Route
+            path="/initial-setup"
+            element={
+              <InitialSetupCheck>
+                <div />
+              </InitialSetupCheck>
+            }
+          />
           <Route
             path="/*"
             element={
