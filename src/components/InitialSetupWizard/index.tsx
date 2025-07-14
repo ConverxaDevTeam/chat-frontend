@@ -84,6 +84,7 @@ const InitialSetupWizard: React.FC<InitialSetupWizardProps> = ({
     departmentId,
     agentId,
     integrationId,
+    setIntegrationId,
     clearWizardState,
     savedState,
   } = useSetupWizard();
@@ -192,21 +193,10 @@ const InitialSetupWizard: React.FC<InitialSetupWizardProps> = ({
         } else {
           goToNextTab();
           // Update saved state with current step
-          // Get current state from localStorage to preserve any updates
           const currentSavedState = localStorage.getItem("wizardState");
           const currentParsedState = currentSavedState
             ? JSON.parse(currentSavedState)
             : {};
-
-          console.log("🔍 Before updating localStorage:", {
-            currentParsedState,
-            hookValues: {
-              organizationId,
-              departmentId,
-              agentId,
-              integrationId,
-            },
-          });
 
           const newState = {
             ...currentParsedState,
@@ -215,7 +205,6 @@ const InitialSetupWizard: React.FC<InitialSetupWizardProps> = ({
           };
 
           localStorage.setItem("wizardState", JSON.stringify(newState));
-          console.log("🔍 After updating localStorage:", newState);
         }
       }
     } catch (error) {
@@ -252,6 +241,7 @@ const InitialSetupWizard: React.FC<InitialSetupWizardProps> = ({
       departmentId,
       agentId,
       integrationId,
+      setIntegrationId,
     };
 
     switch (activeTab) {
