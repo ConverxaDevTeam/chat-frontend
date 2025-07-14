@@ -62,9 +62,6 @@ export const useSetupWizard = () => {
         case "chat":
           return await updateChatConfigStep(formData.chatConfig, formData);
 
-        case "interface":
-          return await updateInterfaceStep(formData.interface);
-
         case "integration":
           return await updateIntegrationStep(formData.integration);
 
@@ -311,44 +308,6 @@ export const useSetupWizard = () => {
     }
 
     throw new Error("Error al actualizar la configuración del chat");
-  };
-
-  const updateInterfaceStep = async (data: SetupFormData["interface"]) => {
-    if (!integrationId) {
-      return true; // Skip if no integration
-    }
-
-    // Get current integration data first
-    const integResponse = await axiosInstance.get(
-      `/api/integration/${integrationId}`
-    );
-
-    const currentData = integResponse.data;
-    const updateData = {
-      cors: currentData.cors || [],
-      title: currentData.title || "",
-      name: currentData.name || "",
-      sub_title: currentData.sub_title || "",
-      description: currentData.description || "",
-      bg_color: data.backgroundColor,
-      text_title: currentData.text_title || "#000000",
-      bg_chat: currentData.bg_chat || "#f5f5f5",
-      text_color: data.textColor,
-      bg_assistant: currentData.bg_assistant || "#e0e0e0",
-      bg_user: currentData.bg_user || "#007bff",
-      button_color: data.primaryColor,
-      button_text: currentData.button_text || "#ffffff",
-      text_date: currentData.text_date || "#666666",
-      logo: currentData.logo,
-    };
-
-    const result = await updateIntegrationWebChat(integrationId, updateData);
-
-    if (result) {
-      toast.success("Interfaz personalizada");
-    }
-
-    return true;
   };
 
   const updateIntegrationStep = async (data: SetupFormData["integration"]) => {
