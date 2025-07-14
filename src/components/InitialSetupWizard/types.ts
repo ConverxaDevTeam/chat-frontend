@@ -24,13 +24,6 @@ export interface SetupFormData {
     welcomeMessage: string;
     placeholder: string;
   };
-  interface: {
-    primaryColor: string;
-    backgroundColor: string;
-    textColor: string;
-    buttonStyle: "rounded" | "square";
-    position: "bottom-right" | "bottom-left" | "top-right" | "top-left";
-  };
   integration: {
     domains: string[];
   };
@@ -52,7 +45,6 @@ export type SetupStepId =
   | "agent"
   | "knowledge"
   | "chat"
-  | "interface"
   | "integration"
   | "final";
 
