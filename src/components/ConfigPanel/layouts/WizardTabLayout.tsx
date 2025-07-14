@@ -113,8 +113,8 @@ const WizardTabLayout: FC<WizardTabLayoutProps> = ({
               </div>
             </div>
           </div>
-          <div className="flex-1 flex flex-col">
-            <div className="p-8 overflow-y-auto">{children}</div>
+          <div className="flex-1 flex flex-col min-h-[600px]">
+            <div className="p-8 overflow-y-auto flex-1">{children}</div>
             {actions && (
               <div className="flex justify-end gap-3 p-6 border-t border-sofia-darkBlue">
                 {actions}
