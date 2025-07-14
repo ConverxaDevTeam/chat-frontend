@@ -25,10 +25,7 @@ export const useTabNavigation = (initialTab: SetupStepId) => {
       id: "chat",
       label: "Configurar el chat",
     },
-    {
-      id: "interface",
-      label: "Configura el diseño",
-    },
+
     {
       id: "integration",
       label: "Integra el chat",
