@@ -1,245 +1,184 @@
 import React, { useState } from "react";
 import { StepComponentProps } from "../types";
 import StepContainer from "../components/StepContainer";
+import { InputGroup } from "@components/forms/inputGroup";
+import { Input } from "@components/forms/input";
+import { urlFiles } from "@config/config";
+import { alertConfirm } from "@utils/alerts";
+
+const CorsTagList = ({
+  cors,
+  onRemove,
+}: {
+  cors: string[];
+  onRemove: (cor: string) => void;
+}) => (
+  <div className="flex gap-[10px] flex-wrap">
+    {cors.map((cor, index) => (
+      <div
+        key={`cor-${index}`}
+        className="flex items-center gap-2 px-3 py-2 rounded-lg border border-sofia-darkBlue"
+      >
+        <p className="truncate text-sofia-superDark text-xs font-normal">
+          {cor}
+        </p>
+        <button
+          onClick={() => onRemove(cor)}
+          className="flex-none w-4 h-4 hover:text-sofia-electricGreen"
+          aria-label="Eliminar dominio"
+          title="Eliminar dominio"
+        >
+          <img src="/mvp/trash.svg" alt="Eliminar dominio" />
+        </button>
+      </div>
+    ))}
+  </div>
+);
+
+const CorsInput = ({
+  value,
+  onChange,
+  onAdd,
+}: {
+  value: string;
+  onChange: (value: string) => void;
+  onAdd: () => void;
+}) => (
+  <div className="w-full mb-[16px]">
+    <InputGroup label="">
+      <div className="relative w-full">
+        <Input
+          type="text"
+          value={value}
+          placeholder="https://tu-dominio.com"
+          onChange={e => onChange(e.target.value)}
+          onKeyDown={e => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              onAdd();
+            }
+          }}
+          className="text-sofia-superDark text-xs font-normal pr-14 w-full"
+        />
+        <button
+          type="button"
+          onClick={onAdd}
+          className="absolute right-2 top-1/2 transform -translate-y-1/2 flex items-center justify-center w-10 h-10"
+          aria-label="Agregar dominio"
+          title="Agregar dominio"
+        >
+          <img src="/mvp/plus.svg" alt="Agregar dominio" />
+        </button>
+      </div>
+    </InputGroup>
+  </div>
+);
+
+const ScriptViewer = ({
+  script,
+  onCopy,
+}: {
+  script: string;
+  onCopy: () => void;
+}) => (
+  <div className="flex flex-col gap-1">
+    <label className="text-sofia-superDark text-[16px] font-normal leading-[16px]">
+      Script de Integración
+    </label>
+    <p className="text-sofia-navyBlue text-[12px]">
+      <span className="font-bold">Instrucción de Integración:</span> Copia y
+      pega el siguiente script{" "}
+      <span className="font-bold">
+        dentro de la etiqueta{" "}
+        <code className="bg-gray-100 px-1 rounded">&lt;head&gt;</code>
+      </span>{" "}
+      de tu sitio web, justo como se muestra a continuación:
+    </p>
+
+    <div className="bg-[#FCFCFC] rounded p-3 my-2 border border-sofia-darkBlue font-mono text-sm relative">
+      <button
+        onClick={onCopy}
+        type="button"
+        className="absolute bottom-2 right-2 text-gray-500 hover:text-gray-700 w-[24px] h-[24px]"
+        aria-label="Copiar script"
+        title="Copiar script"
+      >
+        <img src="/mvp/copy.svg" alt="Copiar script" />
+      </button>
+      <div className="text-gray-500">&lt;head&gt;</div>
+      <div className="pl-4 text-gray-600">...</div>
+      <div className="pl-4 text-green-500">{script}</div>
+      <div className="text-gray-500">&lt;/head&gt;</div>
+    </div>
+
+    <p className="text-sofia-navyBlue text-[12px]">
+      Este paso es necesario para habilitar el Web Chat de Sofia en tu sitio.
+    </p>
+  </div>
+);
 
 const IntegrationStep: React.FC<StepComponentProps> = ({
   data,
   updateData,
   integrationId,
 }) => {
-  const [currentDomain, setCurrentDomain] = useState("");
-  const [activeTab, setActiveTab] = useState<"script" | "iframe" | "wordpress">(
-    "script"
-  );
+  const [domain, setDomain] = useState<string>("");
 
   const handleAddDomain = () => {
-    const domain = currentDomain.trim();
-    if (domain && isValidDomain(domain)) {
-      updateData("integration", {
-        domains: [...data.integration.domains, domain],
-      });
-      setCurrentDomain("");
-    }
+    if (!domain) return;
+    if (data.integration.domains.includes(domain)) return;
+    updateData("integration", {
+      domains: [...data.integration.domains, domain],
+    });
+    setDomain("");
   };
 
-  const removeDomain = (index: number) => {
-    const newDomains = data.integration.domains.filter((_, i) => i !== index);
-    updateData("integration", { domains: newDomains });
+  const handleRemoveDomain = (cor: string) => {
+    updateData("integration", {
+      domains: data.integration.domains.filter(d => d !== cor),
+    });
   };
 
-  const isValidDomain = (domain: string) => {
-    // Basic domain validation
-    const domainRegex = /^([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}$/i;
-    return domainRegex.test(domain);
-  };
+  const generatedScript = `<script src="${urlFiles}/sofia-chat/CI${integrationId || "YOUR_INTEGRATION_ID"}.js"></script>`;
 
-  const getScriptCode = () => {
-    return `<!-- SOF.IA Chat Widget -->
-<script>
-  (function() {
-    var script = document.createElement('script');
-    script.src = 'https://chat.sofi.ia/widget.js';
-    script.setAttribute('data-integration-id', '${integrationId || "YOUR_INTEGRATION_ID"}');
-    script.async = true;
-    document.head.appendChild(script);
-  })();
-</script>
-<!-- End SOF.IA Chat Widget -->`;
-  };
-
-  const getIframeCode = () => {
-    return `<iframe
-  src="https://chat.sofi.ia/embed/${integrationId || "YOUR_INTEGRATION_ID"}"
-  width="400"
-  height="600"
-  frameborder="0"
-  title="SOF.IA Chat"
-></iframe>`;
-  };
-
-  const getWordPressInstructions = () => {
-    return `1. Instala el plugin de SOF.IA desde el repositorio de WordPress
-2. Activa el plugin desde el panel de administración
-3. Ve a Configuración > SOF.IA Chat
-4. Ingresa tu ID de integración: ${integrationId || "YOUR_INTEGRATION_ID"}
-5. Guarda los cambios`;
+  const handleCopy = () => {
+    navigator.clipboard
+      .writeText(generatedScript)
+      .then(() => alertConfirm("Script copiado al portapapeles"))
+      .catch(error => console.error("Error al copiar:", error));
   };
 
   return (
     <StepContainer
-      title="Integrar chat"
-      subtitle="Configura dónde se mostrará tu chat y obtén el código de integración"
+      title="Integra el chat"
+      subtitle="Copia el pequeño código y colócalo en tu sitio web para activarlo."
     >
-      <div className="space-y-6">
-        {/* Domain Configuration */}
-        <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-2">
-            Dominios permitidos
+      <div className="flex flex-col gap-[24px] w-full max-w-[1000px] overflow-y-auto pr-[20px]">
+        <div className="flex flex-col gap-1">
+          <label className="text-sofia-superDark text-[16px] font-normal leading-[16px]">
+            Dominios
           </label>
-          <div className="flex space-x-2">
-            <input
-              type="text"
-              value={currentDomain}
-              onChange={e => setCurrentDomain(e.target.value)}
-              placeholder="ejemplo.com"
-              className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sofia-electricGreen focus:border-transparent"
-              onKeyPress={e => {
-                if (e.key === "Enter") {
-                  e.preventDefault();
-                  handleAddDomain();
-                }
-              }}
+          <p className="text-sofia-navyBlue text-[12px]">
+            Escribe el dominio donde deseas mostrar el Web Chat (por eje
+            https://tu-sitio.com) y haz click en el botón + para agregarlo.{" "}
+            <span className="font-bold">
+              Solo los dominios registrados aquí podrán cargar el Web Chat por
+              seguridad.
+            </span>
+          </p>
+          <CorsInput
+            value={domain}
+            onChange={setDomain}
+            onAdd={handleAddDomain}
+          />
+          {data.integration.domains.length > 0 && (
+            <CorsTagList
+              cors={data.integration.domains}
+              onRemove={handleRemoveDomain}
             />
-            <button
-              type="button"
-              onClick={handleAddDomain}
-              className="px-4 py-2 bg-sofia-electricGreen text-white rounded-md hover:bg-opacity-90"
-            >
-              Agregar
-            </button>
-          </div>
-          <p className="mt-1 text-xs text-gray-500">
-            Agrega los dominios donde quieres que funcione el chat
-          </p>
+          )}
         </div>
-
-        {/* Domains List */}
-        {data.integration.domains.length > 0 && (
-          <div>
-            <p className="text-sm font-semibold text-gray-700 mb-2">
-              Dominios configurados:
-            </p>
-            <ul className="space-y-2">
-              {data.integration.domains.map((domain, index) => (
-                <li
-                  key={index}
-                  className="flex items-center justify-between p-2 bg-gray-50 rounded-md"
-                >
-                  <span className="text-sm text-gray-700">{domain}</span>
-                  <button
-                    type="button"
-                    onClick={() => removeDomain(index)}
-                    className="text-red-600 hover:text-red-800"
-                  >
-                    <svg
-                      className="h-5 w-5"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-
-        {/* Integration Methods */}
-        <div>
-          <p className="text-sm font-semibold text-gray-700 mb-3">
-            Método de integración:
-          </p>
-          <div className="flex space-x-2 mb-4">
-            <button
-              type="button"
-              onClick={() => setActiveTab("script")}
-              className={`px-4 py-2 rounded-md font-medium transition-colors ${
-                activeTab === "script"
-                  ? "bg-sofia-electricGreen text-white"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-              }`}
-            >
-              Script
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveTab("iframe")}
-              className={`px-4 py-2 rounded-md font-medium transition-colors ${
-                activeTab === "iframe"
-                  ? "bg-sofia-electricGreen text-white"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-              }`}
-            >
-              iFrame
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveTab("wordpress")}
-              className={`px-4 py-2 rounded-md font-medium transition-colors ${
-                activeTab === "wordpress"
-                  ? "bg-sofia-electricGreen text-white"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-              }`}
-            >
-              WordPress
-            </button>
-          </div>
-
-          {/* Code Display */}
-          <div className="bg-gray-900 rounded-lg p-4 overflow-x-auto">
-            {activeTab === "script" && (
-              <pre className="text-sm text-gray-300 font-mono whitespace-pre-wrap">
-                {getScriptCode()}
-              </pre>
-            )}
-            {activeTab === "iframe" && (
-              <pre className="text-sm text-gray-300 font-mono whitespace-pre-wrap">
-                {getIframeCode()}
-              </pre>
-            )}
-            {activeTab === "wordpress" && (
-              <pre className="text-sm text-gray-300 font-mono whitespace-pre-wrap">
-                {getWordPressInstructions()}
-              </pre>
-            )}
-          </div>
-
-          <button
-            type="button"
-            onClick={() => {
-              const code =
-                activeTab === "script"
-                  ? getScriptCode()
-                  : activeTab === "iframe"
-                    ? getIframeCode()
-                    : getWordPressInstructions();
-              navigator.clipboard.writeText(code);
-              // You could add a toast notification here
-            }}
-            className="mt-3 text-sm text-sofia-electricGreen hover:text-sofia-superDark font-medium"
-          >
-            Copiar código
-          </button>
-        </div>
-
-        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-          <div className="flex">
-            <div className="flex-shrink-0">
-              <svg
-                className="h-5 w-5 text-yellow-400"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            </div>
-            <div className="ml-3">
-              <p className="text-sm text-yellow-700">
-                Puedes agregar más dominios o cambiar el método de integración
-                más tarde desde el panel de administración.
-              </p>
-            </div>
-          </div>
-        </div>
+        <ScriptViewer script={generatedScript} onCopy={handleCopy} />
       </div>
     </StepContainer>
   );

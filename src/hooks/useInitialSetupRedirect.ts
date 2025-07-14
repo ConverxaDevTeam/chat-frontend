@@ -1,33 +1,19 @@
-import { useSelector } from "react-redux";
-import { RootState } from "@store/index";
+import { useWizardStepVerification } from "./wizard";
 
 export const useInitialSetupRedirect = () => {
-  const { user, myOrganizations } = useSelector(
-    (state: RootState) => state.auth
-  );
-
-  const shouldShowWizard = () => {
-    // Don't show wizard for super admins
-    if (user?.is_super_admin) {
-      return false;
-    }
-
-    // Check if wizard was in progress
-    const savedWizardState = localStorage.getItem("wizardState");
-
-    // Show wizard if user has no organizations OR has incomplete wizard
-    const hasNoOrganizations = !myOrganizations || myOrganizations.length === 0;
-    const hasIncompleteWizard = savedWizardState !== null;
-
-    return hasNoOrganizations || hasIncompleteWizard;
-  };
+  const wizardVerification = useWizardStepVerification();
 
   const getRedirectPath = () => {
-    return shouldShowWizard() ? "/initial-setup" : "/dashboard";
+    return wizardVerification.shouldShowWizard
+      ? "/initial-setup"
+      : "/dashboard";
   };
 
   return {
-    shouldShowWizard: shouldShowWizard(),
+    shouldShowWizard: wizardVerification.shouldShowWizard,
     redirectPath: getRedirectPath(),
+    currentStep: wizardVerification.currentStep,
+    isLoading: wizardVerification.isLoading,
+    hasErrors: wizardVerification.hasErrors,
   };
 };
