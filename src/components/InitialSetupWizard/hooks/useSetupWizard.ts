@@ -8,7 +8,10 @@ import { SetupFormData, SetupStepId } from "../types";
 import { OrganizationType } from "@interfaces/organization.interface";
 import { createDepartment, getWorkspaceData } from "@services/department";
 import { createKnowledgeBase } from "@services/knowledgeBase.service";
-import { updateIntegrationWebChat } from "@services/integration";
+import {
+  updateIntegrationWebChat,
+  getIntegrationWebChat,
+} from "@services/integration";
 import { editOrganization } from "@services/organizations";
 import { agentService } from "@services/agent";
 
@@ -17,11 +20,11 @@ export const useSetupWizard = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // IDs created during the process
-  // Load saved state from localStorage
+  // Load saved state from localStorage for wizard continuation
   const savedState = localStorage.getItem("wizardState");
   const parsedState = savedState ? JSON.parse(savedState) : null;
 
+  // IDs created during the process
   const [organizationId, setOrganizationId] = useState<number | null>(
     parsedState?.organizationId || null
   );
@@ -57,7 +60,7 @@ export const useSetupWizard = () => {
           return await createKnowledgeStep(formData.knowledge);
 
         case "chat":
-          return await updateChatConfigStep(formData.chatConfig);
+          return await updateChatConfigStep(formData.chatConfig, formData);
 
         case "interface":
           return await updateInterfaceStep(formData.interface);
@@ -121,26 +124,17 @@ export const useSetupWizard = () => {
 
     if (response.data.ok && response.data.organization) {
       const orgId = response.data.organization.id;
-      console.log("🔍 Organization created successfully:", {
-        orgId,
-        response: response.data,
-      });
+
       setOrganizationId(orgId);
       toast.success("Organización creada exitosamente");
 
-      // Save wizard state to localStorage
+      // Save wizard state to localStorage for continuation
       const wizardState = {
         organizationId: orgId,
         currentStep: "department",
         lastUpdated: new Date().toISOString(),
       };
-
-      console.log("🔍 Saving wizard state:", wizardState);
       localStorage.setItem("wizardState", JSON.stringify(wizardState));
-
-      // Verify it was saved
-      const savedState = localStorage.getItem("wizardState");
-      console.log("🔍 Verified saved state:", savedState);
 
       return true;
     }
@@ -163,12 +157,10 @@ export const useSetupWizard = () => {
     };
 
     try {
-      console.log("🔍 Updating organization:", { organizationId, editData });
       await editOrganization(organizationId, editData);
       toast.success("Organización actualizada exitosamente");
       return true;
     } catch (error: any) {
-      console.error("🔍 Error updating organization:", error);
       throw new Error(error.message || "Error al actualizar la organización");
     }
   };
@@ -268,51 +260,57 @@ export const useSetupWizard = () => {
     return true;
   };
 
-  const updateChatConfigStep = async (data: SetupFormData["chatConfig"]) => {
-    if (!integrationId || !organizationId || !departmentId) {
-      if (!departmentId || !organizationId) {
-        throw new Error("Department ID and Organization ID are required");
-      }
-      // Get or create integration first
-      const integResponse = await axiosInstance.get(
-        apiUrls.getIntegrationWebChat(departmentId, organizationId)
+  const updateChatConfigStep = async (
+    data: SetupFormData["chatConfig"],
+    formData: SetupFormData
+  ) => {
+    if (!integrationId) {
+      throw new Error(
+        "Integration ID is required. ChatConfigStep should have loaded it."
       );
-
-      if (integResponse.data?.id) {
-        setIntegrationId(integResponse.data.id);
-
-        // Update chat configuration
-        const updateData = {
-          cors: integResponse.data.cors || [],
-          title: data.title,
-          name: data.title,
-          sub_title: data.subtitle,
-          description: data.description,
-          bg_color: integResponse.data.bg_color || "#ffffff",
-          text_title: integResponse.data.text_title || "#000000",
-          bg_chat: integResponse.data.bg_chat || "#f5f5f5",
-          text_color: integResponse.data.text_color || "#000000",
-          bg_assistant: integResponse.data.bg_assistant || "#e0e0e0",
-          bg_user: integResponse.data.bg_user || "#007bff",
-          button_color: integResponse.data.button_color || "#007bff",
-          button_text: integResponse.data.button_text || "#ffffff",
-          text_date: integResponse.data.text_date || "#666666",
-          logo: integResponse.data.logo,
-        };
-
-        const result = await updateIntegrationWebChat(
-          integResponse.data.id,
-          updateData
-        );
-
-        if (result) {
-          toast.success("Configuración del chat actualizada");
-          return true;
-        }
-      }
     }
 
-    return true; // Allow to continue even if update fails
+    if (!departmentId || !organizationId) {
+      throw new Error("Department ID and Organization ID are required");
+    }
+
+    // Get current integration data to preserve existing settings
+    const currentData = await getIntegrationWebChat(
+      departmentId,
+      organizationId
+    );
+
+    if (!currentData?.config) {
+      throw new Error("No se pudo obtener la configuración de la integración");
+    }
+
+    // Update chat configuration
+    const updateData = {
+      cors: currentData.config.cors || [],
+      title: data.title,
+      name: formData.agent.name || currentData.config.name || "SOF.IA",
+      sub_title: data.subtitle,
+      description: data.description,
+      bg_color: currentData.config.bg_color || "#ffffff",
+      text_title: currentData.config.text_title || "#000000",
+      bg_chat: currentData.config.bg_chat || "#f5f5f5",
+      text_color: currentData.config.text_color || "#000000",
+      bg_assistant: currentData.config.bg_assistant || "#e0e0e0",
+      bg_user: currentData.config.bg_user || "#007bff",
+      button_color: currentData.config.button_color || "#007bff",
+      button_text: currentData.config.button_text || "#ffffff",
+      text_date: currentData.config.text_date || "#666666",
+      logo: currentData.config.logo,
+    };
+
+    const result = await updateIntegrationWebChat(integrationId, updateData);
+
+    if (result) {
+      toast.success("Configuración del chat actualizada");
+      return true;
+    }
+
+    throw new Error("Error al actualizar la configuración del chat");
   };
 
   const updateInterfaceStep = async (data: SetupFormData["interface"]) => {
@@ -409,6 +407,7 @@ export const useSetupWizard = () => {
     departmentId,
     agentId,
     integrationId,
+    setIntegrationId,
     clearWizardState,
     savedState: parsedState,
   };
