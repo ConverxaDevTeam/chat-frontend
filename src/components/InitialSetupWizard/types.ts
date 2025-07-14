@@ -43,6 +43,7 @@ export interface StepComponentProps {
   departmentId: number | null;
   agentId: number | null;
   integrationId: number | null;
+  setIntegrationId: (id: number) => void;
 }
 
 export type SetupStepId =

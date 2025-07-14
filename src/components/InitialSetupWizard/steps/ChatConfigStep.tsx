@@ -13,6 +13,11 @@ import {
   Integracion,
   ConfigWebChat,
 } from "@pages/Workspace/components/CustomizeChat";
+import {
+  getIntegrationWebChat,
+  updateIntegrationLogo,
+  deleteIntegrationLogo,
+} from "@services/integration";
 
 interface IntegrationConfig {
   title: string;
@@ -32,6 +37,7 @@ const AvatarUploader = ({
 }: AvatarUploaderProps) => {
   const [imageSrc, setImageSrc] = useState<string>("/mvp/avatar.svg");
   const [showModal, setShowModal] = useState<boolean>(false);
+  const [isSaving, setIsSaving] = useState<boolean>(false);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -46,24 +52,50 @@ const AvatarUploader = ({
   };
 
   const handleSaveCroppedImage = async (croppedImage: Blob) => {
-    const imageUrl = URL.createObjectURL(croppedImage);
-    setIntegration({
-      ...integration,
-      config: {
-        ...integration.config,
-        logo: imageUrl,
-      },
-    });
+    if (!integration.id) return;
+
+    setIsSaving(true);
+    try {
+      const success = await updateIntegrationLogo(integration.id, croppedImage);
+
+      if (success) {
+        const imageUrl = URL.createObjectURL(croppedImage);
+        setIntegration({
+          ...integration,
+          config: {
+            ...integration.config,
+            logo: imageUrl,
+          },
+        });
+      } else {
+      }
+    } catch (error) {
+    } finally {
+      setIsSaving(false);
+    }
   };
 
-  const handleDeleteLogo = () => {
-    setIntegration({
-      ...integration,
-      config: {
-        ...integration.config,
-        logo: "/mvp/avatar.svg",
-      },
-    });
+  const handleDeleteLogo = async () => {
+    if (!integration.id) return;
+
+    setIsSaving(true);
+    try {
+      const success = await deleteIntegrationLogo(integration.id);
+
+      if (success) {
+        setIntegration({
+          ...integration,
+          config: {
+            ...integration.config,
+            logo: "/mvp/avatar.svg",
+          },
+        });
+      } else {
+      }
+    } catch (error) {
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -87,13 +119,19 @@ const AvatarUploader = ({
         <div className="absolute top-14 left-14 flex">
           <button
             onClick={() => document.getElementById("avatar-upload")?.click()}
+            disabled={isSaving}
           >
             <EditButton />
           </button>
-          <button onClick={handleDeleteLogo}>
+          <button onClick={handleDeleteLogo} disabled={isSaving}>
             <DeleteButton />
           </button>
         </div>
+        {isSaving && (
+          <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-full">
+            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+          </div>
+        )}
         <ImageCropModal
           imageSrc={imageSrc}
           onSave={handleSaveCroppedImage}
@@ -136,7 +174,14 @@ const TextAreaInput = ({ label, register }: TextAreaInputProps) => {
   );
 };
 
-const ChatConfigStep: React.FC<StepComponentProps> = ({ data, updateData }) => {
+const ChatConfigStep: React.FC<StepComponentProps> = ({
+  data,
+  updateData,
+  organizationId,
+  departmentId,
+  integrationId,
+  setIntegrationId,
+}) => {
   const [integration, setIntegration] = useState<Integracion>({
     id: 1,
     created_at: "",
@@ -144,7 +189,7 @@ const ChatConfigStep: React.FC<StepComponentProps> = ({ data, updateData }) => {
     type: "chat_web" as any,
     config: {
       id: 1,
-      name: "SOF.IA",
+      name: data.agent.name || "SOF.IA",
       cors: [],
       url_assets: "",
       title: data.chatConfig.title || "SOF.IA LLM",
@@ -169,6 +214,7 @@ const ChatConfigStep: React.FC<StepComponentProps> = ({ data, updateData }) => {
       button_text: "#ffffff",
     },
   });
+  const [isLoadingIntegration, setIsLoadingIntegration] = useState(false);
 
   const {
     register,
@@ -180,35 +226,84 @@ const ChatConfigStep: React.FC<StepComponentProps> = ({ data, updateData }) => {
   useEffect(() => {
     reset({
       title: integration.config.title,
-      name: integration.config.name,
+      name: data.agent.name || integration.config.name,
       sub_title: integration.config.sub_title,
       description: integration.config.description,
     });
-  }, [integration, reset]);
+  }, [integration, reset, data.agent.name]);
+
+  // Load integration data when component mounts
+  useEffect(() => {
+    const fetchIntegration = async () => {
+      if (!organizationId || !departmentId) {
+        return;
+      }
+
+      setIsLoadingIntegration(true);
+      try {
+        const integrationData = await getIntegrationWebChat(
+          departmentId,
+          organizationId
+        );
+
+        if (integrationData) {
+          setIntegration({
+            id: integrationData.id,
+            created_at: integrationData.created_at,
+            updated_at: integrationData.updated_at,
+            type: integrationData.type,
+            config: {
+              ...integrationData.config,
+              // Use backend name as the correct one
+              name: integrationData.config.name || "SOF.IA",
+            },
+          });
+
+          // Set integration ID in the wizard hook
+          setIntegrationId(integrationData.id);
+        }
+      } catch (error) {
+      } finally {
+        setIsLoadingIntegration(false);
+      }
+    };
+
+    fetchIntegration();
+  }, [organizationId, departmentId, data.agent.name]);
 
   useEffect(() => {
     let timeoutId: ReturnType<typeof setTimeout>;
 
-    const subscription = watch(data => {
+    const subscription = watch(formData => {
+      // Don't update if still loading integration
+      if (isLoadingIntegration) return;
       clearTimeout(timeoutId);
       timeoutId = setTimeout(() => {
         const updatedIntegration: Integracion = {
           ...integration,
           config: {
             ...integration.config,
-            ...data,
+            ...formData,
           },
         };
         setIntegration(updatedIntegration);
 
         // Update parent data
         updateData("chatConfig", {
-          title: data.title || "",
-          subtitle: data.sub_title || "",
-          description: data.description || "",
+          title: formData.title || "",
+          subtitle: formData.sub_title || "",
+          description: formData.description || "",
           welcomeMessage: "¡Hola! ¿En qué puedo ayudarte hoy?",
           placeholder: "Escribe tu mensaje...",
         });
+
+        // Also update agent name if it changed
+        if (formData.name && formData.name !== data.agent.name) {
+          updateData("agent", {
+            ...data.agent,
+            name: formData.name,
+          });
+        }
       }, 500);
     });
 
