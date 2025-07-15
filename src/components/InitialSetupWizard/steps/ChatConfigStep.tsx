@@ -327,7 +327,10 @@ const ChatConfigStep: React.FC<StepComponentProps> = ({
           <label className="block text-[12px] font-medium text-[#A6A8AB] leading-[10px]">
             Formatos admitidos: png, jpg, jpeg.
           </label>
-          <form className="w-full mt-[15px] grid grid-cols-1 gap-[30px]">
+          <form
+            className="w-full mt-[15px] grid grid-cols-1 gap-[30px]"
+            onSubmit={e => e.preventDefault()}
+          >
             <TextInput
               label="Nombre del chat"
               name="title"

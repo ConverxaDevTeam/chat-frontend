@@ -15,27 +15,23 @@ import {
 import { editOrganization } from "@services/organizations";
 import { agentService } from "@services/agent";
 
-export const useSetupWizard = () => {
+export const useSetupWizard = (
+  currentOrganizationId?: number | null,
+  currentDepartmentId?: number | null,
+  currentAgentId?: number | null,
+  currentIntegrationId?: number | null,
+  onResourceCreated?: (type: string, id: number) => void
+) => {
   const { user } = useSelector((state: RootState) => state.auth);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Load saved state from localStorage for wizard continuation
-  const savedState = localStorage.getItem("wizardState");
-  const parsedState = savedState ? JSON.parse(savedState) : null;
-
-  // IDs created during the process
-  const [organizationId, setOrganizationId] = useState<number | null>(
-    parsedState?.organizationId || null
-  );
-  const [departmentId, setDepartmentId] = useState<number | null>(
-    parsedState?.departmentId || null
-  );
-  const [agentId, setAgentId] = useState<number | null>(
-    parsedState?.agentId || null
-  );
+  // Use provided IDs directly - no local state
+  const organizationId = currentOrganizationId;
+  const departmentId = currentDepartmentId;
+  const agentId = currentAgentId;
   const [integrationId, setIntegrationId] = useState<number | null>(
-    parsedState?.integrationId || null
+    currentIntegrationId || null
   );
 
   const processStep = async (
@@ -71,9 +67,11 @@ export const useSetupWizard = () => {
         default:
           return false;
       }
-    } catch (error: any) {
-      setError(error.message || "Error al procesar el paso");
-      toast.error(error.message || "Error al procesar el paso");
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Error al procesar el paso";
+      setError(errorMessage);
+      toast.error(errorMessage);
       return false;
     } finally {
       setIsLoading(false);
@@ -122,16 +120,12 @@ export const useSetupWizard = () => {
     if (response.data.ok && response.data.organization) {
       const orgId = response.data.organization.id;
 
-      setOrganizationId(orgId);
       toast.success("Organización creada exitosamente");
 
-      // Save wizard state to localStorage for continuation
-      const wizardState = {
-        organizationId: orgId,
-        currentStep: "department",
-        lastUpdated: new Date().toISOString(),
-      };
-      localStorage.setItem("wizardState", JSON.stringify(wizardState));
+      // Notify parent about new organization
+      if (onResourceCreated) {
+        onResourceCreated("organization", orgId);
+      }
 
       return true;
     }
@@ -157,8 +151,10 @@ export const useSetupWizard = () => {
       await editOrganization(organizationId, editData);
       toast.success("Organización actualizada exitosamente");
       return true;
-    } catch (error: any) {
-      throw new Error(error.message || "Error al actualizar la organización");
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Error al crear organización";
+      throw new Error(errorMessage);
     }
   };
 
@@ -174,31 +170,25 @@ export const useSetupWizard = () => {
     );
 
     if (response?.id) {
-      setDepartmentId(response.id);
+      toast.success("Departamento creado exitosamente");
+
+      // Notify parent about new department
+      if (onResourceCreated) {
+        onResourceCreated("department", response.id);
+      }
 
       // Get workspace data to retrieve the automatically created agent
       try {
         const workspaceData = await getWorkspaceData(response.id);
         if (workspaceData?.department?.agente?.id) {
-          setAgentId(workspaceData.department.agente.id);
-
-          // Update wizard state in localStorage
-          localStorage.setItem(
-            "wizardState",
-            JSON.stringify({
-              organizationId,
-              departmentId: response.id,
-              agentId: workspaceData.department.agente.id,
-              currentStep: "agent",
-              lastUpdated: new Date().toISOString(),
-            })
-          );
+          // Notify parent about auto-created agent
+          if (onResourceCreated) {
+            onResourceCreated("agent", workspaceData.department.agente.id);
+          }
         }
       } catch (error) {
         console.error("Error getting workspace data:", error);
       }
-
-      toast.success("Departamento creado exitosamente");
       return true;
     }
 
@@ -221,9 +211,13 @@ export const useSetupWizard = () => {
       await agentService.update(agentId, agentData);
       toast.success("Agente actualizado exitosamente");
       return true;
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error updating agent:", error);
-      throw new Error(error.message || "Error al actualizar el agente");
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Error al actualizar paso de integración";
+      throw new Error(errorMessage);
     }
   };
 
@@ -351,11 +345,8 @@ export const useSetupWizard = () => {
   };
 
   const clearWizardState = () => {
-    localStorage.removeItem("wizardState");
-    setOrganizationId(null);
-    setDepartmentId(null);
-    setAgentId(null);
     setIntegrationId(null);
+    localStorage.removeItem("wizardState");
   };
 
   return {
@@ -368,6 +359,5 @@ export const useSetupWizard = () => {
     integrationId,
     setIntegrationId,
     clearWizardState,
-    savedState: parsedState,
   };
 };
