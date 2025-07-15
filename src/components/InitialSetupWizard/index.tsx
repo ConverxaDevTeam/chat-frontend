@@ -386,6 +386,9 @@ const InitialSetupWizard: React.FC<InitialSetupWizardProps> = ({
       }
     }
 
+    // Refrescar organizaciones para asegurar que estén actualizadas en FinalStep
+    await dispatch(getMyOrganizationsAsync());
+
     // Clear wizard state on completion
     clearWizardState();
     // Eliminar cualquier estado guardado del wizard anterior

@@ -2,19 +2,49 @@ import React from "react";
 import { StepComponentProps } from "../types";
 import { Button } from "@components/common/Button";
 import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "@store/index";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@store/index";
 import { setSelectedDepartmentId } from "@store/reducers/department";
+import { setOrganizationId } from "@store/actions/auth";
 
 const FinalStep: React.FC<StepComponentProps> = ({
   onComplete,
   onClose,
   departmentId,
+  organizationId,
 }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
 
+  const { myOrganizations, selectOrganizationId } = useSelector(
+    (state: RootState) => state.auth
+  );
+
+  const ensureOrganizationSelected = async () => {
+    // Si ya hay una organización seleccionada y coincide con la del wizard, no hacer nada
+    if (selectOrganizationId === organizationId) {
+      return;
+    }
+
+    // Si tenemos el organizationId del wizard, seleccionarla
+    if (organizationId) {
+      dispatch(setOrganizationId(organizationId));
+      return;
+    }
+
+    // Si no tenemos organizationId pero hay organizaciones, seleccionar la primera
+    if (myOrganizations && myOrganizations.length > 0) {
+      const firstOrg = myOrganizations[0];
+      if (firstOrg?.organization?.id) {
+        dispatch(setOrganizationId(firstOrg.organization.id));
+      }
+    }
+  };
+
   const handleGoToDashboard = async () => {
+    // Asegurar que la organización esté seleccionada
+    await ensureOrganizationSelected();
+
     // Marcar wizard como completado primero
     if (onComplete) {
       await onComplete();
@@ -28,6 +58,9 @@ const FinalStep: React.FC<StepComponentProps> = ({
   };
 
   const handleGoToWorkspace = async () => {
+    // Asegurar que la organización esté seleccionada
+    await ensureOrganizationSelected();
+
     // Marcar wizard como completado primero
     if (onComplete) {
       await onComplete();
