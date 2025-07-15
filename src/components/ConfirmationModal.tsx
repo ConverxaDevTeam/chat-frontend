@@ -5,10 +5,11 @@ interface ConfirmationModalProps {
   isShown: boolean;
   title: string;
   text: string;
-  confirmText?: string;
-  cancelText?: string;
-  onConfirm?: () => Promise<boolean | void>;
+  confirmText: string;
+  cancelText: string;
+  onConfirm: () => void;
   onClose: () => void;
+  zIndex?: number;
 }
 
 const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
@@ -19,6 +20,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   cancelText = "Cancelar",
   onConfirm,
   onClose,
+  zIndex = 999,
 }) => {
   if (!isShown) return null;
 
@@ -34,7 +36,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   return ReactDOM.createPortal(
     <div
       className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50"
-      style={{ zIndex: 999 }}
+      style={{ zIndex }}
       onClick={handleBackgroundClick}
     >
       <div className="bg-white rounded-[4px] p-6 w-[500px] shadow-xl">

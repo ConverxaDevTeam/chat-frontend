@@ -167,6 +167,8 @@ const IntegrationItemNode = memo((props: IntegrationItemProps) => {
         isShown={isRemoveModalOpen}
         title="Eliminar canal"
         text="¿Estás seguro de que deseas eliminar este canal?"
+        confirmText="Eliminar"
+        cancelText="Cancelar"
         onConfirm={async () => {
           const success = await handleDeleteIntegration();
           if (success) {
