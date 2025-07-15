@@ -29,7 +29,8 @@ export type WizardStatus =
   | "agent"
   | "knowledge"
   | "chat"
-  | "integration";
+  | "integration"
+  | "link_web";
 
 export type IOrganizarion = {
   id: number;

@@ -37,7 +37,7 @@ export const useTabNavigation = (initialTab: SetupStepId) => {
     },
     {
       id: "final",
-      label: "Finalizar",
+      label: "Obtener enlace web",
     },
   ];
 
