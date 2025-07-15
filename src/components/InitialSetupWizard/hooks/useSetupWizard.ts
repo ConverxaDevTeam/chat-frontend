@@ -181,10 +181,11 @@ export const useSetupWizard = (
       try {
         const workspaceData = await getWorkspaceData(response.id);
         if (workspaceData?.department?.agente?.id) {
-          // Notify parent about auto-created agent
-          if (onResourceCreated) {
-            onResourceCreated("agent", workspaceData.department.agente.id);
-          }
+          // Store auto-created agent ID locally but don't update wizard status yet
+          // This prevents skipping the agent configuration step
+          // if (onResourceCreated) {
+          //   onResourceCreated("agent", workspaceData.department.agente.id);
+          // }
         }
       } catch (error) {
         console.error("Error getting workspace data:", error);
