@@ -56,9 +56,11 @@ const MessageContainer = ({
 const MessageHeader = ({
   message,
   config,
+  userName,
 }: {
   message: ConversationResponseMessage;
   config: ConfigWebChat;
+  userName: string;
 }) => {
   return (
     <div className="flex justify-center items-center gap-2">
@@ -66,7 +68,7 @@ const MessageHeader = ({
         className="text-[14px] font-semibold"
         style={{ color: config.text_color }}
       >
-        {message.type === MessageType.USER ? "Usuario" : "SOF.IA"}
+        {message.type === MessageType.USER ? "Usuario" : userName}
       </span>
       <span
         className="text-[10px] font-normal"
@@ -138,7 +140,11 @@ const renderContent = (
   );
 };
 
-const MessageCard = ({ message, config = defaultConfig }: MessageCardProps) => {
+const MessageCard = ({
+  message,
+  userName,
+  config = defaultConfig,
+}: MessageCardProps) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState("");
 
@@ -152,7 +158,11 @@ const MessageCard = ({ message, config = defaultConfig }: MessageCardProps) => {
       <MessageContainer align="start">
         <div className="flex flex-col gap-1"></div>
         <div className="flex flex-col items-start gap-1">
-          <MessageHeader message={message} config={config} />
+          <MessageHeader
+            message={message}
+            config={config}
+            userName={userName}
+          />
           <div
             className="flex justify-center items-center self-stretch p-2 border border-[#DBEAF2]"
             style={{
@@ -176,7 +186,7 @@ const MessageCard = ({ message, config = defaultConfig }: MessageCardProps) => {
   return (
     <MessageContainer align="end">
       <div className="flex flex-col items-end gap-1">
-        <MessageHeader message={message} config={config} />
+        <MessageHeader message={message} config={config} userName={userName} />
         <div
           className="flex justify-center items-center self-stretch p-2 border border-[#DBEAF2]"
           style={{
