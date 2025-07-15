@@ -17,7 +17,7 @@ export interface SetupFormData {
     files: File[];
     urls: string[];
   };
-  chatConfig: {
+  chat: {
     title: string;
     subtitle: string;
     description: string;
@@ -31,7 +31,10 @@ export interface SetupFormData {
 
 export interface StepComponentProps {
   data: SetupFormData;
-  updateData: (section: keyof SetupFormData, data: any) => void;
+  updateData: (
+    section: keyof SetupFormData,
+    data: Partial<SetupFormData[keyof SetupFormData]>
+  ) => void;
   organizationId: number | null;
   departmentId: number | null;
   agentId: number | null;

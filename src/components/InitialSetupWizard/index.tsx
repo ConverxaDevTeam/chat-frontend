@@ -64,7 +64,7 @@ const InitialSetupWizard: React.FC<InitialSetupWizardProps> = ({
       files: [],
       urls: [],
     },
-    chatConfig: {
+    chat: {
       title: "Asistente Virtual",
       subtitle: "¿En qué puedo ayudarte?",
       description: "Estoy aquí para responder tus preguntas",
@@ -81,6 +81,9 @@ const InitialSetupWizard: React.FC<InitialSetupWizardProps> = ({
   const [departmentAgentId, setDepartmentAgentId] = useState<number | null>(
     null
   );
+  const [departmentIdFromBackend, setDepartmentIdFromBackend] = useState<
+    number | null
+  >(null);
 
   // Handle resource creation callback
   const handleResourceCreated = useCallback(
@@ -134,15 +137,22 @@ const InitialSetupWizard: React.FC<InitialSetupWizardProps> = ({
     [dispatch, wizardStatus.organizationId]
   );
 
-  // Obtener agentId del departamento existente cuando se inicializa el wizard
+  // Obtener departmentId y agentId del departamento existente cuando se inicializa el wizard
   useEffect(() => {
-    const fetchDepartmentAgent = async () => {
-      if (wizardStatus.organizationId && wizardStatus.currentStep === "agent") {
+    const fetchDepartmentData = async () => {
+      if (
+        wizardStatus.organizationId &&
+        (wizardStatus.currentStep === "agent" ||
+          wizardStatus.currentStep === "knowledge" ||
+          wizardStatus.currentStep === "chat" ||
+          wizardStatus.currentStep === "integration")
+      ) {
         try {
           // Primero obtener los departamentos de la organización
           const departments = await getDepartments(wizardStatus.organizationId);
           if (departments && departments.length > 0) {
             const departmentId = departments[0].id;
+            setDepartmentIdFromBackend(departmentId);
 
             // Luego obtener los datos del workspace con el departmentId
             const workspaceData = await getWorkspaceData(departmentId);
@@ -156,7 +166,7 @@ const InitialSetupWizard: React.FC<InitialSetupWizardProps> = ({
       }
     };
 
-    fetchDepartmentAgent();
+    fetchDepartmentData();
   }, [wizardStatus.organizationId, wizardStatus.currentStep]);
 
   const {
@@ -171,7 +181,7 @@ const InitialSetupWizard: React.FC<InitialSetupWizardProps> = ({
     clearWizardState,
   } = useSetupWizard(
     wizardStatus.organizationId,
-    null, // departmentId - será manejado por el backend
+    departmentIdFromBackend, // departmentId - usar el ID del departamento existente
     createdAgentId || departmentAgentId, // agentId - usar el ID del agente auto-creado o del departamento existente
     null, // integrationId - será manejado por el backend
     handleResourceCreated
@@ -192,6 +202,7 @@ const InitialSetupWizard: React.FC<InitialSetupWizardProps> = ({
       knowledge: "knowledge",
       chat: "chat",
       integration: "integration",
+      link_web: "final",
     };
 
     return stepMapping[wizardStatus.currentStep] || "organization";
@@ -223,6 +234,7 @@ const InitialSetupWizard: React.FC<InitialSetupWizardProps> = ({
       "knowledge",
       "chat",
       "integration",
+      "link_web",
     ];
 
     const currentIndex = stepOrder.indexOf(wizardStatus.currentStep);
@@ -237,6 +249,7 @@ const InitialSetupWizard: React.FC<InitialSetupWizardProps> = ({
         knowledge: "knowledge",
         chat: "chat",
         integration: "integration",
+        link_web: "final",
       };
       const mappedStep = stepMapping[step];
       if (mappedStep) {
@@ -285,27 +298,30 @@ const InitialSetupWizard: React.FC<InitialSetupWizardProps> = ({
             agent: "knowledge",
             knowledge: "chat",
             chat: "integration",
-            integration: "integration", // Se mantiene en integration (último paso)
-            final: "integration",
+            integration: "link_web",
+            final: "link_web", // No actualizar backend en final - se mantiene en link_web
           };
 
           const nextStatus = nextStepMapping[activeTab];
 
           if (nextStatus) {
-            // Actualizar en backend PRIMERO
-            const backendSuccess = await updateWizardStatusBackend(
-              wizardStatus.organizationId,
-              nextStatus
-            );
-
-            if (backendSuccess) {
-              // Luego actualizar Redux local
-              dispatch(
-                updateWizardStatus({
-                  organizationId: wizardStatus.organizationId,
-                  wizardStatus: nextStatus,
-                })
+            // No actualizar backend en el paso final (link_web es el estado final)
+            if (activeTab !== "final") {
+              // Actualizar en backend PRIMERO
+              const backendSuccess = await updateWizardStatusBackend(
+                wizardStatus.organizationId,
+                nextStatus
               );
+
+              if (backendSuccess) {
+                // Luego actualizar Redux local
+                dispatch(
+                  updateWizardStatus({
+                    organizationId: wizardStatus.organizationId,
+                    wizardStatus: nextStatus,
+                  })
+                );
+              }
             }
           }
         }
@@ -358,7 +374,7 @@ const InitialSetupWizard: React.FC<InitialSetupWizardProps> = ({
       data: formData,
       updateData: updateFormData,
       organizationId: wizardStatus.organizationId || organizationId || null,
-      departmentId: departmentId || null,
+      departmentId: departmentId || departmentIdFromBackend || null,
       agentId: agentId || createdAgentId || departmentAgentId || null,
       integrationId,
       setIntegrationId,

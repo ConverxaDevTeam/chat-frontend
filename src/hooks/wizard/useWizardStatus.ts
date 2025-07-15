@@ -68,8 +68,8 @@ export const useWizardStatus = (): WizardStatusResult => {
       currentOrganization.organization.wizardStatus || "organization";
     const organizationId = currentOrganization.organization.id;
 
-    // Si el wizard está completo (integration es el último paso), no mostrar
-    const shouldShowWizard = wizardStatus !== "integration";
+    // Si el wizard está completo (link_web es el último paso), no mostrar
+    const shouldShowWizard = wizardStatus !== "link_web";
 
     return {
       shouldShowWizard,
