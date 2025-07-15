@@ -1,29 +1,13 @@
-import { useEffect } from "react";
-import { useSelector } from "react-redux";
-import { RootState } from "@store/index";
-import { useNavigate } from "react-router-dom";
+import React from "react";
 
 interface InitialSetupCheckProps {
   children: React.ReactNode;
 }
 
 const InitialSetupCheck = ({ children }: InitialSetupCheckProps) => {
-  const { user, myOrganizations } = useSelector(
-    (state: RootState) => state.auth
-  );
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    // Check if user is authenticated, not a super admin, and has no organizations
-    if (
-      user &&
-      !user.is_super_admin &&
-      (!myOrganizations || myOrganizations.length === 0)
-    ) {
-      navigate("/initial-setup");
-    }
-  }, [user, myOrganizations, navigate]);
-
+  // This component is now just a wrapper for backward compatibility
+  // The main logic has been moved to useInitialSetupRedirect hook
+  // and handled in the auth flow
   return <>{children}</>;
 };
 
