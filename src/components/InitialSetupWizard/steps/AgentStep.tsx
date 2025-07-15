@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { StepComponentProps } from "../types";
 import { InputGroup } from "@components/forms/inputGroup";
@@ -6,7 +6,7 @@ import { Input } from "@components/forms/input";
 import { TextArea } from "@components/forms/textArea";
 import InfoTooltip from "@components/common/InfoTooltip";
 import { agentService } from "@services/agent";
-import { Agent } from "@interfaces/agents";
+
 import StepContainer from "../components/StepContainer";
 
 const EXAMPLES_INSTRUCTIONS = {
@@ -43,9 +43,6 @@ const AgentStep: React.FC<StepComponentProps> = ({
   updateData,
   agentId,
 }) => {
-  const [agentData, setAgentData] = useState<Agent | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-
   const {
     register,
     formState: { errors },
@@ -91,10 +88,8 @@ const AgentStep: React.FC<StepComponentProps> = ({
   const loadAgentData = async () => {
     if (!agentId) return;
 
-    setIsLoading(true);
     try {
       const agent = await agentService.getById(agentId);
-      setAgentData(agent);
 
       // Update form values with loaded data
       setValue("name", agent.name);
@@ -108,8 +103,6 @@ const AgentStep: React.FC<StepComponentProps> = ({
       });
     } catch (error) {
       console.error("Error loading agent data:", error);
-    } finally {
-      setIsLoading(false);
     }
   };
 

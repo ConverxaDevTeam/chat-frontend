@@ -16,10 +16,6 @@ export const useWizardStatus = (): WizardStatusResult => {
     (state: RootState) => state.auth
   );
 
-  console.log("🔍 useWizardStatus - user:", user);
-  console.log("🔍 useWizardStatus - myOrganizations:", myOrganizations);
-  console.log("🔍 useWizardStatus - loading:", loading);
-
   const result = useMemo(() => {
     // Si está cargando, no mostrar wizard aún
     if (loading) {
@@ -67,31 +63,21 @@ export const useWizardStatus = (): WizardStatusResult => {
 
     // Una organización - usar wizardStatus del backend
     const currentOrganization = myOrganizations[0];
-    console.log(
-      "🔍 useWizardStatus - currentOrganization:",
-      currentOrganization
-    );
+
     const wizardStatus =
       currentOrganization.organization.wizardStatus || "organization";
     const organizationId = currentOrganization.organization.id;
 
-    console.log("🔍 useWizardStatus - wizardStatus del backend:", wizardStatus);
-    console.log("🔍 useWizardStatus - organizationId:", organizationId);
+    // Si el wizard está completo (integration es el último paso), no mostrar
+    const shouldShowWizard = wizardStatus !== "integration";
 
-    // Si el wizard está completo, no mostrar
-    const shouldShowWizard = wizardStatus !== "complete";
-    console.log("🔍 useWizardStatus - shouldShowWizard:", shouldShowWizard);
-
-    const finalResult = {
+    return {
       shouldShowWizard,
       currentStep: wizardStatus,
       organizationId,
       isLoading: false,
       hasMultipleOrganizations: false,
     };
-
-    console.log("🔍 useWizardStatus - resultado final:", finalResult);
-    return finalResult;
   }, [user, myOrganizations, loading]);
 
   return result;
