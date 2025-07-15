@@ -1,13 +1,17 @@
-import { useState, useMemo, Fragment, useEffect } from "react";
+import { useState, useMemo, Fragment } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@store/index";
 import { getMyOrganizationsAsync, logOutAsync } from "@store/actions/auth";
+import { useCallback } from "react";
 import ConfigPanel from "@components/ConfigPanel";
 import { Button } from "@components/common/Button";
 import RawModal from "@components/RawModal";
 import { useAlertContext } from "@components/Diagrams/components/AlertContext";
-import { useWizardStepVerification, WizardStep } from "@hooks/wizard";
+import { useWizardStatus } from "@hooks/wizard/useWizardStatus";
+import { WizardStatus } from "@utils/interfaces";
+import { updateWizardStatus as updateWizardStatusBackend } from "@services/wizardStatus";
+import { updateWizardStatus } from "@store/reducers/auth";
 
 // Import step components
 import OrganizationStep from "./steps/OrganizationStep";
@@ -37,8 +41,8 @@ const InitialSetupWizard: React.FC<InitialSetupWizardProps> = ({
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
 
-  // Usar verificación dinámica del wizard
-  const wizardVerification = useWizardStepVerification();
+  // Usar wizardStatus del backend
+  const wizardStatus = useWizardStatus();
 
   const [formData, setFormData] = useState<SetupFormData>({
     organization: {
@@ -71,6 +75,81 @@ const InitialSetupWizard: React.FC<InitialSetupWizardProps> = ({
     },
   });
 
+  // State para guardar el agentId cuando se auto-crea
+  const [createdAgentId, setCreatedAgentId] = useState<number | null>(null);
+
+  // Handle resource creation callback
+  const handleResourceCreated = useCallback(
+    async (type: string, id: number) => {
+      console.log("🔥 handleResourceCreated called:", { type, id });
+      console.log("🔥 Current wizardStatus:", wizardStatus);
+
+      // Actualizar wizardStatus según el tipo de recurso creado
+      let nextStatus: WizardStatus;
+      let targetOrganizationId: number;
+
+      switch (type) {
+        case "organization":
+          nextStatus = "department";
+          targetOrganizationId = id; // Usar el ID de la organización recién creada
+          console.log(
+            "🔥 Organization created, setting status to:",
+            nextStatus
+          );
+          break;
+        case "department":
+          nextStatus = "agent";
+          targetOrganizationId = wizardStatus.organizationId!;
+          console.log("🔥 Department created, setting status to:", nextStatus);
+          break;
+        case "agent":
+          nextStatus = "chatConfig";
+          targetOrganizationId = wizardStatus.organizationId!;
+          setCreatedAgentId(id);
+          console.log("🔥 Agent created, setting status to:", nextStatus);
+          break;
+        default:
+          console.log("🔥 Unknown type, returning");
+          return;
+      }
+
+      console.log("🔥 About to update wizard status in backend:", {
+        organizationId: targetOrganizationId,
+        wizardStatus: nextStatus,
+      });
+
+      // Actualizar en backend PRIMERO
+      const backendSuccess = await updateWizardStatusBackend(
+        targetOrganizationId,
+        nextStatus
+      );
+
+      if (backendSuccess) {
+        console.log("🔥 Backend wizard status updated successfully");
+
+        // Luego actualizar Redux local
+        dispatch(
+          updateWizardStatus({
+            organizationId: targetOrganizationId,
+            wizardStatus: nextStatus,
+          })
+        );
+
+        console.log("🔥 Redux wizard status updated");
+
+        // Si se creó una organización, refrescar para sincronizar
+        if (type === "organization") {
+          console.log("🔥 Refreshing organizations...");
+          await dispatch(getMyOrganizationsAsync());
+          console.log("🔥 Organizations refreshed");
+        }
+      } else {
+        console.log("🔥 Failed to update wizard status in backend");
+      }
+    },
+    [dispatch, wizardStatus.organizationId]
+  );
+
   const {
     isLoading,
     error,
@@ -81,30 +160,48 @@ const InitialSetupWizard: React.FC<InitialSetupWizardProps> = ({
     integrationId,
     setIntegrationId,
     clearWizardState,
-  } = useSetupWizard();
+  } = useSetupWizard(
+    wizardStatus.organizationId,
+    null, // departmentId - será manejado por el backend
+    createdAgentId, // agentId - usar el ID del agente auto-creado
+    null, // integrationId - será manejado por el backend
+    handleResourceCreated
+  );
 
-  // Determine initial step based on dynamic verification
+  // Determine initial step based on backend wizardStatus
   const getInitialStep = (): SetupStepId => {
+    console.log("🔍 getInitialStep - wizardStatus:", wizardStatus);
+    console.log("🔍 getInitialStep - currentStep:", wizardStatus.currentStep);
+    console.log(
+      "🔍 getInitialStep - shouldShowWizard:",
+      wizardStatus.shouldShowWizard
+    );
+
     // Si no debe mostrar wizard, ir a final
-    if (!wizardVerification.shouldShowWizard) {
+    if (!wizardStatus.shouldShowWizard) {
+      console.log(
+        "🔍 getInitialStep - No debe mostrar wizard, retornando final"
+      );
       return "final";
     }
 
-    // Mapear WizardStep a SetupStepId
-    const stepMapping: Record<WizardStep, SetupStepId> = {
+    // Mapear WizardStatus a SetupStepId
+    const stepMapping: Record<WizardStatus, SetupStepId> = {
       organization: "organization",
       department: "department",
       agent: "agent",
-      knowledge: "knowledge",
       chatConfig: "chat",
-      interface: "integration", // Mapear interface a integration por simplicidad
       integration: "integration",
-      final: "final",
       complete: "final",
     };
 
-    return stepMapping[wizardVerification.currentStep] || "organization";
+    const result = stepMapping[wizardStatus.currentStep] || "organization";
+    console.log("🔍 getInitialStep - Resultado final:", result);
+    return result;
   };
+
+  const initialStep = getInitialStep();
+  console.log("🔍 InitialSetupWizard - initialStep calculado:", initialStep);
 
   const {
     activeTab,
@@ -114,47 +211,47 @@ const InitialSetupWizard: React.FC<InitialSetupWizardProps> = ({
     goToPreviousTab,
     isLastTab,
     currentStepIndex,
-  } = useTabNavigation(getInitialStep());
+  } = useTabNavigation(initialStep);
 
-  // Actualizar tab activo cuando cambie la verificación
-  useEffect(() => {
-    if (wizardVerification.currentStep !== "complete") {
-      const newStep = getInitialStep();
-      if (newStep !== activeTab) {
-        setActiveTab(newStep);
-      }
-    }
-  }, [wizardVerification.currentStep, activeTab, setActiveTab]);
+  console.log("🔍 InitialSetupWizard - activeTab actual:", activeTab);
 
-  // Track completed steps basado en verificación dinámica
+  // Removed automatic tab switching - only change tabs via user interaction
+
+  // Track completed steps basado en wizardStatus del backend
   const completedSteps = useMemo(() => {
     const completed: SetupStepId[] = [];
 
-    // Usar los estados de verificación dinámica
-    wizardVerification.steps.forEach(stepStatus => {
-      if (stepStatus.completed) {
-        const stepMapping: Record<WizardStep, SetupStepId> = {
-          organization: "organization",
-          department: "department",
-          agent: "agent",
-          knowledge: "knowledge",
-          chatConfig: "chat",
-          interface: "integration",
-          integration: "integration",
-          final: "final",
-          complete: "final",
-        };
-        const mappedStep = stepMapping[stepStatus.step];
-        if (mappedStep && !completed.includes(mappedStep)) {
-          completed.push(mappedStep);
-        }
-      }
-    });
+    // Determinar pasos completados basado en wizardStatus
+    const stepOrder: WizardStatus[] = [
+      "organization",
+      "department",
+      "agent",
+      "chatConfig",
+      "integration",
+      "complete",
+    ];
 
-    // Ya no necesitamos lógica adicional - usamos solo la verificación dinámica
+    const currentIndex = stepOrder.indexOf(wizardStatus.currentStep);
+
+    // Todos los pasos anteriores están completados
+    for (let i = 0; i < currentIndex; i++) {
+      const step = stepOrder[i];
+      const stepMapping: Record<WizardStatus, SetupStepId> = {
+        organization: "organization",
+        department: "department",
+        agent: "agent",
+        chatConfig: "chat",
+        integration: "integration",
+        complete: "final",
+      };
+      const mappedStep = stepMapping[step];
+      if (mappedStep) {
+        completed.push(mappedStep);
+      }
+    }
 
     return completed;
-  }, [wizardVerification.steps, activeTab]);
+  }, [wizardStatus.currentStep, activeTab]);
 
   // Update tabs with completion status
   const tabsWithStatus = useMemo(() => {
@@ -183,14 +280,43 @@ const InitialSetupWizard: React.FC<InitialSetupWizardProps> = ({
   const handleNext = async () => {
     try {
       const success = await processStep(activeTab, formData);
+
       if (success) {
+        // Solo actualizar wizardStatus para pasos que no crean recursos
+        // Los pasos que crean recursos ya actualizan via handleResourceCreated
+        const stepsWithoutResourceCreation = [
+          "knowledge",
+          "chat",
+          "integration",
+        ];
+
+        if (
+          stepsWithoutResourceCreation.includes(activeTab) &&
+          wizardStatus.organizationId
+        ) {
+          const nextStepMapping: Partial<Record<SetupStepId, WizardStatus>> = {
+            knowledge: "chatConfig",
+            chat: "integration",
+            integration: "complete",
+          };
+
+          const nextStatus = nextStepMapping[activeTab];
+
+          if (nextStatus) {
+            dispatch(
+              updateWizardStatus({
+                organizationId: wizardStatus.organizationId,
+                wizardStatus: nextStatus,
+              })
+            );
+          }
+        }
+
         if (isLastTab) {
           // Clear wizard state on completion
           clearWizardState();
           // Eliminar cualquier estado guardado del wizard anterior
           localStorage.removeItem("wizardState");
-          // Refresh organizations and redirect
-          await dispatch(getMyOrganizationsAsync());
           if (onComplete) {
             onComplete();
           } else {
@@ -199,8 +325,6 @@ const InitialSetupWizard: React.FC<InitialSetupWizardProps> = ({
           onClose();
         } else {
           goToNextTab();
-          // Ya no necesitamos guardar estado en localStorage
-          // La verificación dinámica maneja el estado
         }
       }
     } catch (error) {
@@ -235,9 +359,9 @@ const InitialSetupWizard: React.FC<InitialSetupWizardProps> = ({
     const commonProps = {
       data: formData,
       updateData: updateFormData,
-      organizationId: wizardVerification.organizationId || organizationId,
-      departmentId: wizardVerification.departmentId || departmentId,
-      agentId: wizardVerification.agentId || agentId,
+      organizationId: wizardStatus.organizationId || organizationId || null,
+      departmentId: departmentId || null,
+      agentId: agentId || null,
       integrationId,
       setIntegrationId,
     };
@@ -315,12 +439,12 @@ const InitialSetupWizard: React.FC<InitialSetupWizardProps> = ({
           layout="wizard"
         >
           <Fragment>
-            {(error || wizardVerification.hasErrors) && (
+            {error && (
               <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded text-red-700">
-                {error || "Error al cargar los datos del wizard"}
+                {error}
               </div>
             )}
-            {wizardVerification.isLoading && (
+            {wizardStatus.isLoading && (
               <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded text-blue-700">
                 Cargando datos del wizard...
               </div>

@@ -1,8 +1,16 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { SetupStepId, SetupTab } from "../types";
 
 export const useTabNavigation = (initialTab: SetupStepId) => {
   const [activeTab, setActiveTab] = useState<SetupStepId>(initialTab);
+
+  // Actualizar activeTab cuando cambie initialTab
+  useEffect(() => {
+    console.log("🔍 useTabNavigation - initialTab cambió a:", initialTab);
+    console.log("🔍 useTabNavigation - activeTab actual:", activeTab);
+    setActiveTab(initialTab);
+    console.log("🔍 useTabNavigation - activeTab actualizado a:", initialTab);
+  }, [initialTab, activeTab]);
 
   const baseTabsDefinition: Omit<SetupTab, "status">[] = [
     {
