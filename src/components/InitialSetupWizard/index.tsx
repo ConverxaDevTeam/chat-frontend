@@ -85,9 +85,6 @@ const InitialSetupWizard: React.FC<InitialSetupWizardProps> = ({
   // Handle resource creation callback
   const handleResourceCreated = useCallback(
     async (type: string, id: number) => {
-      console.log("🔥 handleResourceCreated called:", { type, id });
-      console.log("🔥 Current wizardStatus:", wizardStatus);
-
       // Actualizar wizardStatus según el tipo de recurso creado
       let nextStatus: WizardStatus;
       let targetOrganizationId: number;
@@ -285,12 +282,8 @@ const InitialSetupWizard: React.FC<InitialSetupWizardProps> = ({
     try {
       // Manejar integration step especialmente
       if (activeTab === "integration") {
-        console.log("🔥 Processing integration step...");
         const success = await processStep(activeTab, formData);
         if (success) {
-          console.log(
-            "🔥 Integration step completed, going to final tab WITHOUT updating backend status"
-          );
           // Solo ir al tab final, NO actualizar el estado del backend
           goToNextTab();
         }
@@ -315,27 +308,14 @@ const InitialSetupWizard: React.FC<InitialSetupWizardProps> = ({
 
           const nextStatus = nextStepMapping[activeTab];
 
-          console.log("🔥 Debug nextStatus mapping:", {
-            activeTab,
-            nextStatus,
-            shouldUpdate: nextStatus && activeTab !== "final",
-          });
-
           if (nextStatus && activeTab !== "final") {
             // Actualizar en backend PRIMERO
-            console.log(
-              "🔥 Updating backend status from",
-              wizardStatus.currentStep,
-              "to",
-              nextStatus
-            );
             const backendSuccess = await updateWizardStatusBackend(
               wizardStatus.organizationId,
               nextStatus
             );
 
             if (backendSuccess) {
-              console.log("🔥 Backend update successful, updating Redux");
               // Luego actualizar Redux local
               dispatch(
                 updateWizardStatus({
@@ -347,31 +327,16 @@ const InitialSetupWizard: React.FC<InitialSetupWizardProps> = ({
           }
         }
 
-        console.log("🔥 Navigation debug:", {
-          activeTab,
-          isLastTab,
-          currentStepIndex,
-          totalTabs: tabs.length,
-        });
-
         if (isLastTab) {
           // En el último paso (final), no hacer nada automáticamente
           // Los botones en FinalStep manejarán la redirección
           if (activeTab === "final") {
-            console.log("🔥 In final step, not doing anything automatic");
             // No hacer nada aquí, los botones del FinalStep manejan las acciones
             return;
           } else {
-            console.log("🔥 Going to next tab (final)");
             goToNextTab();
           }
         } else {
-          console.log(
-            "🔥 Going to next tab - activeTab:",
-            activeTab,
-            "isLastTab:",
-            isLastTab
-          );
           goToNextTab();
         }
       }

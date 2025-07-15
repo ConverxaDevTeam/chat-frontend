@@ -305,13 +305,6 @@ export const useSetupWizard = (
   };
 
   const updateIntegrationStep = async (data: SetupFormData["integration"]) => {
-    console.log("🔥 updateIntegrationStep called with:", {
-      integrationId,
-      departmentId,
-      organizationId,
-      domains: data.domains,
-    });
-
     if (!integrationId || !departmentId || !organizationId) {
       throw new Error(
         "No se puede guardar la configuración: faltan datos de integración"
@@ -349,8 +342,6 @@ export const useSetupWizard = (
         logo: currentData.config.logo,
       };
 
-      console.log("🔥 Calling updateIntegrationWebChat with:", updateData);
-
       const result = await updateIntegrationWebChat(integrationId, updateData);
 
       if (!result) {
@@ -364,7 +355,6 @@ export const useSetupWizard = (
       );
       return true;
     } catch (error) {
-      console.error("❌ Error updating integration:", error);
       const errorMessage =
         error instanceof Error
           ? error.message
