@@ -26,6 +26,7 @@
     "jspdf": "^1.5.3",
     "jwt-decode": "^4.0.0",
     "lottie-web": "^5.12.2",
+    "lucide-react": "^0.525.0",
     "papaparse": "^5.4.1",
     "pdfmake": "^0.2.18",
     "rc-slider": "^11.1.8",
