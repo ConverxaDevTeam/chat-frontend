@@ -23,6 +23,14 @@ export enum OrganizationRoleType {
   USER = "user",
 }
 
+export type WizardStatus =
+  | "organization"
+  | "department"
+  | "agent"
+  | "chatConfig"
+  | "integration"
+  | "complete";
+
 export type IOrganizarion = {
   id: number;
   role: OrganizationRoleType;
@@ -34,6 +42,7 @@ export type IOrganizarion = {
     description: string;
     logo?: string | null;
     type: OrganizationType;
+    wizardStatus?: WizardStatus;
     limitInfo?: {
       hasReachedLimit?: boolean;
       limit?: number;
