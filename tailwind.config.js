@@ -53,6 +53,9 @@ export default {
           hitlPending: "#FFBB93",
           error: "#FF616D",
           navyBlue: "#343E4F",
+          gris6: "#A6A8AB",
+          inputBg: "#FCFCFC",
+          success: "#3AC0A0",
         },
       },
       cursor: {
