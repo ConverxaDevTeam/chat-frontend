@@ -33,15 +33,7 @@ const WizardPage = () => {
 
   // Handle redirect using useEffect to avoid setState during render
   useEffect(() => {
-    console.log("🔥 WizardPage useEffect triggered:", {
-      isLoading: wizardStatus.isLoading,
-      shouldShowWizard: wizardStatus.shouldShowWizard,
-      currentStep: wizardStatus.currentStep,
-      localStorageValue: localStorage.getItem("wizardIntegrationCompleted"),
-    });
-
     if (!wizardStatus.isLoading && !wizardStatus.shouldShowWizard) {
-      console.log("🔥 WizardPage: Redirecting to dashboard!");
       navigate("/dashboard");
     }
   }, [wizardStatus.isLoading, wizardStatus.shouldShowWizard, navigate]);
