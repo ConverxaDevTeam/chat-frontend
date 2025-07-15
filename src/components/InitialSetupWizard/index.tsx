@@ -290,19 +290,63 @@ const InitialSetupWizard: React.FC<InitialSetupWizardProps> = ({
         return;
       }
 
+      // Para el paso de departamento, manejar la obtención del agente auto-creado
+      if (activeTab === "department") {
+        const success = await processStep(activeTab, formData);
+        if (success) {
+          // Después de crear el departamento, obtener el agente auto-creado
+          try {
+            const departments = await getDepartments(
+              wizardStatus.organizationId!
+            );
+            if (departments && departments.length > 0) {
+              const departmentId = departments[0].id;
+              setDepartmentIdFromBackend(departmentId);
+
+              const workspaceData = await getWorkspaceData(departmentId);
+              if (workspaceData?.department?.agente?.id) {
+                setDepartmentAgentId(workspaceData.department.agente.id);
+              }
+            }
+          } catch (error) {
+            console.error("Error obteniendo agente auto-creado:", error);
+          }
+
+          // Actualizar wizard status
+          if (wizardStatus.organizationId) {
+            const backendSuccess = await updateWizardStatusBackend(
+              wizardStatus.organizationId,
+              "agent"
+            );
+
+            if (backendSuccess) {
+              dispatch(
+                updateWizardStatus({
+                  organizationId: wizardStatus.organizationId,
+                  wizardStatus: "agent",
+                })
+              );
+            }
+          }
+
+          goToNextTab();
+        }
+        return;
+      }
+
       // Para el resto de pasos, procesar normalmente
       const success = await processStep(activeTab, formData);
 
       if (success) {
-        // Actualizar wizardStatus para pasos que no son integration
+        // Actualizar wizardStatus para pasos que no son organization, department ni integration
         if (wizardStatus.organizationId) {
           const nextStepMapping: Record<SetupStepId, WizardStatus> = {
-            organization: "department",
-            department: "agent",
+            organization: "department", // No se usa aquí, pero necesario para el tipo
+            department: "agent", // No se usa aquí, pero necesario para el tipo
             agent: "knowledge",
             knowledge: "chat",
             chat: "integration",
-            integration: "integration", // No se usa porque se maneja arriba
+            integration: "integration", // No se usa aquí, pero necesario para el tipo
             final: "link_web", // Solo actualizar a link_web cuando se haga clic en los botones finales
           };
 
