@@ -40,6 +40,8 @@ export interface StepComponentProps {
   agentId: number | null;
   integrationId: number | null;
   setIntegrationId: (id: number) => void;
+  onComplete?: () => void;
+  onClose?: () => void;
 }
 
 export type SetupStepId =
