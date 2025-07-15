@@ -305,43 +305,73 @@ export const useSetupWizard = (
   };
 
   const updateIntegrationStep = async (data: SetupFormData["integration"]) => {
-    if (!integrationId) {
-      return true; // Skip if no integration
+    console.log("🔥 updateIntegrationStep called with:", {
+      integrationId,
+      departmentId,
+      organizationId,
+      domains: data.domains,
+    });
+
+    if (!integrationId || !departmentId || !organizationId) {
+      throw new Error(
+        "No se puede guardar la configuración: faltan datos de integración"
+      );
     }
 
-    if (data.domains.length > 0) {
-      // Get current integration data first
-      const integResponse = await axiosInstance.get(
-        `/api/integration/${integrationId}`
+    try {
+      // Get current integration data using the service
+      const currentData = await getIntegrationWebChat(
+        departmentId,
+        organizationId
       );
 
-      const currentData = integResponse.data;
+      if (!currentData?.config) {
+        throw new Error(
+          "No se pudo obtener la configuración de la integración"
+        );
+      }
+
       const updateData = {
-        cors: data.domains,
-        title: currentData.title || "",
-        name: currentData.name || "",
-        sub_title: currentData.sub_title || "",
-        description: currentData.description || "",
-        bg_color: currentData.bg_color || "#ffffff",
-        text_title: currentData.text_title || "#000000",
-        bg_chat: currentData.bg_chat || "#f5f5f5",
-        text_color: currentData.text_color || "#000000",
-        bg_assistant: currentData.bg_assistant || "#e0e0e0",
-        bg_user: currentData.bg_user || "#007bff",
-        button_color: currentData.button_color || "#007bff",
-        button_text: currentData.button_text || "#ffffff",
-        text_date: currentData.text_date || "#666666",
-        logo: currentData.logo,
+        cors: data.domains || [], // Guardar dominios (o array vacío si no hay)
+        title: currentData.config.title || "",
+        name: currentData.config.name || "",
+        sub_title: currentData.config.sub_title || "",
+        description: currentData.config.description || "",
+        bg_color: currentData.config.bg_color || "#ffffff",
+        text_title: currentData.config.text_title || "#000000",
+        bg_chat: currentData.config.bg_chat || "#f5f5f5",
+        text_color: currentData.config.text_color || "#000000",
+        bg_assistant: currentData.config.bg_assistant || "#e0e0e0",
+        bg_user: currentData.config.bg_user || "#007bff",
+        button_color: currentData.config.button_color || "#007bff",
+        button_text: currentData.config.button_text || "#ffffff",
+        text_date: currentData.config.text_date || "#666666",
+        logo: currentData.config.logo,
       };
+
+      console.log("🔥 Calling updateIntegrationWebChat with:", updateData);
 
       const result = await updateIntegrationWebChat(integrationId, updateData);
 
-      if (result) {
-        toast.success("Dominios configurados");
+      if (!result) {
+        throw new Error("Error al actualizar la configuración de integración");
       }
-    }
 
-    return true;
+      toast.success(
+        data.domains.length > 0
+          ? "Dominios configurados correctamente"
+          : "Configuración de integración guardada"
+      );
+      return true;
+    } catch (error) {
+      console.error("❌ Error updating integration:", error);
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Error al guardar la configuración de integración";
+      toast.error(errorMessage);
+      throw error; // Re-throw para que falle y no pase de página
+    }
   };
 
   const clearWizardState = () => {

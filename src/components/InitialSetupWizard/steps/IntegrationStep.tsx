@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { StepComponentProps } from "../types";
 import StepContainer from "../components/StepContainer";
 import { InputGroup } from "@components/forms/inputGroup";
 import { Input } from "@components/forms/input";
 import { urlFiles } from "@config/config";
 import { alertConfirm } from "@utils/alerts";
+import { getIntegrationWebChat } from "@services/integration";
 
 const CorsTagList = ({
   cors,
@@ -120,9 +121,58 @@ const ScriptViewer = ({
 const IntegrationStep: React.FC<StepComponentProps> = ({
   data,
   updateData,
-  integrationId,
+  organizationId,
+  departmentId,
+  integrationId: propIntegrationId,
+  setIntegrationId: setParentIntegrationId,
 }) => {
   const [domain, setDomain] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [integrationId, setIntegrationId] = useState<string>(
+    "YOUR_INTEGRATION_ID"
+  );
+  const hasLoadedRef = useRef<boolean>(false);
+
+  // Cargar dominios existentes al inicializar el componente
+  useEffect(() => {
+    const loadExistingDomains = async () => {
+      if (!organizationId || !departmentId || hasLoadedRef.current) return;
+
+      hasLoadedRef.current = true;
+      setIsLoading(true);
+
+      try {
+        const integrationData = await getIntegrationWebChat(
+          departmentId,
+          organizationId
+        );
+
+        if (integrationData?.id) {
+          setIntegrationId(integrationData.id);
+          // También actualizar el integrationId en el parent component
+          if (
+            setParentIntegrationId &&
+            typeof integrationData.id === "number"
+          ) {
+            setParentIntegrationId(integrationData.id);
+          }
+        }
+
+        if (integrationData?.config?.cors) {
+          // Actualizar los dominios en el formData si existen
+          updateData("integration", {
+            domains: integrationData.config.cors,
+          });
+        }
+      } catch (error) {
+        console.error("Error loading existing domains:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadExistingDomains();
+  }, [organizationId, departmentId]);
 
   const handleAddDomain = () => {
     if (!domain) return;
@@ -139,7 +189,7 @@ const IntegrationStep: React.FC<StepComponentProps> = ({
     });
   };
 
-  const generatedScript = `<script src="${urlFiles}/sofia-chat/CI${integrationId || "YOUR_INTEGRATION_ID"}.js"></script>`;
+  const generatedScript = `<script src="${urlFiles}/sofia-chat/CI${propIntegrationId || integrationId}.js"></script>`;
 
   const handleCopy = () => {
     navigator.clipboard
@@ -154,31 +204,39 @@ const IntegrationStep: React.FC<StepComponentProps> = ({
       subtitle="Copia el pequeño código y colócalo en tu sitio web para activarlo."
     >
       <div className="flex flex-col gap-[24px] w-full max-w-[1000px] overflow-y-auto pr-[20px]">
-        <div className="flex flex-col gap-1">
-          <label className="text-sofia-superDark text-[16px] font-normal leading-[16px]">
-            Dominios
-          </label>
-          <p className="text-sofia-navyBlue text-[12px]">
-            Escribe el dominio donde deseas mostrar el Web Chat (por eje
-            https://tu-sitio.com) y haz click en el botón + para agregarlo.{" "}
-            <span className="font-bold">
-              Solo los dominios registrados aquí podrán cargar el Web Chat por
-              seguridad.
-            </span>
-          </p>
-          <CorsInput
-            value={domain}
-            onChange={setDomain}
-            onAdd={handleAddDomain}
-          />
-          {data.integration.domains.length > 0 && (
-            <CorsTagList
-              cors={data.integration.domains}
-              onRemove={handleRemoveDomain}
-            />
-          )}
-        </div>
-        <ScriptViewer script={generatedScript} onCopy={handleCopy} />
+        {isLoading ? (
+          <div className="text-center py-4">
+            <p className="text-gray-600">Cargando configuración existente...</p>
+          </div>
+        ) : (
+          <>
+            <div className="flex flex-col gap-1">
+              <label className="text-sofia-superDark text-[16px] font-normal leading-[16px]">
+                Dominios
+              </label>
+              <p className="text-sofia-navyBlue text-[12px]">
+                Escribe el dominio donde deseas mostrar el Web Chat (por eje
+                https://tu-sitio.com) y haz click en el botón + para agregarlo.{" "}
+                <span className="font-bold">
+                  Solo los dominios registrados aquí podrán cargar el Web Chat
+                  por seguridad.
+                </span>
+              </p>
+              <CorsInput
+                value={domain}
+                onChange={setDomain}
+                onAdd={handleAddDomain}
+              />
+              {data.integration.domains.length > 0 && (
+                <CorsTagList
+                  cors={data.integration.domains}
+                  onRemove={handleRemoveDomain}
+                />
+              )}
+            </div>
+            <ScriptViewer script={generatedScript} onCopy={handleCopy} />
+          </>
+        )}
       </div>
     </StepContainer>
   );
