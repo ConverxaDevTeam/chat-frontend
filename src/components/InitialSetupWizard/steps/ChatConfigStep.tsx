@@ -11,7 +11,7 @@ import EditButton from "@pages/Workspace/components/EditButton";
 import ImageCropModal from "@pages/Workspace/components/ImageCropModal";
 import {
   Integracion,
-  ConfigWebChat,
+  IntegracionType,
 } from "@pages/Workspace/components/CustomizeChat";
 import {
   getIntegrationWebChat,
@@ -68,8 +68,10 @@ const AvatarUploader = ({
           },
         });
       } else {
+        console.error("Failed to update integration logo");
       }
     } catch (error) {
+      console.error("Error updating integration logo:", error);
     } finally {
       setIsSaving(false);
     }
@@ -91,8 +93,10 @@ const AvatarUploader = ({
           },
         });
       } else {
+        console.error("Failed to delete integration logo");
       }
     } catch (error) {
+      console.error("Error deleting integration logo:", error);
     } finally {
       setIsSaving(false);
     }
@@ -179,25 +183,23 @@ const ChatConfigStep: React.FC<StepComponentProps> = ({
   updateData,
   organizationId,
   departmentId,
-  integrationId,
   setIntegrationId,
 }) => {
   const [integration, setIntegration] = useState<Integracion>({
     id: 1,
     created_at: "",
     updated_at: "",
-    type: "chat_web" as any,
+    type: IntegracionType.CHAT_WEB,
     config: {
       id: 1,
       name: data.agent.name || "SOF.IA",
       cors: [],
       url_assets: "",
-      title: data.chatConfig.title || "SOF.IA LLM",
+      title: data.chat.title || "SOF.IA LLM",
       sub_title:
-        data.chatConfig.subtitle ||
-        "Descubre todo lo que SOF.IA puede hacer por ti.",
+        data.chat.subtitle || "Descubre todo lo que SOF.IA puede hacer por ti.",
       description:
-        data.chatConfig.description ||
+        data.chat.description ||
         "¡Hola y bienvenido a SOF.IA! Estoy aquí para ayudarte a encontrar respuestas y soluciones de manera rápida y sencilla.",
       logo: "/mvp/avatar.svg",
       horizontal_logo: "",
@@ -216,12 +218,7 @@ const ChatConfigStep: React.FC<StepComponentProps> = ({
   });
   const [isLoadingIntegration, setIsLoadingIntegration] = useState(false);
 
-  const {
-    register,
-    watch,
-    formState: { errors },
-    reset,
-  } = useForm<IntegrationConfig>();
+  const { register, watch, reset } = useForm<IntegrationConfig>();
 
   useEffect(() => {
     reset({
@@ -263,13 +260,14 @@ const ChatConfigStep: React.FC<StepComponentProps> = ({
           setIntegrationId(integrationData.id);
         }
       } catch (error) {
+        console.error("Error loading integration:", error);
       } finally {
         setIsLoadingIntegration(false);
       }
     };
 
     fetchIntegration();
-  }, [organizationId, departmentId, data.agent.name]);
+  }, [organizationId, departmentId, setIntegrationId]);
 
   useEffect(() => {
     let timeoutId: ReturnType<typeof setTimeout>;
@@ -289,7 +287,7 @@ const ChatConfigStep: React.FC<StepComponentProps> = ({
         setIntegration(updatedIntegration);
 
         // Update parent data
-        updateData("chatConfig", {
+        updateData("chat", {
           title: formData.title || "",
           subtitle: formData.sub_title || "",
           description: formData.description || "",

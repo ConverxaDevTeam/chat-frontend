@@ -56,7 +56,7 @@ export const useSetupWizard = (
           return await createKnowledgeStep(formData.knowledge);
 
         case "chat":
-          return await updateChatConfigStep(formData.chatConfig, formData);
+          return await updateChatConfigStep(formData.chat, formData);
 
         case "integration":
           return await updateIntegrationStep(formData.integration);
@@ -252,7 +252,7 @@ export const useSetupWizard = (
   };
 
   const updateChatConfigStep = async (
-    data: SetupFormData["chatConfig"],
+    data: SetupFormData["chat"],
     formData: SetupFormData
   ) => {
     if (!integrationId) {
