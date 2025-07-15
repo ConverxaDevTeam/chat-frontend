@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import { useEffect } from "react";
 import { AppDispatch, RootState } from "@store/index";
 import { getMyOrganizationsAsync } from "@store/actions/auth";
 import InitialSetupWizard from "@components/InitialSetupWizard";
@@ -30,9 +31,23 @@ const WizardPage = () => {
     navigate("/dashboard");
   };
 
-  // Redirect if user shouldn't be here based on backend wizardStatus
-  if (!wizardStatus.shouldShowWizard) {
-    navigate("/dashboard");
+  // Handle redirect using useEffect to avoid setState during render
+  useEffect(() => {
+    console.log("🔥 WizardPage useEffect triggered:", {
+      isLoading: wizardStatus.isLoading,
+      shouldShowWizard: wizardStatus.shouldShowWizard,
+      currentStep: wizardStatus.currentStep,
+      localStorageValue: localStorage.getItem("wizardIntegrationCompleted"),
+    });
+
+    if (!wizardStatus.isLoading && !wizardStatus.shouldShowWizard) {
+      console.log("🔥 WizardPage: Redirecting to dashboard!");
+      navigate("/dashboard");
+    }
+  }, [wizardStatus.isLoading, wizardStatus.shouldShowWizard, navigate]);
+
+  // Don't render anything if we should redirect
+  if (!wizardStatus.shouldShowWizard && !wizardStatus.isLoading) {
     return null;
   }
 

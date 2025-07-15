@@ -1,5 +1,4 @@
 import { useState, useMemo, Fragment, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@store/index";
 import { getMyOrganizationsAsync, logOutAsync } from "@store/actions/auth";
@@ -37,9 +36,7 @@ interface InitialSetupWizardProps {
 const InitialSetupWizard: React.FC<InitialSetupWizardProps> = ({
   isOpen,
   onClose,
-  onComplete,
 }) => {
-  const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
 
   // Usar wizardStatus del backend
@@ -286,11 +283,25 @@ const InitialSetupWizard: React.FC<InitialSetupWizardProps> = ({
 
   const handleNext = async () => {
     try {
+      // Manejar integration step especialmente
+      if (activeTab === "integration") {
+        console.log("🔥 Processing integration step...");
+        const success = await processStep(activeTab, formData);
+        if (success) {
+          console.log(
+            "🔥 Integration step completed, going to final tab WITHOUT updating backend status"
+          );
+          // Solo ir al tab final, NO actualizar el estado del backend
+          goToNextTab();
+        }
+        return;
+      }
+
+      // Para el resto de pasos, procesar normalmente
       const success = await processStep(activeTab, formData);
 
       if (success) {
-        // Solo actualizar wizardStatus para pasos que no crean recursos
-        // Actualizar wizardStatus para todos los pasos
+        // Actualizar wizardStatus para pasos que no son integration
         if (wizardStatus.organizationId) {
           const nextStepMapping: Record<SetupStepId, WizardStatus> = {
             organization: "department",
@@ -298,46 +309,69 @@ const InitialSetupWizard: React.FC<InitialSetupWizardProps> = ({
             agent: "knowledge",
             knowledge: "chat",
             chat: "integration",
-            integration: "link_web",
-            final: "link_web", // No actualizar backend en final - se mantiene en link_web
+            integration: "integration", // No se usa porque se maneja arriba
+            final: "link_web", // Solo actualizar a link_web cuando se haga clic en los botones finales
           };
 
           const nextStatus = nextStepMapping[activeTab];
 
-          if (nextStatus) {
-            // No actualizar backend en el paso final (link_web es el estado final)
-            if (activeTab !== "final") {
-              // Actualizar en backend PRIMERO
-              const backendSuccess = await updateWizardStatusBackend(
-                wizardStatus.organizationId,
-                nextStatus
-              );
+          console.log("🔥 Debug nextStatus mapping:", {
+            activeTab,
+            nextStatus,
+            shouldUpdate: nextStatus && activeTab !== "final",
+          });
 
-              if (backendSuccess) {
-                // Luego actualizar Redux local
-                dispatch(
-                  updateWizardStatus({
-                    organizationId: wizardStatus.organizationId,
-                    wizardStatus: nextStatus,
-                  })
-                );
-              }
+          if (nextStatus && activeTab !== "final") {
+            // Actualizar en backend PRIMERO
+            console.log(
+              "🔥 Updating backend status from",
+              wizardStatus.currentStep,
+              "to",
+              nextStatus
+            );
+            const backendSuccess = await updateWizardStatusBackend(
+              wizardStatus.organizationId,
+              nextStatus
+            );
+
+            if (backendSuccess) {
+              console.log("🔥 Backend update successful, updating Redux");
+              // Luego actualizar Redux local
+              dispatch(
+                updateWizardStatus({
+                  organizationId: wizardStatus.organizationId,
+                  wizardStatus: nextStatus,
+                })
+              );
             }
           }
         }
 
+        console.log("🔥 Navigation debug:", {
+          activeTab,
+          isLastTab,
+          currentStepIndex,
+          totalTabs: tabs.length,
+        });
+
         if (isLastTab) {
-          // Clear wizard state on completion
-          clearWizardState();
-          // Eliminar cualquier estado guardado del wizard anterior
-          localStorage.removeItem("wizardState");
-          if (onComplete) {
-            onComplete();
+          // En el último paso (final), no hacer nada automáticamente
+          // Los botones en FinalStep manejarán la redirección
+          if (activeTab === "final") {
+            console.log("🔥 In final step, not doing anything automatic");
+            // No hacer nada aquí, los botones del FinalStep manejan las acciones
+            return;
           } else {
-            navigate("/dashboard");
+            console.log("🔥 Going to next tab (final)");
+            goToNextTab();
           }
-          onClose();
         } else {
+          console.log(
+            "🔥 Going to next tab - activeTab:",
+            activeTab,
+            "isLastTab:",
+            isLastTab
+          );
           goToNextTab();
         }
       }
@@ -369,6 +403,31 @@ const InitialSetupWizard: React.FC<InitialSetupWizardProps> = ({
     }
   };
 
+  const handleWizardComplete = async () => {
+    // Actualizar estado a link_web cuando se complete realmente
+    if (wizardStatus.organizationId) {
+      const backendSuccess = await updateWizardStatusBackend(
+        wizardStatus.organizationId,
+        "link_web"
+      );
+
+      if (backendSuccess) {
+        dispatch(
+          updateWizardStatus({
+            organizationId: wizardStatus.organizationId,
+            wizardStatus: "link_web",
+          })
+        );
+      }
+    }
+
+    // Clear wizard state on completion
+    clearWizardState();
+    // Eliminar cualquier estado guardado del wizard anterior
+    localStorage.removeItem("wizardState");
+    // NO hacer navegación automática - dejar que los botones manejen la navegación
+  };
+
   const renderStepContent = () => {
     const commonProps = {
       data: formData,
@@ -378,6 +437,8 @@ const InitialSetupWizard: React.FC<InitialSetupWizardProps> = ({
       agentId: agentId || createdAgentId || departmentAgentId || null,
       integrationId,
       setIntegrationId,
+      onComplete: handleWizardComplete,
+      onClose,
     };
 
     switch (activeTab) {
@@ -428,14 +489,16 @@ const InitialSetupWizard: React.FC<InitialSetupWizardProps> = ({
         </Button>
       )}
 
-      <Button
-        onClick={handleNext}
-        variant="primary"
-        disabled={isLoading}
-        type="button"
-      >
-        {isLoading ? "Procesando..." : isLastTab ? "Finalizar" : "Siguiente"}
-      </Button>
+      {activeTab !== "final" && (
+        <Button
+          onClick={handleNext}
+          variant="primary"
+          disabled={isLoading}
+          type="button"
+        >
+          {isLoading ? "Procesando..." : "Siguiente"}
+        </Button>
+      )}
     </div>
   );
 
