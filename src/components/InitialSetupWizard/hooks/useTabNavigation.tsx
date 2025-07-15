@@ -6,11 +6,8 @@ export const useTabNavigation = (initialTab: SetupStepId) => {
 
   // Actualizar activeTab cuando cambie initialTab
   useEffect(() => {
-    console.log("🔍 useTabNavigation - initialTab cambió a:", initialTab);
-    console.log("🔍 useTabNavigation - activeTab actual:", activeTab);
     setActiveTab(initialTab);
-    console.log("🔍 useTabNavigation - activeTab actualizado a:", initialTab);
-  }, [initialTab, activeTab]);
+  }, [initialTab]);
 
   const baseTabsDefinition: Omit<SetupTab, "status">[] = [
     {
@@ -23,7 +20,7 @@ export const useTabNavigation = (initialTab: SetupStepId) => {
     },
     {
       id: "agent",
-      label: "Crear un agente",
+      label: "Configurar agente",
     },
     {
       id: "knowledge",

@@ -5,9 +5,9 @@ export type WizardStatus =
   | "organization"
   | "department"
   | "agent"
-  | "chatConfig"
-  | "integration"
-  | "complete";
+  | "knowledge"
+  | "chat"
+  | "integration";
 
 export const updateWizardStatus = async (
   organizationId: number,
