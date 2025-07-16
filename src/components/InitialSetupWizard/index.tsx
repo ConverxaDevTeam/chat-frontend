@@ -7,6 +7,7 @@ import ConfigPanel from "@components/ConfigPanel";
 import { Button } from "@components/common/Button";
 import RawModal from "@components/RawModal";
 import { useAlertContext } from "@components/Diagrams/components/AlertContext";
+import ProtectedAuth from "@components/ProtectedAuth";
 import { useWizardStatus } from "@hooks/wizard/useWizardStatus";
 import { WizardStatus } from "@utils/interfaces";
 import { updateWizardStatus as updateWizardStatusBackend } from "@services/wizardStatus";
@@ -517,32 +518,34 @@ const InitialSetupWizard: React.FC<InitialSetupWizardProps> = ({
   if (!isOpen) return null;
 
   return (
-    <RawModal isShown={isOpen} onClose={onClose}>
-      <div className="w-[1180px] max-w-[95vw] sm:max-w-[90vw]">
-        <ConfigPanel
-          tabs={tabsWithStatus}
-          activeTab={activeTab}
-          onTabChange={tab => setActiveTab(tab as SetupStepId)}
-          isLoading={isLoading}
-          actions={<ActionButtons />}
-          layout="wizard"
-        >
-          <Fragment>
-            {error && (
-              <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded text-red-700">
-                {error}
-              </div>
-            )}
-            {wizardStatus.isLoading && (
-              <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded text-blue-700">
-                Cargando datos del wizard...
-              </div>
-            )}
-            {renderStepContent()}
-          </Fragment>
-        </ConfigPanel>
-      </div>
-    </RawModal>
+    <ProtectedAuth>
+      <RawModal isShown={isOpen} onClose={onClose}>
+        <div className="w-[1180px] max-w-[95vw] sm:max-w-[90vw]">
+          <ConfigPanel
+            tabs={tabsWithStatus}
+            activeTab={activeTab}
+            onTabChange={tab => setActiveTab(tab as SetupStepId)}
+            isLoading={isLoading}
+            actions={<ActionButtons />}
+            layout="wizard"
+          >
+            <Fragment>
+              {error && (
+                <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded text-red-700">
+                  {error}
+                </div>
+              )}
+              {wizardStatus.isLoading && (
+                <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded text-blue-700">
+                  Cargando datos del wizard...
+                </div>
+              )}
+              {renderStepContent()}
+            </Fragment>
+          </ConfigPanel>
+        </div>
+      </RawModal>
+    </ProtectedAuth>
   );
 };
 
