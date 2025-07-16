@@ -1,173 +1,363 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { StepComponentProps } from "../types";
+import { useForm, UseFormRegister } from "react-hook-form";
+import { InputGroup } from "@components/forms/inputGroup";
+import { Input } from "@components/forms/input";
+import { TextArea } from "@components/forms/textArea";
+import ChatPreview from "@pages/Workspace/components/ChatPreview";
+import StepContainer from "../components/StepContainer";
+import DeleteButton from "@pages/Workspace/components/DeleteButton";
+import EditButton from "@pages/Workspace/components/EditButton";
+import ImageCropModal from "@pages/Workspace/components/ImageCropModal";
+import {
+  Integracion,
+  IntegracionType,
+} from "@pages/Workspace/components/CustomizeChat";
+import {
+  getIntegrationWebChat,
+  updateIntegrationLogo,
+  deleteIntegrationLogo,
+} from "@services/integration";
 
-const ChatConfigStep: React.FC<StepComponentProps> = ({ data, updateData }) => {
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = e.target;
-    updateData("chatConfig", { [name]: value });
+interface IntegrationConfig {
+  title: string;
+  name: string;
+  sub_title: string;
+  description: string;
+}
+
+interface AvatarUploaderProps {
+  integration: Integracion;
+  setIntegration: (integration: Integracion) => void;
+}
+
+const AvatarUploader = ({
+  integration,
+  setIntegration,
+}: AvatarUploaderProps) => {
+  const [imageSrc, setImageSrc] = useState<string>("/mvp/avatar.svg");
+  const [showModal, setShowModal] = useState<boolean>(false);
+  const [isSaving, setIsSaving] = useState<boolean>(false);
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setImageSrc(reader.result as string);
+        setShowModal(true);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleSaveCroppedImage = async (croppedImage: Blob) => {
+    if (!integration.id) return;
+
+    setIsSaving(true);
+    try {
+      const success = await updateIntegrationLogo(integration.id, croppedImage);
+
+      if (success) {
+        const imageUrl = URL.createObjectURL(croppedImage);
+        setIntegration({
+          ...integration,
+          config: {
+            ...integration.config,
+            logo: imageUrl,
+          },
+        });
+      } else {
+        console.error("Failed to update integration logo");
+      }
+    } catch (error) {
+      console.error("Error updating integration logo:", error);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleDeleteLogo = async () => {
+    if (!integration.id) return;
+
+    setIsSaving(true);
+    try {
+      const success = await deleteIntegrationLogo(integration.id);
+
+      if (success) {
+        setIntegration({
+          ...integration,
+          config: {
+            ...integration.config,
+            logo: "/mvp/avatar.svg",
+          },
+        });
+      } else {
+        console.error("Failed to delete integration logo");
+      }
+    } catch (error) {
+      console.error("Error deleting integration logo:", error);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">
-          Configuración del chat
-        </h3>
-        <p className="text-sm text-gray-600">
-          Personaliza los textos y mensajes que verán tus usuarios
-        </p>
-      </div>
-
-      <div className="space-y-4">
-        {/* Chat Title */}
-        <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-2">
-            Título del chat
-          </label>
-          <input
-            type="text"
-            name="title"
-            placeholder="Ej: Asistente Virtual"
-            value={data.chatConfig.title}
-            onChange={handleInputChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sofia-electricGreen focus:border-transparent"
-            required
-          />
+    <div className="flex flex-col gap-[8px]">
+      <label className="text-[14px] font-bold leading-[16px] text-[#001126]">
+        Avatar
+      </label>
+      <div className="relative">
+        <img
+          src={integration.config.logo || "/mvp/avatar.svg"}
+          alt="avatar"
+          className="w-[80px] h-[80px] rounded-full"
+        />
+        <input
+          type="file"
+          accept="image/*"
+          onChange={handleImageUpload}
+          className="hidden"
+          id="avatar-upload"
+        />
+        <div className="absolute top-14 left-14 flex">
+          <button
+            onClick={() => document.getElementById("avatar-upload")?.click()}
+            disabled={isSaving}
+          >
+            <EditButton />
+          </button>
+          <button onClick={handleDeleteLogo} disabled={isSaving}>
+            <DeleteButton />
+          </button>
         </div>
-
-        {/* Chat Subtitle */}
-        <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-2">
-            Subtítulo
-          </label>
-          <input
-            type="text"
-            name="subtitle"
-            placeholder="Ej: ¿En qué puedo ayudarte?"
-            value={data.chatConfig.subtitle}
-            onChange={handleInputChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sofia-electricGreen focus:border-transparent"
-            required
-          />
-        </div>
-
-        {/* Chat Description */}
-        <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-2">
-            Descripción
-          </label>
-          <textarea
-            name="description"
-            placeholder="Ej: Estoy aquí para responder tus preguntas"
-            value={data.chatConfig.description}
-            onChange={handleInputChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sofia-electricGreen focus:border-transparent"
-            rows={3}
-            required
-          />
-        </div>
-
-        {/* Welcome Message */}
-        <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-2">
-            Mensaje de bienvenida
-          </label>
-          <textarea
-            name="welcomeMessage"
-            placeholder="Ej: ¡Hola! ¿En qué puedo ayudarte hoy?"
-            value={data.chatConfig.welcomeMessage}
-            onChange={handleInputChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sofia-electricGreen focus:border-transparent"
-            rows={3}
-            required
-          />
-          <p className="mt-1 text-xs text-gray-500">
-            Este es el primer mensaje que verán los usuarios al abrir el chat
-          </p>
-        </div>
-
-        {/* Input Placeholder */}
-        <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-2">
-            Texto del campo de entrada
-          </label>
-          <input
-            type="text"
-            name="placeholder"
-            placeholder="Ej: Escribe tu mensaje..."
-            value={data.chatConfig.placeholder}
-            onChange={handleInputChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sofia-electricGreen focus:border-transparent"
-            required
-          />
-        </div>
-      </div>
-
-      {/* Preview */}
-      <div>
-        <p className="text-sm font-semibold text-gray-700 mb-3">
-          Vista previa:
-        </p>
-        <div className="border border-gray-200 rounded-lg overflow-hidden max-w-sm">
-          {/* Chat Header */}
-          <div className="bg-sofia-electricGreen text-white p-4">
-            <h4 className="font-semibold">
-              {data.chatConfig.title || "Título del chat"}
-            </h4>
-            <p className="text-sm opacity-90">
-              {data.chatConfig.subtitle || "Subtítulo"}
-            </p>
+        {isSaving && (
+          <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-full">
+            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
           </div>
-
-          {/* Chat Body */}
-          <div className="bg-gray-50 p-4 min-h-[200px]">
-            <div className="bg-white rounded-lg p-3 shadow-sm mb-3 max-w-[80%]">
-              <p className="text-sm text-gray-700">
-                {data.chatConfig.welcomeMessage || "Mensaje de bienvenida"}
-              </p>
-            </div>
-          </div>
-
-          {/* Chat Input */}
-          <div className="bg-white border-t p-3">
-            <input
-              type="text"
-              placeholder={
-                data.chatConfig.placeholder || "Escribe tu mensaje..."
-              }
-              className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
-              disabled
-            />
-          </div>
-        </div>
-      </div>
-
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-        <div className="flex">
-          <div className="flex-shrink-0">
-            <svg
-              className="h-5 w-5 text-blue-400"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path
-                fillRule="evenodd"
-                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
-                clipRule="evenodd"
-              />
-            </svg>
-          </div>
-          <div className="ml-3">
-            <p className="text-sm text-blue-700">
-              Estos textos son los primeros que verán tus usuarios. Asegúrate de
-              que sean claros y amigables.
-            </p>
-          </div>
-        </div>
+        )}
+        <ImageCropModal
+          imageSrc={imageSrc}
+          onSave={handleSaveCroppedImage}
+          onClose={() => {
+            setShowModal(false);
+            setImageSrc("");
+          }}
+          show={showModal}
+        />
       </div>
     </div>
+  );
+};
+
+interface TextInputProps {
+  label: string;
+  name: keyof IntegrationConfig;
+  placeholder?: string;
+  register: UseFormRegister<IntegrationConfig>;
+}
+
+const TextInput = ({ label, name, placeholder, register }: TextInputProps) => {
+  return (
+    <InputGroup label={label}>
+      <Input placeholder={placeholder} register={register(name)} />
+    </InputGroup>
+  );
+};
+
+interface TextAreaInputProps {
+  label: string;
+  register: UseFormRegister<IntegrationConfig>;
+}
+
+const TextAreaInput = ({ label, register }: TextAreaInputProps) => {
+  return (
+    <InputGroup label={label}>
+      <TextArea register={register("description")} />
+    </InputGroup>
+  );
+};
+
+const ChatConfigStep: React.FC<StepComponentProps> = ({
+  data,
+  updateData,
+  organizationId,
+  departmentId,
+  setIntegrationId,
+}) => {
+  const [integration, setIntegration] = useState<Integracion>({
+    id: 1,
+    created_at: "",
+    updated_at: "",
+    type: IntegracionType.CHAT_WEB,
+    config: {
+      id: 1,
+      name: data.agent.name || "SOF.IA",
+      cors: [],
+      url_assets: "",
+      title: data.chat.title || "SOF.IA LLM",
+      sub_title:
+        data.chat.subtitle || "Descubre todo lo que SOF.IA puede hacer por ti.",
+      description:
+        data.chat.description ||
+        "¡Hola y bienvenido a SOF.IA! Estoy aquí para ayudarte a encontrar respuestas y soluciones de manera rápida y sencilla.",
+      logo: "/mvp/avatar.svg",
+      horizontal_logo: "",
+      edge_radius: 12,
+      bg_color: "#001126",
+      bg_chat: "#ffffff",
+      bg_user: "#001126",
+      bg_assistant: "#F4FAFF",
+      text_color: "#001126",
+      text_date: "#A6A8AB",
+      button_color: "#001126",
+      text_title: "#ffffff",
+      message_radius: 12,
+      button_text: "#ffffff",
+    },
+  });
+  const [isLoadingIntegration, setIsLoadingIntegration] = useState(false);
+
+  const { register, watch, reset } = useForm<IntegrationConfig>();
+
+  useEffect(() => {
+    reset({
+      title: integration.config.title,
+      name: data.agent.name || integration.config.name,
+      sub_title: integration.config.sub_title,
+      description: integration.config.description,
+    });
+  }, [integration, reset, data.agent.name]);
+
+  // Load integration data when component mounts
+  useEffect(() => {
+    const fetchIntegration = async () => {
+      if (!organizationId || !departmentId) {
+        return;
+      }
+
+      setIsLoadingIntegration(true);
+      try {
+        const integrationData = await getIntegrationWebChat(
+          departmentId,
+          organizationId
+        );
+
+        if (integrationData) {
+          setIntegration({
+            id: integrationData.id,
+            created_at: integrationData.created_at,
+            updated_at: integrationData.updated_at,
+            type: integrationData.type,
+            config: {
+              ...integrationData.config,
+              // Use backend name as the correct one
+              name: integrationData.config.name || "SOF.IA",
+            },
+          });
+
+          // Set integration ID in the wizard hook
+          setIntegrationId(integrationData.id);
+        }
+      } catch (error) {
+        console.error("Error loading integration:", error);
+      } finally {
+        setIsLoadingIntegration(false);
+      }
+    };
+
+    fetchIntegration();
+  }, [organizationId, departmentId, setIntegrationId]);
+
+  useEffect(() => {
+    let timeoutId: ReturnType<typeof setTimeout>;
+
+    const subscription = watch(formData => {
+      // Don't update if still loading integration
+      if (isLoadingIntegration) return;
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        const updatedIntegration: Integracion = {
+          ...integration,
+          config: {
+            ...integration.config,
+            ...formData,
+          },
+        };
+        setIntegration(updatedIntegration);
+
+        // Update parent data
+        updateData("chat", {
+          title: formData.title || "",
+          subtitle: formData.sub_title || "",
+          description: formData.description || "",
+          welcomeMessage: "¡Hola! ¿En qué puedo ayudarte hoy?",
+          placeholder: "Escribe tu mensaje...",
+        });
+
+        // Also update agent name if it changed
+        if (formData.name && formData.name !== data.agent.name) {
+          updateData("agent", {
+            ...data.agent,
+            name: formData.name,
+          });
+        }
+      }, 500);
+    });
+
+    return () => {
+      subscription.unsubscribe();
+      clearTimeout(timeoutId);
+    };
+  }, [watch, integration, updateData]);
+
+  return (
+    <StepContainer
+      title="Configura el chat"
+      subtitle="Ajusta el comportamiento del asistente y cómo interactúa con los usuarios."
+    >
+      <div className="grid grid-cols-[1fr_auto] gap-[20px] items-start w-full max-w-[1000px]">
+        <div className="flex flex-col flex-1 gap-[10px] items-start w-full max-w-[550px]">
+          <AvatarUploader
+            integration={integration}
+            setIntegration={setIntegration}
+          />
+          <label className="block text-[12px] font-medium text-[#A6A8AB] leading-[10px]">
+            Formatos admitidos: png, jpg, jpeg.
+          </label>
+          <form
+            className="w-full mt-[15px] grid grid-cols-1 gap-[30px]"
+            onSubmit={e => e.preventDefault()}
+          >
+            <TextInput
+              label="Nombre del chat"
+              name="title"
+              placeholder="SOF.IA LLM"
+              register={register}
+            />
+            <TextInput
+              label="Nombre del agente"
+              name="name"
+              placeholder="SOF.IA"
+              register={register}
+            />
+            <TextInput
+              label="CTA"
+              name="sub_title"
+              placeholder="Descubre todo lo que SOF.IA puede hacer por ti."
+              register={register}
+            />
+            <TextAreaInput label="Descripción" register={register} />
+          </form>
+        </div>
+        <div className="w-[320px]">
+          <h3 className="text-sofia-superDark text-[14px] font-semibold leading-[16px] mb-2">
+            Vista previa del chat
+          </h3>
+          <ChatPreview config={integration.config} />
+        </div>
+      </div>
+    </StepContainer>
   );
 };
 
