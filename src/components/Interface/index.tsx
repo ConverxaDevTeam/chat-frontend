@@ -65,7 +65,7 @@ const Interface = () => {
       <PlanStatusBanner />
 
       {/* Contenido principal que se desplaza hacia abajo cuando el banner está presente */}
-      <div className="flex flex-col flex-1 w-full bg-sofia-background overflow-hidden relative">
+      <div className="flex flex-col flex-1 w-full bg-app-background overflow-hidden relative">
         <div className="flex flex-1 w-full overflow-hidden pl-[74px]">
           <OrganizationStrip />
           <Sidebar

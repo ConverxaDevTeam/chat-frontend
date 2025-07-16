@@ -100,9 +100,9 @@ const HitlButton = ({
       title={
         conversation.user_id === null ? "Unassign from HITL" : "Assign to HITL"
       }
-      className={`${conversation.user_id === null ? "bg-sofia-electricGreen" : `${conversation.need_human ? "bg-[#FF616D]" : "bg-[#FFBB93]"}`} rounded-[4px] px-[6px] h-[24px]`}
+      className={`${conversation.user_id === null ? "bg-app-electricGreen" : `${conversation.need_human ? "bg-[#FF616D]" : "bg-[#FFBB93]"}`} rounded-[4px] px-[6px] h-[24px]`}
     >
-      <p className="text-[12px] text-sofia-superDark font-semibold">
+      <p className="text-[12px] text-app-superDark font-semibold">
         {conversation.user_id === null
           ? "AI"
           : conversation.user_id === user?.id
@@ -139,7 +139,7 @@ const ConversationCard = ({
       {/* Desktop Layout */}
       <div className="hidden lg:flex w-full items-center">
         <div className="pl-[16px] w-[calc(100%/19*2)]">
-          <p className="text-sofia-superDark font-semibold text-[14px]">
+          <p className="text-app-superDark font-semibold text-[14px]">
             {conversation.user_name || "Usuario"}
             {(conversation.user_email || conversation.user_phone) && (
               <span
@@ -156,24 +156,24 @@ const ConversationCard = ({
           </p>
         </div>
         <div className="w-[calc(100%/19*2)]">
-          <p className="text-sofia-superDark text-[14px]">
+          <p className="text-app-superDark text-[14px]">
             ID: {conversation.id}
           </p>
         </div>
         <div className="w-[calc(100%/19*2)]">
-          <p className="text-sofia-superDark text-[14px]">
+          <p className="text-app-superDark text-[14px]">
             {conversation.department}
           </p>
         </div>
         <div className="w-[calc(100%/19*2)]">
-          <p className="text-sofia-superDark text-[14px]">
+          <p className="text-app-superDark text-[14px]">
             {lastMessage.type === MessageType.AGENT
               ? "Respondido"
               : "Pendiente"}
           </p>
         </div>
         <div className="w-[calc(100%/19*2)] pr-[16px]">
-          <p className="text-sofia-superDark text-[14px]">
+          <p className="text-app-superDark text-[14px]">
             {convertISOToReadable(conversation.created_at, false)}
           </p>
         </div>
@@ -229,7 +229,7 @@ const ConversationCard = ({
       {/* Tablet Layout */}
       <div className="hidden md:flex lg:hidden w-full items-center">
         <div className="pl-[16px] w-[20%]">
-          <p className="text-sofia-superDark font-semibold text-[13px] truncate">
+          <p className="text-app-superDark font-semibold text-[13px] truncate">
             {conversation.user_name || "Usuario"}
             {(conversation.user_email || conversation.user_phone) && (
               <span
@@ -246,15 +246,15 @@ const ConversationCard = ({
           </p>
         </div>
         <div className="w-[15%]">
-          <p className="text-sofia-superDark text-[13px]">{conversation.id}</p>
+          <p className="text-app-superDark text-[13px]">{conversation.id}</p>
         </div>
         <div className="w-[15%]">
-          <p className="text-sofia-superDark text-[13px] truncate">
+          <p className="text-app-superDark text-[13px] truncate">
             {conversation.department}
           </p>
         </div>
         <div className="w-[15%]">
-          <p className="text-sofia-superDark text-[13px]">
+          <p className="text-app-superDark text-[13px]">
             {lastMessage.type === MessageType.AGENT
               ? "Respondido"
               : "Pendiente"}
@@ -304,7 +304,7 @@ const ConversationCard = ({
       {/* Mobile Layout */}
       <div className="flex md:hidden w-full items-center">
         <div className="pl-[16px] w-[25%]">
-          <p className="text-sofia-superDark font-semibold text-[12px] truncate">
+          <p className="text-app-superDark font-semibold text-[12px] truncate">
             {conversation.user_name || "Usuario"}
             {(conversation.user_email || conversation.user_phone) && (
               <span
@@ -321,10 +321,10 @@ const ConversationCard = ({
           </p>
         </div>
         <div className="w-[15%]">
-          <p className="text-sofia-superDark text-[12px]">{conversation.id}</p>
+          <p className="text-app-superDark text-[12px]">{conversation.id}</p>
         </div>
         <div className="w-[25%]">
-          <p className="text-sofia-superDark text-[12px]">
+          <p className="text-app-superDark text-[12px]">
             {lastMessage.type === MessageType.AGENT
               ? "Respondido"
               : "Pendiente"}

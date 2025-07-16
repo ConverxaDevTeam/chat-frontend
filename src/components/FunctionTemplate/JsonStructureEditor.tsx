@@ -123,14 +123,14 @@ const JsonFieldFormModal = ({
             value={formState.description || ""}
             onChange={e => handleChange("description", e.target.value)}
             rows={3}
-            className="flex px-3 py-4 items-center gap-[11px] bg-[#FCFCFC] self-stretch rounded-[4px] border border-sofia-darkBlue text-sofia-superDark text-[14px] font-normal leading-normal w-full"
+            className="flex px-3 py-4 items-center gap-[11px] bg-[#FCFCFC] self-stretch rounded-[4px] border border-app-darkBlue text-app-superDark text-[14px] font-normal leading-normal w-full"
           />
         </InputGroup>
 
         {formState.type === ParamType.OBJECT && (
           <div className="flex flex-col items-start gap-4 self-stretch">
             <div className="flex items-center gap-2">
-              <label className="text-sofia-superDark text-[16px] font-[600] leading-[16px]">
+              <label className="text-app-superDark text-[16px] font-[600] leading-[16px]">
                 Estructura del Objeto
               </label>
             </div>
@@ -162,13 +162,13 @@ const JsonFieldFormModal = ({
           <input
             type="checkbox"
             id="required-field"
-            className="h-4 w-4 rounded border-gray-300 accent-sofia-electricOlive"
+            className="h-4 w-4 rounded border-gray-300 accent-app-electricOlive"
             checked={formState.required || false}
             onChange={e => handleChange("required", e.target.checked)}
           />
           <label
             htmlFor="required-field"
-            className="ml-2 text-sofia-superDark text-[14px] font-semibold leading-[16px]"
+            className="ml-2 text-app-superDark text-[14px] font-semibold leading-[16px]"
           >
             Requerido
           </label>

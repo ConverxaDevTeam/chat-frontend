@@ -12,7 +12,6 @@ import { useAppDispatch } from "@store/hooks";
 import { removeDepartment } from "@store/reducers/department";
 import TablePagination from "@pages/Users/UsersSuperAdmin/components/TablePagination";
 
-
 const Departments = () => {
   const { selectOrganizationId } = useSelector(
     (state: RootState) => state.auth
@@ -130,7 +129,7 @@ const Departments = () => {
                 <img
                   src="/mvp/arrow-down-up.svg"
                   alt="Ordenar"
-                  className="text-[#A6A8AB] cursor-pointer hover:text-sofia-superDark"
+                  className="text-[#A6A8AB] cursor-pointer hover:text-app-superDark"
                 />
               </div>
             </div>
@@ -140,7 +139,7 @@ const Departments = () => {
                 <img
                   src="/mvp/arrow-down-up.svg"
                   alt="Ordenar"
-                  className="text-[#A6A8AB] cursor-pointer hover:text-sofia-superDark"
+                  className="text-[#A6A8AB] cursor-pointer hover:text-app-superDark"
                 />
               </div>
             </div>
@@ -150,7 +149,7 @@ const Departments = () => {
                 <img
                   src="/mvp/arrow-down-up.svg"
                   alt="Ordenar"
-                  className="text-[#A6A8AB] cursor-pointer hover:text-sofia-superDark"
+                  className="text-[#A6A8AB] cursor-pointer hover:text-app-superDark"
                 />
               </div>
             </div>

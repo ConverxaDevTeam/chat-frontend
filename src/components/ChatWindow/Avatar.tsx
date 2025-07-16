@@ -25,11 +25,11 @@ export const Avatar = ({
       ) : (
         <div className="w-full h-full flex items-center justify-center relative">
           <div
-            className="absolute inset-0 rounded-full bg-sofia-electricLight"
+            className="absolute inset-0 rounded-full bg-app-electricLight"
             style={{ borderColor: borderColor }}
           />
           <span
-            className="relative z-1 text-base font-semibold text-sofia-superDark"
+            className="relative z-1 text-base font-semibold text-app-superDark"
             style={{ color: borderColor }}
           >
             {secret?.substring(0, 2)}

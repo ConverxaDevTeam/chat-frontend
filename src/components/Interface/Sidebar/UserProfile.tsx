@@ -18,7 +18,7 @@ const UserProfile: React.FC<UserProfileProps> = ({
     return (
       <div className="flex justify-center items-center py-3 mb-2">
         <button
-          className="w-10 h-10 rounded-full overflow-hidden border-[0.5px] border-sofia-darkBlue bg-[#343E4F] flex items-center justify-center text-white font-medium"
+          className="w-10 h-10 rounded-full overflow-hidden border-[0.5px] border-app-darkBlue bg-[#343E4F] flex items-center justify-center text-white font-medium"
           onClick={() => setMenuOpen(!menuOpen)}
           aria-label="Perfil de usuario"
         >
@@ -31,10 +31,10 @@ const UserProfile: React.FC<UserProfileProps> = ({
   }
 
   return (
-    <div className="bg-[#F4FAFF] border border-sofia-darkBlue rounded-[4px] py-3 px-3 mb-5">
+    <div className="bg-[#F4FAFF] border border-app-darkBlue rounded-[4px] py-3 px-3 mb-5">
       <div className="flex items-center rounded-[4px] p-2 relative">
         <div className="flex items-center w-full">
-          <div className="w-10 h-10 rounded-full overflow-hidden border-[0.5px] border-sofia-darkBlue flex-shrink-0 bg-[#343E4F] flex items-center justify-center text-white font-normal">
+          <div className="w-10 h-10 rounded-full overflow-hidden border-[0.5px] border-app-darkBlue flex-shrink-0 bg-[#343E4F] flex items-center justify-center text-white font-normal">
             <span className="text-lg uppercase">
               {user?.email?.charAt(0) || ""}
             </span>

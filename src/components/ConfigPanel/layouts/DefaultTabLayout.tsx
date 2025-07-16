@@ -24,7 +24,7 @@ const DefaultTabLayout: FC<DefaultTabLayoutProps> = ({
   isLoading,
 }) => (
   <div
-    className={`${isLoading ? "bg-transparent" : "bg-sofia-blancoPuro"} shadow-lg rounded-[4px] w-[1180px] h-[719px] flex flex-col`}
+    className={`${isLoading ? "bg-transparent" : "bg-app-blancoPuro"} shadow-lg rounded-[4px] w-[1180px] h-[719px] flex flex-col`}
   >
     {isLoading ? (
       <div className="w-full min-h-[400px] flex justify-center items-center">

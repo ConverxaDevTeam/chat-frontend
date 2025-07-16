@@ -139,7 +139,7 @@ const ConversationHistoryModal: React.FC<ConversationHistoryModalProps> = ({
             className="w-5 h-5"
           />
           <div>
-            <span className="satoshi-bold text-sofia-superDark">
+            <span className="satoshi-bold text-app-superDark">
               Historial de conversaciones
             </span>
             {userName && (
@@ -153,7 +153,7 @@ const ConversationHistoryModal: React.FC<ConversationHistoryModalProps> = ({
       footer={
         <button
           onClick={onClose}
-          className="w-full py-2 px-4 bg-sofia-superDark text-white rounded-[4px] hover:bg-sofia-darkLight transition-colors satoshi-medium"
+          className="w-full py-2 px-4 bg-app-superDark text-white rounded-[4px] hover:bg-app-darkLight transition-colors satoshi-medium"
         >
           Cerrar
         </button>
@@ -163,7 +163,7 @@ const ConversationHistoryModal: React.FC<ConversationHistoryModalProps> = ({
         {loading && (
           <div className="flex items-center justify-center py-8">
             <div className="text-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-sofia-superDark mx-auto mb-4"></div>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-app-superDark mx-auto mb-4"></div>
               <p className="text-gray-600 satoshi-regular">
                 Cargando historial...
               </p>
@@ -181,7 +181,7 @@ const ConversationHistoryModal: React.FC<ConversationHistoryModalProps> = ({
             <p className="text-gray-600 satoshi-regular mb-4">{error}</p>
             <button
               onClick={() => fetchHistory(1, false)}
-              className="px-4 py-2 bg-sofia-superDark text-white rounded-[4px] hover:bg-sofia-darkLight transition-colors satoshi-medium"
+              className="px-4 py-2 bg-app-superDark text-white rounded-[4px] hover:bg-app-darkLight transition-colors satoshi-medium"
             >
               Reintentar
             </button>
@@ -213,7 +213,7 @@ const ConversationHistoryModal: React.FC<ConversationHistoryModalProps> = ({
                 onClick={() => handleConversationClick(conversation.id)}
               >
                 <div className="flex justify-between items-start mb-3">
-                  <span className="text-base satoshi-medium text-sofia-superDark">
+                  <span className="text-base satoshi-medium text-app-superDark">
                     {formatConversationDate(conversation.created_at)}
                   </span>
                   <span className="text-sm text-gray-500 satoshi-regular">
@@ -228,7 +228,7 @@ const ConversationHistoryModal: React.FC<ConversationHistoryModalProps> = ({
 
             {loadingMore && (
               <div className="flex items-center justify-center py-4">
-                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-sofia-superDark"></div>
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-app-superDark"></div>
                 <span className="ml-2 text-sm text-gray-600 satoshi-regular">
                   Cargando más...
                 </span>

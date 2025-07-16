@@ -2,21 +2,21 @@ import { formatDateString } from "@utils/format";
 import { ConfigWebChat } from "../CustomizeChat";
 import { IMessage } from "@utils/interfaces";
 
-interface MessageSofiaProps {
+interface MessageConverxaProps {
   menssage: IMessage;
   config: ConfigWebChat;
 }
 
-const MessageSofia = ({ menssage, config }: MessageSofiaProps) => {
+const MessageConverxa = ({ menssage, config }: MessageConverxaProps) => {
   return (
     <div className="flex gap-[10px]">
       <div className="bg-white w-[40px] h-[40px] relative rounded-full flex justify-center items-center">
-        <img src="/img/sofia.svg" alt="converxa" />
-        <div className="bg-green-500 w-[18px] h-[18px] absolute border-[4px] border-sofiaCall-white rounded-full -bottom-[5px] -right-[5px]"></div>
+        <img src="/icon.svg" alt="converxa" />
+        <div className="bg-green-500 w-[18px] h-[18px] absolute border-[4px] border-app-white rounded-full -bottom-[5px] -right-[5px]"></div>
       </div>
       <div className="flex flex-1 flex-col gap-[4px] items-start">
         <p
-          className="p-[16px] text-sofiaCall-dark leading-[18px] font-poppinsRegular text-[14px]"
+          className="p-[16px] text-app-dark leading-[18px] font-poppinsRegular text-[14px]"
           style={{
             backgroundColor: config.bg_assistant,
             borderRadius: `${config.message_radius}px`,
@@ -37,4 +37,4 @@ const MessageSofia = ({ menssage, config }: MessageSofiaProps) => {
   );
 };
 
-export default MessageSofia;
+export default MessageConverxa;

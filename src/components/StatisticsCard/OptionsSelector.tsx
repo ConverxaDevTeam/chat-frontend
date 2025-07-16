@@ -53,8 +53,8 @@ const DataOptionsModal = ({
       {dataOptions.map(option => (
         <button
           key={option.id}
-          className={`flex w-full items-center gap-2 px-2 py-1 text-[14px] text-sofia-superDark rounded-md ${
-            selectedTypes.includes(option.id) ? "bg-sofia-darkBlue" : ""
+          className={`flex w-full items-center gap-2 px-2 py-1 text-[14px] text-app-superDark rounded-md ${
+            selectedTypes.includes(option.id) ? "bg-app-darkBlue" : ""
           }`}
           onClick={e => handleOptionClick(option.id, e)}
           onMouseDown={e => e.stopPropagation()}
@@ -105,8 +105,8 @@ const StatisticsTypeModal = ({
       {statisticsTypes.map((option: Option) => (
         <button
           key={option.id}
-          className={`flex w-full items-center gap-2 px-2 py-[2px] text-[14px] text-sofia-superDark rounded-md hover:bg-sofia-lightBlue/10 transition-colors ${
-            selectedDisplayType === option.id ? "bg-sofia-darkBlue" : ""
+          className={`flex w-full items-center gap-2 px-2 py-[2px] text-[14px] text-app-superDark rounded-md hover:bg-app-lightBlue/10 transition-colors ${
+            selectedDisplayType === option.id ? "bg-app-darkBlue" : ""
           }`}
           onClick={e => handleTypeClick(option.id as StatisticsDisplayType, e)}
           onMouseDown={e => e.stopPropagation()}
@@ -136,7 +136,7 @@ const OptionsButton = ({
     onClick={onClick}
     onMouseDown={onMouseDown}
     className={`p-1.5 hover:bg-white/50 rounded-lg text-gray-500 hover:text-gray-700 transition-colors ${
-      isOpen ? "bg-sofia-darkBlue" : ""
+      isOpen ? "bg-app-darkBlue" : ""
     }`}
   >
     <img src="mvp/three-dots.svg" className="w-[24px] h-[24px]" />
@@ -151,7 +151,7 @@ interface MenuButtonProps {
 
 const MenuButton = ({ onClick, children, iconUrl }: MenuButtonProps) => (
   <button
-    className="flex items-center gap-2 w-full text-[14px] text-sofia-superDark hover:bg-sofia-lightBlue/10 transition-colors"
+    className="flex items-center gap-2 w-full text-[14px] text-app-superDark hover:bg-app-lightBlue/10 transition-colors"
     onClick={onClick}
     onMouseDown={e => e.stopPropagation()}
   >
@@ -171,13 +171,13 @@ const LegendToggle = ({ showLegend, onChange }: LegendToggleProps) => (
   <button
     onClick={onChange}
     onMouseDown={e => e.stopPropagation()}
-    className="flex items-center gap-2 w-full text-[14px] text-sofia-superDark hover:bg-sofia-lightBlue/10 transition-colors"
+    className="flex items-center gap-2 w-full text-[14px] text-app-superDark hover:bg-app-lightBlue/10 transition-colors"
   >
     <input
       type="checkbox"
       checked={showLegend}
       readOnly
-      className="w-4 h-4 rounded border-sofia-navyBlue/30 text-sofia-darkBlue focus:ring-sofia-darkBlue flex-shrink-0"
+      className="w-4 h-4 rounded border-app-navyBlue/30 text-app-darkBlue focus:ring-app-darkBlue flex-shrink-0"
       onClick={e => e.stopPropagation()}
     />
     <span className="flex-grow text-left">Mostrar leyenda</span>

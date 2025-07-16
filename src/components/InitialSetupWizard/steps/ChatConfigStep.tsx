@@ -192,15 +192,16 @@ const ChatConfigStep: React.FC<StepComponentProps> = ({
     type: IntegracionType.CHAT_WEB,
     config: {
       id: 1,
-      name: data.agent.name || "SOF.IA",
+      name: data.agent.name || "CONVERXA",
       cors: [],
       url_assets: "",
-      title: data.chat.title || "SOF.IA LLM",
+      title: data.chat.title || "CONVERXA LLM",
       sub_title:
-        data.chat.subtitle || "Descubre todo lo que SOF.IA puede hacer por ti.",
+        data.chat.subtitle ||
+        "Descubre todo lo que CONVERXA puede hacer por ti.",
       description:
         data.chat.description ||
-        "¡Hola y bienvenido a SOF.IA! Estoy aquí para ayudarte a encontrar respuestas y soluciones de manera rápida y sencilla.",
+        "¡Hola y bienvenido a CONVERXA! Estoy aquí para ayudarte a encontrar respuestas y soluciones de manera rápida y sencilla.",
       logo: "/mvp/avatar.svg",
       horizontal_logo: "",
       edge_radius: 12,
@@ -252,7 +253,7 @@ const ChatConfigStep: React.FC<StepComponentProps> = ({
             config: {
               ...integrationData.config,
               // Use backend name as the correct one
-              name: integrationData.config.name || "SOF.IA",
+              name: integrationData.config.name || "CONVERXA",
             },
           });
 
@@ -332,26 +333,26 @@ const ChatConfigStep: React.FC<StepComponentProps> = ({
             <TextInput
               label="Nombre del chat"
               name="title"
-              placeholder="SOF.IA LLM"
+              placeholder="CONVERXA LLM"
               register={register}
             />
             <TextInput
               label="Nombre del agente"
               name="name"
-              placeholder="SOF.IA"
+              placeholder="CONVERXA"
               register={register}
             />
             <TextInput
               label="CTA"
               name="sub_title"
-              placeholder="Descubre todo lo que SOF.IA puede hacer por ti."
+              placeholder="Descubre todo lo que CONVERXA puede hacer por ti."
               register={register}
             />
             <TextAreaInput label="Descripción" register={register} />
           </form>
         </div>
         <div className="w-[320px]">
-          <h3 className="text-sofia-superDark text-[14px] font-semibold leading-[16px] mb-2">
+          <h3 className="text-app-superDark text-[14px] font-semibold leading-[16px] mb-2">
             Vista previa del chat
           </h3>
           <ChatPreview config={integration.config} />

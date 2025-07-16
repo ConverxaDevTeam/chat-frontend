@@ -148,7 +148,7 @@ const IntegrationItemNode = memo((props: IntegrationItemProps) => {
           <img
             src={getIntegrationIcon(type)}
             alt={type}
-            className="w-6 h-6 shrink-0 text-sofia-superDark"
+            className="w-6 h-6 shrink-0 text-app-superDark"
           />
         }
         allowedConnections={["source"]}

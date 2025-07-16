@@ -46,7 +46,7 @@ export const useChat = (roomName: string, agentId?: number) => {
           threatId: threatId,
           LLMAgentId: LLMAgentId,
           agentId: agentId,
-          agent: AgenteType.SOFIA_ASISTENTE,
+          agent: AgenteType.CONVERXA_ASISTENTE,
         } as TestAgentIdentifier;
       }
 

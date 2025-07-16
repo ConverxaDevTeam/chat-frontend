@@ -152,7 +152,7 @@ export const AgenteForm = ({
             <div className="group relative">
               <button
                 type="button"
-                className="w-auto h-[24px] px-[12px] text-sofia-superDark font-medium text-[12px] border-sofia-superDark border-[1px] rounded-[4px] hover:bg-gray-100 transition-colors"
+                className="w-auto h-[24px] px-[12px] text-app-superDark font-medium text-[12px] border-app-superDark border-[1px] rounded-[4px] hover:bg-gray-100 transition-colors"
                 onClick={() => examples("example1")}
               >
                 {EXAMPLES_TITLES.example1}
@@ -164,7 +164,7 @@ export const AgenteForm = ({
             <div className="group relative">
               <button
                 type="button"
-                className="w-auto h-[24px] px-[12px] text-sofia-superDark font-medium text-[12px] border-sofia-superDark border-[1px] rounded-[4px] hover:bg-gray-100 transition-colors"
+                className="w-auto h-[24px] px-[12px] text-app-superDark font-medium text-[12px] border-app-superDark border-[1px] rounded-[4px] hover:bg-gray-100 transition-colors"
                 onClick={() => examples("example2")}
               >
                 {EXAMPLES_TITLES.example2}
@@ -176,7 +176,7 @@ export const AgenteForm = ({
             <div className="group relative">
               <button
                 type="button"
-                className="w-auto h-[24px] px-[12px] text-sofia-superDark font-medium text-[12px] border-sofia-superDark border-[1px] rounded-[4px] hover:bg-gray-100 transition-colors"
+                className="w-auto h-[24px] px-[12px] text-app-superDark font-medium text-[12px] border-app-superDark border-[1px] rounded-[4px] hover:bg-gray-100 transition-colors"
                 onClick={() => examples("example3")}
               >
                 {EXAMPLES_TITLES.example3}

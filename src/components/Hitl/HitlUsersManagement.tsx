@@ -111,11 +111,11 @@ export const HitlUsersManagement: React.FC<HitlUsersManagementProps> = ({
                 className="w-5 h-5"
               />
             </button>
-            <h2 className="text-[18px] font-semibold text-sofia-superDark">
+            <h2 className="text-[18px] font-semibold text-app-superDark">
               Gestionar usuarios - {hitlType.name}
             </h2>
           </div>
-          <p className="text-sofia-superDark font-normal text-sm">
+          <p className="text-app-superDark font-normal text-sm">
             Asigna o remueve usuarios con rol HITL para este tipo de
             intervención. Un usuario puede estar asignado a múltiples tipos
             HITL.
@@ -135,7 +135,7 @@ export const HitlUsersManagement: React.FC<HitlUsersManagementProps> = ({
 
       {/* Add Users Section */}
       {showAddUsers && unassignedUsers.length > 0 && (
-        <div className="mb-6 p-4 bg-[#F4FAFF] border border-sofia-darkBlue rounded">
+        <div className="mb-6 p-4 bg-[#F4FAFF] border border-app-darkBlue rounded">
           <h3 className="text-sm font-medium text-gray-900 mb-3">
             Seleccionar usuarios para asignar (múltiple selección)
           </h3>
@@ -143,13 +143,13 @@ export const HitlUsersManagement: React.FC<HitlUsersManagementProps> = ({
             {unassignedUsers.map(user => (
               <label
                 key={user.id}
-                className="flex items-center space-x-3 p-2 hover:bg-sofia-darkBlue rounded cursor-pointer"
+                className="flex items-center space-x-3 p-2 hover:bg-app-darkBlue rounded cursor-pointer"
               >
                 <input
                   type="checkbox"
                   checked={selectedUserIds.includes(user.id)}
                   onChange={e => handleUserSelection(user.id, e.target.checked)}
-                  className="w-4 h-4 text-sofia-darkBlue border-sofia-darkBlue rounded focus:ring-sofia-darkBlue"
+                  className="w-4 h-4 text-app-darkBlue border-app-darkBlue rounded focus:ring-app-darkBlue"
                   disabled={isAssigning}
                 />
                 <div className="flex items-center space-x-3 flex-1">
@@ -197,7 +197,7 @@ export const HitlUsersManagement: React.FC<HitlUsersManagementProps> = ({
 
       {/* Assigned Users List */}
       <div className="mb-3">
-        <h3 className="text-lg font-medium text-sofia-superDark mb-4">
+        <h3 className="text-lg font-medium text-app-superDark mb-4">
           Usuarios asignados ({hitlType.userHitlTypes.length})
         </h3>
 
@@ -292,11 +292,11 @@ export const HitlUsersManagement: React.FC<HitlUsersManagementProps> = ({
         availableUsers={availableUsers}
       />
       {/* Info Box */}
-      <div className="mt-6 bg-[#F4FAFF] border border-sofia-darkBlue rounded p-4">
+      <div className="mt-6 bg-[#F4FAFF] border border-app-darkBlue rounded p-4">
         <div className="flex">
           <div className="flex-shrink-0">
             <svg
-              className="h-5 w-5 text-sofia-superDark"
+              className="h-5 w-5 text-app-superDark"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -310,10 +310,10 @@ export const HitlUsersManagement: React.FC<HitlUsersManagementProps> = ({
             </svg>
           </div>
           <div className="ml-3">
-            <h3 className="text-sm font-medium text-sofia-superDark">
+            <h3 className="text-sm font-medium text-app-superDark">
               Gestión de asignaciones
             </h3>
-            <div className="my-2 text-sm text-sofia-superDark font-normal">
+            <div className="my-2 text-sm text-app-superDark font-normal">
               <ul className="list-disc list-inside space-y-1">
                 <li>Puedes asignar múltiples usuarios a este tipo HITL</li>
                 <li>Los usuarios pueden estar asignados a varios tipos HITL</li>

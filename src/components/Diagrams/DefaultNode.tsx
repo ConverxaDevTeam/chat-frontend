@@ -213,7 +213,7 @@ const DefaultNode: React.FC<CustomNodeProps> = ({
           `}
         >
           <div className="w-[100px] text-center">
-            <p className="text-xs font-normal text-sofia-superDark line-clamp-2 overflow-hidden">
+            <p className="text-xs font-normal text-app-superDark line-clamp-2 overflow-hidden">
               {name}
             </p>
           </div>

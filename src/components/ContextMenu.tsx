@@ -232,7 +232,7 @@ const useMenuPosition = (
 
 // Componente para el divisor
 export const MenuDivider = () => (
-  <div className="h-[1px] bg-sofia-celeste/20 w-[50px] mx-auto" />
+  <div className="h-[1px] bg-app-celeste/20 w-[50px] mx-auto" />
 );
 
 // Componente para envolver items del menú
@@ -307,7 +307,7 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
     <div
       ref={menuRef}
       data-menu-id={menuId}
-      className="fixed flex flex-col p-[12px] gap-[10px] items-start rounded-lg border-2 border-sofia-darkBlue bg-sofia-blancoPuro whitespace-nowrap"
+      className="fixed flex flex-col p-[12px] gap-[10px] items-start rounded-lg border-2 border-app-darkBlue bg-app-blancoPuro whitespace-nowrap"
       style={{
         left: position.x,
         top: position.y,

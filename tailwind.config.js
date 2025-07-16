@@ -38,7 +38,6 @@ export default {
           c1: "#fafafa",
           c2: "#ffffff",
           c4: "#393939",
-          // Colores copiados de sofia
           superDark: "#393939",
           darkBlue: "#576aaf",
           darkLight: "#393939",
@@ -49,21 +48,6 @@ export default {
           celeste: "#f6f6f6",
           hitlPending: "#6d5638",
           navyBlue: "#576aaf",
-        },
-        sofia: {
-          superDark: "#393939",
-          darkBlue: "#576aaf",
-          darkLight: "#393939",
-          electricOlive: "#7cc1c4",
-          electricLight: "#7cc1c4",
-          electricGreen: "#7cc1c4",
-          background: "#f6f6f6",
-          secundario: "#f6f6f6",
-          blancoPuro: "#FFFFFF",
-          celeste: "#F6FBFF",
-          hitlPending: "#FFBB93",
-          error: "#FF616D",
-          navyBlue: "#343E4F",
           gris6: "#A6A8AB",
           inputBg: "#FCFCFC",
           success: "#3AC0A0",
@@ -76,7 +60,7 @@ export default {
       backgroundImage: {
         "custom-gradient":
           "linear-gradient(130deg, #f6f9fb 0%, #f0f4f9 40%, #edf2f7 100%)",
-        "sofia-gradient1": "linear-gradient(180deg, #7cc1c4 0%, #7cc1c4 100%)",
+        "app-gradient1": "linear-gradient(180deg, #7cc1c4 0%, #7cc1c4 100%)",
         "diagram-gradient":
           "radial-gradient(circle at center, transparent 0%, #f6f6f6 80%)",
         "node-gradient":

@@ -24,7 +24,7 @@ const TablePagination: React.FC<TablePaginationProps> = ({
   if (totalPages <= 1 && !totalItems) return null;
   const getPageNumbers = () => {
     const pages = [];
-    
+
     if (totalPages <= maxPagesToShow) {
       for (let i = 1; i <= totalPages; i++) {
         pages.push(i);
@@ -32,38 +32,39 @@ const TablePagination: React.FC<TablePaginationProps> = ({
     } else {
       let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
       let endPage = startPage + maxPagesToShow - 1;
-      
+
       if (endPage > totalPages) {
         endPage = totalPages;
         startPage = Math.max(1, endPage - maxPagesToShow + 1);
       }
-      
+
       for (let i = startPage; i <= endPage; i++) {
         pages.push(i);
       }
     }
-    
+
     return pages;
   };
 
   return (
     <div className="bg-[#F6F6F6] flex items-center py-3 px-4">
       <div className="flex justify-start items-center gap-4">
-        
         {totalItems !== undefined && (
-          <div className="text-sm font-normal text-sofia-superDark">
+          <div className="text-sm font-normal text-app-superDark">
             Total <span className="font-bold">{totalItems}</span>
           </div>
         )}
       </div>
       <div className="flex-1 flex justify-end items-center gap-2">
-      {itemsPerPage && onChangeItemsPerPage && (
+        {itemsPerPage && onChangeItemsPerPage && (
           <div className="flex items-center gap-2">
-            <span className="text-sm font-normal text-sofia-superDark">Filas por página</span>
+            <span className="text-sm font-normal text-app-superDark">
+              Filas por página
+            </span>
             <select
               value={itemsPerPage}
-              onChange={(e) => onChangeItemsPerPage(Number(e.target.value))}
-              className="bg-[#F6F6F6] border border-sofia-superDark rounded p-1 text-sm font-normal min-w-[60px]"
+              onChange={e => onChangeItemsPerPage(Number(e.target.value))}
+              className="bg-[#F6F6F6] border border-app-superDark rounded p-1 text-sm font-normal min-w-[60px]"
             >
               {rowsPerPageOptions.map(option => (
                 <option key={option} value={option}>
@@ -81,19 +82,19 @@ const TablePagination: React.FC<TablePaginationProps> = ({
         >
           <img src="/mvp/chevron-left.svg" alt="Anterior" className="w-5 h-5" />
         </button>
-        
+
         <div className="flex items-center gap-1">
           {getPageNumbers().map(page => (
             <button
               key={page}
               onClick={() => goToPage(page)}
-              className={`w-8 h-8 flex items-center justify-center rounded-full ${currentPage === page ? 'bg-sofia-superDark text-sofia-blancoPuro font-normal' : 'hover:bg-gray-100'}`}
+              className={`w-8 h-8 flex items-center justify-center rounded-full ${currentPage === page ? "bg-app-superDark text-app-blancoPuro font-normal" : "hover:bg-gray-100"}`}
             >
               {page}
             </button>
           ))}
         </div>
-        
+
         <button
           onClick={() => goToPage(currentPage + 1)}
           disabled={currentPage === totalPages}

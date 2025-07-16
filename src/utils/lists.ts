@@ -118,7 +118,7 @@ interface themeColor {
 export const themeColors: themeColor[] = [
   {
     id: 0,
-    name: "sofia",
+    name: "converxa",
     bg_color: "#15ECDA",
     text_title: "#000000",
     bg_chat: "#F5F5F5",
@@ -235,7 +235,7 @@ export const themeColors: themeColor[] = [
   },
   {
     id: 9,
-    name: "sofia_blue",
+    name: "converxa_blue",
     bg_color: "#DBEAF2",
     text_title: "#000000",
     bg_chat: "#F5F5F5",

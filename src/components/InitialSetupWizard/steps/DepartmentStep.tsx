@@ -28,7 +28,7 @@ const DepartmentStep: React.FC<StepComponentProps> = ({ data, updateData }) => {
               placeholder="Ej: Ventas, Soporte, Marketing"
               value={data.department.name}
               onChange={handleInputChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sofia-electricGreen focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-app-electricGreen focus:border-transparent"
               required
             />
           </div>
@@ -43,7 +43,7 @@ const DepartmentStep: React.FC<StepComponentProps> = ({ data, updateData }) => {
               placeholder="Describe el propósito de este departamento..."
               value={data.department.description}
               onChange={handleInputChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sofia-electricGreen focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-app-electricGreen focus:border-transparent"
               rows={4}
               required
             />
@@ -75,7 +75,7 @@ const DepartmentStep: React.FC<StepComponentProps> = ({ data, updateData }) => {
                 key={dept.name}
                 type="button"
                 onClick={() => updateData("department", dept)}
-                className="text-left p-3 border border-gray-200 rounded-lg hover:border-sofia-electricGreen hover:bg-gray-50 transition-colors"
+                className="text-left p-3 border border-gray-200 rounded-lg hover:border-app-electricGreen hover:bg-gray-50 transition-colors"
               >
                 <p className="font-medium text-sm text-gray-900">{dept.name}</p>
                 <p className="text-xs text-gray-500 mt-1">{dept.description}</p>

@@ -190,8 +190,8 @@ const AuthenticatorTable = ({
           }}
           className={`flex w-5 h-5 p-[2px] justify-center items-center gap-[10px] rounded-[24px] ${
             auth.id === selectedAuthenticatorId
-              ? "bg-sofia-electricOlive"
-              : "bg-sofia-error"
+              ? "bg-app-electricOlive"
+              : "bg-app-error"
           }`}
         >
           <img
@@ -209,7 +209,7 @@ const AuthenticatorTable = ({
             e.stopPropagation();
             onEdit(auth);
           }}
-          className="p-2 hover:bg-sofia-electricOlive/10 rounded-lg transition-colors"
+          className="p-2 hover:bg-app-electricOlive/10 rounded-lg transition-colors"
         >
           <img src="/mvp/square-pen.svg" alt="Editar" className="w-4 h-4" />
         </button>
@@ -218,7 +218,7 @@ const AuthenticatorTable = ({
             e.stopPropagation();
             onDelete(auth.id!);
           }}
-          className="p-2 hover:bg-sofia-electricOlive/10 rounded-lg transition-colors"
+          className="p-2 hover:bg-app-electricOlive/10 rounded-lg transition-colors"
         >
           <img src="/mvp/trash.svg" alt="Eliminar" className="w-4 h-4" />
         </button>

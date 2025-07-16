@@ -15,7 +15,7 @@ const StepContainer: React.FC<StepContainerProps> = ({
     <div className="w-full h-full flex flex-col">
       {/* Header */}
       <div className="mb-6 flex-shrink-0">
-        <h1 className="text-2xl font-medium text-sofia-superDark leading-5 mb-1">
+        <h1 className="text-2xl font-medium text-app-superDark leading-5 mb-1">
           {title}
         </h1>
         <p className="text-xs font-normal text-[#343E4F]">{subtitle}</p>

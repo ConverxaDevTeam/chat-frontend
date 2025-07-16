@@ -13,7 +13,7 @@ export interface Agent {
 }
 
 export enum AgenteType {
-  SOFIA_ASISTENTE = "sofia_asistente",
+  CONVERXA_ASISTENTE = "converxa_asistente",
   LLAMA = "llama",
   GROK = "grok",
 }

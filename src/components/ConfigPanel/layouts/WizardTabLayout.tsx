@@ -23,7 +23,7 @@ const WizardTabLayout: FC<WizardTabLayoutProps> = ({
   isLoading,
 }) => (
   <div
-    className={`${isLoading ? "bg-transparent" : "bg-sofia-blancoPuro"} shadow-lg rounded-lg w-[1180px] h-[719px] flex`}
+    className={`${isLoading ? "bg-transparent" : "bg-app-blancoPuro"} shadow-lg rounded-lg w-[1180px] h-[719px] flex`}
   >
     {isLoading ? (
       <div className="w-full min-h-[400px] flex justify-center items-center">
@@ -32,18 +32,18 @@ const WizardTabLayout: FC<WizardTabLayoutProps> = ({
     ) : (
       <>
         <div className="flex flex-1">
-          <div className="w-[80px] sm:w-[280px] bg-sofia-blancoPuro border-r border-sofia-darkBlue flex flex-col">
+          <div className="w-[80px] sm:w-[280px] bg-app-blancoPuro border-r border-app-darkBlue flex flex-col">
             <div className="sm:p-6 p-2">
               <img
-                src="/img/logo-sofia-horizontal.svg"
-                alt="SOF.IA"
+                src="/img/logo-app-horizontal.svg"
+                alt="CONVERXA"
                 className="h-6 mb-8 hidden sm:block mx-auto"
               />
-              <p className="text-sofia-superDark text-xl font-normal mb-12 leading-[27px] hidden sm:block">
+              <p className="text-app-superDark text-xl font-normal mb-12 leading-[27px] hidden sm:block">
                 Sigue estos pasos para personalizar tu organización y activar tu
                 asistente con IA.
               </p>
-              <div className="space-y-3 text-sofia-superDark sm:pr-2 pr-0">
+              <div className="space-y-3 text-app-superDark sm:pr-2 pr-0">
                 {tabs.map((tab, index) => {
                   const isCompleted = tab.status === "completed";
                   const isCurrent = tab.status === "current";
@@ -54,12 +54,12 @@ const WizardTabLayout: FC<WizardTabLayoutProps> = ({
                       key={tab.id}
                       className={`group relative sm:px-3 px-1 py-2 rounded transition-colors flex items-center justify-center sm:justify-start ${
                         isCurrent
-                          ? "bg-sofia-superDark text-white cursor-pointer"
+                          ? "bg-app-superDark text-white cursor-pointer"
                           : isCompleted
-                            ? "text-sofia-success cursor-pointer hover:bg-sofia-success/10"
+                            ? "text-app-success cursor-pointer hover:bg-app-success/10"
                             : isPending
                               ? "text-gray-400 cursor-not-allowed opacity-60"
-                              : "hover:bg-sofia-electricGreen/10 cursor-pointer"
+                              : "hover:bg-app-electricGreen/10 cursor-pointer"
                       }`}
                       onClick={() => !isPending && onTabChange(tab.id)}
                     >
@@ -116,7 +116,7 @@ const WizardTabLayout: FC<WizardTabLayoutProps> = ({
           <div className="flex-1 flex flex-col min-h-[600px]">
             <div className="p-8 overflow-y-auto flex-1">{children}</div>
             {actions && (
-              <div className="flex justify-end gap-3 p-6 border-t border-sofia-darkBlue">
+              <div className="flex justify-end gap-3 p-6 border-t border-app-darkBlue">
                 {actions}
               </div>
             )}

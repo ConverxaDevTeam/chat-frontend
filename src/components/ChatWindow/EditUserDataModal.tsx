@@ -183,7 +183,7 @@ const EditUserDataModal: React.FC<EditUserDataModalProps> = ({
       <div className="bg-white rounded-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         <div className="p-6">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-semibold text-sofia-superDark">
+            <h2 className="text-xl font-semibold text-app-superDark">
               Editar datos del usuario
             </h2>
             <button
@@ -210,7 +210,7 @@ const EditUserDataModal: React.FC<EditUserDataModalProps> = ({
           {loading ? (
             <div className="flex justify-center items-center py-12">
               <div className="text-center">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-sofia-superDark mx-auto mb-2"></div>
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-app-superDark mx-auto mb-2"></div>
                 <p className="text-sm text-gray-600">
                   Cargando datos del usuario...
                 </p>
@@ -220,7 +220,7 @@ const EditUserDataModal: React.FC<EditUserDataModalProps> = ({
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
               {/* Campos estándar */}
               <div>
-                <h3 className="text-lg font-medium text-sofia-superDark mb-4">
+                <h3 className="text-lg font-medium text-app-superDark mb-4">
                   Información básica
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -231,7 +231,7 @@ const EditUserDataModal: React.FC<EditUserDataModalProps> = ({
                     <input
                       type="text"
                       {...register("standardFields.name")}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-sofia-darkBlue focus:border-transparent"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-app-darkBlue focus:border-transparent"
                     />
                   </div>
 
@@ -247,7 +247,7 @@ const EditUserDataModal: React.FC<EditUserDataModalProps> = ({
                           message: "Email inválido",
                         },
                       })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-sofia-darkBlue focus:border-transparent"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-app-darkBlue focus:border-transparent"
                     />
                     {errors.standardFields?.email && (
                       <p className="text-red-500 text-sm mt-1">
@@ -263,7 +263,7 @@ const EditUserDataModal: React.FC<EditUserDataModalProps> = ({
                     <input
                       type="text"
                       {...register("standardFields.phone")}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-sofia-darkBlue focus:border-transparent"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-app-darkBlue focus:border-transparent"
                     />
                   </div>
 
@@ -274,7 +274,7 @@ const EditUserDataModal: React.FC<EditUserDataModalProps> = ({
                     <input
                       type="text"
                       {...register("standardFields.address")}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-sofia-darkBlue focus:border-transparent"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-app-darkBlue focus:border-transparent"
                     />
                   </div>
                 </div>
@@ -282,7 +282,7 @@ const EditUserDataModal: React.FC<EditUserDataModalProps> = ({
 
               {/* Información del sistema (solo lectura) */}
               <div>
-                <h3 className="text-lg font-medium text-sofia-superDark mb-4">
+                <h3 className="text-lg font-medium text-app-superDark mb-4">
                   Información del sistema
                   <span className="text-sm font-normal text-gray-500 ml-2">
                     (Solo lectura)
@@ -343,7 +343,7 @@ const EditUserDataModal: React.FC<EditUserDataModalProps> = ({
 
               {/* Campos personalizados */}
               <div>
-                <h3 className="text-lg font-medium text-sofia-superDark mb-4">
+                <h3 className="text-lg font-medium text-app-superDark mb-4">
                   Campos personalizados
                 </h3>
 
@@ -356,7 +356,7 @@ const EditUserDataModal: React.FC<EditUserDataModalProps> = ({
                       onChange={e =>
                         updateCustomField(index, "key", e.target.value)
                       }
-                      className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-sofia-darkBlue focus:border-transparent"
+                      className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-app-darkBlue focus:border-transparent"
                     />
                     <input
                       type="text"
@@ -365,7 +365,7 @@ const EditUserDataModal: React.FC<EditUserDataModalProps> = ({
                       onChange={e =>
                         updateCustomField(index, "value", e.target.value)
                       }
-                      className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-sofia-darkBlue focus:border-transparent"
+                      className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-app-darkBlue focus:border-transparent"
                     />
                     <button
                       type="button"
@@ -398,7 +398,7 @@ const EditUserDataModal: React.FC<EditUserDataModalProps> = ({
                         key: e.target.value,
                       })
                     }
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-sofia-darkBlue focus:border-transparent"
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-app-darkBlue focus:border-transparent"
                   />
                   <input
                     type="text"
@@ -410,12 +410,12 @@ const EditUserDataModal: React.FC<EditUserDataModalProps> = ({
                         value: e.target.value,
                       })
                     }
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-sofia-darkBlue focus:border-transparent"
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-app-darkBlue focus:border-transparent"
                   />
                   <button
                     type="button"
                     onClick={addCustomField}
-                    className="bg-sofia-superDark text-white rounded-[4px] h-[30px] px-3 text-sm hover:bg-opacity-90 transition-colors"
+                    className="bg-app-superDark text-white rounded-[4px] h-[30px] px-3 text-sm hover:bg-opacity-90 transition-colors"
                   >
                     Agregar
                   </button>
@@ -435,7 +435,7 @@ const EditUserDataModal: React.FC<EditUserDataModalProps> = ({
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="bg-sofia-superDark text-white rounded-[4px] h-[30px] px-4 text-sm hover:bg-opacity-90 disabled:opacity-50 transition-colors"
+                  className="bg-app-superDark text-white rounded-[4px] h-[30px] px-4 text-sm hover:bg-opacity-90 disabled:opacity-50 transition-colors"
                 >
                   {submitting ? "Guardando..." : "Guardar cambios"}
                 </button>

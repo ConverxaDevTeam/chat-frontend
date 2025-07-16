@@ -13,7 +13,7 @@ export enum OrganizationType {
 }
 
 export enum AgentType {
-  SOFIA_ASISTENTE = "sofia_asistente",
+  CONVERXA_ASISTENTE = "converxa_asistente",
   CLAUDE = "claude",
 }
 

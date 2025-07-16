@@ -81,7 +81,7 @@ const FinalStep: React.FC<StepComponentProps> = ({
   };
 
   return (
-    <div className="flex flex-col items-center justify-center h-full w-full bg-sofia-blancoPuro">
+    <div className="flex flex-col items-center justify-center h-full w-full bg-app-blancoPuro">
       <div className="flex flex-col items-center justify-center max-w-md mx-auto text-center space-y-6">
         {/* Icono de éxito */}
         <div className="flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-4">
@@ -98,10 +98,10 @@ const FinalStep: React.FC<StepComponentProps> = ({
 
         {/* Mensaje principal */}
         <div className="space-y-2">
-          <h2 className="text-2xl font-bold text-sofia-superDark">
+          <h2 className="text-2xl font-bold text-app-superDark">
             ¡Haz completado la configuración inicial!
           </h2>
-          <p className="text-sofia-navyBlue text-sm">
+          <p className="text-app-navyBlue text-sm">
             Si deseas algún cambio en línea, podrás completar tu agente más
             adelante desde el menú principal.
           </p>

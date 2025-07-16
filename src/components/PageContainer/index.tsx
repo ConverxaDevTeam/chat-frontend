@@ -25,7 +25,11 @@ const PageContainer = ({
       <div>
         <div className="flex justify-between items-center mb-4">
           {title && (
-            <h2 className={`text-xl font-semibold text-sofia-superDark flex items-center ${titleClassName || ''}`}>{title}</h2>
+            <h2
+              className={`text-xl font-semibold text-app-superDark flex items-center ${titleClassName || ""}`}
+            >
+              {title}
+            </h2>
           )}
           {buttonText && onButtonClick && (
             <button

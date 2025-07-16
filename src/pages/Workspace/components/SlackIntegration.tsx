@@ -104,7 +104,7 @@ const SlackIntegration: React.FC<SlackIntegrationProps> = ({
       <div className="flex flex-col w-[470px] bg-white p-[24px] rounded-[4px] justify-center">
         <form onSubmit={handleSubmit} className="flex flex-col">
           <div className="w-full flex justify-between items-center mb-[24px]">
-            <p className="text-sofia-superDark font-semibold text-[24px]">
+            <p className="text-app-superDark font-semibold text-[24px]">
               Integración de Slack
             </p>
             <img
@@ -116,7 +116,7 @@ const SlackIntegration: React.FC<SlackIntegrationProps> = ({
           </div>
           <label
             htmlFor="channelName"
-            className="text-sofia-superDark font-semibold text-[14px] mb-[8px]"
+            className="text-app-superDark font-semibold text-[14px] mb-[8px]"
           >
             Nombre del canal
           </label>
@@ -126,19 +126,19 @@ const SlackIntegration: React.FC<SlackIntegrationProps> = ({
             placeholder="Nombre del canal"
             value={channelName}
             onChange={e => setChannelName(e.target.value)}
-            className="flex w-full h-[56px] pl-4 pr-9 py-2.5 justify-between items-center flex-shrink-0 rounded-lg border border-sofia-darkBlue text-[14px] font-normal placeholder:text-[#A6A8AB]"
+            className="flex w-full h-[56px] pl-4 pr-9 py-2.5 justify-between items-center flex-shrink-0 rounded-lg border border-app-darkBlue text-[14px] font-normal placeholder:text-[#A6A8AB]"
           />
           <div className="flex gap-[16px] mt-[24px]">
             <button
               type="button"
-              className="text-sofia-superDark font-semibold text-[16px] flex-1 h-[48px] border border-app-gray rounded-[4px] flex justify-center items-center"
+              className="text-app-superDark font-semibold text-[16px] flex-1 h-[48px] border border-app-gray rounded-[4px] flex justify-center items-center"
               onClick={onClose}
             >
               Cancelar
             </button>
             <button
               type="submit"
-              className="bg-sofia-electricGreen text-sofia-superDark font-semibold text-[16px] rounded-[4px] flex-1"
+              className="bg-app-electricGreen text-app-superDark font-semibold text-[16px] rounded-[4px] flex-1"
             >
               Guardar
             </button>

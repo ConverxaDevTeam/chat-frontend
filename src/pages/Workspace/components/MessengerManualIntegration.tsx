@@ -163,7 +163,7 @@ const MessengerManualIntegration: React.FC<MessengerManualIntegrationProps> = ({
       <div className="flex flex-col w-[500px] bg-white p-[24px] rounded-[4px] justify-center">
         <form onSubmit={handleSubmit} className="flex flex-col gap-[8px]">
           <div className="w-full flex justify-between items-center mb-3">
-            <p className="text-sofia-superDark font-semibold text-[24px]">
+            <p className="text-app-superDark font-semibold text-[24px]">
               Integración manual de Messenger
             </p>
             <img
@@ -174,7 +174,7 @@ const MessengerManualIntegration: React.FC<MessengerManualIntegrationProps> = ({
             />
           </div>
           <hr className="border-t border-gray-300 -mx-6 mb-[24px]" />
-          <label className="text-sofia-superDark font-bold text-[14px]">
+          <label className="text-app-superDark font-bold text-[14px]">
             Webhook de Integración
           </label>
           <div className="flex gap-[8px] items-center w-full">
@@ -183,12 +183,12 @@ const MessengerManualIntegration: React.FC<MessengerManualIntegrationProps> = ({
                 type="text"
                 readOnly
                 value={`${baseUrl}/api/facebook/webhook/${info.id}`}
-                className="flex w-full px-3 py-4 items-center gap-[11px] bg-[#FCFCFC] self-stretch rounded-[4px] border border-sofia-darkBlue text-sofia-superDark text-[14px] font-normal leading-normal pr-12"
+                className="flex w-full px-3 py-4 items-center gap-[11px] bg-[#FCFCFC] self-stretch rounded-[4px] border border-app-darkBlue text-app-superDark text-[14px] font-normal leading-normal pr-12"
               />
               <img
                 src="/mvp/copy.svg"
                 alt="Copy"
-                className="cursor-pointer p-[8px] rounded-[4px] w-[36px] h-[36px] text-sofia-darkLight absolute top-1/2 right-2 -translate-y-1/2"
+                className="cursor-pointer p-[8px] rounded-[4px] w-[36px] h-[36px] text-app-darkLight absolute top-1/2 right-2 -translate-y-1/2"
                 onClick={() => {
                   navigator.clipboard.writeText(
                     `${baseUrl}/api/facebook/webhook/${info.id}`
@@ -199,7 +199,7 @@ const MessengerManualIntegration: React.FC<MessengerManualIntegrationProps> = ({
             </div>
           </div>
           <div className="flex gap-[8px] items-center">
-            <label className="text-sofia-superDark font-bold text-[14px]">
+            <label className="text-app-superDark font-bold text-[14px]">
               Codigo de webhook
             </label>
             <p
@@ -215,13 +215,13 @@ const MessengerManualIntegration: React.FC<MessengerManualIntegrationProps> = ({
               type="text"
               value={info.code_webhook}
               readOnly
-              className="w-full border border-sofia-darkBlue p-[8px] pr-[90px] rounded-[4px]"
+              className="w-full border border-app-darkBlue p-[8px] pr-[90px] rounded-[4px]"
             />
             <div className="absolute right-2 top-1/2 -translate-y-1/2 flex gap-[8px]">
               <img
                 src="/mvp/copy.svg"
                 alt="Copy"
-                className="cursor-pointer p-[8px] rounded-[4px] w-[36px] h-[36px] text-sofia-darkLight"
+                className="cursor-pointer p-[8px] rounded-[4px] w-[36px] h-[36px] text-app-darkLight"
                 onClick={() => {
                   navigator.clipboard.writeText(info.code_webhook);
                   alertConfirm("Copiado");
@@ -237,7 +237,7 @@ const MessengerManualIntegration: React.FC<MessengerManualIntegrationProps> = ({
           </div>
           <label
             htmlFor="page_id"
-            className="text-sofia-superDark font-bold text-[14px]"
+            className="text-app-superDark font-bold text-[14px]"
           >
             Identificador de pagina
           </label>
@@ -248,11 +248,11 @@ const MessengerManualIntegration: React.FC<MessengerManualIntegrationProps> = ({
             onChange={e => setInfo({ ...info, page_id: e.target.value })}
             value={info.page_id}
             required
-            className="flex w-full h-[56px] pl-4 pr-9 py-2.5 justify-between items-center flex-shrink-0 rounded-[4px] border border-sofia-darkBlue text-[14px] font-normal placeholder:text-[#A6A8AB]"
+            className="flex w-full h-[56px] pl-4 pr-9 py-2.5 justify-between items-center flex-shrink-0 rounded-[4px] border border-app-darkBlue text-[14px] font-normal placeholder:text-[#A6A8AB]"
           />
           <label
             htmlFor="token"
-            className="text-sofia-superDark font-bold text-[14px]"
+            className="text-app-superDark font-bold text-[14px]"
           >
             token
           </label>
@@ -263,26 +263,26 @@ const MessengerManualIntegration: React.FC<MessengerManualIntegrationProps> = ({
             onChange={e => setInfo({ ...info, token: e.target.value })}
             value={info.token}
             required
-            className="flex w-full h-[56px] pl-4 pr-9 py-2.5 justify-between items-center flex-shrink-0 rounded-[4px] border border-sofia-darkBlue text-[14px] font-normal placeholder:text-[#A6A8AB]"
+            className="flex w-full h-[56px] pl-4 pr-9 py-2.5 justify-between items-center flex-shrink-0 rounded-[4px] border border-app-darkBlue text-[14px] font-normal placeholder:text-[#A6A8AB]"
           />
           <div className="flex gap-[24px] mt-[24px]">
             <button
               type="button"
-              className="text-sofia-superDark font-semibold text-[16px] flex-1 h-[48px] border border-app-gray rounded-[4px] flex justify-center items-center"
+              className="text-app-superDark font-semibold text-[16px] flex-1 h-[48px] border border-app-gray rounded-[4px] flex justify-center items-center"
               onClick={onClose}
             >
               Cancelar
             </button>
             <button
               type="button"
-              className="bg-sofia-electricGreen text-sofia-superDark font-semibold text-[16px] flex-1 h-[48px] border rounded-[4px] flex justify-center items-center"
+              className="bg-app-electricGreen text-app-superDark font-semibold text-[16px] flex-1 h-[48px] border rounded-[4px] flex justify-center items-center"
               onClick={getIntegrationMessangerManualInfo}
             >
               Actualizar
             </button>
             <button
               type="submit"
-              className="bg-sofia-superDark text-white font-semibold text-[16px] rounded-[4px] h-[48px] flex-1"
+              className="bg-app-superDark text-white font-semibold text-[16px] rounded-[4px] h-[48px] flex-1"
             >
               Guardar
             </button>

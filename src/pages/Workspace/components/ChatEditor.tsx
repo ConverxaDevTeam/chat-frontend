@@ -23,7 +23,7 @@ const ThemeSelector = ({
   setThemeId: (id: number) => void;
 }) => (
   <div className="flex flex-col items-start gap-[10px] flex-1 col-span-1.5 w-full">
-    <h3 className="my-2 text-sofia-superDark text-[14px] font-semibold leading-[16px]">
+    <h3 className="my-2 text-app-superDark text-[14px] font-semibold leading-[16px]">
       Temas predeterminados
     </h3>
     <div className="grid grid-cols-5 auto-rows-auto gap-2 w-full px-1">
@@ -91,7 +91,7 @@ const ControlItem = ({
   <div className="col-span-2 flex flex-col gap-4">
     <div className="w-full h-[1px] bg-[#DBEAF2]" />
     <div className="flex items-center justify-between w-full gap-4">
-      <span className="text-[12px] text-sofia-superDark font-normal">
+      <span className="text-[12px] text-app-superDark font-normal">
         {label}
       </span>
       <div className="w-[95px]">{children}</div>
@@ -195,12 +195,12 @@ const ColorControl = ({
       <div className="w-full flex flex-2 gap-1">
         <button
           ref={buttonRef}
-          className="w-[40px] h-[16px] border border-sofia-navyBlue rounded flex items-center"
+          className="w-[40px] h-[16px] border border-app-navyBlue rounded flex items-center"
           style={{ backgroundColor: color }}
           onClick={() => setShowPicker(true)}
         />
 
-        <div className="flex-1 text-[13px] text-sofia-superDark px-1">
+        <div className="flex-1 text-[13px] text-app-superDark px-1">
           {color.replace("#", "").toUpperCase()}
         </div>
         {showPicker && (
@@ -283,7 +283,7 @@ const ChatConfigurations = ({
   setThemeId: (id: number) => void;
 }) => (
   <div className="flex flex-col gap-[10px]">
-    <h3 className="text-sofia-superDark text-[14px] font-semibold leading-[16px] mb-2">
+    <h3 className="text-app-superDark text-[14px] font-semibold leading-[16px] mb-2">
       Colores y estilo
     </h3>
     <ThemeSelector
@@ -312,7 +312,7 @@ const ChatEditor = ({ integration, setIntegration }: ChatEditorProps) => {
         setThemeId={setThemeId}
       />
       <div className="w-[320px]">
-        <h3 className="text-sofia-superDark text-[14px] font-semibold leading-[16px] mb-2">
+        <h3 className="text-app-superDark text-[14px] font-semibold leading-[16px] mb-2">
           Vista previa del chat
         </h3>
         <ChatPreview config={integration.config} />

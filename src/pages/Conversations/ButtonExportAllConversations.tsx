@@ -320,7 +320,7 @@ const ButtonExportAllConversations = ({
   return (
     <button
       type="button"
-      className="bg-sofia-superDark flex items-center justify-center rounded-[4px] w-[165px] h-[30px] p-2"
+      className="bg-app-superDark flex items-center justify-center rounded-[4px] w-[165px] h-[30px] p-2"
       onClick={generatePDF}
       disabled={isExporting}
     >

@@ -77,9 +77,9 @@ export const JsonFieldModal = ({
           <input
             type="checkbox"
             {...register("required")}
-            className="h-4 w-4 rounded border-gray-300 accent-sofia-electricOlive"
+            className="h-4 w-4 rounded border-gray-300 accent-app-electricOlive"
           />
-          <label className="ml-2 text-sofia-superDark text-[14px] font-semibold leading-[16px]">
+          <label className="ml-2 text-app-superDark text-[14px] font-semibold leading-[16px]">
             Requerido
           </label>
         </div>

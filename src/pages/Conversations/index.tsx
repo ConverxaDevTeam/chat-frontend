@@ -69,16 +69,16 @@ const Conversations = () => {
   return (
     <div className="w-full flex flex-col">
       <div className="flex gap-4 mb-5">
-        <p className="text-xl font-semibold text-sofia-superDark flex items-center">
+        <p className="text-xl font-semibold text-app-superDark flex items-center">
           Conversaciones
         </p>
         <div className="flex-1 flex justify-end gap-3">
           <button
             type="button"
-            className="bg-sofia-electricGreen flex items-center justify-center rounded-[4px] w-[145px] h-[30px] p-2"
+            className="bg-app-electricGreen flex items-center justify-center rounded-[4px] w-[145px] h-[30px] p-2"
             onClick={handleViewAllChats}
           >
-            <p className="text-[14px] font-medium text-sofia-superDark">
+            <p className="text-[14px] font-medium text-app-superDark">
               Ver todos los chats
             </p>
           </button>
@@ -110,7 +110,7 @@ const Conversations = () => {
                 <div className="flex gap-[10px] items-center">
                   <p className="whitespace-normal break-words">ID</p>
                   <RiArrowUpDownFill
-                    className="text-[#A6A8AB] cursor-pointer hover:text-sofia-superDark"
+                    className="text-[#A6A8AB] cursor-pointer hover:text-app-superDark"
                     onClick={() => handleSort(SortableFields.CREATED_AT)}
                   />
                 </div>
@@ -124,7 +124,7 @@ const Conversations = () => {
                 <div className="flex gap-[10px] items-center">
                   <p className="whitespace-normal break-words">Estatus</p>
                   <RiArrowUpDownFill
-                    className="text-[#A6A8AB] cursor-pointer hover:text-sofia-superDark"
+                    className="text-[#A6A8AB] cursor-pointer hover:text-app-superDark"
                     onClick={() => handleSort(SortableFields.NEED_HUMAN)}
                   />
                 </div>
@@ -133,7 +133,7 @@ const Conversations = () => {
                 <div className="flex gap-[10px] items-center">
                   <p className="whitespace-normal break-words">Iniciado</p>
                   <RiArrowUpDownFill
-                    className="text-[#A6A8AB] cursor-pointer hover:text-sofia-superDark"
+                    className="text-[#A6A8AB] cursor-pointer hover:text-app-superDark"
                     onClick={() => handleSort(SortableFields.CREATED_AT)}
                   />
                 </div>
@@ -149,7 +149,7 @@ const Conversations = () => {
                 <div className="flex gap-[10px] items-center justify-center">
                   <p className="whitespace-normal break-words">Canal</p>
                   <RiArrowUpDownFill
-                    className="text-[#A6A8AB] cursor-pointer hover:text-sofia-superDark"
+                    className="text-[#A6A8AB] cursor-pointer hover:text-app-superDark"
                     onClick={() => handleSort(SortableFields.TYPE)}
                   />
                 </div>
@@ -182,7 +182,7 @@ const Conversations = () => {
                 <div className="flex gap-[10px] items-center">
                   <p className="whitespace-normal break-words">ID</p>
                   <RiArrowUpDownFill
-                    className="text-[#A6A8AB] cursor-pointer hover:text-sofia-superDark"
+                    className="text-[#A6A8AB] cursor-pointer hover:text-app-superDark"
                     onClick={() => handleSort(SortableFields.CREATED_AT)}
                   />
                 </div>
@@ -196,7 +196,7 @@ const Conversations = () => {
                 <div className="flex gap-[10px] items-center">
                   <p className="whitespace-normal break-words">Estado</p>
                   <RiArrowUpDownFill
-                    className="text-[#A6A8AB] cursor-pointer hover:text-sofia-superDark"
+                    className="text-[#A6A8AB] cursor-pointer hover:text-app-superDark"
                     onClick={() => handleSort(SortableFields.NEED_HUMAN)}
                   />
                 </div>
@@ -205,7 +205,7 @@ const Conversations = () => {
                 <div className="flex gap-[10px] items-center justify-center">
                   <p className="whitespace-normal break-words">Canal</p>
                   <RiArrowUpDownFill
-                    className="text-[#A6A8AB] cursor-pointer hover:text-sofia-superDark"
+                    className="text-[#A6A8AB] cursor-pointer hover:text-app-superDark"
                     onClick={() => handleSort(SortableFields.TYPE)}
                   />
                 </div>
@@ -233,7 +233,7 @@ const Conversations = () => {
                 <div className="flex gap-[10px] items-center">
                   <p className="whitespace-normal break-words">ID</p>
                   <RiArrowUpDownFill
-                    className="text-[#A6A8AB] cursor-pointer hover:text-sofia-superDark"
+                    className="text-[#A6A8AB] cursor-pointer hover:text-app-superDark"
                     onClick={() => handleSort(SortableFields.CREATED_AT)}
                   />
                 </div>
@@ -242,7 +242,7 @@ const Conversations = () => {
                 <div className="flex gap-[10px] items-center">
                   <p className="whitespace-normal break-words">Estado</p>
                   <RiArrowUpDownFill
-                    className="text-[#A6A8AB] cursor-pointer hover:text-sofia-superDark"
+                    className="text-[#A6A8AB] cursor-pointer hover:text-app-superDark"
                     onClick={() => handleSort(SortableFields.NEED_HUMAN)}
                   />
                 </div>

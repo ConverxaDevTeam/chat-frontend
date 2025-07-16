@@ -116,11 +116,11 @@ const InitialSetup = () => {
 
   const renderOrganizationForm = () => (
     <form onSubmit={createOrganization} className="space-y-5">
-      <h2 className="text-xl font-semibold text-sofia-superDark ">
+      <h2 className="text-xl font-semibold text-app-superDark ">
         Crea tu organización
       </h2>
       <hr
-        className="border-t border-sofia-darkBlue mb-4 -mx-6"
+        className="border-t border-app-darkBlue mb-4 -mx-6"
         style={{ width: "calc(100% + 3rem)" }}
       />
       <div className="space-y-2">
@@ -174,7 +174,7 @@ const InitialSetup = () => {
           placeholder="Nombre de la organización"
           value={orgFormData.name}
           onChange={handleOrgInputChange}
-          className="bg-[#FCFCFC] w-full rounded-[4px] py-3 px-3 border border-sofia-darkBlue text-[14px] font-normal"
+          className="bg-[#FCFCFC] w-full rounded-[4px] py-3 px-3 border border-app-darkBlue text-[14px] font-normal"
           required
         />
       </div>
@@ -188,7 +188,7 @@ const InitialSetup = () => {
           placeholder="Descripción de la organización"
           value={orgFormData.description}
           onChange={handleOrgInputChange}
-          className="bg-[#FCFCFC] w-full rounded-[4px] py-3 px-3 border border-sofia-darkBlue text-[14px] font-normal"
+          className="bg-[#FCFCFC] w-full rounded-[4px] py-3 px-3 border border-app-darkBlue text-[14px] font-normal"
           rows={3}
           required
         />
@@ -198,13 +198,13 @@ const InitialSetup = () => {
         <button
           type="button"
           onClick={() => (window.location.href = "/")}
-          className="w-1/2 py-3 px-4 border border-sofia-superDark text-sofia-superDark text-[14px] font-medium rounded-[4px] bg-white"
+          className="w-1/2 py-3 px-4 border border-app-superDark text-app-superDark text-[14px] font-medium rounded-[4px] bg-white"
         >
           Volver al login
         </button>
         <button
           type="submit"
-          className="w-1/2 py-3 px-4 bg-sofia-electricGreen text-sofia-superDark text-[14px] font-semibold rounded-[4px]"
+          className="w-1/2 py-3 px-4 bg-app-electricGreen text-app-superDark text-[14px] font-semibold rounded-[4px]"
         >
           {loading ? "Creando..." : "Crear organización"}
         </button>
@@ -213,16 +213,16 @@ const InitialSetup = () => {
   );
 
   return (
-    <div className="flex flex-col min-h-screen bg-sofia-background">
+    <div className="flex flex-col min-h-screen bg-app-background">
       <div className="flex-grow flex items-center justify-center p-6">
         <div className="w-full max-w-md bg-white rounded-[4px] border border-app-lightGray p-[24px]">
           {renderOrganizationForm()}
         </div>
       </div>
 
-      <p className="mx-auto text-[12px] mb-[38px] font-normal text-center text-sofia-superDark">
+      <p className="mx-auto text-[12px] mb-[38px] font-normal text-center text-app-superDark">
         Version 2.0
-        <br /> SOF.IA LLM &copy; 2024 Derechos Reservados
+        <br /> CONVERXA LLM &copy; 2024 Derechos Reservados
       </p>
     </div>
   );

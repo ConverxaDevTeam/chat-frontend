@@ -25,11 +25,11 @@ export const InputGroup = ({
   return (
     <div className="flex flex-col items-start gap-3 self-stretch">
       <div className="flex items-start gap-2 group-re">
-        <label className="text-sofia-superDark text-[16px] font-normal leading-[16px]">
+        <label className="text-app-superDark text-[16px] font-normal leading-[16px]">
           {label}
         </label>
         {description && (
-          <p className="text-sofia-navyBlue text-[12px]">{description}</p>
+          <p className="text-app-navyBlue text-[12px]">{description}</p>
         )}
         {tooltip}
       </div>

@@ -264,7 +264,7 @@ const UploadForm = ({
           />
         </svg>
         <p className="text-gray-600 mb-2">Arrastra y suelta archivos aquí o</p>
-        <label className="cursor-pointer bg-[#F4FAFF] border border-[#DBEAF2] text-sofia-superDark px-4 py-2 rounded hover:bg-opacity-70">
+        <label className="cursor-pointer bg-[#F4FAFF] border border-[#DBEAF2] text-app-superDark px-4 py-2 rounded hover:bg-opacity-70">
           + Subir archivo
           <input
             type="file"
@@ -347,7 +347,7 @@ const KnowledgeStep: React.FC<StepComponentProps> = ({ agentId }) => {
             <div className="mb-4">
               <button
                 onClick={() => setShowUploadForm(false)}
-                className="flex items-center justify-center px-4 py-2 text-sm text-sofia-superDark bg-[#F4FAFF] border border-[#DBEAF2] rounded-[4px] hover:bg-opacity-70 transition-colors duration-200"
+                className="flex items-center justify-center px-4 py-2 text-sm text-app-superDark bg-[#F4FAFF] border border-[#DBEAF2] rounded-[4px] hover:bg-opacity-70 transition-colors duration-200"
               >
                 Volver al listado
               </button>
@@ -363,14 +363,14 @@ const KnowledgeStep: React.FC<StepComponentProps> = ({ agentId }) => {
         ) : (
           <>
             <div className="grid grid-cols-1 gap-2 mb-4">
-              <p className="text-sofia-superDark text-[16px] font-normal flex items-center gap-2">
+              <p className="text-app-superDark text-[16px] font-normal flex items-center gap-2">
                 Base de conocimientos
                 <InfoTooltip
                   text="Añade archivos con información que el agente utilizará para responder preguntas. Puedes subir guías, documentos de soporte u otros recursos relevantes."
                   width="237px"
                 />
               </p>
-              <p className="text-sofia-navyBlue text-[12px]">
+              <p className="text-app-navyBlue text-[12px]">
                 Añade archivos con información que el agente utilizará para
                 responder preguntas. Puedes subir guías, documentos de soporte u
                 otros recursos relevantes
@@ -391,7 +391,7 @@ const KnowledgeStep: React.FC<StepComponentProps> = ({ agentId }) => {
             <div>
               <button
                 onClick={() => setShowUploadForm(true)}
-                className="w-full h-[48px] mt-[9px] flex items-center justify-center px-4 py-2 text-sm text-sofia-superDark border-[#DBEAF2] border-[1px] bg-[#F4FAFF] rounded-[4px] hover:bg-opacity-70 transition-colors duration-200"
+                className="w-full h-[48px] mt-[9px] flex items-center justify-center px-4 py-2 text-sm text-app-superDark border-[#DBEAF2] border-[1px] bg-[#F4FAFF] rounded-[4px] hover:bg-opacity-70 transition-colors duration-200"
               >
                 <img
                   src="/mvp/plus.svg"

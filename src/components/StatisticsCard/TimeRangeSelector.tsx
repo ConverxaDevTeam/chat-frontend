@@ -70,7 +70,7 @@ export const TimeRangeSelector = ({
           ref={buttonRef}
           onClick={handleClick}
           onMouseDown={handleMouseDown}
-          className="inline-flex w-[126px] items-center justify-between pr-[8px] pl-[10px] py-[6px] text-sofia-superDark rounded hover:bg-white/50 bg-sofia-secundario border-[0.5px] border-sofia-superDark"
+          className="inline-flex w-[126px] items-center justify-between pr-[8px] pl-[10px] py-[6px] text-app-superDark rounded hover:bg-white/50 bg-app-secundario border-[0.5px] border-app-superDark"
         >
           <span className="text-xs font-medium truncate">
             {timeRangeLabels[timeRange]}
@@ -86,7 +86,7 @@ export const TimeRangeSelector = ({
           ref={buttonRef}
           onClick={handleClick}
           onMouseDown={handleMouseDown}
-          className="inline-flex w-6 h-6 p-[5px_2px] flex-col justify-center items-center gap-2.5 flex-shrink-0 rounded-full border-[0.5px] border-sofia-superDark bg-sofia-secundario"
+          className="inline-flex w-6 h-6 p-[5px_2px] flex-col justify-center items-center gap-2.5 flex-shrink-0 rounded-full border-[0.5px] border-app-superDark bg-app-secundario"
         >
           <img
             src={`/mvp/${timeRangeOptions.find(opt => opt.id === timeRange)?.icon}`}
@@ -101,7 +101,7 @@ export const TimeRangeSelector = ({
           {timeRangeOptions.map(option => (
             <button
               key={option.id}
-              className="w-[128px] flex items-center gap-2 text-left text-[14px] font-medium text-sofia-superDark leading-none self-stretch [font-feature-settings:'liga'_off,'clig'_off]"
+              className="w-[128px] flex items-center gap-2 text-left text-[14px] font-medium text-app-superDark leading-none self-stretch [font-feature-settings:'liga'_off,'clig'_off]"
               onClick={() => handleOptionClick(option.id)}
               onMouseDown={handleMouseDown}
             >

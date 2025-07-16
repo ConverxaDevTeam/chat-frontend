@@ -182,7 +182,7 @@ const ChatUsers = () => {
     <PageContainer loading={loading} title="Clientes" titleClassName="mt-1">
       <div className="w-full">
         <div className="flex justify-between items-center mb-6">
-          <p className="text-sofia-superDark">
+          <p className="text-app-superDark">
             Gestiona los clientes de tu organización
           </p>
           <ButtonExportAllChatUsers
@@ -204,7 +204,7 @@ const ChatUsers = () => {
           {/* Primera fila de filtros */}
           <div className="flex gap-4">
             <div className="flex-1">
-              <label className="block text-sm font-medium text-sofia-superDark mb-2">
+              <label className="block text-sm font-medium text-app-superDark mb-2">
                 Buscar cliente
               </label>
               <input
@@ -216,7 +216,7 @@ const ChatUsers = () => {
               />
             </div>
             <div className="w-48">
-              <label className="block text-sm font-medium text-sofia-superDark mb-2">
+              <label className="block text-sm font-medium text-app-superDark mb-2">
                 Tipo de cliente
               </label>
               <select
@@ -236,7 +236,7 @@ const ChatUsers = () => {
           {/* Segunda fila de filtros */}
           <div className="flex gap-4">
             <div className="w-48">
-              <label className="block text-sm font-medium text-sofia-superDark mb-2">
+              <label className="block text-sm font-medium text-app-superDark mb-2">
                 Necesita asistencia
               </label>
               <select
@@ -250,7 +250,7 @@ const ChatUsers = () => {
               </select>
             </div>
             <div className="w-48">
-              <label className="block text-sm font-medium text-sofia-superDark mb-2">
+              <label className="block text-sm font-medium text-app-superDark mb-2">
                 Mensajes no leídos
               </label>
               <select
@@ -268,7 +268,7 @@ const ChatUsers = () => {
               </select>
             </div>
             <div className="w-40">
-              <label className="block text-sm font-medium text-sofia-superDark mb-2">
+              <label className="block text-sm font-medium text-app-superDark mb-2">
                 Fecha desde
               </label>
               <input
@@ -280,7 +280,7 @@ const ChatUsers = () => {
               />
             </div>
             <div className="w-40">
-              <label className="block text-sm font-medium text-sofia-superDark mb-2">
+              <label className="block text-sm font-medium text-app-superDark mb-2">
                 Fecha hasta
               </label>
               <input
@@ -294,7 +294,7 @@ const ChatUsers = () => {
             <div className="flex items-end">
               <button
                 onClick={clearFilters}
-                className="px-4 py-2 text-sm text-sofia-superDark hover:text-red-600 transition-colors"
+                className="px-4 py-2 text-sm text-app-superDark hover:text-red-600 transition-colors"
               >
                 Limpiar filtros
               </button>
@@ -311,10 +311,8 @@ const ChatUsers = () => {
                 <img
                   src="/mvp/arrow-down-up.svg"
                   alt="Ordenar"
-                  className={`cursor-pointer hover:text-sofia-superDark ${
-                    sortBy === "name"
-                      ? "text-sofia-superDark"
-                      : "text-[#A6A8AB]"
+                  className={`cursor-pointer hover:text-app-superDark ${
+                    sortBy === "name" ? "text-app-superDark" : "text-[#A6A8AB]"
                   }`}
                   onClick={() => handleSortByChange("name")}
                 />
@@ -326,10 +324,8 @@ const ChatUsers = () => {
                 <img
                   src="/mvp/arrow-down-up.svg"
                   alt="Ordenar"
-                  className={`cursor-pointer hover:text-sofia-superDark ${
-                    sortBy === "email"
-                      ? "text-sofia-superDark"
-                      : "text-[#A6A8AB]"
+                  className={`cursor-pointer hover:text-app-superDark ${
+                    sortBy === "email" ? "text-app-superDark" : "text-[#A6A8AB]"
                   }`}
                   onClick={() => handleSortByChange("email")}
                 />
@@ -341,10 +337,8 @@ const ChatUsers = () => {
                 <img
                   src="/mvp/arrow-down-up.svg"
                   alt="Ordenar"
-                  className={`cursor-pointer hover:text-sofia-superDark ${
-                    sortBy === "phone"
-                      ? "text-sofia-superDark"
-                      : "text-[#A6A8AB]"
+                  className={`cursor-pointer hover:text-app-superDark ${
+                    sortBy === "phone" ? "text-app-superDark" : "text-[#A6A8AB]"
                   }`}
                   onClick={() => handleSortByChange("phone")}
                 />
@@ -364,9 +358,9 @@ const ChatUsers = () => {
                   <img
                     src="/mvp/arrow-down-up.svg"
                     alt="Ordenar"
-                    className={`cursor-pointer hover:text-sofia-superDark ${
+                    className={`cursor-pointer hover:text-app-superDark ${
                       sortBy === "last_activity"
-                        ? "text-sofia-superDark"
+                        ? "text-app-superDark"
                         : "text-[#A6A8AB]"
                     }`}
                     onClick={() => handleSortByChange("last_activity")}
@@ -385,9 +379,9 @@ const ChatUsers = () => {
                 <img
                   src="/mvp/arrow-down-up.svg"
                   alt="Ordenar"
-                  className={`cursor-pointer hover:text-sofia-superDark ${
+                  className={`cursor-pointer hover:text-app-superDark ${
                     sortBy === "created_at"
-                      ? "text-sofia-superDark"
+                      ? "text-app-superDark"
                       : "text-[#A6A8AB]"
                   }`}
                   onClick={() => handleSortByChange("created_at")}

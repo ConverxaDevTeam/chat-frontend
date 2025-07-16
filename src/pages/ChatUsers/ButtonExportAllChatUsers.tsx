@@ -306,7 +306,7 @@ const ButtonExportAllChatUsers = ({
           },
           footer: function (currentPage: number, pageCount: number) {
             return {
-              text: `Página ${currentPage} de ${pageCount} - Generado por Sofia Chat`,
+              text: `Página ${currentPage} de ${pageCount} - Generado por CONVERXA`,
               alignment: "center",
               style: "footer",
             };
@@ -514,7 +514,7 @@ const ButtonExportAllChatUsers = ({
     <div className="relative" ref={dropdownRef}>
       <button
         type="button"
-        className="bg-sofia-superDark flex items-center justify-center rounded-[4px] w-[165px] h-[30px] p-2"
+        className="bg-app-superDark flex items-center justify-center rounded-[4px] w-[165px] h-[30px] p-2"
         onClick={() => setShowDropdown(!showDropdown)}
         disabled={isExporting}
       >

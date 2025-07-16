@@ -91,7 +91,7 @@ export const JsonFieldFormModal = ({
                     controlField.onChange(newType);
                     handleChange({ type: newType });
                   }}
-                  className="flex w-full px-3 py-4 items-center gap-[11px] bg-[#FCFCFC] self-stretch rounded-lg border border-sofia-darkBlue text-sofia-superDark text-[14px] font-normal leading-normal appearance-none bg-[url('/mvp/chevron-down.svg')] bg-no-repeat bg-[center_right_1rem] focus:outline-none focus:ring-0 focus:border-sofia-darkBlue"
+                  className="flex w-full px-3 py-4 items-center gap-[11px] bg-[#FCFCFC] self-stretch rounded-lg border border-app-darkBlue text-app-superDark text-[14px] font-normal leading-normal appearance-none bg-[url('/mvp/chevron-down.svg')] bg-no-repeat bg-[center_right_1rem] focus:outline-none focus:ring-0 focus:border-app-darkBlue"
                 >
                   <option value="" disabled>
                     Seleccionar tipo
@@ -125,9 +125,9 @@ export const JsonFieldFormModal = ({
               onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                 handleChange({ required: e.target.checked })
               }
-              className="h-4 w-4 rounded border-gray-300 accent-sofia-electricOlive"
+              className="h-4 w-4 rounded border-gray-300 accent-app-electricOlive"
             />
-            <label className="ml-2 text-sofia-superDark text-[14px] font-semibold leading-[16px]">
+            <label className="ml-2 text-app-superDark text-[14px] font-semibold leading-[16px]">
               Requerido
             </label>
           </div>

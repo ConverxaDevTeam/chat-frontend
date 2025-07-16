@@ -156,7 +156,7 @@ const AgentStep: React.FC<StepComponentProps> = ({
             <div className="group relative">
               <button
                 type="button"
-                className="w-auto h-[24px] px-[12px] text-sofia-superDark font-medium text-[12px] border-sofia-superDark border-[1px] rounded-[4px] hover:bg-gray-100 transition-colors"
+                className="w-auto h-[24px] px-[12px] text-app-superDark font-medium text-[12px] border-app-superDark border-[1px] rounded-[4px] hover:bg-gray-100 transition-colors"
                 onClick={() => setExample("example1")}
               >
                 {EXAMPLES_TITLES.example1}
@@ -168,7 +168,7 @@ const AgentStep: React.FC<StepComponentProps> = ({
             <div className="group relative">
               <button
                 type="button"
-                className="w-auto h-[24px] px-[12px] text-sofia-superDark font-medium text-[12px] border-sofia-superDark border-[1px] rounded-[4px] hover:bg-gray-100 transition-colors"
+                className="w-auto h-[24px] px-[12px] text-app-superDark font-medium text-[12px] border-app-superDark border-[1px] rounded-[4px] hover:bg-gray-100 transition-colors"
                 onClick={() => setExample("example2")}
               >
                 {EXAMPLES_TITLES.example2}
@@ -180,7 +180,7 @@ const AgentStep: React.FC<StepComponentProps> = ({
             <div className="group relative">
               <button
                 type="button"
-                className="w-auto h-[24px] px-[12px] text-sofia-superDark font-medium text-[12px] border-sofia-superDark border-[1px] rounded-[4px] hover:bg-gray-100 transition-colors"
+                className="w-auto h-[24px] px-[12px] text-app-superDark font-medium text-[12px] border-app-superDark border-[1px] rounded-[4px] hover:bg-gray-100 transition-colors"
                 onClick={() => setExample("example3")}
               >
                 {EXAMPLES_TITLES.example3}
@@ -246,21 +246,21 @@ const AgentStep: React.FC<StepComponentProps> = ({
           </p>
           <ul className="space-y-2">
             <li className="flex items-start">
-              <span className="text-sofia-electricGreen mr-2">•</span>
+              <span className="text-app-electricGreen mr-2">•</span>
               <span className="text-sm text-gray-600">
                 Agrega información a la base de conocimiento en el siguiente
                 paso
               </span>
             </li>
             <li className="flex items-start">
-              <span className="text-sofia-electricGreen mr-2">•</span>
+              <span className="text-app-electricGreen mr-2">•</span>
               <span className="text-sm text-gray-600">
                 Personaliza las respuestas y el comportamiento después de la
                 configuración inicial
               </span>
             </li>
             <li className="flex items-start">
-              <span className="text-sofia-electricGreen mr-2">•</span>
+              <span className="text-app-electricGreen mr-2">•</span>
               <span className="text-sm text-gray-600">
                 Configura funciones adicionales para expandir las capacidades
               </span>

@@ -154,7 +154,7 @@ export const HitlTypesList: React.FC<HitlTypesListProps> = ({
       >
         {canManage && (
           <div className="mb-6">
-            <p className="text-sofia-newGray text-sm font-normal">
+            <p className="text-app-newGray text-sm font-normal">
               Gestiona los tipos de intervención humana especializada
             </p>
           </div>
@@ -186,7 +186,7 @@ export const HitlTypesList: React.FC<HitlTypesListProps> = ({
 
               <div className="flex flex-col items-start mb-2">
                 <div className="flex items-center w-full">
-                  <h3 className="text-lg font-semibold text-sofia-superDark truncate max-w-[65%]">
+                  <h3 className="text-lg font-semibold text-app-superDark truncate max-w-[65%]">
                     {hitlType.name}
                   </h3>
                 </div>
@@ -201,7 +201,7 @@ export const HitlTypesList: React.FC<HitlTypesListProps> = ({
                 </p>
                 {hitlType.description && hitlType.description.length > 100 && (
                   <button
-                    className="text-xs text-sofia-navyBlue mt-1 hover:underline"
+                    className="text-xs text-app-navyBlue mt-1 hover:underline"
                     onClick={() => onEdit(hitlType.id)}
                   >
                     Ver más
@@ -211,7 +211,7 @@ export const HitlTypesList: React.FC<HitlTypesListProps> = ({
 
               {hitlType.assignedUsersCount > 0 && (
                 <div className="flex flex-row gap-4 items-center mb-3">
-                  <p className="text-sm font-semibold text-sofia-superDark">
+                  <p className="text-sm font-semibold text-app-superDark">
                     Usuarios asignados
                   </p>
                   <div className="flex flex-row items-center">
@@ -254,7 +254,7 @@ export const HitlTypesList: React.FC<HitlTypesListProps> = ({
                     </button>
                     <button
                       onClick={() => onEdit(hitlType.id)}
-                      className="w-full px-4 py-1 bg-sofia-superDark text-white rounded-[4px] text-sm font-normal hover:bg-opacity-50 transition-all whitespace-nowrap"
+                      className="w-full px-4 py-1 bg-app-superDark text-white rounded-[4px] text-sm font-normal hover:bg-opacity-50 transition-all whitespace-nowrap"
                     >
                       Editar
                     </button>
@@ -272,7 +272,7 @@ export const HitlTypesList: React.FC<HitlTypesListProps> = ({
           onClose={handleCloseContextMenu}
         >
           <button
-            className="w-full text-left flex items-center gap-2 text-sofia-superDark"
+            className="w-full text-left flex items-center gap-2 text-app-superDark"
             onClick={() => {
               onManageUsers(contextMenu.hitlTypeId);
               handleCloseContextMenu();

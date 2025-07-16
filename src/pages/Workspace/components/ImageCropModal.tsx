@@ -68,7 +68,7 @@ const ImageCropModal: React.FC<ImageCropModalProps> = ({
   };
 
   const headerContent: ReactElement = (
-    <div className="text-sofia-superDark text-xl font-bold leading-6">
+    <div className="text-app-superDark text-xl font-bold leading-6">
       Cortar imagen
     </div>
   );

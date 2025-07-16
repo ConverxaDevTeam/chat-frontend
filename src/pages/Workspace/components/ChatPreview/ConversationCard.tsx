@@ -40,7 +40,7 @@ const ConversationCard = ({
 
   return (
     <div
-      className="flex flex-col p-[16px] gap-[8px] items-start self-stretch rounded-tr-[8px] rounded-bl-[8px] rounded-tl-[8px] border border-sofia-darkBlue bg-[#FCFCFC] hover:bg-slate-100 cursor-pointer"
+      className="flex flex-col p-[16px] gap-[8px] items-start self-stretch rounded-tr-[8px] rounded-bl-[8px] rounded-tl-[8px] border border-app-darkBlue bg-[#FCFCFC] hover:bg-slate-100 cursor-pointer"
       style={{
         backgroundColor: config.bg_assistant,
         color: textColor,

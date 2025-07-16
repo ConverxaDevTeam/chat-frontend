@@ -17,23 +17,27 @@ export const HitlAssignmentStats: React.FC<HitlAssignmentStatsProps> = ({
   ).length;
 
   return (
-    <div className="bg-[#F4FAFF] border border-sofia-darkBlue rounded p-4 mb-6">
-      <h3 className="text-sm font-medium text-sofia-superDark mb-3 flex items-center">
+    <div className="bg-[#F4FAFF] border border-app-darkBlue rounded p-4 mb-6">
+      <h3 className="text-sm font-medium text-app-superDark mb-3 flex items-center">
         Gestión de usuarios - {hitlType.name}
       </h3>
 
       <div className="grid grid-cols-2 gap-4">
         <div className="text-center bg-white rounded-md p-3">
-          <div className="text-2xl font-bold text-sofia-superDark">
+          <div className="text-2xl font-bold text-app-superDark">
             {assignedUsers}
           </div>
-          <div className="text-sm text-sofia-superDark font-normal">Usuarios asignados</div>
+          <div className="text-sm text-app-superDark font-normal">
+            Usuarios asignados
+          </div>
         </div>
         <div className="text-center bg-white rounded-md p-3">
           <div className="text-2xl font-bold text-gray-600">
             {availableForAssignment}
           </div>
-          <div className="text-sm text-gray-700 font-normal">Disponibles para asignar</div>
+          <div className="text-sm text-gray-700 font-normal">
+            Disponibles para asignar
+          </div>
         </div>
       </div>
 

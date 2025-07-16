@@ -45,8 +45,8 @@ export const Select = <T extends FieldValues>({
 
   const getBorderClass = () => {
     if (error) return "border-red-500";
-    if (touched) return "border-sofia-darkBlue";
-    return "border-sofia-darkBlue";
+    if (touched) return "border-app-darkBlue";
+    return "border-app-darkBlue";
   };
 
   return (
@@ -69,7 +69,7 @@ export const Select = <T extends FieldValues>({
                 {...field}
                 value={field.value ?? ""}
                 disabled={disabled}
-                className={`flex w-full px-3 py-4 items-center gap-[11px] bg-[#FCFCFC] self-stretch rounded-[4px] border ${getBorderClass()} text-sofia-superDark text-[14px] font-normal leading-normal appearance-none bg-[url('/mvp/chevron-down.svg')] bg-no-repeat bg-[center_right_1rem] focus:outline-none focus:ring-0 ${disabled ? "opacity-70 cursor-not-allowed" : ""}`}
+                className={`flex w-full px-3 py-4 items-center gap-[11px] bg-[#FCFCFC] self-stretch rounded-[4px] border ${getBorderClass()} text-app-superDark text-[14px] font-normal leading-normal appearance-none bg-[url('/mvp/chevron-down.svg')] bg-no-repeat bg-[center_right_1rem] focus:outline-none focus:ring-0 ${disabled ? "opacity-70 cursor-not-allowed" : ""}`}
                 onChange={e => {
                   field.onChange(e);
                   if (onChange) onChange(e.target.value);

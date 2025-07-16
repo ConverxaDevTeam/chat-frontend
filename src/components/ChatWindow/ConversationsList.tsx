@@ -177,7 +177,7 @@ const SearchBox = ({
                   setSearchQuery("");
                   setSearchFilter("Usuario");
                 }}
-                className="absolute -top-1 -right-1 w-5 h-5 bg-sofia-darkBlue rounded-full flex items-center justify-center hover:bg-opacity-80 transition-colors"
+                className="absolute -top-1 -right-1 w-5 h-5 bg-app-darkBlue rounded-full flex items-center justify-center hover:bg-opacity-80 transition-colors"
               >
                 <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
                   <path
@@ -211,7 +211,7 @@ const SearchBox = ({
                 setSearchQuery("");
                 setSearchFilter("Usuario");
               }}
-              className="absolute -top-1 -right-1 w-5 h-5 bg-sofia-darkBlue rounded-full flex items-center justify-center hover:bg-opacity-80 transition-colors"
+              className="absolute -top-1 -right-1 w-5 h-5 bg-app-darkBlue rounded-full flex items-center justify-center hover:bg-opacity-80 transition-colors"
             >
               <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
                 <path
@@ -244,7 +244,7 @@ interface ConversationsListProps {
 const tabBaseStyles =
   "flex flex-col justify-center text-xs font-medium self-stretch whitespace-nowrap px-1";
 const tabSelectedStyles =
-  "bg-sofia-darkBlue text-sofia-superDark rounded flex items-center gap-2.5 px-2 py-1";
+  "bg-app-darkBlue text-app-superDark rounded flex items-center gap-2.5 px-2 py-1";
 const tabNormalStyles = "text-app-newGray";
 
 export const ConversationsList = ({
@@ -265,7 +265,7 @@ export const ConversationsList = ({
   const filteredConversations = conversations;
 
   return (
-    <div className="w-[345px] h-full bg-sofia-blancoPuro border border-app-lightGray rounded-l-lg flex flex-col">
+    <div className="w-[345px] h-full bg-app-blancoPuro border border-app-lightGray rounded-l-lg flex flex-col">
       <div className="flex flex-col gap-4 py-[24px] px-[16px] flex-none">
         <SearchBox
           searchQuery={searchQuery}

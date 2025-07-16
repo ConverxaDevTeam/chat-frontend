@@ -110,13 +110,11 @@ const ChatUserCard = ({ chatUser }: ChatUserCardProps) => {
       }
     >
       <div className="w-[18%] flex items-center gap-3">
-        <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-sm font-medium text-sofia-superDark">
+        <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-sm font-medium text-app-superDark">
           {name.charAt(0).toUpperCase()}
         </div>
         <div className="flex flex-col">
-          <span className="text-sm font-medium text-sofia-superDark">
-            {name}
-          </span>
+          <span className="text-sm font-medium text-app-superDark">{name}</span>
           {lastConversation?.unread_messages &&
             lastConversation.unread_messages > 0 && (
               <span className="text-xs bg-red-500 text-white rounded-full px-2 py-0.5 w-fit">
@@ -127,15 +125,11 @@ const ChatUserCard = ({ chatUser }: ChatUserCardProps) => {
       </div>
 
       <div className="w-[20%] flex items-center">
-        <span className="text-sm font-normal text-sofia-superDark">
-          {email}
-        </span>
+        <span className="text-sm font-normal text-app-superDark">{email}</span>
       </div>
 
       <div className="w-[12%] flex items-center">
-        <span className="text-sm font-normal text-sofia-superDark">
-          {phone}
-        </span>
+        <span className="text-sm font-normal text-app-superDark">{phone}</span>
       </div>
 
       <div className="w-[10%] flex items-center">
@@ -155,7 +149,7 @@ const ChatUserCard = ({ chatUser }: ChatUserCardProps) => {
                   <span className="text-xs text-gray-500">
                     {formatDate(lastConversation.last_message_created_at)}
                   </span>
-                  <span className="text-sm font-normal text-sofia-superDark truncate max-w-[120px]">
+                  <span className="text-sm font-normal text-app-superDark truncate max-w-[120px]">
                     {lastConversation.last_message_text || "Sin mensaje"}
                   </span>
                   <span className="text-xs text-blue-600 opacity-75">
@@ -203,12 +197,12 @@ const ChatUserCard = ({ chatUser }: ChatUserCardProps) => {
             )}
           </div>
         ) : (
-          <span className="text-sm font-normal text-sofia-superDark">-</span>
+          <span className="text-sm font-normal text-app-superDark">-</span>
         )}
       </div>
 
       <div className="w-[15%] flex items-center">
-        <span className="text-sm font-normal text-sofia-superDark">
+        <span className="text-sm font-normal text-app-superDark">
           {createdAt ? formatDate(createdAt) : "Sin fecha"}
         </span>
       </div>

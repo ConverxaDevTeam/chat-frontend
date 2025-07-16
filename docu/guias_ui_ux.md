@@ -4,7 +4,7 @@
 
 ### Consistencia Visual
 - Tipografía: Poppins para textos, Quicksand para títulos
-- Colores: Converxa design tokens (sofia-superDark, sofia-electricGreen, etc.)
+- Colores: Converxa design tokens (app-superDark, app-electricGreen, etc.)
 - Espaciado: Múltiplos de 4px (8px, 16px, 24px, 32px)
 - Bordes: 4px radius por defecto
 

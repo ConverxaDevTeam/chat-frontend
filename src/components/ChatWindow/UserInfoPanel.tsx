@@ -15,9 +15,9 @@ export const UserInfoPanel = ({ conversation }: UserInfoPanelProps) => {
   const formattedTime = formatTime(totalTime);
 
   return (
-    <div className="w-full h-full flex-shrink-0 rounded-lg border border-app-lightGray bg-sofia-blancoPuro p-[13px]">
+    <div className="w-full h-full flex-shrink-0 rounded-lg border border-app-lightGray bg-app-blancoPuro p-[13px]">
       {/* Header verde */}
-      <div className=" h-[160px] flex-shrink-0 rounded-lg bg-sofia-electricLight mb-4">
+      <div className=" h-[160px] flex-shrink-0 rounded-lg bg-app-electricLight mb-4">
         <div className="flex flex-col items-center justify-center h-full">
           <Avatar
             avatar={null}
@@ -25,10 +25,10 @@ export const UserInfoPanel = ({ conversation }: UserInfoPanelProps) => {
             className="w-[80px] h-[80px]"
           />
           <div className="text-center">
-            <div className="text-[16px] font-semibold text-center text-sofia-superDark">
+            <div className="text-[16px] font-semibold text-center text-app-superDark">
               {conversation?.chat_user?.secret}
             </div>
-            <div className="text-[14px] font-normal text-center text-sofia-superDark">
+            <div className="text-[14px] font-normal text-center text-app-superDark">
               +502 56 78 90 12
             </div>
           </div>
@@ -38,23 +38,23 @@ export const UserInfoPanel = ({ conversation }: UserInfoPanelProps) => {
       {/* Contadores */}
       <div className="flex justify-between mb-4">
         <div className="text-center w-1/2 px-2">
-          <div className="text-[32px] font-bold text-sofia-superDark truncate">
+          <div className="text-[32px] font-bold text-app-superDark truncate">
             {conversation?.messages.length}
           </div>
-          <div className="text-[14px] font-normal text-sofia-superDark">
+          <div className="text-[14px] font-normal text-app-superDark">
             Mensajes Totales
           </div>
         </div>
         <div className="text-center w-1/2 px-2">
           <div className="group relative">
             <div
-              className="text-[32px] font-bold text-sofia-superDark truncate group-hover:cursor-pointer"
+              className="text-[32px] font-bold text-app-superDark truncate group-hover:cursor-pointer"
               title={formattedTime}
             >
               {formattedTime}
             </div>
           </div>
-          <div className="text-[14px] font-normal text-sofia-superDark">
+          <div className="text-[14px] font-normal text-app-superDark">
             Minutos de audio
           </div>
         </div>
@@ -67,14 +67,14 @@ export const UserInfoPanel = ({ conversation }: UserInfoPanelProps) => {
       {/* <div className="space-y-4">
         {infoItems.map((item, index) => (
           <div key={index} className="flex items-center gap-2">
-            <div className="flex w-[32px] h-[32px] p-[5px_2px] flex-col justify-center items-center rounded-[24px] border border-sofia-superDark bg-sofia-celeste">
-              <item.icon className="w-5 h-5 text-sofia-superDark" />
+            <div className="flex w-[32px] h-[32px] p-[5px_2px] flex-col justify-center items-center rounded-[24px] border border-app-superDark bg-app-celeste">
+              <item.icon className="w-5 h-5 text-app-superDark" />
             </div>
             <div className="flex-1">
               <div className="self-stretch text-[10px] font-bold text-app-newGray">
                 {item.label}
               </div>
-              <div className="self-stretch text-[14px] font-normal text-sofia-superDark">
+              <div className="self-stretch text-[14px] font-normal text-app-superDark">
                 {item.value}
               </div>
             </div>
@@ -91,7 +91,7 @@ export const UserInfoPanel = ({ conversation }: UserInfoPanelProps) => {
             <div className="self-stretch text-[10px] font-bold text-app-newGray">
               Canal
             </div>
-            <div className="self-stretch text-[14px] font-normal text-sofia-superDark">
+            <div className="self-stretch text-[14px] font-normal text-app-superDark">
               jesus_mtz
             </div>
           </div>

@@ -23,7 +23,7 @@ const Conversations = ({
           backgroundColor: config.bg_chat,
         }}
       >
-        <p className="text-sofia-superDark text-[14px] font-bold leading-[16px]">
+        <p className="text-app-superDark text-[14px] font-bold leading-[16px]">
           Conversaciones
         </p>
         <div className="flex flex-col gap-[8px] mt-[8px]">

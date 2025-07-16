@@ -18,14 +18,12 @@ const CorsTagList = ({
     {cors.map((cor, index) => (
       <div
         key={`cor-${index}`}
-        className="flex items-center gap-2 px-3 py-2 rounded-lg border border-sofia-darkBlue"
+        className="flex items-center gap-2 px-3 py-2 rounded-lg border border-app-darkBlue"
       >
-        <p className="truncate text-sofia-superDark text-xs font-normal">
-          {cor}
-        </p>
+        <p className="truncate text-app-superDark text-xs font-normal">{cor}</p>
         <button
           onClick={() => onRemove(cor)}
-          className="flex-none w-4 h-4 hover:text-sofia-electricGreen"
+          className="flex-none w-4 h-4 hover:text-app-electricGreen"
           aria-label="Eliminar dominio"
           title="Eliminar dominio"
         >
@@ -59,7 +57,7 @@ const CorsInput = ({
               onAdd();
             }
           }}
-          className="text-sofia-superDark text-xs font-normal pr-14 w-full"
+          className="text-app-superDark text-xs font-normal pr-14 w-full"
         />
         <button
           type="button"
@@ -83,10 +81,10 @@ const ScriptViewer = ({
   onCopy: () => void;
 }) => (
   <div className="flex flex-col gap-1">
-    <label className="text-sofia-superDark text-[16px] font-normal leading-[16px]">
+    <label className="text-app-superDark text-[16px] font-normal leading-[16px]">
       Script de Integración
     </label>
-    <p className="text-sofia-navyBlue text-[12px]">
+    <p className="text-app-navyBlue text-[12px]">
       <span className="font-bold">Instrucción de Integración:</span> Copia y
       pega el siguiente script{" "}
       <span className="font-bold">
@@ -96,7 +94,7 @@ const ScriptViewer = ({
       de tu sitio web, justo como se muestra a continuación:
     </p>
 
-    <div className="bg-[#FCFCFC] rounded p-3 my-2 border border-sofia-darkBlue font-mono text-sm relative">
+    <div className="bg-[#FCFCFC] rounded p-3 my-2 border border-app-darkBlue font-mono text-sm relative">
       <button
         onClick={onCopy}
         type="button"
@@ -112,8 +110,8 @@ const ScriptViewer = ({
       <div className="text-gray-500">&lt;/head&gt;</div>
     </div>
 
-    <p className="text-sofia-navyBlue text-[12px]">
-      Este paso es necesario para habilitar el Web Chat de Sofia en tu sitio.
+    <p className="text-app-navyBlue text-[12px]">
+      Este paso es necesario para habilitar el Web Chat de Converxa en tu sitio.
     </p>
   </div>
 );
@@ -189,7 +187,7 @@ const IntegrationStep: React.FC<StepComponentProps> = ({
     });
   };
 
-  const generatedScript = `<script src="${urlFiles}/sofia-chat/CI${propIntegrationId || integrationId}.js"></script>`;
+  const generatedScript = `<script src="${urlFiles}/converxa-chat/CI${propIntegrationId || integrationId}.js"></script>`;
 
   const handleCopy = () => {
     navigator.clipboard
@@ -211,10 +209,10 @@ const IntegrationStep: React.FC<StepComponentProps> = ({
         ) : (
           <>
             <div className="flex flex-col gap-1">
-              <label className="text-sofia-superDark text-[16px] font-normal leading-[16px]">
+              <label className="text-app-superDark text-[16px] font-normal leading-[16px]">
                 Dominios
               </label>
-              <p className="text-sofia-navyBlue text-[12px]">
+              <p className="text-app-navyBlue text-[12px]">
                 Escribe el dominio donde deseas mostrar el Web Chat (por eje
                 https://tu-sitio.com) y haz click en el botón + para agregarlo.{" "}
                 <span className="font-bold">

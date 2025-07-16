@@ -43,7 +43,7 @@ const OrganizationStep: React.FC<StepComponentProps> = ({
       <div className="space-y-6">
         {/* Image Upload */}
         <div>
-          <label className="block text-sm font-medium text-sofia-superDark mb-2">
+          <label className="block text-sm font-medium text-app-superDark mb-2">
             Imagen para tu organización
           </label>
           <div className="relative">
@@ -81,7 +81,7 @@ const OrganizationStep: React.FC<StepComponentProps> = ({
 
         {/* Name Input */}
         <div>
-          <label className="block text-sm font-medium text-sofia-superDark mb-2">
+          <label className="block text-sm font-medium text-app-superDark mb-2">
             Nombre
           </label>
           <input
@@ -89,7 +89,7 @@ const OrganizationStep: React.FC<StepComponentProps> = ({
             name="name"
             value={data.organization.name}
             onChange={handleInputChange}
-            className="w-full h-[51px] px-4 py-3 bg-[#FCFCFC] rounded border-0 focus:outline-none focus:ring-2 focus:ring-sofia-electricGreen"
+            className="w-full h-[51px] px-4 py-3 bg-[#FCFCFC] rounded border-0 focus:outline-none focus:ring-2 focus:ring-app-electricGreen"
             placeholder="Ingresa el nombre de tu organización"
             required
           />
@@ -97,14 +97,14 @@ const OrganizationStep: React.FC<StepComponentProps> = ({
 
         {/* Description Input */}
         <div>
-          <label className="block text-sm font-medium text-sofia-superDark mb-2">
+          <label className="block text-sm font-medium text-app-superDark mb-2">
             Descripción
           </label>
           <textarea
             name="description"
             value={data.organization.description}
             onChange={handleInputChange}
-            className="w-full px-4 py-3 bg-[#FCFCFC] rounded border-0 focus:outline-none focus:ring-2 focus:ring-sofia-electricGreen resize-none"
+            className="w-full px-4 py-3 bg-[#FCFCFC] rounded border-0 focus:outline-none focus:ring-2 focus:ring-app-electricGreen resize-none"
             placeholder="Describe brevemente tu organización..."
             rows={4}
             required

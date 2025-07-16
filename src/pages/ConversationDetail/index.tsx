@@ -389,7 +389,7 @@ const ConversationDetail = () => {
         {isLoadingChatUsers ? (
           <div className="flex items-center justify-center h-full">
             <div className="text-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-sofia-darkBlue mx-auto mb-2"></div>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-app-darkBlue mx-auto mb-2"></div>
               <p className="text-sm text-app-newGray">Cargando usuarios...</p>
             </div>
           </div>
@@ -435,14 +435,14 @@ const ConversationDetail = () => {
         {/* Left Column - Conversations List */}
         <div className="hidden md:block h-full w-full overflow-hidden">
           {isLoadingChatUsers ? (
-            <div className="w-[345px] h-full bg-sofia-blancoPuro border border-app-lightGray rounded-l-lg flex items-center justify-center">
+            <div className="w-[345px] h-full bg-app-blancoPuro border border-app-lightGray rounded-l-lg flex items-center justify-center">
               <div className="text-center">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-sofia-darkBlue mx-auto mb-2"></div>
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-app-darkBlue mx-auto mb-2"></div>
                 <p className="text-sm text-app-newGray">Cargando usuarios...</p>
               </div>
             </div>
           ) : chatUsersError ? (
-            <div className="w-[345px] h-full bg-sofia-blancoPuro border border-app-lightGray rounded-l-lg flex items-center justify-center">
+            <div className="w-[345px] h-full bg-app-blancoPuro border border-app-lightGray rounded-l-lg flex items-center justify-center">
               <div className="text-center p-4">
                 <p className="text-sm text-red-600 mb-2">
                   Error al cargar usuarios
@@ -467,7 +467,7 @@ const ConversationDetail = () => {
 
         {/* Middle Column - Chat */}
         <div
-          className="h-full w-full overflow-hidden bg-sofia-blancoPuro flex flex-col"
+          className="h-full w-full overflow-hidden bg-app-blancoPuro flex flex-col"
           style={{
             backgroundImage: "url('/mvp/background-chats.png')",
             backgroundRepeat: "repeat",

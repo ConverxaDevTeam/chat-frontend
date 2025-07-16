@@ -60,12 +60,8 @@ const FunctionTemplateModal: React.FC<FunctionTemplateModalProps> = ({
   const handleFormSubmit = handleSubmit(processSubmit);
 
   return (
-    <Modal
-      isShown={isOpen}
-      onClose={onClose}
-      zindex={1000}
-    >
-      <div className="w-[1180px] h-[719px] bg-sofia-blancoPuro shadow-lg rounded">
+    <Modal isShown={isOpen} onClose={onClose} zindex={1000}>
+      <div className="w-[1180px] h-[719px] bg-app-blancoPuro shadow-lg rounded">
         <div className="flex flex-col h-full">
           <div className="flex pt-2">
             <div className="w-[200px] relative px-3">
@@ -73,7 +69,7 @@ const FunctionTemplateModal: React.FC<FunctionTemplateModalProps> = ({
               {tabs.map(tab => (
                 <div
                   key={tab.id}
-                  className={`py-2 px-3 mb-2 cursor-pointer rounded ${activeTab === tab.id ? 'bg-sofia-superDark font-normal text-white' : 'hover:bg-sofia-electricGreen-100'}`}
+                  className={`py-2 px-3 mb-2 cursor-pointer rounded ${activeTab === tab.id ? "bg-app-superDark font-normal text-white" : "hover:bg-app-electricGreen-100"}`}
                   onClick={() => setActiveTab(tab.id)}
                 >
                   {tab.label}

@@ -138,7 +138,7 @@ const PlanStatusBanner: React.FC = () => {
   return (
     <div
       ref={bannerRef}
-      className="w-full bg-sofia-electricLight text-sofia-superDark py-2.5 px-5 text-center text-xs"
+      className="w-full bg-app-electricLight text-app-superDark py-2.5 px-5 text-center text-xs"
     >
       {typeof daysRemaining === "number" && daysRemaining >= 0 && (
         <span>

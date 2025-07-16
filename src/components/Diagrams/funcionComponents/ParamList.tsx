@@ -26,7 +26,7 @@ interface PaginationProps {
 
 const NameLabel = ({ name, type }: { name: string; type: string }) => (
   <div className="flex items-center gap-2">
-    <span className="text-sofia-superDark text-[14px] font-semibold leading-[16px]">
+    <span className="text-app-superDark text-[14px] font-semibold leading-[16px]">
       {name}
     </span>
     <span className="text-app-newGray text-[14px] font-semibold leading-[16px]">
@@ -48,23 +48,23 @@ const ParamItem = ({ param, onEdit, onDelete }: ParamItemProps) => (
       <>
         <button
           onClick={onEdit}
-          className="text-sofia-superDark hover:text-sofia-electricGreen"
+          className="text-app-superDark hover:text-app-electricGreen"
           title="Editar parámetro"
         >
           <img
             src="/mvp/square-pen.svg"
-            className="w-4 h-4 text-sofia-superDark"
+            className="w-4 h-4 text-app-superDark"
             alt="Editar"
           />
         </button>
         <button
           onClick={onDelete}
-          className="text-sofia-superDark hover:text-sofia-electricGreen"
+          className="text-app-superDark hover:text-app-electricGreen"
           title="Eliminar parámetro"
         >
           <img
             src="/mvp/trash.svg"
-            className="w-4 h-4 text-sofia-superDark"
+            className="w-4 h-4 text-app-superDark"
             alt="Eliminar"
           />
         </button>

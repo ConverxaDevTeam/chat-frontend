@@ -280,7 +280,7 @@ export const useSetupWizard = (
     const updateData = {
       cors: currentData.config.cors || [],
       title: data.title,
-      name: formData.agent.name || currentData.config.name || "SOF.IA",
+      name: formData.agent.name || currentData.config.name || "CONVERXA",
       sub_title: data.subtitle,
       description: data.description,
       bg_color: currentData.config.bg_color || "#ffffff",

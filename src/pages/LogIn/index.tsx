@@ -139,7 +139,7 @@ const LogIn = () => {
 
       <p className="mx-auto text-[12px] mb-[38px] font-normal text-center text-app-superDark">
         Version 2.0
-        <br /> SOF.IA LLM &copy; 2024 Derechos Reservados
+        <br /> CONVERXA LLM &copy; 2024 Derechos Reservados
       </p>
     </div>
   );

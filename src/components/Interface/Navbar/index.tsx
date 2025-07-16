@@ -80,7 +80,7 @@ const OptionTabs = ({
       {["Todos", "Sistema", "Usuario"].map(tab => (
         <button
           key={tab}
-          className={`text-xs p-[8px] rounded-[4px]  ${activeTab === tab ? "font-medium text-[#001130] bg-sofia-darkBlue" : "text-gray-500"}`}
+          className={`text-xs p-[8px] rounded-[4px]  ${activeTab === tab ? "font-medium text-[#001130] bg-app-darkBlue" : "text-gray-500"}`}
           onClick={() => setActiveTab(tab)}
         >
           {tab}
@@ -120,7 +120,7 @@ const NotificationsFooter = ({
   <div className="flex justify-end items-center py-[15px]">
     <button
       onClick={onMarkAllAsRead}
-      className="text-sofia-superDark text-xs font-normal underline underline-offset-auto underline-from-font hover:underline"
+      className="text-app-superDark text-xs font-normal underline underline-offset-auto underline-from-font hover:underline"
     >
       Marcar todas como leídas
     </button>
@@ -285,11 +285,11 @@ const NotificationItem = ({
       key={notification.id}
       onClick={handleClick}
       className={`flex items-center gap-4 px-4 py-[16px] cursor-pointer ${
-        notification.isRead ? "" : "bg-sofia-celeste"
+        notification.isRead ? "" : "bg-app-celeste"
       }`}
     >
       <div className="relative">
-        <div className="rounded-full bg-sofia-darkLight w-[40px] h-[40px] flex items-center justify-center">
+        <div className="rounded-full bg-app-darkLight w-[40px] h-[40px] flex items-center justify-center">
           <img src="/icon.svg" alt="notification" />
         </div>
       </div>
@@ -388,7 +388,7 @@ const NotificationsMenu = ({
       <div className="flex items-center">
         <img src="/mvp/bell.svg" alt="Bell" onClick={handleBellClick} />
         {notificationCount > 0 && (
-          <span className="absolute -top-1 -right-1 bg-sofia-error text-white text-[10px] rounded-full w-[12px] h-[12px] flex items-center justify-center">
+          <span className="absolute -top-1 -right-1 bg-app-error text-white text-[10px] rounded-full w-[12px] h-[12px] flex items-center justify-center">
             {notificationCount}
           </span>
         )}
@@ -396,7 +396,7 @@ const NotificationsMenu = ({
       {(contextMenu || contextMenuState) && (
         <div
           ref={menuRef}
-          className="fixed right-4 top-[60px] w-[400px] bg-white shadow-lg rounded border border-sofia-darkBlue p-4 z-10"
+          className="fixed right-4 top-[60px] w-[400px] bg-white shadow-lg rounded border border-app-darkBlue p-4 z-10"
         >
           <NotificationsHeader
             activeTab={activeTab}
@@ -442,11 +442,11 @@ const UserActions = ({
     <div
       className={`flex gap-[8px] items-center ${mobileResolution ? "self-end" : ""}`}
     >
-      <p className="text-sofia-superDark font-normal text-[14px] whitespace-nowrap mr-5">
+      <p className="text-app-superDark font-normal text-[14px] whitespace-nowrap mr-5">
         <span className="font-bold">Plan actual:</span> <PlanNavInfo />
       </p>
       <p
-        className={`text-sofia-superDark font-normal text-[14px] whitespace-nowrap ${
+        className={`text-app-superDark font-normal text-[14px] whitespace-nowrap ${
           mobileResolution ? "" : "mr-3"
         }`}
       >
@@ -504,7 +504,7 @@ const Navbar = ({ mobileResolution }: NavbarProps) => {
   } | null>(null);
 
   return (
-    <div className="w-full h-auto bg-white border-b border-sofia-darkBlue py-[17px]">
+    <div className="w-full h-auto bg-white border-b border-app-darkBlue py-[17px]">
       <div className="flex flex-col gap-4 lg:gap-0 lg:flex-row justify-between items-start lg:items-center w-full px-6">
         <div className="flex flex-col md:flex-col lg:flex-row items-start lg:items-center gap-4 w-full">
           <div
