@@ -39,8 +39,12 @@ export const useWizardStatus = (): WizardStatusResult => {
       };
     }
 
-    // Si no tiene organizaciones, necesita crear una
-    if (!myOrganizations || myOrganizations.length === 0) {
+    // Filter valid organizations (those with organization object not null)
+    const validOrganizations =
+      myOrganizations?.filter(org => org.organization !== null) || [];
+
+    // Si no tiene organizaciones válidas, necesita crear una
+    if (validOrganizations.length === 0) {
       return {
         shouldShowWizard: true,
         currentStep: "organization" as WizardStatus,
@@ -50,19 +54,19 @@ export const useWizardStatus = (): WizardStatusResult => {
       };
     }
 
-    // Si tiene múltiples organizaciones, no mostrar wizard
-    if (myOrganizations.length > 1) {
+    // Si tiene múltiples organizaciones válidas, no mostrar wizard
+    if (validOrganizations.length > 1) {
       return {
         shouldShowWizard: false,
         currentStep: "complete" as WizardStatus,
-        organizationId: myOrganizations[0].organization.id,
+        organizationId: validOrganizations[0].organization.id,
         isLoading: false,
         hasMultipleOrganizations: true,
       };
     }
 
-    // Una organización - usar wizardStatus del backend
-    const currentOrganization = myOrganizations[0];
+    // Una organización válida - usar wizardStatus del backend
+    const currentOrganization = validOrganizations[0];
 
     const wizardStatus =
       currentOrganization.organization.wizardStatus || "organization";
