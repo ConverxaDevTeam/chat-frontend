@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { IAuthState } from "../../utils/interfaces";
+import { IAuthState, WizardStatus } from "../../utils/interfaces";
 
 import {
   getUserAsync,
@@ -32,9 +32,28 @@ export const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    updateConversationCount: (state, action: { payload: { organizationId: number; count: number } }) => {
+    updateConversationCount: (
+      state,
+      action: { payload: { organizationId: number; count: number } }
+    ) => {
       const { organizationId, count } = action.payload;
       state.conversationCounts[organizationId] = count;
+    },
+    updateWizardStatus: (
+      state,
+      action: {
+        payload: { organizationId: number; wizardStatus: WizardStatus };
+      }
+    ) => {
+      const { organizationId, wizardStatus } = action.payload;
+      const orgIndex = state.myOrganizations.findIndex(
+        org => org.organization.id === organizationId
+      );
+
+      if (orgIndex !== -1) {
+        state.myOrganizations[orgIndex].organization.wizardStatus =
+          wizardStatus;
+      }
     },
   },
   extraReducers: builder => {
@@ -96,6 +115,13 @@ export const authSlice = createSlice({
       })
       .addCase(getMyOrganizationsAsync.fulfilled, (state, action) => {
         state.myOrganizations = action.payload;
+
+        // Si no hay selectOrganizationId y solo hay una organización, establecerla automáticamente
+        if (!state.selectOrganizationId && action.payload.length === 1) {
+          const organizationId = action.payload[0].organization.id;
+          state.selectOrganizationId = organizationId;
+          localStorage.setItem("organizationSelect", String(organizationId));
+        }
       })
       .addCase(getMyOrganizationsAsync.rejected, state => {
         state.myOrganizations = [];
@@ -106,6 +132,7 @@ export const authSlice = createSlice({
   },
 });
 
-export const { updateConversationCount } = authSlice.actions;
+export const { updateConversationCount, updateWizardStatus } =
+  authSlice.actions;
 
 export default authSlice.reducer;

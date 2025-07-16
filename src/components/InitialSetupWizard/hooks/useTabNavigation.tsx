@@ -1,10 +1,15 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { SetupStepId, SetupTab } from "../types";
 
 export const useTabNavigation = (initialTab: SetupStepId) => {
   const [activeTab, setActiveTab] = useState<SetupStepId>(initialTab);
 
-  const tabs: SetupTab[] = [
+  // Actualizar activeTab cuando cambie initialTab
+  useEffect(() => {
+    setActiveTab(initialTab);
+  }, [initialTab]);
+
+  const baseTabsDefinition: Omit<SetupTab, "status">[] = [
     {
       id: "organization",
       label: "Crear organización",
@@ -15,7 +20,7 @@ export const useTabNavigation = (initialTab: SetupStepId) => {
     },
     {
       id: "agent",
-      label: "Crear un agente",
+      label: "Configurar agente",
     },
     {
       id: "knowledge",
@@ -25,19 +30,18 @@ export const useTabNavigation = (initialTab: SetupStepId) => {
       id: "chat",
       label: "Configurar el chat",
     },
-    {
-      id: "interface",
-      label: "Configura el diseño",
-    },
+
     {
       id: "integration",
       label: "Integra el chat",
     },
     {
       id: "final",
-      label: "Finalizar",
+      label: "Obtener enlace web",
     },
   ];
+
+  const tabs: SetupTab[] = baseTabsDefinition;
 
   const currentStepIndex = tabs.findIndex(tab => tab.id === activeTab);
   const isFirstTab = currentStepIndex === 0;
