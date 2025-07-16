@@ -44,7 +44,7 @@ const WizardConfigPanel: FC<WizardConfigPanelProps> = ({
                 asistente con IA.
               </p>
               <ol className="list-decimal list-inside space-y-3 text-sofia-superDark">
-                {tabs.map((tab, index) => (
+                {tabs.map(tab => (
                   <li
                     key={tab.id}
                     className={`cursor-pointer px-4 py-3 -ml-4 rounded transition-colors ${
