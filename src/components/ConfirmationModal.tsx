@@ -5,8 +5,8 @@ interface ConfirmationModalProps {
   isShown: boolean;
   title: string;
   text: string;
-  confirmText: string;
-  cancelText: string;
+  confirmText?: string;
+  cancelText?: string;
   onConfirm: () => void;
   onClose: () => void;
   zIndex?: number;
