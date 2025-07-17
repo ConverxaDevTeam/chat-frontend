@@ -4,16 +4,19 @@ import { AppDispatch, RootState } from "@store/index";
 import { Navigate, Link } from "react-router-dom";
 import GoogleLoginButton from "@components/GoogleLoginButton";
 import { signUpAsync } from "@store/actions/auth";
+import { useForm, SubmitHandler } from "react-hook-form";
+import { Input } from "@components/forms/input";
+import { usePostLoginRedirect } from "@hooks/usePostLoginRedirect";
+
+interface SignUpFormValues {
+  email: string;
+  password: string;
+  confirmPassword: string;
+  first_name: string;
+  last_name: string;
+}
 
 const SignUp = () => {
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-    confirmPassword: "",
-    first_name: "",
-    last_name: "",
-  });
-
   const dispatch = useDispatch<AppDispatch>();
   const { authenticated, loading } = useSelector(
     (state: RootState) => state.auth
@@ -21,27 +24,32 @@ const SignUp = () => {
 
   const [error, setError] = useState<string | null>(null);
   const [active, setActive] = useState<boolean>(false);
+  const { handlePostLoginRedirect } = usePostLoginRedirect();
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    watch,
+  } = useForm<SignUpFormValues>();
+
+  const password = watch("password");
+
+  const onSubmit: SubmitHandler<SignUpFormValues> = formData => {
     setError(null);
-
-    if (formData.password !== formData.confirmPassword) {
-      setError("Las contraseñas no coinciden");
-      return;
-    }
-
     setActive(true);
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { confirmPassword: _, ...dataToSubmit } = formData;
     dispatch(
-      signUpAsync({ data: dataToSubmit, setActive, setError, dispatch })
+      signUpAsync({
+        data: dataToSubmit,
+        setActive,
+        setError,
+        dispatch,
+        onSuccess: handlePostLoginRedirect,
+      })
     );
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   if (authenticated && !loading) {
@@ -56,10 +64,10 @@ const SignUp = () => {
           src="/logo.svg"
           alt="logo"
         />
-        <h2 className="font-semibold text-[30px] text-sofia-superDark mb-[16px] text-center">
+        <h2 className="font-semibold text-[30px] text-app-superDark mb-[16px] text-center">
           Crear cuenta
         </h2>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <div className="flex flex-col">
             <label
               className="text-[14px] font-medium text-[#414651] mb-[6px]"
@@ -67,16 +75,20 @@ const SignUp = () => {
             >
               Nombre
             </label>
-            <input
-              className="bg-[#FCFCFC] rounded-[4px] mb-[16px] py-[10px] px-[14px] border text-[#717680] text-[14px] font-normal"
+            <Input
               type="text"
-              id="first_name"
               placeholder="Ingresa tu nombre"
-              onChange={handleChange}
-              value={formData.first_name}
-              name="first_name"
-              required
+              register={register("first_name", {
+                required: "El nombre es obligatorio",
+              })}
+              error={errors.first_name?.message}
+              className="bg-[#FCFCFC] rounded-[4px] mb-[16px] py-[10px] px-[14px] border text-[#717680] text-[14px] font-normal h-auto"
             />
+            {errors.first_name && (
+              <p className="text-red-500 text-sm -mt-3 mb-3">
+                {errors.first_name.message}
+              </p>
+            )}
 
             <label
               className="text-[14px] font-medium text-[#414651] mb-[6px]"
@@ -84,16 +96,20 @@ const SignUp = () => {
             >
               Apellido
             </label>
-            <input
-              className="bg-[#FCFCFC] rounded-[4px] mb-[16px] py-[10px] px-[14px] border text-[#717680] text-[14px] font-normal"
+            <Input
               type="text"
-              id="last_name"
               placeholder="Ingresa tu apellido"
-              onChange={handleChange}
-              value={formData.last_name}
-              name="last_name"
-              required
+              register={register("last_name", {
+                required: "El apellido es obligatorio",
+              })}
+              error={errors.last_name?.message}
+              className="bg-[#FCFCFC] rounded-[4px] mb-[16px] py-[10px] px-[14px] border text-[#717680] text-[14px] font-normal h-auto"
             />
+            {errors.last_name && (
+              <p className="text-red-500 text-sm -mt-3 mb-3">
+                {errors.last_name.message}
+              </p>
+            )}
 
             <label
               className="text-[14px] font-medium text-[#414651] mb-[6px]"
@@ -101,16 +117,24 @@ const SignUp = () => {
             >
               Email
             </label>
-            <input
-              className="bg-[#FCFCFC] rounded-[4px] mb-[16px] py-[10px] px-[14px] border text-[#717680] text-[14px] font-normal"
+            <Input
               type="email"
-              id="email"
               placeholder="Ingresa tu correo"
-              onChange={handleChange}
-              value={formData.email}
-              name="email"
-              required
+              register={register("email", {
+                required: "El email es obligatorio",
+                pattern: {
+                  value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                  message: "Ingresa un email válido",
+                },
+              })}
+              error={errors.email?.message}
+              className="bg-[#FCFCFC] rounded-[4px] mb-[16px] py-[10px] px-[14px] border text-[#717680] text-[14px] font-normal h-auto"
             />
+            {errors.email && (
+              <p className="text-red-500 text-sm -mt-3 mb-3">
+                {errors.email.message}
+              </p>
+            )}
 
             <label
               className="text-[14px] font-medium text-[#414651] mb-[6px]"
@@ -118,17 +142,24 @@ const SignUp = () => {
             >
               Contraseña
             </label>
-            <input
-              className="bg-[#FCFCFC] rounded-[4px] mb-[16px] py-[10px] px-[14px] border text-[#717680] text-[14px] font-normal"
+            <Input
               type="password"
-              id="password"
               placeholder="Contraseña (mínimo 8 caracteres)"
-              onChange={handleChange}
-              value={formData.password}
-              name="password"
-              required
-              minLength={8}
+              register={register("password", {
+                required: "La contraseña es obligatoria",
+                minLength: {
+                  value: 8,
+                  message: "La contraseña debe tener al menos 8 caracteres",
+                },
+              })}
+              error={errors.password?.message}
+              className="bg-[#FCFCFC] rounded-[4px] mb-[16px] py-[10px] px-[14px] border text-[#717680] text-[14px] font-normal h-auto"
             />
+            {errors.password && (
+              <p className="text-red-500 text-sm -mt-3 mb-3">
+                {errors.password.message}
+              </p>
+            )}
 
             <label
               className="text-[14px] font-medium text-[#414651] mb-[6px]"
@@ -136,21 +167,26 @@ const SignUp = () => {
             >
               Confirmar contraseña
             </label>
-            <input
-              className="bg-[#FCFCFC] rounded-[4px] mb-[16px] py-[10px] px-[14px] border text-[#717680] text-[14px] font-normal"
+            <Input
               type="password"
-              id="confirmPassword"
               placeholder="Confirma tu contraseña"
-              onChange={handleChange}
-              value={formData.confirmPassword}
-              name="confirmPassword"
-              required
-              minLength={8}
+              register={register("confirmPassword", {
+                required: "Confirma tu contraseña",
+                validate: value =>
+                  value === password || "Las contraseñas no coinciden",
+              })}
+              error={errors.confirmPassword?.message}
+              className="bg-[#FCFCFC] rounded-[4px] mb-[16px] py-[10px] px-[14px] border text-[#717680] text-[14px] font-normal h-auto"
             />
+            {errors.confirmPassword && (
+              <p className="text-red-500 text-sm -mt-3 mb-3">
+                {errors.confirmPassword.message}
+              </p>
+            )}
           </div>
 
           <button
-            className="w-full rounded-[4px] py-[10px] px-[18px] bg-sofia-electricGreen text-sofia-superDark text-[16px] font-semibold mb-[16px] disabled:bg-app-lightGray"
+            className="w-full rounded-[4px] py-[10px] px-[18px] bg-app-electricGreen text-app-superDark text-[16px] font-semibold mb-[16px] disabled:bg-app-lightGray"
             type="submit"
             disabled={active}
           >
@@ -163,7 +199,10 @@ const SignUp = () => {
             <div className="w-[45%] h-[1px] bg-gray-300"></div>
           </div>
 
-          <GoogleLoginButton setError={setError} />
+          <GoogleLoginButton
+            setError={setError}
+            onSuccess={handlePostLoginRedirect}
+          />
 
           {error && (
             <p className="text-red-600 text-sm text-center max-h-5 px-2 mb-2">
@@ -177,7 +216,7 @@ const SignUp = () => {
             </span>
             <Link
               to="/"
-              className="text-[14px] font-semibold text-sofia-superDark hover:text-sofia-electricGreen hover:underline"
+              className="text-[14px] font-semibold text-app-superDark hover:text-app-electricGreen hover:underline"
             >
               Inicia sesión
             </Link>
@@ -185,9 +224,9 @@ const SignUp = () => {
         </form>
       </div>
 
-      <p className="mx-auto text-[12px] mb-[38px] font-normal text-center text-sofia-superDark">
+      <p className="mx-auto text-[12px] mb-[38px] font-normal text-center text-app-superDark">
         Version 2.0
-        <br /> SOF.IA LLM &copy; 2024 Derechos Reservados
+        <br /> CONVERXA LLM &copy; 2024 Derechos Reservados
       </p>
     </div>
   );

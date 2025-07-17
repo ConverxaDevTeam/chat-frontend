@@ -98,8 +98,7 @@ const NodeContent: React.FC<NodeContentProps> = ({
         ) : (
           <DiagramContextMenuV2
             options={contextMenuOptions}
-            x={menuPosition?.x ?? 0}
-            y={menuPosition?.y ?? 0}
+            position={{ x: menuPosition?.x ?? 0, y: menuPosition?.y ?? 0 }}
             onClose={handleCloseContextMenu}
           />
         )}
@@ -214,7 +213,7 @@ const DefaultNode: React.FC<CustomNodeProps> = ({
           `}
         >
           <div className="w-[100px] text-center">
-            <p className="text-xs font-normal text-sofia-superDark line-clamp-2 overflow-hidden">
+            <p className="text-xs font-normal text-app-superDark line-clamp-2 overflow-hidden">
               {name}
             </p>
           </div>

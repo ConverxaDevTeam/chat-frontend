@@ -265,12 +265,12 @@ const HitlPage: React.FC = () => {
         <nav className="flex items-center space-x-2 text-sm text-gray-500 my-3 px-2">
           <button
             onClick={handleBackToList}
-            className="hover:text-sofia-superDark transition-colors font-normal"
+            className="hover:text-app-superDark transition-colors font-normal"
           >
             Sistema HITL
           </button>
           <span>/</span>
-          <span className="text-sofia-superDark">
+          <span className="text-app-superDark">
             {currentView === "create" && "Crear tipo HITL"}
             {currentView === "edit" && "Editar tipo HITL"}
             {currentView === "manage-users" && "Gestionar usuarios"}

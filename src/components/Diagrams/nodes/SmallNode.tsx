@@ -13,7 +13,7 @@ export const SmallNode = ({ children, className = "" }: SmallNodeProps) => {
         w-[40px] h-[40px] p-2
         shrink-0
         rounded
-        bg-sofia-celeste
+        bg-app-celeste
         shadow-[8px_5px_16px_0px_#C9D9E8]
         ${className}
       `}

@@ -167,7 +167,7 @@ const WhatsAppManualIntegration: React.FC<WhatsAppManualIntegrationProps> = ({
       <div className="flex flex-col w-[500px] bg-white p-[24px] rounded-[4px] justify-center">
         <form onSubmit={handleSubmit} className="flex flex-col gap-[8px]">
           <div className="w-full flex justify-between items-center mb-3">
-            <p className="text-sofia-superDark font-semibold text-[24px]">
+            <p className="text-app-superDark font-semibold text-[24px]">
               Integración manual de WhatsApp
             </p>
             <img
@@ -178,7 +178,7 @@ const WhatsAppManualIntegration: React.FC<WhatsAppManualIntegrationProps> = ({
             />
           </div>
           <hr className="border-t border-gray-300 -mx-6 mb-[24px]" />
-          <label className="text-sofia-superDark font-bold text-[14px]">
+          <label className="text-app-superDark font-bold text-[14px]">
             Webhook de Integración
           </label>
           <div className="flex gap-[8px] items-center w-full">
@@ -187,12 +187,12 @@ const WhatsAppManualIntegration: React.FC<WhatsAppManualIntegrationProps> = ({
                 type="text"
                 readOnly
                 value={`${baseUrl}/api/facebook/webhook/${info.id}`}
-                className="flex w-full px-3 py-4 items-center gap-[11px] bg-[#FCFCFC] self-stretch rounded-lg border border-sofia-darkBlue text-sofia-superDark text-[14px] font-normal leading-normal pr-12"
+                className="flex w-full px-3 py-4 items-center gap-[11px] bg-[#FCFCFC] self-stretch rounded-lg border border-app-darkBlue text-app-superDark text-[14px] font-normal leading-normal pr-12"
               />
               <img
                 src="/mvp/copy.svg"
                 alt="Copy"
-                className="cursor-pointer p-[8px] rounded-lg w-[36px] h-[36px] text-sofia-darkLight absolute right-2 top-1/2 transform -translate-y-1/2"
+                className="cursor-pointer p-[8px] rounded-lg w-[36px] h-[36px] text-app-darkLight absolute right-2 top-1/2 transform -translate-y-1/2"
                 onClick={() => {
                   navigator.clipboard.writeText(
                     `${baseUrl}/api/facebook/webhook/${info.id}`
@@ -203,7 +203,7 @@ const WhatsAppManualIntegration: React.FC<WhatsAppManualIntegrationProps> = ({
             </div>
           </div>
           <div className="flex gap-[8px] items-center">
-            <label className="text-sofia-superDark font-bold text-[14px]">
+            <label className="text-app-superDark font-bold text-[14px]">
               Codigo de webhook
             </label>
             <div className="flex items-center gap-1">
@@ -238,7 +238,7 @@ const WhatsAppManualIntegration: React.FC<WhatsAppManualIntegrationProps> = ({
               type="text"
               value={info.code_webhook}
               readOnly
-              className="w-full border border-sofia-darkBlue p-[8px] pr-[90px] rounded-lg"
+              className="w-full border border-app-darkBlue p-[8px] pr-[90px] rounded-lg"
             />
             <div className="absolute right-2 top-1/2 -translate-y-1/2 flex gap-[8px]">
               <img
@@ -260,7 +260,7 @@ const WhatsAppManualIntegration: React.FC<WhatsAppManualIntegrationProps> = ({
           </div>
           <label
             htmlFor="phone_number_id"
-            className="text-sofia-superDark font-bold text-[14px]"
+            className="text-app-superDark font-bold text-[14px]"
           >
             Identificador de número de teléfono
           </label>
@@ -273,11 +273,11 @@ const WhatsAppManualIntegration: React.FC<WhatsAppManualIntegrationProps> = ({
             }
             value={info.phone_number_id}
             required
-            className="flex w-full h-[56px] pl-4 pr-9 py-2.5 justify-between items-center flex-shrink-0 rounded-lg border border-sofia-darkBlue text-[14px] font-normal placeholder:text-[#A6A8AB]"
+            className="flex w-full h-[56px] pl-4 pr-9 py-2.5 justify-between items-center flex-shrink-0 rounded-lg border border-app-darkBlue text-[14px] font-normal placeholder:text-[#A6A8AB]"
           />
           <label
             htmlFor="waba_id"
-            className="text-sofia-superDark font-bold text-[14px]"
+            className="text-app-superDark font-bold text-[14px]"
           >
             Identificador de la cuenta de WhatsApp Business
           </label>
@@ -288,11 +288,11 @@ const WhatsAppManualIntegration: React.FC<WhatsAppManualIntegrationProps> = ({
             onChange={e => setInfo({ ...info, waba_id: e.target.value })}
             value={info.waba_id}
             required
-            className="flex w-full h-[56px] pl-4 pr-9 py-2.5 justify-between items-center flex-shrink-0 rounded-lg border border-sofia-darkBlue text-[14px] font-normal placeholder:text-[#A6A8AB]"
+            className="flex w-full h-[56px] pl-4 pr-9 py-2.5 justify-between items-center flex-shrink-0 rounded-lg border border-app-darkBlue text-[14px] font-normal placeholder:text-[#A6A8AB]"
           />
           <label
             htmlFor="token"
-            className="text-sofia-superDark font-bold text-[14px]"
+            className="text-app-superDark font-bold text-[14px]"
           >
             token
           </label>
@@ -303,19 +303,19 @@ const WhatsAppManualIntegration: React.FC<WhatsAppManualIntegrationProps> = ({
             onChange={e => setInfo({ ...info, token: e.target.value })}
             value={info.token}
             required
-            className="flex w-full h-[56px] pl-4 pr-9 py-2.5 justify-between items-center flex-shrink-0 rounded-lg border border-sofia-darkBlue text-[14px] font-normal placeholder:text-[#A6A8AB]"
+            className="flex w-full h-[56px] pl-4 pr-9 py-2.5 justify-between items-center flex-shrink-0 rounded-lg border border-app-darkBlue text-[14px] font-normal placeholder:text-[#A6A8AB]"
           />
           <div className="flex gap-[16px] p-[16px] mt-[24px]">
             <button
               type="button"
-              className="text-sofia-superDark font-semibold text-[16px] flex-1 h-[48px] border border-app-gray rounded-[4px] flex justify-center items-center"
+              className="text-app-superDark font-semibold text-[16px] flex-1 h-[48px] border border-app-gray rounded-[4px] flex justify-center items-center"
               onClick={onClose}
             >
               Cancelar
             </button>
             <button
               type="submit"
-              className="bg-sofia-superDark text-white font-semibold text-[16px] rounded-[4px] flex-1"
+              className="bg-app-superDark text-white font-semibold text-[16px] rounded-[4px] flex-1"
             >
               Guardar
             </button>

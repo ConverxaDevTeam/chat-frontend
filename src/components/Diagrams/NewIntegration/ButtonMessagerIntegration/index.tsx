@@ -141,7 +141,7 @@ const ButtonMessagerIntegration = ({
                         <span>{page.name}</span>
                         <button
                           onClick={handleConnect}
-                          className="bg-sofia-electricGreen text-sofia-superDark p-[8px] rounded-md"
+                          className="bg-app-electricGreen text-app-superDark p-[8px] rounded-md"
                         >
                           Conectar
                         </button>

@@ -3,7 +3,7 @@ import { IDepartment } from "@interfaces/departments";
 import { getDepartments } from "@services/department";
 import { logOutAsync, setOrganizationId } from "../actions/auth";
 
-const HIDDEN_DEPARTMENTS_KEY = "sofia_hidden_departments";
+const HIDDEN_DEPARTMENTS_KEY = "converxa_hidden_departments";
 
 const getInitialHiddenDepartmentIds = (): string[] => {
   try {

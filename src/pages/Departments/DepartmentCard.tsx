@@ -30,17 +30,17 @@ const DepartmentCard: FC<DepartmentCardProps> = ({
   return (
     <div className="min-h-[60px] text-[14px] border-b border-b-app-lightGray hover:bg-gray-50 flex items-center cursor-pointer">
       <div className="pl-[16px] pr-[8px] w-[25%]">
-        <p className="text-sofia-superDark text-[14px] font-normal leading-normal truncate max-w-[90%]">
+        <p className="text-app-superDark text-[14px] font-normal leading-normal truncate max-w-[90%]">
           {department.name}
         </p>
       </div>
       <div className="px-[8px] w-[35%]">
-        <p className="text-sofia-superDark text-[14px] font-normal leading-normal truncate max-w-[90%]">
+        <p className="text-app-superDark text-[14px] font-normal leading-normal truncate max-w-[90%]">
           {department.description || "Sin descripción"}
         </p>
       </div>
       <div className="px-[8px] w-[15%]">
-        <p className="text-sofia-superDark text-[14px] font-normal leading-normal truncate max-w-[90%]">
+        <p className="text-app-superDark text-[14px] font-normal leading-normal truncate max-w-[90%]">
           {department.id}
         </p>
       </div>

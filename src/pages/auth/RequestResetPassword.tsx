@@ -42,7 +42,7 @@ export const RequestResetPassword = () => {
             src="/icon.svg"
             alt="logo"
           />
-          <h2 className="font-semibold text-[30px] text-sofia-superDark mb-[16px] text-center">
+          <h2 className="font-semibold text-[30px] text-app-superDark mb-[16px] text-center">
             Restablecer contraseña
           </h2>
 
@@ -65,7 +65,7 @@ export const RequestResetPassword = () => {
             </InputGroup>
 
             <button
-              className="w-full rounded py-[10px] bg-sofia-electricGreen text-sofia-superDark text-[16px] font-semibold mb-[24px] mt-4 disabled:bg-app-lightGray"
+              className="w-full rounded py-[10px] bg-app-electricGreen text-app-superDark text-[16px] font-semibold mb-[24px] mt-4 disabled:bg-app-lightGray"
               type="submit"
               disabled={isLoading}
             >
@@ -74,7 +74,7 @@ export const RequestResetPassword = () => {
             <div className="text-center">
               <Link
                 to="/"
-                className="text-[14px] font-medium text-sofia-superDark hover:text-sofia-electricGreen hover:underline"
+                className="text-[14px] font-medium text-app-superDark hover:text-app-electricGreen hover:underline"
               >
                 Volver a inicio de sesión
               </Link>
@@ -83,9 +83,9 @@ export const RequestResetPassword = () => {
         </div>
       </div>
 
-      <p className="mx-auto text-[12px] mb-[38px] font-normal text-center text-sofia-superDark">
+      <p className="mx-auto text-[12px] mb-[38px] font-normal text-center text-app-superDark">
         Version 2.0
-        <br /> SOF.IA LLM &copy; 2024 Derechos Reservados
+        <br /> CONVERXA LLM &copy; 2024 Derechos Reservados
       </p>
     </div>
   );

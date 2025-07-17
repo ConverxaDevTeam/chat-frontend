@@ -33,7 +33,7 @@ const RemoveIntegration: React.FC<RemoveIntegrationProps> = ({
         <div className="flex justify-end mt-[24px]">
           <button
             type="button"
-            className="text-sofia-superDark font-bold text-[14px] mr-[16px]"
+            className="text-app-superDark font-bold text-[14px] mr-[16px]"
             onClick={onClose}
           >
             Cancelar

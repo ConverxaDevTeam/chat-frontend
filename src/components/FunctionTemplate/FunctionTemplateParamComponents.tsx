@@ -43,7 +43,7 @@ export const ParamsContent: React.FC<ParamsContentProps> = ({ control }) => {
         <h3 className="text-lg font-medium text-gray-700">Parámetros</h3>
         <button
           onClick={addNewParam}
-          className="flex items-center text-sofia-primary hover:text-sofia-primary-dark transition-colors"
+          className="flex items-center text-app-primary hover:text-app-primary-dark transition-colors"
         >
           <img
             src="/mvp/circle-plus.svg"
@@ -61,7 +61,7 @@ export const ParamsContent: React.FC<ParamsContentProps> = ({ control }) => {
           </p>
           <button
             onClick={addNewParam}
-            className="mt-2 text-sofia-primary hover:text-sofia-primary-dark text-sm font-medium"
+            className="mt-2 text-app-primary hover:text-app-primary-dark text-sm font-medium"
           >
             Agregar el primer parámetro
           </button>

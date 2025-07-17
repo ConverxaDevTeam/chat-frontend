@@ -45,10 +45,12 @@ const ItemSidebar = ({
   const active =
     currentPath === linkUrl ||
     link.active.some(path => {
-      if (path === '/') {
-        return currentPath === '/';
+      if (path === "/") {
+        return currentPath === "/";
       }
-      return currentPath === path || (path !== '/' && currentPath.startsWith(path));
+      return (
+        currentPath === path || (path !== "/" && currentPath.startsWith(path))
+      );
     });
   if (
     !actualRoles ||
@@ -59,20 +61,21 @@ const ItemSidebar = ({
 
   return (
     <li
-      className={`relative flex h-[35px] items-center gap-[16px] ${active
-          ? "bg-sofia-superDark rounded-[4px] text-sofia-blancoPuro"
+      className={`relative flex h-[35px] items-center gap-[16px] ${
+        active
+          ? "bg-app-superDark rounded-[4px] text-app-blancoPuro"
           : "text-app-gray hover:bg-[#F6F6F6] rounded"
-        } ${sidebarMinimized || mobileResolution ? "w-full justify-center" : "w-full pl-[12px]"}`}
+      } ${sidebarMinimized || mobileResolution ? "w-full justify-center" : "w-full pl-[12px]"}`}
     >
       {sidebarMinimized || mobileResolution ? (
         <div className="group relative flex justify-center items-center w-full">
           <InfoTooltip
-            text={link.text}                       
-            position="right"                       
-            width="auto"                           
-            iconSrc={`/mvp/${link.img}`}           
+            text={link.text}
+            position="right"
+            width="auto"
+            iconSrc={`/mvp/${link.img}`}
             onClick={() => navigate(linkUrl)}
-            active={active}                       
+            active={active}
           />
         </div>
       ) : (
@@ -87,10 +90,11 @@ const ItemSidebar = ({
           />
           <Link
             to={linkUrl}
-            className={`z-10 font-normal transition-all duration-300 ease-in-out ${active
-                ? "cursor-default text-sofia-blancoPuro"
+            className={`z-10 font-normal transition-all duration-300 ease-in-out ${
+              active
+                ? "cursor-default text-app-blancoPuro"
                 : "cursor-pointer text-[#001126]"
-              }`}
+            }`}
           >
             {link.text}
           </Link>

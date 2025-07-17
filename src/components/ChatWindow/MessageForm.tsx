@@ -203,7 +203,7 @@ const HitlSection = ({
     <HitlButton
       onClick={handleHitlAction}
       disabled={isLoading}
-      className="w-full p-3 bg-sofia-electricOlive hover:bg-sofia-electricOlive-700 rounded-lg transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+      className="w-full p-3 bg-app-electricOlive hover:bg-app-electricOlive-700 rounded-lg transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
       type="button"
       isLoading={isLoading}
       isAssigned={!!conversation?.user}
@@ -292,7 +292,7 @@ export const MessageForm = ({
             <SendMessageButton
               type="submit"
               disabled={isSubmitting}
-              className="w-[38px] h-[38px] flex items-center justify-center hover:bg-sofia-electricGreen rounded-full transition-colors disabled:opacity-50"
+              className="w-[38px] h-[38px] flex items-center justify-center hover:bg-app-electricGreen rounded-full transition-colors disabled:opacity-50"
               style={{
                 backgroundColor: config.button_text,
               }}

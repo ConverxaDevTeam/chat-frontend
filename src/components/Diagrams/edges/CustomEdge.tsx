@@ -199,7 +199,7 @@ export default function CustomEdge({
   };
 
   return (
-    <svg className="stroke-sofia-superDark">
+    <svg className="stroke-app-superDark">
       <path {...pathProps} />
     </svg>
   );

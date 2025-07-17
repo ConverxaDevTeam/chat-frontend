@@ -5,6 +5,7 @@ import { logInAsync } from "@store/actions/auth";
 import { Navigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import GoogleLoginButton from "@components/GoogleLoginButton";
+import { usePostLoginRedirect } from "@hooks/usePostLoginRedirect";
 
 const LogIn = () => {
   const [data, setData] = useState({
@@ -19,12 +20,21 @@ const LogIn = () => {
 
   const [error, setError] = useState<string | null>(null);
   const [active, setActive] = useState<boolean>(false);
+  const { handlePostLoginRedirect } = usePostLoginRedirect();
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
     setActive(true);
-    dispatch(logInAsync({ data, setActive, setError, dispatch }));
+    dispatch(
+      logInAsync({
+        data,
+        setActive,
+        setError,
+        dispatch,
+        onSuccess: handlePostLoginRedirect,
+      })
+    );
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -103,7 +113,10 @@ const LogIn = () => {
             <div className="w-[45%] h-[1px] bg-gray-300"></div>
           </div>
 
-          <GoogleLoginButton setError={setError} />
+          <GoogleLoginButton
+            setError={setError}
+            onSuccess={handlePostLoginRedirect}
+          />
           {error && (
             <p className="text-app-error text-sm text-center max-h-5 px-2 mb-2">
               {error}
@@ -126,7 +139,7 @@ const LogIn = () => {
 
       <p className="mx-auto text-[12px] mb-[38px] font-normal text-center text-app-superDark">
         Version 2.0
-        <br /> SOF.IA LLM &copy; 2024 Derechos Reservados
+        <br /> CONVERXA LLM &copy; 2024 Derechos Reservados
       </p>
     </div>
   );

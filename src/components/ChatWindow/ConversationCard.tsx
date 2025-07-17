@@ -17,12 +17,12 @@ interface ConversationCardProps {
 const getHitlBackground = (status: ConversationStatus) => {
   switch (status) {
     case ConversationStatus.TAKEN:
-      return "bg-sofia-hitlPending"; // Naranja: tomado por humano
+      return "bg-app-hitlPending"; // Naranja: tomado por humano
     case ConversationStatus.IA:
-      return "bg-sofia-electricGreen"; // Verde: respuesta automática con IA
+      return "bg-app-electricGreen"; // Verde: respuesta automática con IA
     case ConversationStatus.PENDING:
     default:
-      return "bg-sofia-error"; // Rojo: no se ha recibido respuesta
+      return "bg-app-error"; // Rojo: no se ha recibido respuesta
   }
 };
 
@@ -63,8 +63,8 @@ export const ConversationCard: FC<ConversationCardProps> = ({
       onClick={onClick}
       className={`flex h-[70px] px-4 items-center gap-3 w-full transition-colors ${
         isSelected
-          ? "bg-sofia-celeste"
-          : "bg-sofia-blancoPuro hover:bg-sofia-background"
+          ? "bg-app-celeste"
+          : "bg-app-blancoPuro hover:bg-app-background"
       }`}
     >
       {/* Avatar */}
@@ -74,8 +74,8 @@ export const ConversationCard: FC<ConversationCardProps> = ({
       <div className="flex flex-col h-9 min-w-0 max-w-[calc(100%-4rem)] items-start gap-0.5 flex-1">
         {/* Frame Superior */}
         <div className="flex justify-between items-center w-full">
-          <h3 className="text-sm font-bold text-sofia-superDark truncate flex-1 min-w-0 text-left">
-            Usuario
+          <h3 className="text-sm font-bold text-app-superDark truncate flex-1 min-w-0 text-left">
+            {conversation.user_name?.trim() || "Usuario"}
           </h3>
           <span className="text-[10px] font-normal text-app-newGray ml-2 flex-shrink-0">
             {conversation.message_created_at
@@ -87,7 +87,7 @@ export const ConversationCard: FC<ConversationCardProps> = ({
         {/* Frame Inferior */}
         <div className="flex justify-between items-center w-full">
           <div className="flex-1 min-w-0">
-            <p className="text-xs text-sofia-superDark text-left truncate">
+            <p className="text-xs text-app-superDark text-left truncate">
               {conversation.message_text}
             </p>
           </div>
@@ -100,13 +100,13 @@ export const ConversationCard: FC<ConversationCardProps> = ({
             <div
               className={`h-4 px-1 flex justify-center items-center ${getHitlBackground(status)}`}
             >
-              <span className="text-tiny text-sofia-superDark">
+              <span className="text-tiny text-app-superDark">
                 {getHitlText(status)}
               </span>
             </div>
             {conversation.unread_messages > 0 && (
-              <div className="w-4 h-4 flex justify-center items-center p-0.5 rounded-full bg-sofia-electricOlive">
-                <span className="text-tiny text-sofia-superDark">
+              <div className="w-4 h-4 flex justify-center items-center p-0.5 rounded-full bg-app-electricOlive">
+                <span className="text-tiny text-app-superDark">
                   {conversation.unread_messages}
                 </span>
               </div>

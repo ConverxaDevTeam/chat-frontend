@@ -48,18 +48,19 @@ const Chat = ({ config, conversation }: ChatProps) => {
         }}
       >
         {conversation?.messages &&
-          conversation.messages.map(message => (
-            <MessageCard
-              key={`chat-msg-${message.id}`}
-              message={transformMessage(message)}
-              userName={
-                message.type === MessageType.AGENT
-                  ? config.name
-                  : "Demo Usuario"
-              }
-              config={config}
-            />
-          ))}
+          conversation.messages.map(message => {
+            const userName =
+              message.type === MessageType.AGENT ? config.name : "Demo Usuario";
+
+            return (
+              <MessageCard
+                key={`chat-msg-${message.id}`}
+                message={transformMessage(message)}
+                userName={userName}
+                config={config}
+              />
+            );
+          })}
         <div ref={messagesEndRef}></div>
       </div>
       <MessageForm

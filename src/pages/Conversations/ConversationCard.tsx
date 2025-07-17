@@ -100,9 +100,9 @@ const HitlButton = ({
       title={
         conversation.user_id === null ? "Unassign from HITL" : "Assign to HITL"
       }
-      className={`${conversation.user_id === null ? "bg-sofia-electricGreen" : `${conversation.need_human ? "bg-[#FF616D]" : "bg-[#FFBB93]"}`} rounded-[4px] px-[6px] h-[24px]`}
+      className={`${conversation.user_id === null ? "bg-app-electricGreen" : `${conversation.need_human ? "bg-[#FF616D]" : "bg-[#FFBB93]"}`} rounded-[4px] px-[6px] h-[24px]`}
     >
-      <p className="text-[12px] text-sofia-superDark font-semibold">
+      <p className="text-[12px] text-app-superDark font-semibold">
         {conversation.user_id === null
           ? "AI"
           : conversation.user_id === user?.id
@@ -128,7 +128,7 @@ const ConversationCard = ({
     : { type: MessageType.USER, text: "Sin mensajes" };
 
   const handleRowClick = () => {
-    navigate(`/conversation/detail/${conversation.id}`);
+    navigate(`/conversations/detail/${conversation.id}`);
   };
 
   return (
@@ -136,66 +136,239 @@ const ConversationCard = ({
       className="min-h-[60px] text-[14px] border-b-[1px] border-b-app-lightGray last:border-b-0 hover:bg-gray-50 flex items-center cursor-pointer"
       onClick={handleRowClick}
     >
-      <div className="pl-[16px] w-[calc(100%/19*2)]">
-        <p className="text-sofia-superDark font-semibold text-[14px]">
-          Usuario
-        </p>
-      </div>
-      <div className="w-[calc(100%/19*2)]">
-        <p className="text-sofia-superDark text-[14px]">
-          ID: {conversation.id}
-        </p>
-      </div>
-      <div className="w-[calc(100%/19*2)]">
-        <p className="text-sofia-superDark text-[14px]">
-          {conversation.department}
-        </p>
-      </div>
-      <div className="w-[calc(100%/19*2)]">
-        <p className="text-sofia-superDark text-[14px]">
-          {lastMessage.type === MessageType.AGENT ? "Respondido" : "Pendiente"}
-        </p>
-      </div>
-      <div className="hidden md:block w-[calc(100%/19*2)] pr-[16px]">
-        <p className="text-sofia-superDark text-[14px]">
-          {convertISOToReadable(conversation.created_at, false)}
-        </p>
-      </div>
-      <div className="w-[calc(100%/19*5)] py-[8px] pr-[16px]">
-        <div className="relative">
-          <div className="h-[50px] overflow-hidden">
-            <p className="line-clamp-2 text-[14px]">
-              <MessagePreview type={lastMessage.type} text={lastMessage.text} />
-            </p>
+      {/* Desktop Layout */}
+      <div className="hidden lg:flex w-full items-center">
+        <div className="pl-[16px] w-[calc(100%/19*2)]">
+          <p className="text-app-superDark font-semibold text-[14px]">
+            {conversation.user_name || "Usuario"}
+            {(conversation.user_email || conversation.user_phone) && (
+              <span
+                className="ml-1 text-blue-500 cursor-help"
+                title={
+                  conversation.need_human && conversation.user_id === null
+                    ? "Necesita HITL"
+                    : "Ver información adicional"
+                }
+              >
+                ⓘ
+              </span>
+            )}
+          </p>
+        </div>
+        <div className="w-[calc(100%/19*2)]">
+          <p className="text-app-superDark text-[14px]">
+            ID: {conversation.id}
+          </p>
+        </div>
+        <div className="w-[calc(100%/19*2)]">
+          <p className="text-app-superDark text-[14px]">
+            {conversation.department}
+          </p>
+        </div>
+        <div className="w-[calc(100%/19*2)]">
+          <p className="text-app-superDark text-[14px]">
+            {lastMessage.type === MessageType.AGENT
+              ? "Respondido"
+              : "Pendiente"}
+          </p>
+        </div>
+        <div className="w-[calc(100%/19*2)] pr-[16px]">
+          <p className="text-app-superDark text-[14px]">
+            {convertISOToReadable(conversation.created_at, false)}
+          </p>
+        </div>
+        <div className="w-[calc(100%/19*5)] py-[8px] pr-[16px]">
+          <div className="relative">
+            <div className="h-[50px] overflow-hidden">
+              <p className="line-clamp-2 text-[14px]">
+                <MessagePreview
+                  type={lastMessage.type}
+                  text={lastMessage.text}
+                />
+              </p>
+            </div>
           </div>
         </div>
-      </div>
-      <div className="w-[calc(100%/19*2)] flex justify-center items-center">
-        {conversation.type === IntegrationType.CHAT_WEB && (
-          <img className="select-none" src="/img/icon-web.svg" alt="Web" />
-        )}
-        {conversation.type === IntegrationType.MESSENGER && (
-          <img className="select-none" src="/img/icon-fb.svg" alt="Facebook" />
-        )}
-        {conversation.type === IntegrationType.WHATSAPP && (
-          <img className="select-none" src="/img/icon-wa.svg" alt="WhatsApp" />
-        )}
-        {conversation.type === IntegrationType.SLACK && (
-          <img
-            className="select-none w-[24px] h-[24px] bg-white p-[5px] rounded"
-            src="/mvp/slack.svg"
-            alt="WhatsApp"
+        <div className="w-[calc(100%/19*2)] flex justify-center items-center">
+          {conversation.type === IntegrationType.CHAT_WEB && (
+            <img className="select-none" src="/img/icon-web.svg" alt="Web" />
+          )}
+          {conversation.type === IntegrationType.MESSENGER && (
+            <img
+              className="select-none"
+              src="/img/icon-fb.svg"
+              alt="Facebook"
+            />
+          )}
+          {conversation.type === IntegrationType.WHATSAPP && (
+            <img
+              className="select-none"
+              src="/img/icon-wa.svg"
+              alt="WhatsApp"
+            />
+          )}
+          {conversation.type === IntegrationType.SLACK && (
+            <img
+              className="select-none w-[24px] h-[24px] bg-white p-[5px] rounded"
+              src="/mvp/slack.svg"
+              alt="Slack"
+            />
+          )}
+        </div>
+        <div className="w-[calc(100%/19*3)] flex items-center">
+          <HitlButton
+            conversation={conversation}
+            onUpdateConversation={onUpdateConversation}
           />
-        )}
+        </div>
+        <div className="w-[calc(100%/19*1)] flex items-center justify-center pr-[12px]">
+          <ButtonExportConversation conversation={conversation} />
+        </div>
       </div>
-      <div className="w-[calc(100%/19*3)] flex items-center">
-        <HitlButton
-          conversation={conversation}
-          onUpdateConversation={onUpdateConversation}
-        />
+
+      {/* Tablet Layout */}
+      <div className="hidden md:flex lg:hidden w-full items-center">
+        <div className="pl-[16px] w-[20%]">
+          <p className="text-app-superDark font-semibold text-[13px] truncate">
+            {conversation.user_name || "Usuario"}
+            {(conversation.user_email || conversation.user_phone) && (
+              <span
+                className="ml-1 text-blue-500 cursor-help text-[11px]"
+                title={
+                  conversation.need_human && conversation.user_id === null
+                    ? "Necesita HITL"
+                    : "Ver información adicional"
+                }
+              >
+                ⓘ
+              </span>
+            )}
+          </p>
+        </div>
+        <div className="w-[15%]">
+          <p className="text-app-superDark text-[13px]">{conversation.id}</p>
+        </div>
+        <div className="w-[15%]">
+          <p className="text-app-superDark text-[13px] truncate">
+            {conversation.department}
+          </p>
+        </div>
+        <div className="w-[15%]">
+          <p className="text-app-superDark text-[13px]">
+            {lastMessage.type === MessageType.AGENT
+              ? "Respondido"
+              : "Pendiente"}
+          </p>
+        </div>
+        <div className="w-[15%] flex justify-center items-center">
+          {conversation.type === IntegrationType.CHAT_WEB && (
+            <img
+              className="select-none w-[22px] h-[22px]"
+              src="/img/icon-web.svg"
+              alt="Web"
+            />
+          )}
+          {conversation.type === IntegrationType.MESSENGER && (
+            <img
+              className="select-none w-[22px] h-[22px]"
+              src="/img/icon-fb.svg"
+              alt="Facebook"
+            />
+          )}
+          {conversation.type === IntegrationType.WHATSAPP && (
+            <img
+              className="select-none w-[22px] h-[22px]"
+              src="/img/icon-wa.svg"
+              alt="WhatsApp"
+            />
+          )}
+          {conversation.type === IntegrationType.SLACK && (
+            <img
+              className="select-none w-[22px] h-[22px] bg-white p-[4px] rounded"
+              src="/mvp/slack.svg"
+              alt="Slack"
+            />
+          )}
+        </div>
+        <div className="w-[10%] flex items-center justify-center">
+          <HitlButton
+            conversation={conversation}
+            onUpdateConversation={onUpdateConversation}
+          />
+        </div>
+        <div className="w-[10%] flex items-center justify-center pr-[12px]">
+          <ButtonExportConversation conversation={conversation} />
+        </div>
       </div>
-      <div className="w-[calc(100%/19*1)] flex items-center justify-center pr-[12px]">
-        <ButtonExportConversation conversation={conversation} />
+
+      {/* Mobile Layout */}
+      <div className="flex md:hidden w-full items-center">
+        <div className="pl-[16px] w-[25%]">
+          <p className="text-app-superDark font-semibold text-[12px] truncate">
+            {conversation.user_name || "Usuario"}
+            {(conversation.user_email || conversation.user_phone) && (
+              <span
+                className="ml-1 text-blue-500 cursor-help text-[10px]"
+                title={
+                  conversation.need_human && conversation.user_id === null
+                    ? "Necesita HITL"
+                    : "Ver info"
+                }
+              >
+                ⓘ
+              </span>
+            )}
+          </p>
+        </div>
+        <div className="w-[15%]">
+          <p className="text-app-superDark text-[12px]">{conversation.id}</p>
+        </div>
+        <div className="w-[25%]">
+          <p className="text-app-superDark text-[12px]">
+            {lastMessage.type === MessageType.AGENT
+              ? "Respondido"
+              : "Pendiente"}
+          </p>
+        </div>
+        <div className="w-[20%] flex justify-center items-center">
+          {conversation.type === IntegrationType.CHAT_WEB && (
+            <img
+              className="select-none w-[20px] h-[20px]"
+              src="/img/icon-web.svg"
+              alt="Web"
+            />
+          )}
+          {conversation.type === IntegrationType.MESSENGER && (
+            <img
+              className="select-none w-[20px] h-[20px]"
+              src="/img/icon-fb.svg"
+              alt="Facebook"
+            />
+          )}
+          {conversation.type === IntegrationType.WHATSAPP && (
+            <img
+              className="select-none w-[20px] h-[20px]"
+              src="/img/icon-wa.svg"
+              alt="WhatsApp"
+            />
+          )}
+          {conversation.type === IntegrationType.SLACK && (
+            <img
+              className="select-none w-[20px] h-[20px] bg-white p-[3px] rounded"
+              src="/mvp/slack.svg"
+              alt="Slack"
+            />
+          )}
+        </div>
+        <div className="w-[15%] flex items-center justify-center pr-[12px]">
+          <div className="flex gap-1">
+            <HitlButton
+              conversation={conversation}
+              onUpdateConversation={onUpdateConversation}
+            />
+            <ButtonExportConversation conversation={conversation} />
+          </div>
+        </div>
       </div>
     </div>
   );

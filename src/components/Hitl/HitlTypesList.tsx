@@ -154,116 +154,125 @@ export const HitlTypesList: React.FC<HitlTypesListProps> = ({
       >
         {canManage && (
           <div className="mb-6">
-            <p className="text-sofia-newGray text-sm font-normal">
+            <p className="text-app-newGray text-sm font-normal">
               Gestiona los tipos de intervención humana especializada
             </p>
           </div>
         )}
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-        {hitlTypes.map(hitlType => (
-          <div
-            key={hitlType.id}
-            className="bg-white rounded border-[0.5px] border-app-lightGray p-4 relative flex flex-col h-full"
-          >
-            <div className="absolute top-3 right-3 flex items-center gap-2">
-              {getStatusBadge(hitlType.status, hitlType.assignedUsersCount)}
-              {canManage && (
-                <button
-                  className="text-gray-500 hover:text-gray-700 transition-colors"
-                  onClick={e =>
-                    handleOpenContextMenu(e, hitlType.id, hitlType.name)
-                  }
-                >
-                  <img
-                    src="/mvp/ellipsis.svg"
-                    alt="Opciones"
-                    className="w-4 h-4"
-                  />
-                </button>
-              )}
-            </div>
-
-            <div className="flex flex-col items-start mb-2">
-              <div className="flex items-center w-full">
-                <h3 className="text-lg font-semibold text-sofia-superDark truncate max-w-[65%]">
-                  {hitlType.name}
-                </h3>
-              </div>
-              <p className="text-xs font-normal text-app-newGray">
-                ID: {hitlType.id}
-              </p>
-            </div>
-
-            <div className="flex-grow mb-2">
-              <p className="text-sm font-normal text-gray-700 line-clamp-2 text-left">
-                {hitlType.description}
-              </p>
-              {hitlType.description && hitlType.description.length > 100 && (
-                <button 
-                  className="text-xs text-sofia-navyBlue mt-1 hover:underline" 
-                  onClick={() => onEdit(hitlType.id)}
-                >
-                  Ver más
-                </button>
-              )}
-            </div>
-
-            {hitlType.assignedUsersCount > 0 && (
-              <div className="flex flex-row gap-4 items-center mb-3">
-                <p className="text-sm font-semibold text-sofia-superDark">Usuarios asignados</p>
-                <div className="flex flex-row items-center">
-                  {[...Array(Math.min(3, hitlType.assignedUsersCount))].map((_, index) => (
-                    <div 
-                      key={index} 
-                      className="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center -ml-2 first:ml-0 border-[0.5px] border-white shadow-sm"
-                      style={{ zIndex: 10 - index }}
-                    >
-                      <span className="text-xs font-medium text-gray-600">
-                        {String.fromCharCode(65 + index)}{String.fromCharCode(75 + index)}
-                      </span>
-                    </div>
-                  ))}
-                  {hitlType.assignedUsersCount > 3 && (
-                    <div className="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center -ml-2 border-[0.5px] border-white shadow-sm" style={{ zIndex: 7 }}>
-                      <span className="text-xs font-medium text-gray-600">+{hitlType.assignedUsersCount - 3}</span>
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
-
-            {canManage && (
-              <div className="mt-auto">
-                <div className="flex justify-center gap-2">
+          {hitlTypes.map(hitlType => (
+            <div
+              key={hitlType.id}
+              className="bg-white rounded border-[0.5px] border-app-lightGray p-4 relative flex flex-col h-full"
+            >
+              <div className="absolute top-3 right-3 flex items-center gap-2">
+                {getStatusBadge(hitlType.status, hitlType.assignedUsersCount)}
+                {canManage && (
                   <button
-                    onClick={() => onDelete(hitlType.id, hitlType.name)}
-                    className="w-full px-4 py-1 text-app-newGray border rounded-[4px] text-sm font-normal"
+                    className="text-gray-500 hover:text-gray-700 transition-colors"
+                    onClick={e =>
+                      handleOpenContextMenu(e, hitlType.id, hitlType.name)
+                    }
                   >
-                    Eliminar
+                    <img
+                      src="/mvp/ellipsis.svg"
+                      alt="Opciones"
+                      className="w-4 h-4"
+                    />
                   </button>
+                )}
+              </div>
+
+              <div className="flex flex-col items-start mb-2">
+                <div className="flex items-center w-full">
+                  <h3 className="text-lg font-semibold text-app-superDark truncate max-w-[65%]">
+                    {hitlType.name}
+                  </h3>
+                </div>
+                <p className="text-xs font-normal text-app-newGray">
+                  ID: {hitlType.id}
+                </p>
+              </div>
+
+              <div className="flex-grow mb-2">
+                <p className="text-sm font-normal text-gray-700 line-clamp-2 text-left">
+                  {hitlType.description}
+                </p>
+                {hitlType.description && hitlType.description.length > 100 && (
                   <button
+                    className="text-xs text-app-navyBlue mt-1 hover:underline"
                     onClick={() => onEdit(hitlType.id)}
-                    className="w-full px-4 py-1 bg-sofia-superDark text-white rounded-[4px] text-sm font-normal hover:bg-opacity-50 transition-all whitespace-nowrap"
                   >
-                    Editar
+                    Ver más
                   </button>
-                </div>
+                )}
               </div>
-            )}
-          </div>
-        ))}
-      </div>
+
+              {hitlType.assignedUsersCount > 0 && (
+                <div className="flex flex-row gap-4 items-center mb-3">
+                  <p className="text-sm font-semibold text-app-superDark">
+                    Usuarios asignados
+                  </p>
+                  <div className="flex flex-row items-center">
+                    {[...Array(Math.min(3, hitlType.assignedUsersCount))].map(
+                      (_, index) => (
+                        <div
+                          key={index}
+                          className="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center -ml-2 first:ml-0 border-[0.5px] border-white shadow-sm"
+                          style={{ zIndex: 10 - index }}
+                        >
+                          <span className="text-xs font-medium text-gray-600">
+                            {String.fromCharCode(65 + index)}
+                            {String.fromCharCode(75 + index)}
+                          </span>
+                        </div>
+                      )
+                    )}
+                    {hitlType.assignedUsersCount > 3 && (
+                      <div
+                        className="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center -ml-2 border-[0.5px] border-white shadow-sm"
+                        style={{ zIndex: 7 }}
+                      >
+                        <span className="text-xs font-medium text-gray-600">
+                          +{hitlType.assignedUsersCount - 3}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {canManage && (
+                <div className="mt-auto">
+                  <div className="flex justify-center gap-2">
+                    <button
+                      onClick={() => onDelete(hitlType.id, hitlType.name)}
+                      className="w-full px-4 py-1 text-app-newGray border rounded-[4px] text-sm font-normal"
+                    >
+                      Eliminar
+                    </button>
+                    <button
+                      onClick={() => onEdit(hitlType.id)}
+                      className="w-full px-4 py-1 bg-app-superDark text-white rounded-[4px] text-sm font-normal hover:bg-opacity-50 transition-all whitespace-nowrap"
+                    >
+                      Editar
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
       </PageContainer>
 
       {contextMenu.isOpen && (
         <ContextMenu
-          x={contextMenu.x}
-          y={contextMenu.y}
+          position={{ x: contextMenu.x, y: contextMenu.y }}
           onClose={handleCloseContextMenu}
         >
           <button
-            className="w-full text-left flex items-center gap-2 text-sofia-superDark"
+            className="w-full text-left flex items-center gap-2 text-app-superDark"
             onClick={() => {
               onManageUsers(contextMenu.hitlTypeId);
               handleCloseContextMenu();

@@ -52,11 +52,11 @@ export const ChangePassword = () => {
   };
 
   return (
-    <div className="flex flex-col w-full h-full bg-sofia-background">
+    <div className="flex flex-col w-full h-full bg-app-background">
       <div className="flex flex-col w-[446px] bg-custom-gradient p-[12px] rounded-2xl border-[1px] border-[#B8CCE0] border-inherit m-auto">
         <div className="bg-[#F1F5F9] rounded-lg px-[32px] pt-[53px] pb-[40px] [box-shadow:0px_4px_8px_0px_rgba(201,_217,_232,_0.8)]">
           <img className="mx-auto mb-[48px]" src="/logo.svg" alt="logo" />
-          <h2 className="font-semibold text-[30px] text-sofia-superDark mb-[16px] text-center">
+          <h2 className="font-semibold text-[30px] text-app-superDark mb-[16px] text-center">
             Cambiar Contraseña
           </h2>
 
@@ -79,7 +79,7 @@ export const ChangePassword = () => {
             </InputGroup>
 
             <button
-              className="w-full rounded-[8px] py-[10px] bg-sofia-electricGreen text-sofia-superDark text-[16px] font-semibold mb-[24px] mt-4 disabled:bg-app-lightGray"
+              className="w-full rounded-[8px] py-[10px] bg-app-electricGreen text-app-superDark text-[16px] font-semibold mb-[24px] mt-4 disabled:bg-app-lightGray"
               type="submit"
               disabled={isLoading}
             >
@@ -89,9 +89,9 @@ export const ChangePassword = () => {
         </div>
       </div>
 
-      <p className="mx-auto text-[12px] mb-[38px] font-normal text-center text-sofia-superDark">
+      <p className="mx-auto text-[12px] mb-[38px] font-normal text-center text-app-superDark">
         Version 2.0
-        <br /> SOF.IA LLM 2024 Derechos Reservados
+        <br /> CONVERXA LLM 2024 Derechos Reservados
       </p>
     </div>
   );

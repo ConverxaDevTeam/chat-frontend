@@ -24,7 +24,7 @@ const OrganizationCard = ({
   const { isSuperAdmin } = useRoleAuth();
   const hasDeletePermission = isSuperAdmin;
   const [agentType, setAgentType] = useState<AgentType>(
-    organization.agentType || AgentType.SOFIA_ASISTENTE
+    organization.agentType || AgentType.CONVERXA_ASISTENTE
   );
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [showContextMenu, setShowContextMenu] = useState(false);
@@ -40,7 +40,7 @@ const OrganizationCard = ({
   };
 
   useEffect(() => {
-    setAgentType(organization.agentType || AgentType.SOFIA_ASISTENTE);
+    setAgentType(organization.agentType || AgentType.CONVERXA_ASISTENTE);
   }, [organization.agentType]);
 
   const handleOpenMenu = (e: React.MouseEvent) => {
@@ -72,11 +72,7 @@ const OrganizationCard = ({
       </Modal>
 
       {showContextMenu && (
-        <ContextMenu
-          x={menuPosition.x}
-          y={menuPosition.y}
-          onClose={handleCloseMenu}
-        >
+        <ContextMenu position={menuPosition} onClose={handleCloseMenu}>
           <button
             onClick={onEdit}
             className="flex items-center gap-2 w-full text-left"
@@ -216,7 +212,7 @@ const OrganizationCard = ({
                   value={agentType}
                   onChange={handleAgentTypeChange}
                 >
-                  <option value={AgentType.SOFIA_ASISTENTE}>Converxa</option>
+                  <option value={AgentType.CONVERXA_ASISTENTE}>Converxa</option>
                   <option value={AgentType.CLAUDE}>Claude</option>
                 </select>
               </InlineInputGroup>

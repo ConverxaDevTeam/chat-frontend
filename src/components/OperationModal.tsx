@@ -50,7 +50,7 @@ const OperationModal: React.FC<OperationModalProps> = ({
         )}
         {type === "loading" && (
           <div className="w-16 h-16 mb-4">
-            <div className="w-full h-full rounded-full border-4 border-gray-200 border-t-sofia-superDark animate-spin"></div>
+            <div className="w-full h-full rounded-full border-4 border-gray-200 border-t-app-superDark animate-spin"></div>
           </div>
         )}
         <h2 className="text-xl gap-2 font-semibold text-center mb-2">

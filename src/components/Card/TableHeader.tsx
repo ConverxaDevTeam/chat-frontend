@@ -23,13 +23,13 @@ const TableHeader: FC<TableHeaderProps> = ({ columns, onSort, ...props }) => {
             !column.hidden && (
               <th
                 key={column.key}
-                className={`${column.width || ""} text-left px-4 text-sofia-superDark font-normal`}
+                className={`${column.width || ""} text-left px-4 text-app-superDark font-normal`}
               >
                 <div className="flex gap-[10px] items-center">
                   <p>{column.label}</p>
                   {column.sortable && onSort && (
                     <button onClick={() => onSort(column.key)}>
-                      <RiArrowUpDownFill className="text-[#A6A8AB] cursor-pointer hover:text-sofia-superDark" />
+                      <RiArrowUpDownFill className="text-[#A6A8AB] cursor-pointer hover:text-app-superDark" />
                     </button>
                   )}
                 </div>

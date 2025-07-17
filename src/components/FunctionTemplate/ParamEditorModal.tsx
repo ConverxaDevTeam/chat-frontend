@@ -103,7 +103,7 @@ export const ParamEditorModal: React.FC<ParamEditorModalProps> = ({
                   onChange={e => onChange(e.target.value)}
                   ref={ref}
                   rows={3}
-                  className="flex px-3 py-4 items-center gap-[11px] bg-[#FCFCFC] self-stretch rounded-[4px] border border-sofia-darkBlue text-sofia-superDark text-[14px] font-normal leading-normal w-full"
+                  className="flex px-3 py-4 items-center gap-[11px] bg-[#FCFCFC] self-stretch rounded-[4px] border border-app-darkBlue text-app-superDark text-[14px] font-normal leading-normal w-full"
                 />
               </InputGroup>
             )}
@@ -137,13 +137,13 @@ export const ParamEditorModal: React.FC<ParamEditorModalProps> = ({
                   <input
                     type="checkbox"
                     id={`required-${index}`}
-                    className="h-4 w-4 rounded border-gray-300 accent-sofia-electricOlive"
+                    className="h-4 w-4 rounded border-gray-300 accent-app-electricOlive"
                     checked={value || false}
                     onChange={e => onChange(e.target.checked)}
                   />
                   <label
                     htmlFor={`required-${index}`}
-                    className="ml-2 text-sofia-superDark text-[14px] font-semibold leading-[16px]"
+                    className="ml-2 text-app-superDark text-[14px] font-semibold leading-[16px]"
                   >
                     Este parámetro es obligatorio
                   </label>

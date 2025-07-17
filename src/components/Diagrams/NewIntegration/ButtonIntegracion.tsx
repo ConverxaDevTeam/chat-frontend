@@ -17,17 +17,17 @@ const ButtonIntegracion = ({
       className={`flex flex-col items-center gap-4 rounded bg-white ${
         disabled
           ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-          : "hover:bg-sofia-grayLight"
+          : "hover:bg-app-grayLight"
       }`}
       onClick={action}
     >
       <div className="p-4">
         <img
           src={`/mvp/${Icon}.svg`}
-          className="w-[56px] h-[56px] text-sofia-superDark"
+          className="w-[56px] h-[56px] text-app-superDark"
         />
       </div>
-      <p className="text-sm text-sofia-superDark">{text}</p>
+      <p className="text-sm text-app-superDark">{text}</p>
     </button>
   );
 };

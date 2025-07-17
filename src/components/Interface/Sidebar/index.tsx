@@ -51,7 +51,7 @@ const Sidebar = ({
       className={`transition-all duration-150 ease-in-out flex flex-col ${mobileResolution ? "" : ""}${sidebarMinimized || mobileResolution ? `${mobileResolution ? "w-[80px]" : "w-[80px]"}` : "w-[260px]"}`}
     >
       <div
-        className={`fixed top-0 bottom-0 bg-white border-r border-sofia-darkBlue rounded-b-[4px] ${sidebarMinimized || mobileResolution ? `w-[80px]` : "w-[260px]"}`}
+        className={`fixed top-0 bottom-0 bg-white border-r border-app-darkBlue rounded-b-[4px] ${sidebarMinimized || mobileResolution ? `w-[80px]` : "w-[260px]"}`}
         style={{ top: "var(--banner-height, 0px)" }}
       >
         <div className="flex flex-col w-full h-full relative px-4">
@@ -93,7 +93,7 @@ const Sidebar = ({
             )}
           </div>
           <div
-            className="w-full border-b border-sofia-darkBlue mb-3 -ml-8 relative"
+            className="w-full border-b border-app-darkBlue mb-3 -ml-8 relative"
             style={{ width: "calc(100% + 3rem)" }}
           ></div>
           <ul className="flex flex-col w-full gap-[15px]">
@@ -146,7 +146,7 @@ const Sidebar = ({
                 </p>
                 <a
                   href="mailto:gio@pixeldigita.com"
-                  className="flex justify-center items-center text-[12px] text-sofia-navyBlue bg-white border-sofia-navyBlue border-[0.5px] py-[4px] px-[8px] rounded-[4px] mt-1"
+                  className="flex justify-center items-center text-[12px] text-app-navyBlue bg-white border-app-navyBlue border-[0.5px] py-[4px] px-[8px] rounded-[4px] mt-1"
                 >
                   Ir ahora
                 </a>

@@ -89,7 +89,7 @@ export function AuthEdge({
             onClick={() => setShowModal(true)}
             className={`flex items-center rounded-full shadow-md p-3 transition-colors ${
               data?.authenticatorId
-                ? "bg-sofia-secundario hover:bg-blue-100"
+                ? "bg-app-secundario hover:bg-blue-100"
                 : "bg-white hover:bg-gray-50"
             }`}
           >

@@ -153,17 +153,13 @@ export const HitlTypeForm: React.FC<HitlTypeFormProps> = ({
             className="text-gray-500 hover:text-gray-700 transition-colors"
             type="button"
           >
-            <img
-              src="/mvp/chevron-left.svg"
-              alt="Volver"
-              className="w-5 h-5"
-            />
+            <img src="/mvp/chevron-left.svg" alt="Volver" className="w-5 h-5" />
           </button>
-          <h2 className="text-[18px] font-semibold text-sofia-superDark">
+          <h2 className="text-[18px] font-semibold text-app-superDark">
             {mode === "create" ? "Crear nuevo tipo HITL" : "Editar tipo HITL"}
           </h2>
         </div>
-        <p className="text-sofia-superDark text-sm font-normal">
+        <p className="text-app-superDark text-sm font-normal">
           {mode === "create"
             ? "Define roles personalizados para asignar a usuarios específicos. Estos roles determinan qué tipo de conversaciones o solicitudes podrán atender, recibiendo notificaciones relacionadas."
             : "Modifica la información del tipo HITL"}
@@ -231,11 +227,11 @@ export const HitlTypeForm: React.FC<HitlTypeFormProps> = ({
           </p>
         </div>
 
-        <div className="bg-[#F4FAFF] border border-sofia-darkBlue rounded p-4">
+        <div className="bg-[#F4FAFF] border border-app-darkBlue rounded p-4">
           <div className="flex">
             <div className="flex-shrink-0">
               <svg
-                className="h-5 w-5 text-sofia-superDark"
+                className="h-5 w-5 text-app-superDark"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -249,10 +245,10 @@ export const HitlTypeForm: React.FC<HitlTypeFormProps> = ({
               </svg>
             </div>
             <div className="ml-3">
-              <h3 className="text-sm font-medium text-sofia-superDark">
+              <h3 className="text-sm font-medium text-app-superDark">
                 Información importante
               </h3>
-              <div className="my-2 text-sm text-sofia-superDark">
+              <div className="my-2 text-sm text-app-superDark">
                 <ul className="list-disc list-inside space-y-1 font-normal">
                   <li>El nombre debe ser único en tu organización</li>
                   <li>Una vez creado, deberás asignar usuarios con rol HITL</li>

@@ -38,28 +38,28 @@ const OrganizationList = ({
           <table className="w-full border-collapse">
             <thead>
               <tr>
-                <th className="py-2.5 px-6 text-left font-size-[16px] text-sofia-superDark font-normal">
+                <th className="py-2.5 px-6 text-left font-size-[16px] text-app-superDark font-normal">
                   Organización
                 </th>
-                <th className="py-2.5 px-6 text-left font-size-[16px] text-sofia-superDark font-normal">
+                <th className="py-2.5 px-6 text-left font-size-[16px] text-app-superDark font-normal">
                   ID
                 </th>
-                <th className="py-2.5 px-6 text-left font-size-[16px] text-sofia-superDark font-normal">
+                <th className="py-2.5 px-6 text-left font-size-[16px] text-app-superDark font-normal">
                   Descripción
                 </th>
-                <th className="py-2.5 px-6 text-left font-size-[16px] text-sofia-superDark font-normal">
+                <th className="py-2.5 px-6 text-left font-size-[16px] text-app-superDark font-normal">
                   Email
                 </th>
-                <th className="py-2.5 px-6 text-left font-size-[16px] text-sofia-superDark font-normal">
+                <th className="py-2.5 px-6 text-left font-size-[16px] text-app-superDark font-normal">
                   Tipo
                 </th>
-                <th className="py-2.5 px-6 text-left font-size-[16px] text-sofia-superDark font-normal">
+                <th className="py-2.5 px-6 text-left font-size-[16px] text-app-superDark font-normal">
                   Departamentos
                 </th>
-                <th className="py-2.5 px-6 text-center font-size-[16px] text-sofia-superDark font-normal">
+                <th className="py-2.5 px-6 text-center font-size-[16px] text-app-superDark font-normal">
                   Usuarios
                 </th>
-                <th className="py-2.5 px-6 text-right font-size-[16px] text-sofia-superDark font-normal">
+                <th className="py-2.5 px-6 text-right font-size-[16px] text-app-superDark font-normal">
                   Acciones
                 </th>
               </tr>
