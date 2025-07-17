@@ -35,7 +35,7 @@ const WizardTabLayout: FC<WizardTabLayoutProps> = ({
           <div className="w-[80px] sm:w-[280px] bg-app-blancoPuro border-r border-app-darkBlue flex flex-col">
             <div className="sm:p-6 p-2">
               <img
-                src="/img/logo-app-horizontal.svg"
+                src="/logo.svg"
                 alt="CONVERXA"
                 className="h-6 mb-8 hidden sm:block mx-auto"
               />
