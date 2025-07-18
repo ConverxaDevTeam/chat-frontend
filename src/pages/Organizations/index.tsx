@@ -12,10 +12,13 @@ import { useAlertContext } from "@components/Diagrams/components/AlertContext";
 import { IOrganization } from "@interfaces/organization.interface";
 import ButtonExportAllOrganizations from "./ButtonExportAllOrganizations";
 import ChangeOrganizationTypeModal from "./ChangeOrganizationTypeModal";
+import DepartmentLimitsModal from "./DepartmentLimitsModal";
 import TablePagination from "../Users/UsersSuperAdmin/components/TablePagination";
 import { useSelector } from "react-redux";
 import { RootState } from "@store";
 import { OrganizationRoleType } from "@utils/interfaces";
+import { alertConfirm, alertError } from "@utils/alerts";
+import { updateDepartmentLimit } from "@services/organizationLimits";
 
 type EditFormData = {
   owner_id: number;
@@ -26,6 +29,8 @@ interface OrganizationListProps {
   onEdit: (organization: IOrganization) => void;
   onDelete: (organization: IOrganization) => void;
   onSetCustomPlan: (organization: IOrganization) => void;
+  onManageDepartmentLimits: (organization: IOrganization) => void;
+  onShowInfo: (organization: IOrganization) => void;
 }
 
 const OrganizationList = ({
@@ -33,6 +38,8 @@ const OrganizationList = ({
   onEdit,
   onDelete,
   onSetCustomPlan,
+  onManageDepartmentLimits,
+  onShowInfo,
 }: OrganizationListProps) => {
   return (
     <div className="flex flex-col gap-4">
@@ -48,19 +55,13 @@ const OrganizationList = ({
                   ID
                 </th>
                 <th className="py-2.5 px-6 text-left font-size-[16px] text-sofia-superDark font-normal">
-                  Descripción
-                </th>
-                <th className="py-2.5 px-6 text-left font-size-[16px] text-sofia-superDark font-normal">
                   Email
                 </th>
                 <th className="py-2.5 px-6 text-left font-size-[16px] text-sofia-superDark font-normal">
                   Tipo
                 </th>
-                <th className="py-2.5 px-6 text-left font-size-[16px] text-sofia-superDark font-normal">
-                  Departamentos
-                </th>
-                <th className="py-2.5 px-6 text-center font-size-[16px] text-sofia-superDark font-normal">
-                  Usuarios
+                <th className="py-2.5 px-6 text-center font-size-[16px] text-sofia-superDark font-normal w-16">
+                  Info
                 </th>
                 <th className="py-2.5 px-6 text-right font-size-[16px] text-sofia-superDark font-normal">
                   Acciones
@@ -75,6 +76,10 @@ const OrganizationList = ({
                   onEdit={() => onEdit(organization)}
                   onDelete={() => onDelete(organization)}
                   onSetCustomPlan={() => onSetCustomPlan(organization)}
+                  onManageDepartmentLimits={() =>
+                    onManageDepartmentLimits(organization)
+                  }
+                  onShowInfo={() => onShowInfo(organization)}
                 />
               ))}
             </tbody>
@@ -250,6 +255,13 @@ const Organizations = () => {
   const [selectedPlanOrg, setSelectedPlanOrg] = useState<IOrganization | null>(
     null
   );
+  const [isLimitsModalOpen, setIsLimitsModalOpen] = useState<boolean>(false);
+  const [selectedLimitsOrg, setSelectedLimitsOrg] =
+    useState<IOrganization | null>(null);
+  const [isInfoModalOpen, setIsInfoModalOpen] = useState<boolean>(false);
+  const [selectedInfoOrg, setSelectedInfoOrg] = useState<IOrganization | null>(
+    null
+  );
   const {
     handleDelete,
     reset,
@@ -317,6 +329,40 @@ const Organizations = () => {
     setIsCustomPlanModalOpen(true);
   };
 
+  const handleManageDepartmentLimits = (organization: IOrganization) => {
+    setSelectedLimitsOrg(organization);
+    setIsLimitsModalOpen(true);
+  };
+
+  const handleSaveDepartmentLimits = async (
+    organizationId: number,
+    departmentLimit: number
+  ) => {
+    try {
+      await updateDepartmentLimit(organizationId, departmentLimit);
+
+      // Mostrar notificación de éxito
+      alertConfirm("Límites de departamentos actualizados correctamente");
+
+      // Refrescar la lista de organizaciones
+      await getAllOrganizations();
+    } catch (error) {
+      console.error("Error al actualizar límites:", error);
+
+      // Mostrar notificación de error
+      const errorMessage =
+        error instanceof Error ? error.message : "Error al actualizar límites";
+      alertError(errorMessage);
+
+      throw error;
+    }
+  };
+
+  const handleShowInfo = (organization: IOrganization) => {
+    setSelectedInfoOrg(organization);
+    setIsInfoModalOpen(true);
+  };
+
   return (
     <>
       <CreateModal
@@ -346,6 +392,137 @@ const Organizations = () => {
             }}
             onPlanUpdated={getAllOrganizations}
           />
+        </Modal>
+      )}
+
+      {/* Modal para gestionar límites de departamentos */}
+      {isLimitsModalOpen && selectedLimitsOrg && (
+        <Modal
+          isShown={isLimitsModalOpen}
+          onClose={() => setIsLimitsModalOpen(false)}
+        >
+          <DepartmentLimitsModal
+            organization={selectedLimitsOrg}
+            onClose={() => setIsLimitsModalOpen(false)}
+            onSave={handleSaveDepartmentLimits}
+          />
+        </Modal>
+      )}
+
+      {/* Modal para mostrar información de la organización */}
+      {isInfoModalOpen && selectedInfoOrg && (
+        <Modal
+          isShown={isInfoModalOpen}
+          onClose={() => setIsInfoModalOpen(false)}
+          header="Información de la Organización"
+        >
+          <div className="w-[500px] max-w-[90vw]">
+            <div className="space-y-4">
+              {/* Organization Header */}
+              <div className="flex items-center justify-center gap-3 w-full">
+                <div className="flex justify-center items-center w-8 h-8 rounded-[4px] before:content-[''] before:absolute before:-z-10 before:inset-0 before:bg-custom-gradient before:rounded-[8px] before:border-[2px] before:border-[#B8CCE0] before:border-inherit before:bg-app-c2 overflow-hidden flex-shrink-0">
+                  {selectedInfoOrg.logo ? (
+                    <img
+                      src={selectedInfoOrg.logo}
+                      alt={`${selectedInfoOrg.name} logo`}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <p className="text-gray-600 font-medium text-sm">
+                      {selectedInfoOrg.name.substring(0, 2).toUpperCase()}
+                    </p>
+                  )}
+                </div>
+                <div className="text-center">
+                  <h4 className="font-semibold text-sofia-superDark capitalize">
+                    {selectedInfoOrg.name}
+                  </h4>
+                  <p className="text-sm text-gray-500">
+                    ID: {selectedInfoOrg.id}
+                  </p>
+                </div>
+              </div>
+
+              {/* Info Grid */}
+              <div className="grid grid-cols-2 gap-6">
+                {/* Left Column */}
+                <div className="space-y-4">
+                  {/* Email */}
+                  <div>
+                    <label className="block text-sm font-medium text-sofia-superDark mb-1">
+                      Email:
+                    </label>
+                    <p className="text-sm text-gray-600">
+                      {selectedInfoOrg.email ||
+                        selectedInfoOrg.owner?.user.email ||
+                        "-"}
+                    </p>
+                  </div>
+
+                  {/* Users */}
+                  <div>
+                    <div className="flex items-center gap-2 mb-1">
+                      <img
+                        src="/mvp/users.svg"
+                        alt="Usuarios"
+                        className="w-4 h-4"
+                      />
+                      <label className="text-sm font-medium text-sofia-superDark">
+                        Usuarios:
+                      </label>
+                    </div>
+                    <p className="text-sm text-gray-600">
+                      {selectedInfoOrg.users || 0}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Right Column */}
+                <div className="space-y-4">
+                  {/* Type */}
+                  <div>
+                    <label className="block text-sm font-medium text-sofia-superDark mb-1">
+                      Tipo de Plan:
+                    </label>
+                    <span className="inline-flex px-2 py-1 text-xs font-medium rounded-[4px] bg-sofia-electricGreen text-sofia-superDark capitalize">
+                      {selectedInfoOrg.type || "N/A"}
+                    </span>
+                  </div>
+
+                  {/* Departments */}
+                  <div>
+                    <div className="flex items-center gap-2 mb-1">
+                      <img
+                        src="/mvp/building.svg"
+                        alt="Departamentos"
+                        className="w-4 h-4"
+                      />
+                      <label className="text-sm font-medium text-sofia-superDark">
+                        Departamentos:
+                      </label>
+                    </div>
+                    <p className="text-sm text-gray-600">
+                      {selectedInfoOrg.departments !== undefined
+                        ? selectedInfoOrg.departments
+                        : 0}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Description - Full Width */}
+              {selectedInfoOrg.description && (
+                <div className="w-full">
+                  <label className="block text-sm font-medium text-sofia-superDark mb-1">
+                    Descripción:
+                  </label>
+                  <p className="text-sm text-gray-600">
+                    {selectedInfoOrg.description}
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
         </Modal>
       )}
 
@@ -431,6 +608,8 @@ const Organizations = () => {
                   }}
                   onDelete={handleDelete}
                   onSetCustomPlan={handleSetCustomPlan}
+                  onManageDepartmentLimits={handleManageDepartmentLimits}
+                  onShowInfo={handleShowInfo}
                 />
 
                 <TablePagination

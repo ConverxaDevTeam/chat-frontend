@@ -225,6 +225,16 @@ export const apiUrls = {
     ) =>
       `/api/organizations/${organizationId}/hitl-types/${hitlTypeId}/users/${userId}`,
   },
+  // Organization limits
+  organizationLimits: {
+    get: (organizationId: number) =>
+      `/api/organization-limits/organization/${organizationId}`,
+    update: (organizationId: number) =>
+      `/api/organization-limits/organization/${organizationId}`,
+    checkDepartmentLimit: (organizationId: number) =>
+      `/api/organization-limits/organization/${organizationId}/department-limit-check`,
+    create: () => `/api/organization-limits`,
+  },
 } as const;
 
 export const tokenAccess = {

@@ -13,6 +13,8 @@ interface OrganizationCardProps {
   onEdit: () => void;
   onDelete: () => void;
   onSetCustomPlan: () => void;
+  onManageDepartmentLimits?: () => void;
+  onShowInfo: () => void;
 }
 
 const OrganizationCard = ({
@@ -20,6 +22,8 @@ const OrganizationCard = ({
   onEdit,
   onDelete,
   onSetCustomPlan,
+  onManageDepartmentLimits,
+  onShowInfo,
 }: OrganizationCardProps) => {
   const { isSuperAdmin } = useRoleAuth();
   const hasDeletePermission = isSuperAdmin;
@@ -30,6 +34,7 @@ const OrganizationCard = ({
   const [showContextMenu, setShowContextMenu] = useState(false);
   const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
   const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const [showAgentTypeModal, setShowAgentTypeModal] = useState(false);
 
   const handleAgentTypeChange = async (
     e: React.ChangeEvent<HTMLSelectElement>
@@ -69,6 +74,35 @@ const OrganizationCard = ({
           organizationId={organization.id}
           close={setShowPasswordModal}
         />
+      </Modal>
+
+      <Modal
+        isShown={showAgentTypeModal}
+        onClose={() => setShowAgentTypeModal(false)}
+      >
+        <div className="p-6 bg-white rounded-lg max-w-md">
+          <h3 className="text-lg font-semibold mb-4">Cambiar Tipo de Agente</h3>
+          <div className="mb-4">
+            <InlineInputGroup label="Agente:">
+              <select
+                className="w-full p-2 border rounded-[4px] focus:outline-none text-[14px] bg-white"
+                value={agentType}
+                onChange={handleAgentTypeChange}
+              >
+                <option value={AgentType.SOFIA_ASISTENTE}>Sofia</option>
+                <option value={AgentType.CLAUDE}>Claude</option>
+              </select>
+            </InlineInputGroup>
+          </div>
+          <div className="flex justify-end gap-2">
+            <button
+              onClick={() => setShowAgentTypeModal(false)}
+              className="px-4 py-2 text-gray-600 border border-gray-300 rounded hover:bg-gray-50"
+            >
+              Cancelar
+            </button>
+          </div>
+        </div>
       </Modal>
 
       {showContextMenu && (
@@ -120,6 +154,42 @@ const OrganizationCard = ({
               <span>Cambiar tipo de organización</span>
             </button>
           )}
+
+          {isSuperAdmin &&
+            organization.type === "custom" &&
+            onManageDepartmentLimits && (
+              <button
+                onClick={() => {
+                  onManageDepartmentLimits();
+                  handleCloseMenu();
+                }}
+                className="flex items-center gap-2 w-full text-left"
+              >
+                <img
+                  src="/mvp/settings.svg"
+                  alt="Gestionar límites"
+                  className="w-4 h-4"
+                />
+                <span>Gestionar límites de departamentos</span>
+              </button>
+            )}
+
+          {isSuperAdmin && (
+            <button
+              onClick={() => {
+                setShowAgentTypeModal(true);
+                handleCloseMenu();
+              }}
+              className="flex items-center gap-2 w-full text-left"
+            >
+              <img
+                src="/mvp/bot.svg"
+                alt="Cambiar tipo de agente"
+                className="w-4 h-4"
+              />
+              <span>Cambiar tipo de agente</span>
+            </button>
+          )}
         </ContextMenu>
       )}
 
@@ -145,14 +215,7 @@ const OrganizationCard = ({
           </div>
         </td>
         <td className="py-2.5 px-6 text-sm font-medium">{organization.id}</td>
-        <td className="py-2.5 px-6">
-          <p
-            className="text-sm font-medium text-gray-600 truncate max-w-[200px]"
-            title={organization.description}
-          >
-            {organization.description}
-          </p>
-        </td>
+
         <td className="py-2.5 px-6">
           <p
             className="text-sm font-medium text-gray-600 truncate max-w-[200px]"
@@ -169,25 +232,21 @@ const OrganizationCard = ({
             {organization.type || "-"}
           </p>
         </td>
-        <td className="py-2.5 px-6">
-          <p
-            className="text-sm font-medium text-gray-600 truncate max-w-[200px]"
-            title={
-              organization.departments !== undefined
-                ? organization.departments.toString()
-                : ""
-            }
+
+        <td className="py-2.5 px-6 text-center">
+          <button
+            onClick={onShowInfo}
+            className="p-1.5 rounded-full hover:bg-gray-100 transition-colors"
+            title="Ver información detallada"
           >
-            {organization.departments !== undefined
-              ? organization.departments
-              : "-"}
-          </p>
+            <img
+              src="/mvp/info.svg"
+              alt="Información"
+              className="w-4 h-4 text-gray-500"
+            />
+          </button>
         </td>
-        <td className="py-2.5 px-6 text-center font-size-[16px]">
-          <span className="text-sm font-medium text-gray-600 px-3 py-0.5 rounded-[4px]">
-            {organization.users}
-          </span>
-        </td>
+
         <td className="py-2.5 px-6 first:rounded-tr-[8px] last:rounded-br-[8px]">
           <div className="flex justify-end">
             <button
@@ -202,22 +261,6 @@ const OrganizationCard = ({
               />
             </button>
           </div>
-        </td>
-        <td className="py-2.5 px-6">
-          {isSuperAdmin && (
-            <div className="flex items-center">
-              <InlineInputGroup label="Agente:">
-                <select
-                  className="w-full p-2 border rounded-[4px] focus:outline-none text-[14px] bg-white"
-                  value={agentType}
-                  onChange={handleAgentTypeChange}
-                >
-                  <option value={AgentType.SOFIA_ASISTENTE}>Sofia</option>
-                  <option value={AgentType.CLAUDE}>Claude</option>
-                </select>
-              </InlineInputGroup>
-            </div>
-          )}
         </td>
       </tr>
     </>
