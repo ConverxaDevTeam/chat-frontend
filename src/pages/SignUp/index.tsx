@@ -24,7 +24,7 @@ const SignUp = () => {
 
   const [error, setError] = useState<string | null>(null);
   const [active, setActive] = useState<boolean>(false);
-  const { handlePostLoginRedirect } = usePostLoginRedirect();
+  const { handlePostLoginRedirect, redirectPath } = usePostLoginRedirect();
 
   const {
     register,
@@ -53,7 +53,7 @@ const SignUp = () => {
   };
 
   if (authenticated && !loading) {
-    return <Navigate to="/dashboard" />;
+    return <Navigate to={redirectPath} />;
   }
 
   return (

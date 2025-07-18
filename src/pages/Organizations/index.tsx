@@ -13,6 +13,9 @@ import { IOrganization } from "@interfaces/organization.interface";
 import ButtonExportAllOrganizations from "./ButtonExportAllOrganizations";
 import ChangeOrganizationTypeModal from "./ChangeOrganizationTypeModal";
 import TablePagination from "../Users/UsersSuperAdmin/components/TablePagination";
+import { useSelector } from "react-redux";
+import { RootState } from "@store";
+import { OrganizationRoleType } from "@utils/interfaces";
 
 type EditFormData = {
   owner_id: number;
@@ -233,6 +236,9 @@ const useHandles = (
 // Eliminamos la constante ITEMS_PER_PAGE ya que ahora será un estado
 
 const Organizations = () => {
+  const { user, myOrganizations } = useSelector(
+    (state: RootState) => state.auth
+  );
   const { organizations, loading, getAllOrganizations } = useOrganizations();
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [itemsPerPage, setItemsPerPage] = useState<number>(10);
@@ -346,16 +352,21 @@ const Organizations = () => {
 
       <div className="flex flex-1 flex-col gap-[20px] overflow-auto w-full">
         <div className="flex justify-between items-center">
-          <button
-            type="button"
-            onClick={() => {
-              setSelectedOrg(null);
-              setIsModalOpen(true);
-            }}
-            className="flex items-center gap-1 px-4 w-[190px] h-[41px] text-white rounded leading-[24px] bg-[#001130] hover:bg-opacity-90"
-          >
-            <FiPlus /> Crear organización
-          </button>
+          {(user?.is_super_admin ||
+            myOrganizations?.some(
+              org => org.role === OrganizationRoleType.USR_TECNICO
+            )) && (
+            <button
+              type="button"
+              onClick={() => {
+                setSelectedOrg(null);
+                setIsModalOpen(true);
+              }}
+              className="flex items-center gap-1 px-4 w-[190px] h-[41px] text-white rounded leading-[24px] bg-[#001130] hover:bg-opacity-90"
+            >
+              <FiPlus /> Crear organización
+            </button>
+          )}
 
           <div className="flex items-center gap-2">
             <ButtonExportAllOrganizations
