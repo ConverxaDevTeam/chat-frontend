@@ -27,14 +27,6 @@ export const OrganizationStrip: React.FC<OrganizationStripProps> = () => {
   );
   const { showConfirmation } = useAlertContext();
 
-  const isAdmin =
-    user?.is_super_admin ||
-    myOrganizations.some(
-      org =>
-        org.role === OrganizationRoleType.ADMIN ||
-        org.role === OrganizationRoleType.OWNER
-    );
-
   const realOrganizations = myOrganizations.filter(
     organization => organization.organization
   );
@@ -102,12 +94,13 @@ export const OrganizationStrip: React.FC<OrganizationStripProps> = () => {
     }
   };
 
-  const isSuperAdmin = user?.is_super_admin;
-
   return (
     <div className="absolute top-0 left-0 flex flex-col items-center gap-0 p-0 w-[74px] h-full bg-[#F4FAFF] z-10 overflow-visible">
       <div className="w-full flex flex-col items-center pt-[70px] pb-2 gap-4 overflow-visible">
-        {isSuperAdmin && (
+        {(user?.is_super_admin ||
+          myOrganizations.some(
+            org => org.role === OrganizationRoleType.USR_TECNICO
+          )) && (
           <div className="group relative overflow-visible">
             <button
               className={`w-8 h-8 rounded-md bg-[#F8E473] flex items-center justify-center text-[#343E4F] font-bold border ${selectOrganizationId === null ? "border-[#343E4F] border-2" : "border-[#343E4F] border"} text-[10px]`}
@@ -193,7 +186,10 @@ export const OrganizationStrip: React.FC<OrganizationStripProps> = () => {
           );
         })}
 
-        {isAdmin && (
+        {(user?.is_super_admin ||
+          myOrganizations.some(
+            org => org.role === OrganizationRoleType.USR_TECNICO
+          )) && (
           <div className="group relative overflow-visible">
             <button
               className="w-7 h-7 rounded-md bg-[#EEEEEE] flex items-center justify-center text-[#343E4F] hover:bg-gray-200 transition"
