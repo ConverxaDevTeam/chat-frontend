@@ -45,8 +45,9 @@ jobs:
             VITE_PUBLIC_URL_FILES=https://back-chat.converxa.net
             VITE_BACKEND_URL_FILES=https://back-chat.converxa.net
             VITE_GOOGLE_CLIENT_ID=${{ secrets.VITE_GOOGLE_CLIENT_ID }}
-            VITE_FB_APP_ID=${{ secrets.VITE_FB_APP_ID }}
-            VITE_FB_CONFIG_ID=${{ secrets.VITE_FB_CONFIG_ID }}
+            VITE_FB_CONFIG_ID=617129767332521
+            VITE_FB_MESSENGER_CONFIG_ID=1058554123005287
+            VITE_FB_APP_ID=1219212166345748
             EOF
             npm run build -- --mode production
             rm -rf /var/www/frontend/prod/*

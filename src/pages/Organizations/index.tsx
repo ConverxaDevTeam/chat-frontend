@@ -415,7 +415,7 @@ const Organizations = () => {
         <Modal
           isShown={isInfoModalOpen}
           onClose={() => setIsInfoModalOpen(false)}
-          header="Información de la Organización"
+          header={<h1>Información de la Organización</h1>}
         >
           <div className="w-[500px] max-w-[90vw]">
             <div className="space-y-4">

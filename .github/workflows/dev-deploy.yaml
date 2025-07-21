@@ -44,6 +44,7 @@ jobs:
             VITE_GOOGLE_CLIENT_ID=${{ secrets.VITE_GOOGLE_CLIENT_ID_DEV }}
             VITE_FB_APP_ID=${{ secrets.VITE_FB_APP_ID_DEV }}
             VITE_FB_CONFIG_ID=${{ secrets.VITE_FB_CONFIG_ID_DEV }}
+            VITE_FB_MESSENGER_CONFIG_ID=1058554123005287
             NODE_OPTIONS="--max-old-space-size=1536"
             EOF
             export NODE_OPTIONS="--max-old-space-size=1536"
