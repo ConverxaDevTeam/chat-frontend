@@ -3,7 +3,7 @@ name: Auto deploy sofia-chat-frontend-v2 development in VPS
 on:
   push:
     branches:
-      - develop  # Cambiamos de "main" a "develop"
+      - develop # Cambiamos de "main" a "develop"
     paths:
       - ".github/workflows/**"
       - "index.html"
@@ -22,14 +22,14 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          ref: develop  # Aseguramos que se haga checkout de la rama "develop"
+          ref: develop # Aseguramos que se haga checkout de la rama "develop"
 
       - name: Deploy using ssh
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.DEV_SSH_HOST }}  # Asegúrate de que este secret esté configurado
-          username: ${{ secrets.DEV_SSH_USERNAME }}  # Asegúrate de que este secret esté configurado
-          key: ${{ secrets.DEV_SSH_PRIVATE_KEY }}  # Asegúrate de que este secret esté configurado
+          host: ${{ secrets.DEV_SSH_HOST }} # Asegúrate de que este secret esté configurado
+          username: ${{ secrets.DEV_SSH_USERNAME }} # Asegúrate de que este secret esté configurado
+          key: ${{ secrets.DEV_SSH_PRIVATE_KEY }} # Asegúrate de que este secret esté configurado
           port: 22
           script: |
             cd /root/repos/sofia-chat-frontend-v2
@@ -44,6 +44,7 @@ jobs:
             VITE_GOOGLE_CLIENT_ID=${{ secrets.VITE_GOOGLE_CLIENT_ID_DEV }}
             VITE_FB_APP_ID=${{ secrets.VITE_FB_APP_ID_DEV }}
             VITE_FB_CONFIG_ID=${{ secrets.VITE_FB_CONFIG_ID_DEV }}
+            VITE_FB_MESSENGER_CONFIG_ID=1058554123005287
             NODE_OPTIONS="--max-old-space-size=1536"
             EOF
             export NODE_OPTIONS="--max-old-space-size=1536"

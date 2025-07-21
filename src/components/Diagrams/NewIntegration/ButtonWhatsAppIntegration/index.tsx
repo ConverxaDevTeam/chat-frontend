@@ -5,7 +5,7 @@ import { RootState } from "@store";
 import { useEffect, useMemo, useState } from "react";
 import Modal from "@components/Modal";
 import { createIntegrationWhatsAppManual } from "@services/integration";
-import { ensureFBSDKLoaded } from "@utils/facebook-init";
+import { facebookLogin } from "@services/facebook-login";
 
 interface ButtonWhatsAppIntegrationProps {
   getDataIntegrations: () => void;
@@ -37,52 +37,13 @@ const ButtonWhatsAppIntegration = ({
   }, [data]);
 
   const handleConnectFacebook = async () => {
-    try {
-      console.log(
-        "ButtonWhatsAppIntegration: Asegurando que el SDK de Facebook esté cargado"
-      );
-
-      // Obtener el objeto FB inicializado
-      const FB = await ensureFBSDKLoaded();
-
-      console.log(
-        "ButtonWhatsAppIntegration: SDK de Facebook cargado, llamando a FB.login"
-      );
-
-      // Usar el objeto FB devuelto directamente
-      FB.login(
-        response => {
-          console.log(
-            "ButtonWhatsAppIntegration: Respuesta de FB.login recibida",
-            response
-          );
-          // Respuesta recibida de la integración de WhatsApp
-          if (response.authResponse && response.authResponse.code) {
-            const code = response.authResponse.code;
-            setData(prev => ({ ...prev, code }));
-          } else {
-            console.log(
-              "ButtonWhatsAppIntegration: FB.login falló o fue cancelado"
-            );
-          }
-        },
-        {
-          config_id: import.meta.env.VITE_FB_CONFIG_ID,
-          response_type: "code",
-          override_default_response_type: true,
-          extras: {
-            setup: {},
-            featureType: "",
-            sessionInfoVersion: "3",
-          },
-        }
-      );
-    } catch (error) {
-      console.error(
-        "Error en el proceso de inicio de sesión de Facebook:",
-        error
-      );
-    }
+    await facebookLogin({
+      configId: import.meta.env.VITE_FB_CONFIG_ID,
+      platform: "whatsapp",
+      onSuccess: code => {
+        setData(prev => ({ ...prev, code }));
+      },
+    });
   };
 
   const handleMessage = async (event: MessageEvent) => {

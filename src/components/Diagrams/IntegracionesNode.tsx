@@ -10,10 +10,14 @@ import {
   createIntegrationWhatsAppManual,
   createIntegrationMessagerManual,
 } from "@services/integration";
-import { createIntegrationWhatsApp } from "@services/facebook";
+import {
+  createIntegrationWhatsApp,
+  createIntegrationMessager,
+  getPagesFacebook,
+} from "@services/facebook";
 import { baseUrl } from "@config/config";
 import { alertError, alertConfirm } from "@utils/alerts";
-import { ensureFBSDKLoaded } from "@utils/facebook-init";
+import { facebookLogin } from "@services/facebook-login";
 import { useState, useEffect, useMemo } from "react";
 
 export interface ConfigWhatsApp {
@@ -59,6 +63,16 @@ const IntegracionesNode = ({
     waba_id: null,
   });
 
+  const [messengerAutoData, setMessengerAutoData] = useState<{
+    code: string | null;
+    access_token: string | null;
+    id: string | null;
+  }>({
+    code: null,
+    access_token: null,
+    id: null,
+  });
+
   // Obtener el nombre de la organización actual
   const currentOrganizationName = useMemo(() => {
     const currentOrg = myOrganizations.find(
@@ -76,6 +90,15 @@ const IntegracionesNode = ({
     );
   }, [whatsAppAutoData]);
 
+  // Verificar si la lógica de Messenger automático está completa
+  const isMessengerAutoDataComplete = useMemo(() => {
+    return (
+      messengerAutoData.code &&
+      messengerAutoData.access_token &&
+      messengerAutoData.id
+    );
+  }, [messengerAutoData]);
+
   const getDataIntegrations = () => {
     increment();
   };
@@ -84,40 +107,49 @@ const IntegracionesNode = ({
   const handleCreateIntegrationWhatsAppAuto = async () => {
     if (!selectedDepartmentId || !selectOrganizationId) return;
 
-    try {
-      console.log(
-        "IntegracionesNode: Iniciando integración WhatsApp automática"
-      );
+    await facebookLogin({
+      configId: import.meta.env.VITE_FB_CONFIG_ID,
+      platform: "whatsapp",
+      onSuccess: code => {
+        setWhatsAppAutoData(prev => ({ ...prev, code }));
+      },
+    });
+  };
 
-      // Cargar Facebook SDK
-      const FB = await ensureFBSDKLoaded();
+  // Función para integración automática de Messenger
+  const handleCreateIntegrationMessengerAuto = async () => {
+    if (!selectedDepartmentId || !selectOrganizationId) return;
 
-      // Ejecutar login de Facebook
-      FB.login(
-        response => {
-          console.log("IntegracionesNode: Respuesta FB.login", response);
-          if (response.authResponse && response.authResponse.code) {
-            const code = response.authResponse.code;
-            setWhatsAppAutoData(prev => ({ ...prev, code }));
-          } else {
-            console.log("IntegracionesNode: FB.login falló o fue cancelado");
-          }
-        },
-        {
-          config_id: import.meta.env.VITE_FB_CONFIG_ID,
-          response_type: "code",
-          override_default_response_type: true,
-          extras: {
-            setup: {},
-            featureType: "",
-            sessionInfoVersion: "3",
-          },
-        }
-      );
-    } catch (error) {
-      console.error("Error en integración WhatsApp automática:", error);
-      alertError("Error al iniciar la integración de WhatsApp automática");
-    }
+    await facebookLogin({
+      configId: import.meta.env.VITE_FB_MESSENGER_CONFIG_ID,
+      platform: "messenger",
+      onSuccess: code => {
+        setMessengerAutoData(prev => ({ ...prev, code }));
+
+        // Obtener páginas de Facebook automáticamente
+        getPagesFacebook(selectedDepartmentId, selectOrganizationId, code)
+          .then(pages => {
+            if (pages && pages.length > 0) {
+              // Seleccionar automáticamente la primera página disponible
+              const firstPage = pages[0];
+              setMessengerAutoData(prev => ({
+                ...prev,
+                access_token: firstPage.access_token,
+                id: firstPage.id,
+              }));
+            } else {
+              console.log(
+                "IntegracionesNode: No se encontraron páginas de Facebook"
+              );
+              alertError("No se encontraron páginas de Facebook disponibles");
+            }
+          })
+          .catch(error => {
+            console.error("Error al obtener páginas de Facebook:", error);
+            alertError("Error al obtener páginas de Facebook");
+          });
+      },
+    });
   };
 
   // Función para crear la integración WhatsApp automática
@@ -152,6 +184,41 @@ const IntegracionesNode = ({
     }
   };
 
+  // Función para crear la integración Messenger automática
+  const handleCreateMessengerAutoIntegration = async () => {
+    if (
+      selectedDepartmentId &&
+      selectOrganizationId &&
+      isMessengerAutoDataComplete
+    ) {
+      try {
+        const integration = await createIntegrationMessager(
+          selectedDepartmentId,
+          selectOrganizationId,
+          {
+            access_token: messengerAutoData.access_token!,
+            id: messengerAutoData.id!,
+          }
+        );
+        if (integration) {
+          getDataIntegrations();
+          alertConfirm(
+            "Canal Messenger automático creado exitosamente",
+            "La integración está lista para usar"
+          );
+        }
+        // Limpiar datos después de procesar
+        setMessengerAutoData({
+          code: null,
+          access_token: null,
+          id: null,
+        });
+      } catch (error) {
+        alertError("Error al crear la integración de Messenger automática");
+      }
+    }
+  };
+
   // Manejo de mensajes de Facebook
   const handleFacebookMessage = (event: MessageEvent) => {
     if (
@@ -177,6 +244,12 @@ const IntegracionesNode = ({
       handleCreateWhatsAppAutoIntegration();
     }
   }, [isWhatsAppAutoDataComplete]);
+
+  useEffect(() => {
+    if (isMessengerAutoDataComplete) {
+      handleCreateMessengerAutoIntegration();
+    }
+  }, [isMessengerAutoDataComplete]);
 
   useEffect(() => {
     window.addEventListener("message", handleFacebookMessage);
@@ -304,6 +377,26 @@ const IntegracionesNode = ({
               </div>
             ),
             onClick: handleCreateIntegrationWhatsAppAuto,
+          },
+          {
+            child: (
+              <div className="group relative p-1">
+                <div className="relative">
+                  <img
+                    src="/mvp/messenger.svg"
+                    alt="Messenger Automático"
+                    className="w-6 h-6"
+                  />
+                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-blue-500 rounded-full flex items-center justify-center">
+                    <span className="text-white text-[8px] font-bold">A</span>
+                  </div>
+                </div>
+                <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 bg-gray-800 text-white font-normal text-xs px-2 py-1 rounded whitespace-nowrap z-[9999]">
+                  Messenger Automático
+                </div>
+              </div>
+            ),
+            onClick: handleCreateIntegrationMessengerAuto,
           },
         ]
       : []),
