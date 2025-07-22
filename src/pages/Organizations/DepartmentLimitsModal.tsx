@@ -83,7 +83,7 @@ const DepartmentLimitsModal: React.FC<DepartmentLimitsModalProps> = ({
           Gestionar Límites de Departamentos
         </h3>
         <div className="flex items-center justify-center py-8">
-          <div className="w-8 h-8 border-2 border-sofia-electricGreen border-t-transparent rounded-full animate-spin"></div>
+          <div className="w-8 h-8 border-2 border-app-electricGreen border-t-transparent rounded-full animate-spin"></div>
           <span className="ml-3 text-gray-600">
             Cargando límites actuales...
           </span>
@@ -147,7 +147,7 @@ const DepartmentLimitsModal: React.FC<DepartmentLimitsModalProps> = ({
             value={departmentLimit}
             onChange={e => setDepartmentLimit(parseInt(e.target.value) || 1)}
             disabled={isLoading}
-            className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-sofia-electricGreen focus:border-sofia-electricGreen text-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
+            className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-app-electricGreen focus:border-app-electricGreen text-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
             placeholder="Ej: 10"
           />
           <p className="text-xs text-gray-500 mt-1">
@@ -165,7 +165,7 @@ const DepartmentLimitsModal: React.FC<DepartmentLimitsModalProps> = ({
         {isLoading && (
           <div className="p-3 bg-blue-50 border border-blue-200 rounded-md">
             <div className="flex items-center gap-2">
-              <div className="w-4 h-4 border-2 border-sofia-electricGreen border-t-transparent rounded-full animate-spin"></div>
+              <div className="w-4 h-4 border-2 border-app-electricGreen border-t-transparent rounded-full animate-spin"></div>
               <p className="text-sm text-gray-600">
                 Cargando límites actuales...
               </p>
@@ -184,10 +184,10 @@ const DepartmentLimitsModal: React.FC<DepartmentLimitsModalProps> = ({
           <button
             onClick={handleSave}
             disabled={isLoading || !hasChanges}
-            className="px-4 py-2 bg-sofia-electricGreen text-sofia-superDark rounded hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+            className="px-4 py-2 bg-app-electricGreen text-app-superDark rounded hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
           >
             {isLoading && (
-              <div className="w-4 h-4 border-2 border-sofia-superDark border-t-transparent rounded-full animate-spin"></div>
+              <div className="w-4 h-4 border-2 border-app-superDark border-t-transparent rounded-full animate-spin"></div>
             )}
             {isLoading
               ? "Guardando..."

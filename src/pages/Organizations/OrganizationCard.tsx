@@ -89,7 +89,7 @@ const OrganizationCard = ({
                 value={agentType}
                 onChange={handleAgentTypeChange}
               >
-                <option value={AgentType.SOFIA_ASISTENTE}>Sofia</option>
+                <option value={AgentType.CONVERXA_ASISTENTE}>Converxa</option>
                 <option value={AgentType.CLAUDE}>Claude</option>
               </select>
             </InlineInputGroup>

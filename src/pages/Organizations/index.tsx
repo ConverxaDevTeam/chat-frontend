@@ -435,7 +435,7 @@ const Organizations = () => {
                   )}
                 </div>
                 <div className="text-center">
-                  <h4 className="font-semibold text-sofia-superDark capitalize">
+                  <h4 className="font-semibold text-app-superDark capitalize">
                     {selectedInfoOrg.name}
                   </h4>
                   <p className="text-sm text-gray-500">
@@ -450,7 +450,7 @@ const Organizations = () => {
                 <div className="space-y-4">
                   {/* Email */}
                   <div>
-                    <label className="block text-sm font-medium text-sofia-superDark mb-1">
+                    <label className="block text-sm font-medium text-app-superDark mb-1">
                       Email:
                     </label>
                     <p className="text-sm text-gray-600">
@@ -468,7 +468,7 @@ const Organizations = () => {
                         alt="Usuarios"
                         className="w-4 h-4"
                       />
-                      <label className="text-sm font-medium text-sofia-superDark">
+                      <label className="text-sm font-medium text-app-superDark">
                         Usuarios:
                       </label>
                     </div>
@@ -482,10 +482,10 @@ const Organizations = () => {
                 <div className="space-y-4">
                   {/* Type */}
                   <div>
-                    <label className="block text-sm font-medium text-sofia-superDark mb-1">
+                    <label className="block text-sm font-medium text-app-superDark mb-1">
                       Tipo de Plan:
                     </label>
-                    <span className="inline-flex px-2 py-1 text-xs font-medium rounded-[4px] bg-sofia-electricGreen text-sofia-superDark capitalize">
+                    <span className="inline-flex px-2 py-1 text-xs font-medium rounded-[4px] bg-app-electricGreen text-app-superDark capitalize">
                       {selectedInfoOrg.type || "N/A"}
                     </span>
                   </div>
@@ -498,7 +498,7 @@ const Organizations = () => {
                         alt="Departamentos"
                         className="w-4 h-4"
                       />
-                      <label className="text-sm font-medium text-sofia-superDark">
+                      <label className="text-sm font-medium text-app-superDark">
                         Departamentos:
                       </label>
                     </div>
@@ -514,7 +514,7 @@ const Organizations = () => {
               {/* Description - Full Width */}
               {selectedInfoOrg.description && (
                 <div className="w-full">
-                  <label className="block text-sm font-medium text-sofia-superDark mb-1">
+                  <label className="block text-sm font-medium text-app-superDark mb-1">
                     Descripción:
                   </label>
                   <p className="text-sm text-gray-600">
